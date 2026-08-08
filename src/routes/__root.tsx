@@ -1,8 +1,7 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
+import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-
-import appCss from "../styles.css?url"
+import tailwind from "@/styles/globals.css?url"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,13 +14,13 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Infra",
       },
     ],
     links: [
       {
         rel: "stylesheet",
-        href: appCss,
+        href: tailwind
       },
     ],
   }),
@@ -34,14 +33,14 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 })
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument() {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        {children}
+        <Outlet/>
         <TanStackDevtools
           config={{
             position: "bottom-right",
