@@ -1,7 +1,6 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { TanStackDevtools } from "@tanstack/react-devtools"
 import tailwind from "@/styles/globals.css?url"
+import { cn } from "@/lib/utils"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -35,23 +34,19 @@ export const Route = createRootRoute({
 
 function RootDocument() {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className='antialiased blur-none dark' suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
-        <Outlet/>
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
+      <body
+        id='root'
+        className={cn(
+          'relative min-h-dvh min-w-full border bg-background',
+          'selection:bg-olive-500/15 overflow-x-hidden',
+          'typeset wrap-anywhere duration-200'
+        )}
+      >
+        <Outlet />
         <Scripts />
       </body>
     </html>

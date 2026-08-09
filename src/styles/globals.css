@@ -2,8 +2,63 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
+@import "./typeset.css";
+@import "goey-toast/styles.css";
 
 @custom-variant dark (&:is(.dark *));
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+
+  @media (width >=--theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+
+  @media (width >=1440px) {
+    padding-inline: 2rem;
+    max-width: 1440px;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility dualTone {
+  cursor: pointer;
+  color: currentcolor;
+  stroke-width: 2;
+
+  & path {
+    transition: opacity 200ms ease;
+  }
+
+  & path:first-child {
+    opacity: 80%;
+  }
+
+  & path:not(:first-child) {
+    opacity: 40%;
+  }
+
+  .group:hover & path:first-child {
+    opacity: 100%;
+    transform: rotate(-3deg);
+    --transform-origin: 0% 100%;
+  }
+
+  .group:hover & path:not(:first-child) {
+    opacity: 100%;
+    transform: rotate(3deg);
+    --transform-origin: 100% 100%;
+  }
+}
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -123,7 +178,23 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground [&_svg]:dualTone;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition: background-color 999999s ease-in-out 0s;
+  }
+
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition: background-color 999999s ease-in-out 0s;
   }
 
   button:not(:disabled),
@@ -134,4 +205,22 @@
   html {
     @apply font-sans;
   }
+}
+
+body::-webkit-scrollbar {
+  @apply hidden;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+[data-slot="drawer-overlay"] {
+  z-index: 60;
+}
+
+[data-slot="drawer-viewport"] {
+  z-index: 60;
 }
