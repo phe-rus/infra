@@ -125,6 +125,12 @@ export const auth = betterAuth({
     },
     hooks: {
         before: createAuthMiddleware(async (ctx) => {
+            const adapter = ctx?.context?.adapter
+            if (!adapter) return
+            const count = await adapter.count({ model: 'user' })
+            if (count === 0) {
+                throw ctx.redirect("/setup")
+            }
             const method = methodForPath(ctx.path)
             if (!method) return
 

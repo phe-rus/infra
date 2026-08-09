@@ -1,11 +1,18 @@
+import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
 import { useNavigate } from "@tanstack/react-router"
-import { IconLoader2 } from "@tabler/icons-react"
+import { IconEye, IconEyeOff, IconLoader2 } from "@tabler/icons-react"
 import { z } from "zod"
 import { signInEmail, setupOwner } from "@/functions/authFn"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupButton,
+    InputGroupInput,
+} from "@/components/ui/input-group"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { t } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 
@@ -27,6 +34,7 @@ const setupSchema = z.object({
 
 export function AuthForm({ mode }: AuthFormProps) {
     const navigate = useNavigate()
+    const [showPassword, setShowPassword] = useState(false)
 
     const form = useForm({
         defaultValues: {
@@ -61,10 +69,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 e.preventDefault()
                 void form.handleSubmit()
             }}
-            className={cn(
-                "flex w-full max-w-sm flex-col gap-5",
-                'container m-auto'
-            )}
+            className={cn("flex w-full max-w-sm flex-col gap-5", "container m-auto")}
         >
             <section>
                 <h1 className="text-3xl">Infra</h1>
@@ -73,77 +78,92 @@ export function AuthForm({ mode }: AuthFormProps) {
                 </p>
             </section>
 
-            <div className="flex flex-col gap-3">
+            <FieldGroup>
                 {mode === "setup" && (
-                    <form.Field name="name">
-                        {(field) => (
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor={field.name}>Name</Label>
+                    <form.Field
+                        name="name"
+                        children={(field) => {
+                            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                                    <Input
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) => field.handleChange(e.target.value)}
+                                        aria-invalid={isInvalid}
+                                        autoComplete="name"
+                                        placeholder='Enter your name'
+                                    />
+                                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                                </Field>
+                            )
+                        }}
+                    />
+                )}
+
+                <form.Field
+                    name="email"
+                    children={(field) => {
+                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                        return (
+                            <Field data-invalid={isInvalid}>
+                                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                                 <Input
                                     id={field.name}
                                     name={field.name}
+                                    type="email"
                                     value={field.state.value}
-                                    onChange={(e) => field.handleChange(e.target.value)}
                                     onBlur={field.handleBlur}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    aria-invalid={isInvalid}
+                                    autoComplete="email"
+                                    placeholder='Enter your email'
                                 />
-                                {!field.state.meta.isValid && (
-                                    <p className="text-xs text-destructive">
-                                        {field.state.meta.errors
-                                            .map((err) => err?.message)
-                                            .join(", ")}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                    </form.Field>
-                )}
+                                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                            </Field>
+                        )
+                    }}
+                />
 
-                <form.Field name="email">
-                    {(field) => (
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor={field.name}>Email</Label>
-                            <Input
-                                id={field.name}
-                                name={field.name}
-                                type="email"
-                                value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
-                                onBlur={field.handleBlur}
-                            />
-                            {!field.state.meta.isValid && (
-                                <p className="text-xs text-destructive">
-                                    {field.state.meta.errors
-                                        .map((err) => err?.message)
-                                        .join(", ")}
-                                </p>
-                            )}
-                        </div>
-                    )}
-                </form.Field>
-
-                <form.Field name="password">
-                    {(field) => (
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor={field.name}>Password</Label>
-                            <Input
-                                id={field.name}
-                                name={field.name}
-                                type="password"
-                                value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
-                                onBlur={field.handleBlur}
-                            />
-                            {!field.state.meta.isValid && (
-                                <p className="text-xs text-destructive">
-                                    {field.state.meta.errors
-                                        .map((err) => err?.message)
-                                        .join(", ")}
-                                </p>
-                            )}
-                        </div>
-                    )}
-                </form.Field>
-            </div>
+                <form.Field
+                    name="password"
+                    children={(field) => {
+                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                        return (
+                            <Field data-invalid={isInvalid}>
+                                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                                <InputGroup>
+                                    <InputGroupInput
+                                        id={field.name}
+                                        name={field.name}
+                                        type={showPassword ? "text" : "password"}
+                                        value={field.state.value}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) => field.handleChange(e.target.value)}
+                                        aria-invalid={isInvalid}
+                                        autoComplete={mode === "setup" ? "new-password" : "current-password"}
+                                        placeholder='Enter your password'
+                                    />
+                                    <InputGroupAddon align="inline-end">
+                                        <InputGroupButton
+                                            type="button"
+                                            size="icon-xs"
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                        >
+                                            {showPassword ? <IconEyeOff /> : <IconEye />}
+                                        </InputGroupButton>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                            </Field>
+                        )
+                    }}
+                />
+            </FieldGroup>
 
             <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting] as const}>
                 {([canSubmit, isSubmitting]) => (

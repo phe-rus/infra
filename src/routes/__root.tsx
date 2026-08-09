@@ -1,7 +1,8 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
+import { currentUserQueryOptions } from "@/functions/authFn"
+import type { QueryClient } from "@tanstack/react-query"
 import tailwind from "@/styles/globals.css?url"
 import { cn } from "@/lib/utils"
-import type { QueryClient } from "@tanstack/react-query"
 
 export interface RouterAppContext {
   q: QueryClient
@@ -34,6 +35,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       <p>The requested page could not be found.</p>
     </main>
   ),
+  beforeLoad: async ({ context }) => {
+    const session = await context.q.ensureQueryData(currentUserQueryOptions())
+    return { session: session }
+  },
   shellComponent: RootDocument,
 })
 
