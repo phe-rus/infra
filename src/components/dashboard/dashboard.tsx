@@ -19,7 +19,7 @@ export function useSidebar() {
 export const Dashboard: FC<DashboardProps> = ({
     children
 }) => {
-    const [open, setOpen] = useState<boolean>(false)
+    const [open, setOpen] = useState<boolean>(true)
     const ref = useRef<HTMLDivElement>(null)
     const isMobile = useIsMobile()
 
@@ -103,7 +103,7 @@ export const Dashboard: FC<DashboardProps> = ({
                                 ? "left-full -translate-x-1/2"
                                 : "left-[calc(100%+8px)] translate-x-0.5"
                         )}
-                        onClick={toggleSidebar}
+                        onClick={() => toggleSidebar()}
                     >
                         {!open ? <IconChevronRight /> : <IconChevronLeft />}
                     </Button>
