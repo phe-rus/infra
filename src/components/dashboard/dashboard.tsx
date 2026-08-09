@@ -89,6 +89,7 @@ export const Dashboard: FC<DashboardProps> = ({
                     className={cn(
                         "fixed md:relative shrink-0 h-full border-r backdrop-blur bg-background/85 shadow-sm",
                         "transition-transform duration-300 ease-in-out ease-initial border-primary/5 z-55",
+                        'inset-y-0',
                         open ? "translate-x-0 w-78" : "-translate-x-full w-fit"
                     )}
                 >
@@ -113,7 +114,7 @@ export const Dashboard: FC<DashboardProps> = ({
                     )}>
                         <section className='flex flex-col gap-5 p-5'>
                             <nav>
-                                <h1>Pherus</h1>
+                                <h1>Infra</h1>
                             </nav>
                             <nav className='flex flex-col'>
                                 {navLists.map((nav, index) => (
