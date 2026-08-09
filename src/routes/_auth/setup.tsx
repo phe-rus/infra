@@ -4,9 +4,14 @@ import { AuthForm } from "@/components/auth"
 
 export const Route = createFileRoute("/_auth/setup")({
     loader: async ({ context: { q, hasOwner } }) => {
-        if (hasOwner) throw redirect({ to: "/sign-in", replace: true })
+        if (hasOwner) throw redirect({
+            to: "/sign-in",
+            replace: true
+        })
         return {
-            authMethods: await q.ensureQueryData(authSettingsQueryOptions()),
+            authMethods: await q.ensureQueryData(
+                authSettingsQueryOptions()
+            )
         }
     },
     component: RouteComponent,

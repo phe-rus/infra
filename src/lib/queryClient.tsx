@@ -1,7 +1,4 @@
 import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
-import { TanStackDevtools } from "@tanstack/react-devtools"
 import { useState, type PropsWithChildren } from "react"
 import { t, ToasterProvider } from "@/components/ui/sonner"
 
@@ -48,21 +45,6 @@ export const QueryProvider = ({ children, query }: TRProviderProps) => {
             <>
                 {children}
                 <ToasterProvider richColors />
-                <TanStackDevtools
-                    config={{
-                        position: "bottom-right",
-                    }}
-                    plugins={[
-                        {
-                            name: 'TanStack Query',
-                            render: <ReactQueryDevtoolsPanel />,
-                        },
-                        {
-                            name: "Tanstack Router",
-                            render: <TanStackRouterDevtoolsPanel />,
-                        },
-                    ]}
-                />
             </>
         </QueryClientProvider>
     )

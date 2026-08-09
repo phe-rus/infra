@@ -13,8 +13,10 @@ export const getSetupStatus = createServerFn({ method: "GET" }).handler(async ()
     try {
         const ctx = await auth.$context
         const count = await ctx.adapter.count({ model: "user" })
+        console.log(`[debug] Setup status count: ${count}`)
         return { hasOwner: count > 0 }
-    } catch {
+    } catch (error) {
+        console.log(`[debug] Setup status error: ${error}`)
         return { hasOwner: false }
     }
 })

@@ -29,7 +29,7 @@ const enabledMethods = await getEnabledMethods()
 const emailPassword = await getEmailPasswordSettings()
 
 export const auth = betterAuth({
-    appName,
+    appName: appName,
     database: env.AUTH_DB,
     emailAndPassword: {
         enabled: enabledMethods.emailAndPassword,
@@ -137,7 +137,7 @@ export const auth = betterAuth({
         },
     },
     advanced: {
-        cookiePrefix: env.VITE_APPNAME,
+        cookiePrefix: appName,
         useSecureCookies: security.useSecureCookies,
         crossSubDomainCookies: {
             enabled: security.crossSubDomainCookies,

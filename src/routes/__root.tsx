@@ -1,4 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
+import { TanStackDevtools } from "@tanstack/react-devtools"
 import { currentUserQueryOptions, setupOptions } from "@/functions/authFn"
 import type { QueryClient } from "@tanstack/react-query"
 import tailwind from "@/styles/globals.css?url"
@@ -69,6 +72,21 @@ function RootDocument() {
         )}
       >
         <Outlet />
+        <TanStackDevtools
+          config={{
+            position: "bottom-right",
+          }}
+          plugins={[
+            {
+              name: 'TanStack Query',
+              render: <ReactQueryDevtoolsPanel />,
+            },
+            {
+              name: "Tanstack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
         <Scripts />
       </body>
     </html>

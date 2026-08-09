@@ -1,7 +1,7 @@
-import { createServerFn } from "@tanstack/react-start"
-import { queryOptions } from "@tanstack/react-query"
 import { getEnabledMethods, setEnabledMethods } from "@/auth/settings/methods-store"
 import type { AuthMethod } from "@/auth/settings/methods"
+import { createServerFn } from "@tanstack/react-start"
+import { queryOptions } from "@tanstack/react-query"
 import {
     getEmailPasswordSettings,
     setEmailPasswordSettings,
@@ -32,9 +32,10 @@ export const authSettingsQueryOptions = () =>
         queryFn: () => getAuthSettings(),
     })
 
-export const getEmailPasswordAuthSettings = createServerFn({ method: "GET" }).handler(async () => {
-    return await getEmailPasswordSettings()
-})
+export const getEmailPasswordAuthSettings = createServerFn({ method: "GET" })
+    .handler(async () => {
+        return await getEmailPasswordSettings()
+    })
 
 export const updateEmailPasswordAuthSettings = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
@@ -43,9 +44,10 @@ export const updateEmailPasswordAuthSettings = createServerFn({ method: "POST" }
         return await setEmailPasswordSettings(data)
     })
 
-export const getSecurityAuthSettings = createServerFn({ method: "GET" }).handler(async () => {
-    return await getSecuritySettings()
-})
+export const getSecurityAuthSettings = createServerFn({ method: "GET" })
+    .handler(async () => {
+        return await getSecuritySettings()
+    })
 
 export const updateSecurityAuthSettings = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])

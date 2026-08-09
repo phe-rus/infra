@@ -113,7 +113,7 @@ export function AuthForm({ mode, initialAuthMethods }: AuthFormProps) {
                 e.preventDefault()
                 void form.handleSubmit()
             }}
-            className={cn("flex w-full max-w-sm flex-col gap-5", "container m-auto")}
+            className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
         >
             <section>
                 <h1 className="text-3xl">Infra</h1>
