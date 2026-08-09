@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
-import { APIError, createAuthMiddleware } from "better-auth/api"
+import { APIError } from "better-auth/api"
 import {
     admin,
     anonymous,
@@ -15,18 +15,31 @@ import { apiKey } from "@better-auth/api-key"
 import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { ac, roles } from "./permissions"
 import { password } from "./password"
-import { getEnabledMethods, methodForPath } from "./settings/methods"
+import { getEnabledMethods } from "./settings/methods-store"
 import { getAppName } from "./settings/instance"
+import { getSecuritySettings } from "./settings/security"
+import { getEmailPasswordSettings } from "./settings/email-password"
+import { execCtxStorage } from "./execution-context"
 
 const FIRST_USER_ROLE = "owner"
+
 const appName = await getAppName()
+const security = await getSecuritySettings()
+const enabledMethods = await getEnabledMethods()
+const emailPassword = await getEmailPasswordSettings()
 
 export const auth = betterAuth({
-    appName: appName,
+    appName,
     database: env.AUTH_DB,
     emailAndPassword: {
-        enabled: true,
-        password,
+        enabled: enabledMethods.emailAndPassword,
+        password: password,
+        requireEmailVerification: emailPassword.requireEmailVerification,
+    },
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url }) => {
+            console.log(`[dev] Verification email for ${user.email}: ${url}`)
+        },
     },
     rateLimit: {
         enabled: true,
@@ -123,24 +136,26 @@ export const auth = betterAuth({
             },
         },
     },
-    hooks: {
-        before: createAuthMiddleware(async (ctx) => {
-            const adapter = ctx?.context?.adapter
-            if (!adapter) return
-            const count = await adapter.count({ model: 'user' })
-            if (count === 0) {
-                throw ctx.redirect("/setup")
-            }
-            const method = methodForPath(ctx.path)
-            if (!method) return
-
-            const enabled = await getEnabledMethods()
-            if (!enabled[method]) {
-                throw new APIError("FORBIDDEN", {
-                    message: `${method} is disabled on this instance.`,
-                })
-            }
-        })
+    advanced: {
+        cookiePrefix: env.VITE_APPNAME,
+        useSecureCookies: security.useSecureCookies,
+        crossSubDomainCookies: {
+            enabled: security.crossSubDomainCookies,
+            domain: security.crossSubDomainCookies ? security.cookieDomain : undefined,
+        },
+        defaultCookieAttributes: {
+            httpOnly: true,
+            secure: security.useSecureCookies,
+            sameSite: "lax",
+        },
+        ipAddress: {
+            ipv6Subnet: 64,
+            ipAddressHeaders: ["cf-connecting-ip"],
+            disableIpTracking: false,
+        },
+        backgroundTasks: {
+            handler: (p) => execCtxStorage.getStore()?.waitUntil(p),
+        },
     },
     plugins: [
         admin({
@@ -149,28 +164,38 @@ export const auth = betterAuth({
             defaultRole: "user",
             adminRoles: [FIRST_USER_ROLE],
         }),
-        twoFactor({
-            issuer: appName,
-        }),
-        username(),
-        anonymous(),
-        passkey(),
-        apiKey(),
-        phoneNumber({
-            sendOTP: async ({ phoneNumber, code }) => {
-                console.log(`[dev] SMS OTP for ${phoneNumber}: ${code}`)
-            }
-        }),
-        magicLink({
-            sendMagicLink: async ({ email, url }) => {
-                console.log(`[dev] Magic link for ${email}: ${url}`)
-            }
-        }),
-        emailOTP({
-            sendVerificationOTP: async ({ email, otp }) => {
-                console.log(`[dev] Email OTP for ${email}: ${otp}`)
-            }
-        }),
-        tanstackStartCookies()
-    ]
+        ...(enabledMethods.twoFactor ? [twoFactor({ issuer: appName })] : []),
+        ...(enabledMethods.username ? [username()] : []),
+        ...(enabledMethods.anonymous ? [anonymous()] : []),
+        ...(enabledMethods.passkey ? [passkey()] : []),
+        ...(enabledMethods.apiKey ? [apiKey()] : []),
+        ...(enabledMethods.phoneNumber
+            ? [
+                phoneNumber({
+                    sendOTP: async ({ phoneNumber, code }) => {
+                        console.log(`[dev] SMS OTP for ${phoneNumber}: ${code}`)
+                    },
+                }),
+            ]
+            : []),
+        ...(enabledMethods.magicLink
+            ? [
+                magicLink({
+                    sendMagicLink: async ({ email, url }) => {
+                        console.log(`[dev] Magic link for ${email}: ${url}`)
+                    },
+                }),
+            ]
+            : []),
+        ...(enabledMethods.emailOTP
+            ? [
+                emailOTP({
+                    sendVerificationOTP: async ({ email, otp }) => {
+                        console.log(`[dev] Email OTP for ${email}: ${otp}`)
+                    },
+                }),
+            ]
+            : []),
+        tanstackStartCookies(),
+    ],
 })

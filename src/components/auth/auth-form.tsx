@@ -1,62 +1,106 @@
-import { useState } from "react"
-import { useForm } from "@tanstack/react-form"
-import { useNavigate } from "@tanstack/react-router"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { AUTH_METHODS, type AuthMethod } from "@/auth/settings/methods"
 import { IconEye, IconEyeOff, IconLoader2 } from "@tabler/icons-react"
-import { z } from "zod"
 import { signInEmail, setupOwner } from "@/functions/authFn"
+import { updateAuthSettings } from "@/functions/settingsFn"
+import { useNavigate } from "@tanstack/react-router"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
+import { useForm } from "@tanstack/react-form"
 import { Input } from "@/components/ui/input"
+import { t } from "@/components/ui/sonner"
 import {
     InputGroup,
     InputGroupAddon,
     InputGroupButton,
     InputGroupInput,
 } from "@/components/ui/input-group"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { t } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
+import { z } from "zod"
 
 type AuthFormProps = {
     mode: "sign-in" | "setup"
+    initialAuthMethods?: Record<AuthMethod, boolean>
 }
+
+const METHOD_LABELS: Record<AuthMethod, string> = {
+    emailAndPassword: "Email & password",
+    twoFactor: "Two-factor authentication",
+    username: "Username sign-in",
+    anonymous: "Anonymous sign-in",
+    phoneNumber: "Phone number",
+    magicLink: "Magic link",
+    emailOTP: "Email OTP",
+    passkey: "Passkeys",
+    apiKey: "API keys",
+}
+
+const TOGGLEABLE_METHODS = AUTH_METHODS.filter((method) => method !== "emailAndPassword")
+
+const authMethodsSchema = z.record(z.string(), z.boolean())
 
 const signInSchema = z.object({
     name: z.string(),
     email: z.email("Enter a valid email"),
     password: z.string().min(1, "Password is required"),
+    rememberMe: z.boolean(),
+    authMethods: authMethodsSchema,
 })
 
 const setupSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.email("Enter a valid email"),
     password: z.string().min(8, "At least 8 characters"),
+    rememberMe: z.boolean(),
+    authMethods: authMethodsSchema,
 })
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode, initialAuthMethods }: AuthFormProps) {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
 
+    const defaultValues: z.input<typeof setupSchema> = {
+        name: "",
+        email: "",
+        password: "",
+        rememberMe: true,
+        authMethods: initialAuthMethods ?? {},
+    }
+
     const form = useForm({
-        defaultValues: {
-            name: "",
-            email: "",
-            password: "",
-        },
+        defaultValues,
         validators: {
             onChange: mode === "setup" ? setupSchema : signInSchema,
         },
         onSubmit: async ({ value }) => {
-            const { error } =
-                mode === "setup"
-                    ? await setupOwner({ data: value })
-                    : await signInEmail({
-                        data: { email: value.email, password: value.password },
-                    })
-
-            if (error) {
-                t.error(mode === "setup" ? "Setup failed" : "Sign in failed", {
-                    description: error,
+            if (mode === "setup") {
+                const { error } = await setupOwner({
+                    data: {
+                        name: value.name,
+                        email: value.email,
+                        password: value.password,
+                        rememberMe: value.rememberMe,
+                    },
                 })
+                if (error) {
+                    t.error("Setup failed", { description: error })
+                    return
+                }
+                await updateAuthSettings({ data: value.authMethods })
+                navigate({ to: "/" })
+                return
+            }
+
+            const { error } = await signInEmail({
+                data: {
+                    email: value.email,
+                    password: value.password,
+                    rememberMe: value.rememberMe,
+                },
+            })
+            if (error) {
+                t.error("Sign in failed", { description: error })
                 return
             }
             navigate({ to: "/" })
@@ -163,7 +207,48 @@ export function AuthForm({ mode }: AuthFormProps) {
                         )
                     }}
                 />
+
+                <form.Field
+                    name="rememberMe"
+                    children={(field) => (
+                        <Field orientation="horizontal">
+                            <Checkbox
+                                id={field.name}
+                                name={field.name}
+                                isSelected={field.state.value}
+                                onChange={field.handleChange}
+                            />
+                            <FieldLabel htmlFor={field.name}>Remember me</FieldLabel>
+                        </Field>
+                    )}
+                />
             </FieldGroup>
+
+            {mode === "setup" && (
+                <FieldGroup>
+                    <FieldDescription>
+                        {METHOD_LABELS.emailAndPassword} is always on. Enable anything else you want
+                        available now — all of this stays changeable later.
+                    </FieldDescription>
+                    {TOGGLEABLE_METHODS.map((method) => (
+                        <form.Field
+                            key={method}
+                            name={`authMethods.${method}`}
+                            children={(field) => (
+                                <Field orientation="horizontal">
+                                    <Checkbox
+                                        id={field.name}
+                                        name={field.name}
+                                        isSelected={field.state.value}
+                                        onChange={field.handleChange}
+                                    />
+                                    <FieldLabel htmlFor={field.name}>{METHOD_LABELS[method]}</FieldLabel>
+                                </Field>
+                            )}
+                        />
+                    ))}
+                </FieldGroup>
+            )}
 
             <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting] as const}>
                 {([canSubmit, isSubmitting]) => (

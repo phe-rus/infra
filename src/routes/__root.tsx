@@ -1,8 +1,9 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
-import { currentUserQueryOptions } from "@/functions/authFn"
+import { currentUserQueryOptions, setupOptions } from "@/functions/authFn"
 import type { QueryClient } from "@tanstack/react-query"
 import tailwind from "@/styles/globals.css?url"
 import { cn } from "@/lib/utils"
+import { seo } from "@/lib/seo"
 
 export interface RouterAppContext {
   q: QueryClient
@@ -18,9 +19,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
-      {
-        title: "Infra",
-      },
+      ...seo({
+        siteName: 'Infra',
+        title: 'Infra',
+        description: 'Manage your infrastructure with ease.'
+      })
     ],
     links: [
       {
@@ -36,8 +39,16 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     </main>
   ),
   beforeLoad: async ({ context }) => {
-    const session = await context.q.ensureQueryData(currentUserQueryOptions())
-    return { session: session }
+    const session = await context.q.ensureQueryData(
+      currentUserQueryOptions()
+    )
+    const { hasOwner } = await context.q.ensureQueryData(
+      setupOptions()
+    )
+    return {
+      session: session,
+      hasOwner: hasOwner
+    }
   },
   shellComponent: RootDocument,
 })

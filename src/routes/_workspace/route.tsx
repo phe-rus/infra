@@ -3,8 +3,13 @@ import { Dashboard } from '@/components/dashboard'
 
 export const Route = createFileRoute('/_workspace')({
   beforeLoad: async ({ context: { session } }) => {
-    if (!session) throw redirect({ to: '/sign-in', replace: true })
-    return { user: session.user }
+    if (!session) throw redirect({
+      to: '/sign-in',
+      replace: true
+    })
+    return {
+      user: session.user
+    }
   },
   component: RouteComponent
 })

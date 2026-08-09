@@ -15,8 +15,6 @@ export const getSetupStatus = createServerFn({ method: "GET" }).handler(async ()
         const count = await ctx.adapter.count({ model: "user" })
         return { hasOwner: count > 0 }
     } catch {
-        // Table doesn't exist yet (migrations haven't run on this DB) — that's
-        // just as "no owner yet" as an empty table, so route to setup either way.
         return { hasOwner: false }
     }
 })
@@ -24,6 +22,7 @@ export const getSetupStatus = createServerFn({ method: "GET" }).handler(async ()
 const signInSchema = z.object({
     email: z.email(),
     password: z.string().min(1),
+    rememberMe: z.boolean().optional(),
 })
 
 export const signInEmail = createServerFn({ method: "POST" })
@@ -42,6 +41,7 @@ const setupSchema = z.object({
     name: z.string().min(1),
     email: z.email(),
     password: z.string().min(8),
+    rememberMe: z.boolean().optional(),
 })
 
 export const setupOwner = createServerFn({ method: "POST" })
@@ -62,8 +62,12 @@ export const signOutUser = createServerFn({ method: "POST" })
         await auth.api.signOut({ headers: request.headers })
     })
 
-export const currentUserQueryOptions = () =>
-    queryOptions({
-        queryKey: ['currentUser'],
-        queryFn: () => getSession(),
-    })
+export const currentUserQueryOptions = () => queryOptions({
+    queryKey: ['currentUser'],
+    queryFn: () => getSession()
+})
+
+export const setupOptions = () => queryOptions({
+    queryKey: ["setup"],
+    queryFn: getSetupStatus
+})

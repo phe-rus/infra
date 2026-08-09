@@ -1,4 +1,5 @@
 import handler from "@tanstack/react-start/server-entry"
+import { execCtxStorage } from "@/auth/execution-context"
 
 export type RequestContext = {
     env: Env;
@@ -18,13 +19,15 @@ export default {
         env: Env,
         ctx: ExecutionContext,
     ) {
-        return handler.fetch(request, {
-            context: {
-                // @ts-ignore
-                env: env,
-                waitUntil: ctx.waitUntil.bind(ctx),
-                passThroughOnException: ctx.passThroughOnException.bind(ctx),
-            }
-        })
+        return execCtxStorage.run(ctx, () =>
+            handler.fetch(request, {
+                context: {
+                    // @ts-ignore
+                    env: env,
+                    waitUntil: ctx.waitUntil.bind(ctx),
+                    passThroughOnException: ctx.passThroughOnException.bind(ctx),
+                }
+            })
+        )
     }
 }

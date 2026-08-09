@@ -12,7 +12,9 @@
 	// Real value is supplied locally via .dev.vars (gitignored) and, for a real
 	// deploy, via `wrangler secret put MIGRATION_SECRET` instead of this file.
 	"vars": {
-		"MIGRATION_SECRET": "changeme-local-dev"
+		"MIGRATION_SECRET": "changeme-local-dev",
+		"VITE_APPNAME": "infra",
+		"COOKIE_DOMAIN": ".pherus.org"
 	},
 	// Placeholders for Stage 1 (local emulation only). Real database/namespace/bucket
 	// creation happens when we build the Better Auth setup that actually uses these.
