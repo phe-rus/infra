@@ -180,23 +180,20 @@
   body {
     @apply bg-background text-foreground [&_svg]:dualTone;
   }
-
   input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus {
-    -webkit-background-clip: text;
-    background-clip: text;
-    transition: background-color 999999s ease-in-out 0s;
-  }
-
-  textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus {
-    -webkit-background-clip: text;
-    background-clip: text;
-    transition: background-color 999999s ease-in-out 0s;
-  }
-
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus {
+		-webkit-background-clip: text;
+		background-clip: text;
+		transition: background-color 999999s ease-in-out 0s;
+	}
+	textarea:-webkit-autofill,
+	textarea:-webkit-autofill:hover,
+	textarea:-webkit-autofill:focus {
+		-webkit-background-clip: text;
+		background-clip: text;
+		transition: background-color 999999s ease-in-out 0s;
+	}
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -213,14 +210,12 @@ body::-webkit-scrollbar {
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
+	-webkit-appearance: none;
+	margin: 0;
+}	
 [data-slot="drawer-overlay"] {
   z-index: 60;
 }
-
 [data-slot="drawer-viewport"] {
   z-index: 60;
 }

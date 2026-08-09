@@ -1,8 +1,13 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router"
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import tailwind from "@/styles/globals.css?url"
 import { cn } from "@/lib/utils"
+import type { QueryClient } from "@tanstack/react-query"
 
-export const Route = createRootRoute({
+export interface RouterAppContext {
+  q: QueryClient
+}
+
+export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
     meta: [
       {
@@ -43,7 +48,8 @@ function RootDocument() {
         className={cn(
           'relative min-h-dvh min-w-full border bg-background',
           'selection:bg-olive-500/15 overflow-x-hidden',
-          'typeset wrap-anywhere duration-200'
+          'typeset wrap-anywhere duration-200',
+          'flex flex-col'
         )}
       >
         <Outlet />

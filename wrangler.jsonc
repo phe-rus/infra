@@ -1,0 +1,46 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "infra",
+	"compatibility_date": "2026-08-08",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "src/server.ts",
+	"observability": {
+		"enabled": true
+	},
+	// Real value is supplied locally via .dev.vars (gitignored) and, for a real
+	// deploy, via `wrangler secret put MIGRATION_SECRET` instead of this file.
+	"vars": {
+		"MIGRATION_SECRET": "changeme-local-dev"
+	},
+	// Placeholders for Stage 1 (local emulation only). Real database/namespace/bucket
+	// creation happens when we build the Better Auth setup that actually uses these.
+	"d1_databases": [
+		{
+			"binding": "AUTH_DB",
+			"database_name": "infra-auth",
+			"database_id": "00000000-0000-0000-0000-000000000000"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "SET",
+			"id": "00000000000000000000000000000001"
+		},
+		{
+			"binding": "RL",
+			"id": "00000000000000000000000000000001"
+		},
+		{
+			"binding": "CACHE",
+			"id": "00000000000000000000000000000002"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "STORAGE",
+			"bucket_name": "infra-storage"
+		}
+	]
+}
