@@ -35,6 +35,7 @@ export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
     appName: appName,
     database: env.AUTH_DB,
+    experimental: { joins: true },
     emailAndPassword: {
         enabled: enabledMethods.emailAndPassword,
         password: password,
@@ -157,6 +158,9 @@ export const auth = betterAuth({
             ipAddressHeaders: ["cf-connecting-ip"],
             disableIpTracking: false,
         },
+        database: {
+            generateId: 'uuid',
+        },
         backgroundTasks: {
             handler: (p) => execCtxStorage.getStore()?.waitUntil(p),
         },
@@ -172,10 +176,21 @@ export const auth = betterAuth({
                 ...customRoles.filter((role) => role.adminTier).map((role) => role.name),
             ],
         }),
-        ...(enabledMethods.twoFactor ? [twoFactor({ issuer: appName })] : []),
+        ...(enabledMethods.twoFactor ? [twoFactor({
+            issuer: appName,
+            backupCodeOptions: {
+                amount: 10,
+                storeBackupCodes: 'encrypted'
+            },
+            twoFactorCookieMaxAge: 600, // 10 min 2 FA challenge window
+            trustDeviceMaxAge: 60 * 60 * 24 * 30, // 30 day trusted device
+        })] : []),
         ...(enabledMethods.username ? [username()] : []),
         ...(enabledMethods.anonymous ? [anonymous()] : []),
-        ...(enabledMethods.passkey ? [passkey()] : []),
+        ...(enabledMethods.passkey ? [passkey({
+            rpName: appName,
+            rpID: security.crossSubDomainCookies ? security.cookieDomain : undefined
+        })] : []),
         ...(enabledMethods.apiKey ? [apiKey()] : []),
         ...(enabledMethods.phoneNumber
             ? [
