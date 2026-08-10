@@ -20,6 +20,7 @@ import { getAppName } from "./settings/instance"
 import { getSecuritySettings } from "./settings/security"
 import { getEmailPasswordSettings } from "./settings/email-password"
 import { getCustomRoles } from "./settings/roles-store"
+import { getTrustedHostnamePatterns } from "./settings/trusted-origins"
 import { execCtxStorage } from "./execution-context"
 
 const FIRST_USER_ROLE = "owner"
@@ -30,20 +31,55 @@ const enabledMethods = await getEnabledMethods()
 const emailPassword = await getEmailPasswordSettings()
 const customRoles = await getCustomRoles()
 const roles = buildRoles(customRoles)
+const trustedHostnamePatterns = (await getTrustedHostnamePatterns()).map(
+    (pattern) => new RegExp(pattern)
+)
+
+const trustedOrigins = async (
+    request: Request | undefined
+): Promise<string[]> => {
+    const origin = request?.headers.get("origin") ?? ''
+    const fallbackOrigin = env.BETTER_AUTH_URL ?? 'https://pass.pherus.org'
+    if (!origin) {
+        return [fallbackOrigin]
+    }
+    try {
+        const { hostname } = new URL(origin)
+        const isTrusted = trustedHostnamePatterns.some((pattern) => pattern.test(hostname))
+        return isTrusted ? [origin] : [fallbackOrigin]
+    } catch {
+        return [fallbackOrigin]
+    }
+}
 
 export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
     appName: appName,
     database: env.AUTH_DB,
     experimental: { joins: true },
+    trustedOrigins: trustedOrigins,
     emailAndPassword: {
         enabled: enabledMethods.emailAndPassword,
+        revokeSessionsOnPasswordReset: true,
+        resetPasswordTokenExpiresIn: 3600, // 1 hour
         password: password,
+        autoSignIn: true,
+        maxPasswordLength: 48,
+        minPasswordLength: 8,
         requireEmailVerification: emailPassword.requireEmailVerification,
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
             console.log(`[dev] Verification email for ${user.email}: ${url}`)
+        },
+    },
+    session: {
+        expiresIn: 60 * 60 * 24 * 30, // 30 days
+        updateAge: 60 * 60 * 24, // refresh if older than 24 h
+        storeSessionInDatabase: false,
+        cookieCache: {
+            enabled: true,
+            maxAge: 60 * 5, // 5-min browser-side cache
         },
     },
     rateLimit: {

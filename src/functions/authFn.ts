@@ -1,9 +1,10 @@
+import { AuthMiddleware, RequestMiddleware } from "./protectionFn"
 import { createServerFn } from "@tanstack/react-start"
-import { z } from "zod"
+import { queryOptions } from "@tanstack/react-query"
 import { APIError } from "better-auth/api"
 import { auth } from "@/auth"
-import { AuthMiddleware, RequestMiddleware } from "./protectionFn"
-import { queryOptions } from "@tanstack/react-query"
+import { forwardAuthCookies } from "@/auth/forward-cookies"
+import { z } from "zod"
 
 export const getSession = createServerFn({ method: "GET" })
     .middleware([AuthMiddleware])
@@ -31,26 +32,8 @@ export const signInEmail = createServerFn({ method: "POST" })
     .validator(signInSchema)
     .handler(async ({ data }) => {
         try {
-            await auth.api.signInEmail({ body: data })
-            return { error: null }
-        } catch (error) {
-            if (error instanceof APIError) return { error: error.message }
-            throw error
-        }
-    })
-
-const setupSchema = z.object({
-    name: z.string().min(1),
-    email: z.email(),
-    password: z.string().min(8),
-    rememberMe: z.boolean().optional(),
-})
-
-export const setupOwner = createServerFn({ method: "POST" })
-    .validator(setupSchema)
-    .handler(async ({ data }) => {
-        try {
-            await auth.api.signUpEmail({ body: data })
+            const { headers } = await auth.api.signInEmail({ body: data, returnHeaders: true })
+            forwardAuthCookies(headers)
             return { error: null }
         } catch (error) {
             if (error instanceof APIError) return { error: error.message }
@@ -61,10 +44,11 @@ export const setupOwner = createServerFn({ method: "POST" })
 export const signOutUser = createServerFn({ method: "POST" })
     .middleware([RequestMiddleware])
     .handler(async ({ context: { request } }) => {
-        await auth.api.signOut({ headers: request.headers })
+        const { headers } = await auth.api.signOut({ headers: request.headers, returnHeaders: true })
+        forwardAuthCookies(headers)
     })
 
-export const currentUserQueryOptions = () => queryOptions({
+export const currentOptions = () => queryOptions({
     queryKey: ['currentUser'],
     queryFn: () => getSession()
 })

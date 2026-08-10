@@ -31,7 +31,14 @@ export const OwnerStep = withForm({
 
             <form.AppField
                 name="password"
-                children={(field) => <field.password label="Password" autoComplete="new-password" />}
+                children={(field) => (
+                    <field.input
+                        label="Password"
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="Enter your password"
+                    />
+                )}
             />
 
             <form.AppField

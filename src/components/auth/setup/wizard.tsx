@@ -3,16 +3,8 @@ import type { SecuritySettings } from "@/auth/settings/security"
 import type { EmailPasswordSettings } from "@/auth/settings/email-password"
 import type { AuthMethod } from "@/auth/settings/methods"
 import { IconLoader2 } from "@tabler/icons-react"
-import { setupOwner } from "@/functions/authFn"
-import { runSetupMigrations } from "@/functions/setupFn"
-import { updateAppName } from "@/functions/instanceFn"
-import {
-    updateAuthSettings,
-    updateEmailPasswordAuthSettings,
-    updateSecurityAuthSettings,
-} from "@/functions/settingsFn"
-import { updateCustomRolesFn } from "@/functions/rolesFn"
-import { useNavigate } from "@tanstack/react-router"
+import { completeSetup, runSetupMigrations } from "@/functions/setupFn"
+import { useRouter } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { useAppForm } from "@/components/blocks"
 import { t } from "@/components/ui/sonner"
@@ -20,6 +12,20 @@ import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { STEPS, wizardSchema, type WizardValues } from "./schema"
 import { BasicStep, SecurityStep, ProvidersStep, RolesStep, OwnerStep } from "./steps"
+
+const STEP_FOR_FIELD: Record<string, (typeof STEPS)[number]> = {
+    appName: "Basics",
+    useSecureCookies: "Security",
+    crossSubDomainCookies: "Security",
+    cookieDomain: "Security",
+    requireEmailVerification: "Providers",
+    authMethods: "Providers",
+    customRoles: "Roles",
+    name: "Owner",
+    email: "Owner",
+    password: "Owner",
+    rememberMe: "Owner",
+}
 
 type SetupWizardProps = {
     initialAppName: string
@@ -36,7 +42,7 @@ export function SetupWizard({
     initialAuthMethods,
     initialCustomRoles,
 }: SetupWizardProps) {
-    const navigate = useNavigate()
+    const router = useRouter()
     const [step, setStep] = useState(0)
     const [migrating, setMigrating] = useState(false)
     const [migrated, setMigrated] = useState(false)
@@ -58,38 +64,55 @@ export function SetupWizard({
         validators: {
             onChange: wizardSchema,
         },
+        // Without this, TanStack Form silently no-ops handleSubmit() whenever
+        // any field across ANY step is invalid — including ones not visible
+        // on the current step — so clicking Continue can look like it does
+        // nothing at all. We validate explicitly below instead, so there's
+        // always a toast telling you what's wrong and where.
+        canSubmitWhenInvalid: true,
         onSubmit: async ({ value }) => {
-            const { error } = await setupOwner({
-                data: {
-                    name: value.name,
-                    email: value.email,
-                    password: value.password,
-                    rememberMe: value.rememberMe,
-                },
-            })
-            if (error) {
-                t.error("Setup failed", { description: error })
+            const parsed = wizardSchema.safeParse(value)
+            if (!parsed.success) {
+                const issue = parsed.error.issues[0]
+                const field = String(issue.path[0] ?? "")
+                const stepLabel = STEP_FOR_FIELD[field] ?? "an earlier step"
+                t.error(`Check the ${stepLabel} step`, { description: issue.message })
                 return
             }
 
-            await Promise.all([
-                updateAppName({ data: { appName: value.appName } }),
-                updateSecurityAuthSettings({
+            try {
+                const { error } = await completeSetup({
                     data: {
-                        useSecureCookies: value.useSecureCookies,
-                        crossSubDomainCookies: value.crossSubDomainCookies,
-                        cookieDomain: value.cookieDomain,
+                        name: value.name,
+                        email: value.email,
+                        password: value.password,
+                        rememberMe: value.rememberMe,
+                        appName: value.appName,
+                        security: {
+                            useSecureCookies: value.useSecureCookies,
+                            crossSubDomainCookies: value.crossSubDomainCookies,
+                            cookieDomain: value.cookieDomain,
+                        },
+                        emailPassword: { requireEmailVerification: value.requireEmailVerification },
+                        authMethods: value.authMethods,
+                        customRoles: value.customRoles,
                     },
-                }),
-                updateEmailPasswordAuthSettings({
-                    data: { requireEmailVerification: value.requireEmailVerification },
-                }),
-                updateAuthSettings({ data: value.authMethods }),
-                updateCustomRolesFn({ data: value.customRoles }),
-            ])
+                })
+                if (error) {
+                    t.error("Setup failed", { description: error })
+                    return
+                }
 
-            t.success("Setup complete", { description: "Welcome to Infra." })
-            navigate({ to: "/" })
+                t.success("Setup complete", { description: "Welcome to Infra." })
+                router.navigate({
+                    to: "/",
+                    replace: true
+                })
+            } catch (error) {
+                t.error("Setup failed", {
+                    description: error instanceof Error ? error.message : "Unexpected error",
+                })
+            }
         },
     })
 

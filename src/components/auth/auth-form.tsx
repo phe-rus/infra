@@ -64,7 +64,14 @@ export function AuthForm() {
 
                     <form.AppField
                         name="password"
-                        children={(field) => <field.password label="Password" autoComplete="current-password" />}
+                        children={(field) => (
+                            <field.input
+                                label="Password"
+                                type="password"
+                                autoComplete="current-password"
+                                placeholder="Enter your password"
+                            />
+                        )}
                     />
 
                     <form.AppField
