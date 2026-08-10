@@ -3,7 +3,6 @@ import { DefaultBoundary, DefaultLoader, NotFound } from '@/components/defaults'
 import { createRouter as createTanStackRouter } from "@tanstack/react-router"
 import { QueryProvider, getContext } from "@/lib/queryClient"
 import { routeTree } from "@/routeTree.gen"
-import type { RequestContext } from './server'
 
 export function getRouter() {
   const q = getContext()
@@ -38,9 +37,6 @@ export function getRouter() {
 
 declare module "@tanstack/react-router" {
   interface Register {
-    router: ReturnType<typeof getRouter>,
-    server: {
-      requestContext: RequestContext
-    }
+    router: ReturnType<typeof getRouter>
   }
 }

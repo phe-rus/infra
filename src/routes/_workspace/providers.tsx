@@ -4,11 +4,8 @@ import {
     emailPasswordAuthSettingsQueryOptions,
     securityAuthSettingsQueryOptions,
     trustedOriginsQueryOptions,
-    updateAuthSettings,
-    updateEmailPasswordAuthSettings,
-    updateSecurityAuthSettings,
-    updateTrustedOrigins,
 } from "@/functions/settingsFn"
+import { useUpdateProviderSettings } from "@/hooks/settingsHooks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { METHOD_LABELS, TOGGLEABLE_METHODS } from "@/auth/settings/methods"
@@ -16,7 +13,6 @@ import { useAppForm } from "@/components/blocks"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { IconPlus, IconX } from "@tabler/icons-react"
-import { t } from "@/components/ui/sonner"
 import { useState } from "react"
 import { z } from "zod"
 
@@ -45,6 +41,7 @@ export const Route = createFileRoute("/_workspace/providers")({
 function RouteComponent() {
     const { authMethods, emailPassword, security, trustedOrigins } = Route.useLoaderData()
     const [draftOrigin, setDraftOrigin] = useState("")
+    const { mutateAsync: updateProviderSettings } = useUpdateProviderSettings()
 
     const form = useAppForm({
         defaultValues: {
@@ -59,29 +56,7 @@ function RouteComponent() {
             onChange: providersSettingsSchema,
         },
         onSubmit: async ({ value }) => {
-            try {
-                await Promise.all([
-                    updateAuthSettings({ data: value.authMethods }),
-                    updateEmailPasswordAuthSettings({
-                        data: { requireEmailVerification: value.requireEmailVerification },
-                    }),
-                    updateSecurityAuthSettings({
-                        data: {
-                            useSecureCookies: value.useSecureCookies,
-                            crossSubDomainCookies: value.crossSubDomainCookies,
-                            cookieDomain: value.cookieDomain,
-                        },
-                    }),
-                    updateTrustedOrigins({ data: value.trustedOrigins }),
-                ])
-                t.success("Settings saved", {
-                    description: "Changes take effect the next time this instance restarts.",
-                })
-            } catch (error) {
-                t.error("Could not save settings", {
-                    description: error instanceof Error ? error.message : "Unexpected error",
-                })
-            }
+            await updateProviderSettings(value)
         },
     })
 

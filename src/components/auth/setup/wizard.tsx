@@ -3,8 +3,8 @@ import type { SecuritySettings } from "@/auth/settings/security"
 import type { EmailPasswordSettings } from "@/auth/settings/email-password"
 import type { AuthMethod } from "@/auth/settings/methods"
 import { IconLoader2 } from "@tabler/icons-react"
-import { completeSetup, runSetupMigrations } from "@/functions/setupFn"
-import { useRouter } from "@tanstack/react-router"
+import { runSetupMigrations } from "@/functions/setupFn"
+import { useCompleteSetup } from "@/hooks/setupHooks"
 import { Button } from "@/components/ui/button"
 import { useAppForm } from "@/components/blocks"
 import { t } from "@/components/ui/sonner"
@@ -42,7 +42,7 @@ export function SetupWizard({
     initialAuthMethods,
     initialCustomRoles,
 }: SetupWizardProps) {
-    const router = useRouter()
+    const { mutateAsync: completeSetup } = useCompleteSetup()
     const [step, setStep] = useState(0)
     const [migrating, setMigrating] = useState(false)
     const [migrated, setMigrated] = useState(false)
@@ -80,39 +80,23 @@ export function SetupWizard({
                 return
             }
 
-            try {
-                const { error } = await completeSetup({
-                    data: {
-                        name: value.name,
-                        email: value.email,
-                        password: value.password,
-                        rememberMe: value.rememberMe,
-                        appName: value.appName,
-                        security: {
-                            useSecureCookies: value.useSecureCookies,
-                            crossSubDomainCookies: value.crossSubDomainCookies,
-                            cookieDomain: value.cookieDomain,
-                        },
-                        emailPassword: { requireEmailVerification: value.requireEmailVerification },
-                        authMethods: value.authMethods,
-                        customRoles: value.customRoles,
+            await completeSetup({
+                data: {
+                    name: value.name,
+                    email: value.email,
+                    password: value.password,
+                    rememberMe: value.rememberMe,
+                    appName: value.appName,
+                    security: {
+                        useSecureCookies: value.useSecureCookies,
+                        crossSubDomainCookies: value.crossSubDomainCookies,
+                        cookieDomain: value.cookieDomain,
                     },
-                })
-                if (error) {
-                    t.error("Setup failed", { description: error })
-                    return
-                }
-
-                t.success("Setup complete", { description: "Welcome to Infra." })
-                router.navigate({
-                    to: "/",
-                    replace: true
-                })
-            } catch (error) {
-                t.error("Setup failed", {
-                    description: error instanceof Error ? error.message : "Unexpected error",
-                })
-            }
+                    emailPassword: { requireEmailVerification: value.requireEmailVerification },
+                    authMethods: value.authMethods,
+                    customRoles: value.customRoles,
+                },
+            })
         },
     })
 

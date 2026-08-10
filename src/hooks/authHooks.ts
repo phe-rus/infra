@@ -19,7 +19,11 @@ export const useSignIn = () => {
     const q = getContext()
     return useMutation({
         mutationFn: signInEmail,
-        onSuccess: () => {
+        onSuccess: (data) => {
+            if (data.error) {
+                t.error("Sign in failed", { description: data.error })
+                return
+            }
             t.success("Signed in", {
                 description: "You have been signed in successfully",
                 duration: 2000
