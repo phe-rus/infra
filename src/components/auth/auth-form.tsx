@@ -33,11 +33,13 @@ export function AuthForm() {
                 },
             })
             if (error) {
-                t.error("Sign in failed", { description: error })
+                t.error("Sign in failed", {
+                    description: error
+                })
                 return
             }
-            navigate({ to: "/" })
-        },
+            navigate({ to: "/", replace: true, reloadDocument: true })
+        }
     })
 
     return (

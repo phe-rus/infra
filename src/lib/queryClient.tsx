@@ -12,9 +12,15 @@ export const queryContext = () => {
         defaultOptions: {
             queries: {
                 networkMode: 'offlineFirst',
+                staleTime: 1000 * 60 * 60, // 1 hour
+                gcTime: 1000 * 60 * 60, // 1 hour
                 refetchOnWindowFocus: false,
-                gcTime: 1000 * 60 * 60 * 7, // 7 days
-                retry: 0
+                refetchOnMount: false,
+                refetchOnReconnect: false,
+                retry: (count, error) => {
+                    const status = (error as any)?.status
+                    return status !== 401 && status !== 403 && count < 2
+                }
             }
         },
         queryCache: new QueryCache({
