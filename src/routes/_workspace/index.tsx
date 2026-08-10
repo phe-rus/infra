@@ -11,7 +11,7 @@ function RouteComponent() {
   return (
     <article className={cn(
       "container flex flex-col w-full md:max-w-2xl mx-auto",
-      'py-5 gap-5'
+      'py-20 gap-5'
     )}>
       <section>
         <h1 className='text-3xl md:text-4xl'>Good morning, Pherus</h1>

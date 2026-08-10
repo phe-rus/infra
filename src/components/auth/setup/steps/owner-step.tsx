@@ -7,7 +7,7 @@ export const OwnerStep = withForm({
     render: ({ form }) => (
         <FieldGroup>
             <FieldDescription>
-                This account is the instance owner — it has full access to everything.
+                This account is the instance owner. It has full access to everything.
             </FieldDescription>
 
             <form.AppField

@@ -1,6 +1,7 @@
 import { FieldDescription, FieldGroup } from "@/components/ui/field"
 import { withForm } from "@/components/blocks"
-import { METHOD_LABELS, TOGGLEABLE_METHODS, wizardDefaultValues } from "../schema"
+import { METHOD_LABELS, TOGGLEABLE_METHODS } from "@/auth/settings/methods"
+import { wizardDefaultValues } from "../schema"
 
 export const ProvidersStep = withForm({
     defaultValues: wizardDefaultValues,
@@ -8,7 +9,7 @@ export const ProvidersStep = withForm({
         <FieldGroup>
             <FieldDescription>
                 {METHOD_LABELS.emailAndPassword} is always on. Enable anything else you want available
-                now — all of this stays changeable later.
+                now. All of this stays changeable later.
             </FieldDescription>
 
             <form.AppField

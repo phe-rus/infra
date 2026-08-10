@@ -33,7 +33,7 @@ export const RolesStep = withForm({
         return (
             <FieldGroup>
                 <FieldDescription>
-                    Roles control what a user can do. Owner, admin, and user always exist — add more if
+                    Roles control what a user can do. Owner, admin, and user always exist. Add more if
                     you need finer-grained access.
                 </FieldDescription>
 

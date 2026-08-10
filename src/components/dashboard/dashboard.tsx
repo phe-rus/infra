@@ -33,39 +33,39 @@ export const Dashboard: FC<DashboardProps> = ({
     const navLists = [
         {
             label: "Providers",
-            path: "."
+            path: "/providers"
         },
         {
             label: "Users",
-            path: "."
+            path: "/users"
         },
         {
             label: "Database",
-            path: "."
+            path: "/database"
         },
         {
             label: "Storage",
-            path: "."
+            path: "/storage"
         },
         {
             label: "API keys",
-            path: "."
+            path: "/api-keys"
         },
         {
             label: "Environment variables",
-            path: "."
+            path: "/environment-variables"
         },
         {
             label: "Team & roles",
-            path: "."
+            path: "/team-roles"
         },
         {
             label: "Logs",
-            path: "."
+            path: "/logs"
         },
         {
             label: "Billing",
-            path: "."
+            path: "/billing"
         }
     ]
 
@@ -115,18 +115,19 @@ export const Dashboard: FC<DashboardProps> = ({
                         )}>
                             <section className='flex flex-col gap-5 p-5'>
                                 <nav>
-                                    <h1>Infra</h1>
+                                    <Link to='/' className={cn(
+                                        'text-primary text-2xl',
+                                        'hover:text-primary/65'
+                                    )}>Infra</Link>
                                 </nav>
                                 <nav className='flex flex-col'>
                                     {navLists.map((nav, index) => (
                                         <Link
                                             key={index}
                                             to={nav.path}
-                                            className='text-xl'
-                                            activeOptions={{
-                                                exact: true,
-                                                includeHash: true,
-                                                includeSearch: true
+                                            className='text-lg'
+                                            activeProps={{
+                                                className: 'text-primary!'
                                             }}
                                         >
                                             {nav.label}
@@ -147,7 +148,6 @@ export const Dashboard: FC<DashboardProps> = ({
                                 >
                                     Sign out
                                 </Button>
-                                <Button variant='secondary' className='w-fit!'>Create provider</Button>
                             </nav>
                         </section>
                     </aside>

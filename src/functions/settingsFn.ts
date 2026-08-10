@@ -12,6 +12,10 @@ import {
     setSecuritySettings,
     type SecuritySettings,
 } from "@/auth/settings/security"
+import {
+    getTrustedHostnamePatterns,
+    setTrustedHostnamePatterns,
+} from "@/auth/settings/trusted-origins"
 import { OwnerMiddleware } from "./protectionFn"
 
 export const getAuthSettings = createServerFn({ method: "GET" })
@@ -66,4 +70,22 @@ export const securityAuthSettingsQueryOptions = () =>
     queryOptions({
         queryKey: ["securityAuthSettings"],
         queryFn: () => getSecurityAuthSettings(),
+    })
+
+export const getTrustedOrigins = createServerFn({ method: "GET" })
+    .handler(async () => {
+        return await getTrustedHostnamePatterns()
+    })
+
+export const updateTrustedOrigins = createServerFn({ method: "POST" })
+    .middleware([OwnerMiddleware])
+    .validator((data: string[]) => data)
+    .handler(async ({ data }) => {
+        return await setTrustedHostnamePatterns(data)
+    })
+
+export const trustedOriginsQueryOptions = () =>
+    queryOptions({
+        queryKey: ["trustedOrigins"],
+        queryFn: () => getTrustedOrigins(),
     })

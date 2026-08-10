@@ -23,3 +23,17 @@ export const DEFAULT_ENABLED_METHODS: Record<AuthMethod, boolean> = {
     passkey: false,
     apiKey: false,
 }
+
+export const METHOD_LABELS: Record<AuthMethod, string> = {
+    emailAndPassword: "Email & password",
+    twoFactor: "Two-factor authentication",
+    username: "Username sign-in",
+    anonymous: "Anonymous sign-in",
+    phoneNumber: "Phone number",
+    magicLink: "Magic link",
+    emailOTP: "Email OTP",
+    passkey: "Passkeys",
+    apiKey: "API keys",
+}
+
+export const TOGGLEABLE_METHODS = AUTH_METHODS.filter((method) => method !== "emailAndPassword")

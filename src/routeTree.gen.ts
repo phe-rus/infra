@@ -14,6 +14,7 @@ import { Route as WorkspaceRouteRouteImport } from './routes/_workspace/route'
 import { Route as AuthSetupRouteImport } from './routes/_auth/setup'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as WorkspaceIndexRouteImport } from './routes/_workspace/index'
+import { Route as WorkspaceProvidersRouteImport } from './routes/_workspace/providers'
 import { Route as ApiMigrateRouteImport } from './routes/api/migrate'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -40,6 +41,11 @@ const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
   path: '/',
   getParentRoute: () => WorkspaceRouteRoute,
 } as any)
+const WorkspaceProvidersRoute = WorkspaceProvidersRouteImport.update({
+  id: '/providers',
+  path: '/providers',
+  getParentRoute: () => WorkspaceRouteRoute,
+} as any)
 const ApiMigrateRoute = ApiMigrateRouteImport.update({
   id: '/api/migrate',
   path: '/api/migrate',
@@ -55,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/': typeof WorkspaceIndexRoute
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
+  '/providers': typeof WorkspaceProvidersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/': typeof WorkspaceIndexRoute
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
+  '/providers': typeof WorkspaceProvidersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -71,21 +79,25 @@ export interface FileRoutesById {
   '/_workspace': typeof WorkspaceRouteRouteWithChildren
   '/_auth/setup': typeof AuthSetupRoute
   '/_auth/sign-in': typeof AuthSignInRoute
+  '/_workspace/providers': typeof WorkspaceProvidersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/_workspace/': typeof WorkspaceIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/setup' | '/sign-in' | '/api/migrate' | '/api/auth/$'
+  fullPaths:
+    '/' | '/setup' | '/sign-in' | '/providers' | '/api/migrate' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/setup' | '/sign-in' | '/api/migrate' | '/api/auth/$'
+  to:
+    '/' | '/setup' | '/sign-in' | '/providers' | '/api/migrate' | '/api/auth/$'
   id:
     | '__root__'
     | '/_auth'
     | '/_workspace'
     | '/_auth/setup'
     | '/_auth/sign-in'
+    | '/_workspace/providers'
     | '/api/migrate'
     | '/_workspace/'
     | '/api/auth/$'
@@ -135,6 +147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceIndexRouteImport
       parentRoute: typeof WorkspaceRouteRoute
     }
+    '/_workspace/providers': {
+      id: '/_workspace/providers'
+      path: '/providers'
+      fullPath: '/providers'
+      preLoaderRoute: typeof WorkspaceProvidersRouteImport
+      parentRoute: typeof WorkspaceRouteRoute
+    }
     '/api/migrate': {
       id: '/api/migrate'
       path: '/api/migrate'
@@ -167,10 +186,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface WorkspaceRouteRouteChildren {
+  WorkspaceProvidersRoute: typeof WorkspaceProvidersRoute
   WorkspaceIndexRoute: typeof WorkspaceIndexRoute
 }
 
 const WorkspaceRouteRouteChildren: WorkspaceRouteRouteChildren = {
+  WorkspaceProvidersRoute: WorkspaceProvidersRoute,
   WorkspaceIndexRoute: WorkspaceIndexRoute,
 }
 

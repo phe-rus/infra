@@ -1,25 +1,11 @@
-import { AUTH_METHODS, DEFAULT_ENABLED_METHODS, type AuthMethod } from "@/auth/settings/methods"
+import { DEFAULT_ENABLED_METHODS } from "@/auth/settings/methods"
 import { FIXED_ROLE_NAMES } from "@/auth/permissions"
 import { z } from "zod"
-
-export const METHOD_LABELS: Record<AuthMethod, string> = {
-    emailAndPassword: "Email & password",
-    twoFactor: "Two-factor authentication",
-    username: "Username sign-in",
-    anonymous: "Anonymous sign-in",
-    phoneNumber: "Phone number",
-    magicLink: "Magic link",
-    emailOTP: "Email OTP",
-    passkey: "Passkeys",
-    apiKey: "API keys",
-}
-
-export const TOGGLEABLE_METHODS = AUTH_METHODS.filter((method) => method !== "emailAndPassword")
 
 export const STEPS = ["Basics", "Security", "Providers", "Roles", "Owner"] as const
 
 export const FIXED_ROLE_COPY: Record<(typeof FIXED_ROLE_NAMES)[number], string> = {
-    owner: "Full access. Automatically assigned to the account you're about to create — there's only ever one.",
+    owner: "Full access. Automatically assigned to the account you're about to create. There's only ever one.",
     admin: "Full access, same as owner. Assign this to other trusted users later.",
     user: "No elevated permissions. The default role for anyone who signs up.",
 }
