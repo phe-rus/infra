@@ -44,6 +44,12 @@ export const updateEmailPasswordAuthSettings = createServerFn({ method: "POST" }
         return await setEmailPasswordSettings(data)
     })
 
+export const emailPasswordAuthSettingsQueryOptions = () =>
+    queryOptions({
+        queryKey: ["emailPasswordAuthSettings"],
+        queryFn: () => getEmailPasswordAuthSettings(),
+    })
+
 export const getSecurityAuthSettings = createServerFn({ method: "GET" })
     .handler(async () => {
         return await getSecuritySettings()
@@ -54,4 +60,10 @@ export const updateSecurityAuthSettings = createServerFn({ method: "POST" })
     .validator((data: Partial<SecuritySettings>) => data)
     .handler(async ({ data }) => {
         return await setSecuritySettings(data)
+    })
+
+export const securityAuthSettingsQueryOptions = () =>
+    queryOptions({
+        queryKey: ["securityAuthSettings"],
+        queryFn: () => getSecurityAuthSettings(),
     })

@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start"
+import { queryOptions } from "@tanstack/react-query"
 import { getAppName, setAppName } from "@/auth/settings/instance"
 import { OwnerMiddleware } from "./protectionFn"
 
@@ -12,4 +13,10 @@ export const updateAppName = createServerFn({ method: "POST" })
     .handler(async ({ data }) => {
         await setAppName(data.appName)
         return { appName: data.appName }
+    })
+
+export const instanceAppNameQueryOptions = () =>
+    queryOptions({
+        queryKey: ["instanceAppName"],
+        queryFn: () => getInstanceAppName(),
     })

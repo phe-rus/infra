@@ -13,12 +13,13 @@ import {
 import { passkey } from "@better-auth/passkey"
 import { apiKey } from "@better-auth/api-key"
 import { tanstackStartCookies } from "better-auth/tanstack-start"
-import { ac, roles } from "./permissions"
+import { ac, buildRoles } from "./permissions"
 import { password } from "./password"
 import { getEnabledMethods } from "./settings/methods-store"
 import { getAppName } from "./settings/instance"
 import { getSecuritySettings } from "./settings/security"
 import { getEmailPasswordSettings } from "./settings/email-password"
+import { getCustomRoles } from "./settings/roles-store"
 import { execCtxStorage } from "./execution-context"
 
 const FIRST_USER_ROLE = "owner"
@@ -27,8 +28,11 @@ const appName = await getAppName()
 const security = await getSecuritySettings()
 const enabledMethods = await getEnabledMethods()
 const emailPassword = await getEmailPasswordSettings()
+const customRoles = await getCustomRoles()
+const roles = buildRoles(customRoles)
 
 export const auth = betterAuth({
+    baseURL: env.BETTER_AUTH_URL,
     appName: appName,
     database: env.AUTH_DB,
     emailAndPassword: {
@@ -162,7 +166,11 @@ export const auth = betterAuth({
             ac,
             roles,
             defaultRole: "user",
-            adminRoles: [FIRST_USER_ROLE],
+            adminRoles: [
+                FIRST_USER_ROLE,
+                "admin",
+                ...customRoles.filter((role) => role.adminTier).map((role) => role.name),
+            ],
         }),
         ...(enabledMethods.twoFactor ? [twoFactor({ issuer: appName })] : []),
         ...(enabledMethods.username ? [username()] : []),

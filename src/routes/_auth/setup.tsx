@@ -1,6 +1,12 @@
-import { authSettingsQueryOptions } from "@/functions/settingsFn"
+import {
+    authSettingsQueryOptions,
+    emailPasswordAuthSettingsQueryOptions,
+    securityAuthSettingsQueryOptions,
+} from "@/functions/settingsFn"
+import { instanceAppNameQueryOptions } from "@/functions/instanceFn"
+import { customRolesQueryOptions } from "@/functions/rolesFn"
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { AuthForm } from "@/components/auth"
+import { SetupWizard } from "@/components/auth"
 
 export const Route = createFileRoute("/_auth/setup")({
     loader: async ({ context: { q, hasOwner } }) => {
@@ -8,16 +14,27 @@ export const Route = createFileRoute("/_auth/setup")({
             to: "/sign-in",
             replace: true
         })
-        return {
-            authMethods: await q.ensureQueryData(
-                authSettingsQueryOptions()
-            )
-        }
+        const [authMethods, { appName }, security, emailPassword, customRoles] = await Promise.all([
+            q.ensureQueryData(authSettingsQueryOptions()),
+            q.ensureQueryData(instanceAppNameQueryOptions()),
+            q.ensureQueryData(securityAuthSettingsQueryOptions()),
+            q.ensureQueryData(emailPasswordAuthSettingsQueryOptions()),
+            q.ensureQueryData(customRolesQueryOptions()),
+        ])
+        return { authMethods, appName, security, emailPassword, customRoles }
     },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const { authMethods } = Route.useLoaderData()
-    return <AuthForm mode="setup" initialAuthMethods={authMethods} />
+    const { authMethods, appName, security, emailPassword, customRoles } = Route.useLoaderData()
+    return (
+        <SetupWizard
+            initialAppName={appName}
+            initialSecurity={security}
+            initialEmailPassword={emailPassword}
+            initialAuthMethods={authMethods}
+            initialCustomRoles={customRoles}
+        />
+    )
 }
