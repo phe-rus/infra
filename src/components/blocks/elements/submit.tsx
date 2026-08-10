@@ -8,16 +8,21 @@ export function Submit({ label }: { label: string }) {
     return (
         <form.Subscribe
             selector={(state) => [
+                state.isSubmitting,
                 state.canSubmit,
-                state.isSubmitting
+                state.isDirty,
+                state.isTouched
             ]}
         >
-            {([canSubmit, isSubmitting]) => (
-                <Button type="submit" isDisabled={!canSubmit}>
-                    {isSubmitting && <IconLoader2 className="animate-spin" />}
-                    {label}
-                </Button>
-            )}
+            {([isSubmitting, canSubmit, isDirty, isTouched]) => {
+                const isDisabled = isSubmitting || !canSubmit || !isDirty || !isTouched
+                return (
+                    <Button type="submit" isDisabled={isDisabled}>
+                        {isSubmitting && <IconLoader2 className="animate-spin" />}
+                        {label}
+                    </Button>
+                )
+            }}
         </form.Subscribe>
     )
 }

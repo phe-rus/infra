@@ -1,8 +1,8 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
+import { useMeOptions, useSetupOptions } from "@/hooks/authHooks"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-import { currentOptions, setupOptions } from "@/functions/authFn"
 import type { QueryClient } from "@tanstack/react-query"
 import tailwind from "@/styles/globals.css?url"
 import { cn } from "@/lib/utils"
@@ -35,25 +35,19 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       },
     ],
   }),
-  notFoundComponent: () => (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>404</h1>
-      <p>The requested page could not be found.</p>
-    </main>
-  ),
   beforeLoad: async ({ context }) => {
     const session = await context.q.ensureQueryData(
-      currentOptions()
+      useMeOptions()
     )
     const { hasOwner } = await context.q.ensureQueryData(
-      setupOptions()
+      useSetupOptions()
     )
     return {
       session: session,
       hasOwner: hasOwner
     }
   },
-  shellComponent: RootDocument,
+  shellComponent: RootDocument
 })
 
 function RootDocument() {

@@ -1,9 +1,8 @@
 import { AuthMiddleware, RequestMiddleware } from "./protectionFn"
+import { forwardAuthCookies } from "@/auth/forward-cookies"
 import { createServerFn } from "@tanstack/react-start"
-import { queryOptions } from "@tanstack/react-query"
 import { APIError } from "better-auth/api"
 import { auth } from "@/auth"
-import { forwardAuthCookies } from "@/auth/forward-cookies"
 import { z } from "zod"
 
 const signInSchema = z.object({
@@ -54,13 +53,3 @@ export const signOutUser = createServerFn({ method: "POST" })
         })
         forwardAuthCookies(headers)
     })
-
-export const currentOptions = () => queryOptions({
-    queryKey: ['currentUser'],
-    queryFn: () => getSession()
-})
-
-export const setupOptions = () => queryOptions({
-    queryKey: ["setup"],
-    queryFn: getSetupStatus
-})

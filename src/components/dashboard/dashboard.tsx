@@ -1,10 +1,10 @@
 import { createContext, useContext, type PropsWithChildren, type FC, useState, useRef, useEffect, useCallback } from "react"
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 import { useIsMobile } from "@/lib/use-media-query"
 import { Button } from "@/components/ui/button"
-import { Link, useNavigate } from "@tanstack/react-router"
-import { signOutUser } from "@/functions/authFn"
+import { Link } from "@tanstack/react-router"
+import { useLogout } from "@/hooks/authHooks"
 import { cn } from "@/lib/utils"
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 
 type DashboardProps = PropsWithChildren<{}>
 type SidebarProps = {
@@ -15,7 +15,7 @@ const SidebarContext = createContext<SidebarProps | null>(null)
 export const Dashboard: FC<DashboardProps> = ({
     children
 }) => {
-    const navigate = useNavigate()
+    const { isPending, mutateAsync: signOut } = useLogout()
     const [open, setOpen] = useState<boolean>(true)
     const ref = useRef<HTMLDivElement>(null)
     const isMobile = useIsMobile()
@@ -68,6 +68,7 @@ export const Dashboard: FC<DashboardProps> = ({
             path: "/billing"
         }
     ]
+
 
     return (
         <SidebarContext.Provider value={{
@@ -142,11 +143,10 @@ export const Dashboard: FC<DashboardProps> = ({
                             )}>
                                 <Button
                                     className='w-fit!'
-                                    onClick={() => {
-                                        void signOutUser().then(() => navigate({ to: "/sign-in" }))
-                                    }}
+                                    onClick={() => signOut({})}
+                                    isDisabled={isPending}
                                 >
-                                    Sign out
+                                    {isPending ? "Signing out..." : "Sign out"}
                                 </Button>
                             </nav>
                         </section>

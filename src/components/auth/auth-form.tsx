@@ -1,8 +1,6 @@
 import { FieldGroup } from "@/components/ui/field"
 import { useAppForm } from "@/components/blocks"
-import { signInEmail } from "@/functions/authFn"
-import { useNavigate } from "@tanstack/react-router"
-import { t } from "@/components/ui/sonner"
+import { useSignIn } from "@/hooks/authHooks"
 import { cn } from "@/lib/utils"
 import { z } from "zod"
 
@@ -13,7 +11,7 @@ const signInSchema = z.object({
 })
 
 export function AuthForm() {
-    const navigate = useNavigate()
+    const { mutateAsync: signIn } = useSignIn()
 
     const form = useAppForm({
         defaultValues: {
@@ -25,20 +23,17 @@ export function AuthForm() {
             onChange: signInSchema,
         },
         onSubmit: async ({ value }) => {
-            const { error } = await signInEmail({
+            await signIn({
                 data: {
                     email: value.email,
                     password: value.password,
                     rememberMe: value.rememberMe,
-                },
+                }
+            }, {
+                onSettled: () => {
+                    form.reset()
+                }
             })
-            if (error) {
-                t.error("Sign in failed", {
-                    description: error
-                })
-                return
-            }
-            navigate({ to: "/", replace: true, reloadDocument: true })
         }
     })
 
