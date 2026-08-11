@@ -71,6 +71,7 @@ export function RoleEditor({ roles, onAdd, onRemove, allowedRoles, onToggleAllow
                                 <CardContent>
                                     <Field orientation="horizontal" className="w-fit">
                                         <Checkbox
+                                            aria-label={`Allow ${role.name} to access this instance`}
                                             isSelected={allowedRoles?.includes(role.name)}
                                             onChange={() => onToggleAllowed?.(role.name)}
                                         />
@@ -106,6 +107,7 @@ export function RoleEditor({ roles, onAdd, onRemove, allowedRoles, onToggleAllow
                                     {PERMISSION_STATEMENTS[resource].map((action) => (
                                         <Field key={action} orientation="horizontal" className="w-fit">
                                             <Checkbox
+                                                aria-label={permissionLabel(action)}
                                                 isSelected={draftPermissions[resource].includes(action)}
                                                 onChange={() => toggleDraftPermission(resource, action)}
                                             />
@@ -117,7 +119,11 @@ export function RoleEditor({ roles, onAdd, onRemove, allowedRoles, onToggleAllow
                         ))}
 
                         <Field orientation="horizontal">
-                            <Checkbox isSelected={draftAdminTier} onChange={setDraftAdminTier} />
+                            <Checkbox
+                                aria-label="Grant elevated (admin) access"
+                                isSelected={draftAdminTier}
+                                onChange={setDraftAdminTier}
+                            />
                             <FieldLabel>Grant elevated (admin) access</FieldLabel>
                         </Field>
 

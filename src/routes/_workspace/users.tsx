@@ -96,6 +96,7 @@ function RouteComponent() {
             </section>
 
             <DataTable
+                aria-label="Users"
                 columns={columns}
                 data={usersData.users}
                 emptyMessage="No members yet."

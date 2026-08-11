@@ -21,6 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { format } from "date-fns/format"
 import { useState } from "react"
 
 const BAN_DURATIONS = [
@@ -96,8 +97,8 @@ export function UserDetailDrawer({ userId, onClose, isOwner, currentUserId }: Us
                         <div>
                             ID: <code className="text-foreground">{data.user.id}</code>
                         </div>
-                        <div>Created {new Date(data.user.createdAt).toLocaleString()}</div>
-                        <div>Updated {new Date(data.user.updatedAt).toLocaleString()}</div>
+                        <div>Created {format(data.user.createdAt, "PPPp")}</div>
+                        <div>Updated {format(data.user.updatedAt, "PPPp")}</div>
                     </section>
 
                     {isOwner && !isSelf && (
@@ -114,7 +115,7 @@ export function UserDetailDrawer({ userId, onClose, isOwner, currentUserId }: Us
                                         )}
                                         <p className="text-xs text-muted-foreground">
                                             {data.user.banExpires
-                                                ? `Expires ${new Date(data.user.banExpires).toLocaleString()}`
+                                                ? `Expires ${format(data.user.banExpires, "PPPp")}`
                                                 : "Never expires"}
                                         </p>
                                         <Button
@@ -195,7 +196,7 @@ export function UserDetailDrawer({ userId, onClose, isOwner, currentUserId }: Us
                                     <span>{session.userAgent ?? "Unknown device"}</span>
                                     <span className="text-muted-foreground">
                                         {session.ipAddress ?? "Unknown IP"} · expires{" "}
-                                        {new Date(session.expiresAt).toLocaleDateString()}
+                                        {format(session.expiresAt, "PPP")}
                                     </span>
                                 </div>
                                 {isOwner && (
@@ -227,7 +228,7 @@ export function UserDetailDrawer({ userId, onClose, isOwner, currentUserId }: Us
                             >
                                 <span className="capitalize">{account.providerId}</span>
                                 <span className="text-muted-foreground">
-                                    linked {new Date(account.createdAt).toLocaleDateString()}
+                                    linked {format(account.createdAt, "PPP")}
                                 </span>
                             </div>
                         ))}

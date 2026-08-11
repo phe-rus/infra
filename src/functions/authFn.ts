@@ -1,6 +1,7 @@
-import { AuthMiddleware, RequestMiddleware } from "./protectionFn"
+import { AuthMiddleware } from "./protectionFn"
 import { forwardAuthCookies } from "@/auth/forward-cookies"
 import { createServerFn } from "@tanstack/react-start"
+import { getRequestHeaders } from "@tanstack/react-start/server"
 import { APIError } from "better-auth/api"
 import { auth } from "@/auth"
 import { z } from "zod"
@@ -20,10 +21,8 @@ export const getSetupStatus = createServerFn({ method: "GET" })
         try {
             const ctx = await auth.$context
             const count = await ctx.adapter.count({ model: "user" })
-            console.log(`[debug] Setup status count: ${count}`)
             return { hasOwner: count > 0 }
         } catch (error) {
-            console.log(`[debug] Setup status error: ${error}`)
             return { hasOwner: false }
         }
     })
@@ -45,10 +44,10 @@ export const signInEmail = createServerFn({ method: "POST" })
     })
 
 export const signOutUser = createServerFn({ method: "POST" })
-    .middleware([RequestMiddleware])
-    .handler(async ({ context: { request } }) => {
+    .handler(async () => {
+        const requestHeaders = getRequestHeaders()
         const { headers } = await auth.api.signOut({
-            headers: request.headers,
+            headers: requestHeaders,
             returnHeaders: true
         })
         forwardAuthCookies(headers)

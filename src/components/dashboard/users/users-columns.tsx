@@ -123,7 +123,7 @@ export function getUsersColumns({
                         <Button type="button" variant="ghost" size="icon-xs" aria-label="Row actions">
                             <IconDotsVertical className="size-4" />
                         </Button>
-                        <DropdownMenu>
+                        <DropdownMenu aria-label="Row actions">
                             <DropdownMenuItem onAction={() => onView?.(user.id)}>View</DropdownMenuItem>
 
                             {canManageRole && (

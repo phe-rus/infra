@@ -1,13 +1,15 @@
 import { createServerFn } from "@tanstack/react-start"
+import { getRequestHeaders } from "@tanstack/react-start/server"
 import { queryOptions } from "@tanstack/react-query"
 import { auth } from "@/auth"
 import { forwardAuthCookies } from "@/auth/forward-cookies"
-import { AdminMiddleware, OwnerMiddleware, RequestMiddleware } from "./protectionFn"
+import { AdminMiddleware, OwnerMiddleware } from "./protectionFn"
 import { z } from "zod"
 
 export const listUsersFn = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
-    .handler(async ({ context: { headers } }) => {
+    .handler(async () => {
+        const headers = getRequestHeaders()
         const { users, total } = await auth.api.listUsers({
             headers,
             query: { limit: 100, sortBy: "createdAt", sortDirection: "desc" },
@@ -33,12 +35,13 @@ const createUserSchema = z.object({
 export const createUserFn = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(createUserSchema)
-    .handler(async ({ data, context: { sessions, headers } }) => {
+    .handler(async ({ data, context: { sessions } }) => {
         // admins can only add plain users; only an owner can hand out admin/owner
         // or any custom (potentially elevated) role
         if (sessions.user.role !== "owner" && data.role !== "user") {
             throw new Error("Only an owner can create admin, owner, or custom-role accounts")
         }
+        const headers = getRequestHeaders()
         const { user } = await auth.api.createUser({
             headers,
             body: {
@@ -62,10 +65,11 @@ const setUserRoleSchema = z.object({
 export const setUserRoleFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(setUserRoleSchema)
-    .handler(async ({ data, context: { sessions, headers } }) => {
+    .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
             throw new Error("You can't change your own role here")
         }
+        const headers = getRequestHeaders()
         const { user } = await auth.api.setRole({
             headers,
             body: { userId: data.userId, role: data.role as "owner" | "admin" | "user" },
@@ -80,10 +84,11 @@ const removeUserSchema = z.object({
 export const removeUserFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(removeUserSchema)
-    .handler(async ({ data, context: { sessions, headers } }) => {
+    .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
             throw new Error("You can't remove your own account")
         }
+        const headers = getRequestHeaders()
         return await auth.api.removeUser({
             headers,
             body: { userId: data.userId },
@@ -95,7 +100,8 @@ const userIdSchema = z.object({ userId: z.string().min(1) })
 export const getUserDetailFn = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
-    .handler(async ({ data, context: { headers } }) => {
+    .handler(async ({ data }) => {
+        const headers = getRequestHeaders()
         const [user, { sessions }, ctx] = await Promise.all([
             auth.api.getUser({ headers, query: { id: data.userId } }),
             auth.api.listUserSessions({ headers, body: { userId: data.userId } }),
@@ -135,10 +141,11 @@ const banUserSchema = z.object({
 export const banUserFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(banUserSchema)
-    .handler(async ({ data, context: { sessions, headers } }) => {
+    .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
             throw new Error("You can't ban your own account")
         }
+        const headers = getRequestHeaders()
         const { user } = await auth.api.banUser({
             headers,
             body: {
@@ -153,8 +160,12 @@ export const banUserFn = createServerFn({ method: "POST" })
 export const unbanUserFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(userIdSchema)
-    .handler(async ({ data, context: { headers } }) => {
-        const { user } = await auth.api.unbanUser({ headers, body: { userId: data.userId } })
+    .handler(async ({ data }) => {
+        const headers = getRequestHeaders()
+        const { user } = await auth.api.unbanUser({
+            headers,
+            body: { userId: data.userId },
+        })
         return user
     })
 
@@ -163,7 +174,8 @@ const revokeUserSessionSchema = z.object({ sessionToken: z.string().min(1) })
 export const revokeUserSessionFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(revokeUserSessionSchema)
-    .handler(async ({ data, context: { headers } }) => {
+    .handler(async ({ data }) => {
+        const headers = getRequestHeaders()
         return await auth.api.revokeUserSession({
             headers,
             body: { sessionToken: data.sessionToken },
@@ -173,8 +185,12 @@ export const revokeUserSessionFn = createServerFn({ method: "POST" })
 export const revokeUserSessionsFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(userIdSchema)
-    .handler(async ({ data, context: { headers } }) => {
-        return await auth.api.revokeUserSessions({ headers, body: { userId: data.userId } })
+    .handler(async ({ data }) => {
+        const headers = getRequestHeaders()
+        return await auth.api.revokeUserSessions({
+            headers,
+            body: { userId: data.userId },
+        })
     })
 
 const setUserPasswordSchema = z.object({
@@ -185,7 +201,8 @@ const setUserPasswordSchema = z.object({
 export const setUserPasswordFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(setUserPasswordSchema)
-    .handler(async ({ data, context: { headers } }) => {
+    .handler(async ({ data }) => {
+        const headers = getRequestHeaders()
         return await auth.api.setUserPassword({
             headers,
             body: { userId: data.userId, newPassword: data.newPassword },
@@ -195,10 +212,11 @@ export const setUserPasswordFn = createServerFn({ method: "POST" })
 export const impersonateUserFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(userIdSchema)
-    .handler(async ({ data, context: { sessions, headers } }) => {
+    .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
             throw new Error("You can't impersonate your own account")
         }
+        const headers = getRequestHeaders()
         const { headers: responseHeaders } = await auth.api.impersonateUser({
             headers,
             body: { userId: data.userId },
@@ -211,10 +229,10 @@ export const impersonateUserFn = createServerFn({ method: "POST" })
 // current session's role is the impersonated *target's* role, so an
 // owner/admin check here would lock the admin out of their own escape hatch
 export const stopImpersonatingFn = createServerFn({ method: "POST" })
-    .middleware([RequestMiddleware])
-    .handler(async ({ context: { request } }) => {
+    .handler(async () => {
+        const headers = getRequestHeaders()
         const { headers: responseHeaders } = await auth.api.stopImpersonating({
-            headers: request.headers,
+            headers,
             returnHeaders: true,
         })
         forwardAuthCookies(responseHeaders)

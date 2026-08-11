@@ -102,6 +102,7 @@ export const Dashboard: FC<DashboardProps> = ({
                         <Button
                             size="icon-xs"
                             variant='secondary'
+                            aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
                             className={cn(
                                 "absolute top-10 -translate-y-1/2 z-56 cursor-pointer",
                                 "transition-all duration-300 select-none rounded-full",

@@ -35,7 +35,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { useMemo, useState, type ReactNode } from "react"
+import { useId, useMemo, useState, type ReactNode } from "react"
 import { DataTablePagination } from "./pagination"
 
 // only the individual filter/sort functions this table actually resolves by
@@ -89,6 +89,8 @@ export type DataTableColumnDef<TData extends RowData, TValue = unknown> = Column
 type DataTableProps<TData extends RowData> = {
     data: TData[]
     columns: DataTableColumnDef<TData, any>[]
+    /** Accessible name for the table landmark — react-aria's grid requires one. */
+    "aria-label": string
     emptyMessage?: ReactNode
     searchPlaceholder?: string
     bulkActions?: (selectedRows: TData[], clearSelection: () => void) => ReactNode
@@ -169,6 +171,7 @@ export function DataTable<TData extends RowData>({
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
     const [columnsOpen, setColumnsOpen] = useState(false)
     const [filtersOpen, setFiltersOpen] = useState(false)
+    const id = useId()
 
     // A caller's own explicit `filterFn` always wins. Otherwise: a column
     // marked `meta.filterVariant: 'date'` gets real date-range matching; a
@@ -302,7 +305,11 @@ export function DataTable<TData extends RowData>({
                                     className="flex cursor-pointer items-center gap-2"
                                     onClick={() => column.toggleVisibility()}
                                 >
-                                    <Checkbox isSelected={visible} onChange={() => column.toggleVisibility()} />
+                                    <Checkbox
+                                        aria-label={getColumnLabel(column)}
+                                        isSelected={visible}
+                                        onChange={() => column.toggleVisibility()}
+                                    />
                                     <span className="text-xs">{getColumnLabel(column)}</span>
                                 </div>
                             )
@@ -367,7 +374,7 @@ export function DataTable<TData extends RowData>({
                 </div>
             )}
 
-            <Table>
+            <Table className='divide-none!'>
                 <TableHeader>
                     {table.getHeaderGroups().flatMap((headerGroup) =>
                         headerGroup.headers.map((header) => (
@@ -510,7 +517,7 @@ function FilterRow<TData extends RowData>({
                             column.setFilterValue(active ? undefined : isArrayColumn ? [value] : value)
                         return (
                             <div key={value} className="flex cursor-pointer items-center gap-2" onClick={setActive}>
-                                <Checkbox isSelected={active} onChange={setActive} />
+                                <Checkbox aria-label={value} isSelected={active} onChange={setActive} />
                                 <span className="text-xs">{value}</span>
                             </div>
                         )

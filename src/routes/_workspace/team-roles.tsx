@@ -109,6 +109,7 @@ function RouteComponent() {
                                     <CardContent>
                                         <Field orientation="horizontal" className="w-fit">
                                             <Checkbox
+                                                aria-label="Allow the user role to access this instance"
                                                 isSelected={currentAllowedRoles.includes("user")}
                                                 onChange={() => toggleAllowedRole("user")}
                                                 isDisabled={!isOwner}
