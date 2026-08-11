@@ -1,76 +1,41 @@
-# Pherus
+# Infra
 
-Self-hosted authentication infrastructure. Pherus runs on your own Cloudflare
-account and gives you the pieces a Firebase Auth / Supabase Auth / Clerk would
-otherwise host for you — but you own the data, the database, and the uptime.
+Infra is a centralized, self-hosted authentication server. It runs on your own Cloudflare account and is meant to be the thing every application you build points at to authenticate its users, instead of paying a per-user bill to Auth0, Clerk, Firebase Auth, or Supabase Auth.
 
-## What we're building
+Infra is open source, published by Pherus. Pherus uses it, but Infra is not Pherus's product. It is its own project, and anyone can deploy their own instance.
 
-Two things, under one roof:
+- **Self-hosted.** Runs entirely on your own Cloudflare account, Workers, D1, and KV. Your users, your database, your uptime.
+- **Centralized.** One Infra instance can serve every application you build, web, mobile, internal tools, APIs, instead of each app wiring up its own auth.
+- **Built on solid, standard primitives.** Email and password, magic links, email OTP, passkeys, two-factor auth, and API keys work out of the box, powered by better-auth. The direction we're building toward is a fully standards-based server, so any OAuth client can use Infra as its identity provider.
+- **A real admin console, not just a database.** A dashboard is included for managing sign-in methods, deciding who is allowed into that dashboard, managing every account on the instance, and issuing API keys, so running it day to day doesn't mean writing SQL by hand.
 
-1. **The auth backend** — a [better-auth](https://better-auth.com) instance
-   (email/password, magic link, OTP, passkeys, 2FA, API keys, admin plugin)
-   running on Cloudflare Workers, backed by D1 (Postgres-compatible SQLite)
-   and KV. This is what your *other* applications point at to authenticate
-   their users — the same job Firebase Auth or Supabase Auth does, just
-   self-hosted.
-2. **"Infra"** — the admin dashboard in this repo, for the person who runs
-   the instance. It's where you configure sign-in providers, define roles
-   and who's allowed to sign into the *admin console itself*, manage the
-   people who have accounts on the instance (ban, impersonate, reset
-   passwords, inspect sessions and connected credentials), and issue API
-   keys for server-to-server access.
+## Approach
 
-## The aim
+There are two common ways people get auth today. Most open source projects are libraries you embed into a single application, tightly coupled to whatever database and framework that app already uses. The other option is a paid, centralized SaaS service like Auth0 or Clerk, where you don't run anything yourself but you do pay per user and trust someone else with the data.
 
-Give a small team (or a solo dev) a real, production-shaped auth backend
-without a vendor bill or a vendor's data-residency terms — while making the
-*admin experience* of running that backend as good as the hosted
-alternatives', not an afterthought CLI or a raw database console.
+Infra is a third option: a centralized auth server, the same shape as Auth0 or Clerk, except you deploy and run it on your own infrastructure. It can authenticate every application you build, not just one, the same way a hosted service would, without handing your users' data to a vendor.
 
-## The approach
+There are already self-hosted auth servers you could pick instead. Most of them assume you have a server: something always running, that you provision, patch, and pay for by the month, whether you're using it or not. That's a real cost and a real operational burden, and it's often what pushes people back toward a paid SaaS instead. Infra is built to not need that. The target is serverless: Cloudflare Workers today, with Vercel planned next. There's no box to rent or keep alive, you deploy to a platform you likely already use for the rest of your stack, and it scales with you instead of sitting there as a fixed monthly cost. Renting a server just to end up fronting it with Cloudflare anyway defeats the point of self-hosting in the first place; you're still trusting someone else to keep your users' data reachable. Infra's aim is to remove that step entirely.
 
-- **One Cloudflare Worker, one codebase.** TanStack Start (React 19, SSR)
-  serves both the dashboard UI and better-auth's HTTP API from the same
-  Worker — no separate backend service to deploy or version alongside it.
-- **better-auth is the source of truth for identity.** We don't reimplement
-  session handling, password hashing policy, or the admin/ban/impersonation
-  primitives — we configure better-auth's plugins and build UI on top of its
-  server API (`auth.api.*`), rather than talking to the database directly
-  except where better-auth has no endpoint for it (e.g. reading a user's
-  linked OAuth accounts for display).
-- **Role-gated by default, not by accident.** Nobody gets into the admin
-  console just by having *an* account on the instance — see
-  `CLAUDE.md` → Access model for how owner/admin/custom-role access is
-  decided.
-- **Own the primitives, don't over-abstract early.** Shared UI building
-  blocks (a data table with search/filter/sort/pagination, a form-field
-  system, a drawer/dialog wrapper) live under `components/widgets/` and are
-  meant to be genuinely reusable — not a pile of one-off page components
-  wearing a shared folder name.
+Under the hood, Infra is built on better-auth, so sign-in flows (email and password, magic link, email OTP, passkeys, two-factor, API keys) are handled by a library already trusted across the JS ecosystem rather than reimplemented from scratch. Where we're heading, inspired by projects like OpenAuth, is a fully OAuth 2.0 compliant authorization server, so any client that speaks OAuth, not just apps written specifically for Infra, could use it as an identity provider and implement "log in with your account" flows. That part is a direction, not a finished feature yet. Today Infra issues its own sessions and API keys rather than OAuth tokens for third-party clients.
+
+One place Infra deliberately differs from projects like OpenAuth: it does not hand user management back to your own application code. OpenAuth intentionally stays stateless and expects you to look up or create users yourself in a callback. Infra owns accounts, roles, bans, and sessions directly, and ships a dashboard to manage all of it, because most people running their own auth server don't want to also build the admin tooling for it.
+
+Data lives in Cloudflare D1 (the account and session store) and KV (settings and configuration), both provisioned as part of your own Cloudflare account when you deploy. You should not need to query either directly; the dashboard and the auth API are the intended interface.
 
 ## Status
 
-The auth backend (sign-up/sign-in, sessions, the plugin set) works today.
-The admin console has: first-run setup, provider/security settings, team
-role definitions + who's allowed to sign in, full user management (roles,
-bans, sessions, impersonation, password resets), and self-service API keys.
-Not yet built: database/storage/environment-variables/logs/billing pages —
-those are placeholders in the nav today.
+Working today: first-run setup, sign-in method and security configuration, role definitions and instance access control, full user management (roles, bans, sessions, impersonation, password resets), and self-service API keys.
 
-See `CLAUDE.md` for the technical architecture, and its **Known issues /
-cleanup backlog** section for what's intentionally left rough right now.
+Not built yet: database, storage, environment variables, logs, and billing pages exist as placeholders in the dashboard's navigation but have no functionality behind them.
 
-## Commands
+## Running your own instance
 
 ```bash
 bun install       # install dependencies
-bun run dev       # start dev server on port 3000
-bun run build     # production build (vite build)
-bun run preview   # preview a production build
-bun run test      # run the vitest suite once (vitest run)
-bun run lint      # eslint
-bun run format    # prettier --write across ts/tsx/js/jsx
-bun run check     # prettier --check (no writes)
-bun run typecheck # tsc --noEmit
+bun run dev       # start a local dev instance on port 3000
+bun run build     # production build
+bun run deploy    # build and deploy to your Cloudflare account
 ```
+
+The first time you visit a fresh instance, you'll be walked through a setup wizard to configure your app name, sign-in methods, security settings, and create the owner account.

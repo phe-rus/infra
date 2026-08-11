@@ -1,7 +1,6 @@
 import { getEnabledMethods, setEnabledMethods } from "@/auth/settings/methods-store"
 import type { AuthMethod } from "@/auth/settings/methods"
 import { createServerFn } from "@tanstack/react-start"
-import { queryOptions } from "@tanstack/react-query"
 import {
     getEmailPasswordSettings,
     setEmailPasswordSettings,
@@ -16,7 +15,7 @@ import {
     getTrustedHostnamePatterns,
     setTrustedHostnamePatterns,
 } from "@/auth/settings/trusted-origins"
-import { OwnerMiddleware } from "./protectionFn"
+import { OwnerMiddleware } from "@/middleware/owner-middleware"
 
 export const getAuthSettings = createServerFn({ method: "GET" })
     .handler(async () => {
@@ -28,12 +27,6 @@ export const updateAuthSettings = createServerFn({ method: "POST" })
     .validator((data: Partial<Record<AuthMethod, boolean>>) => data)
     .handler(async ({ data }) => {
         return await setEnabledMethods(data)
-    })
-
-export const authSettingsQueryOptions = () =>
-    queryOptions({
-        queryKey: ['authSettings'],
-        queryFn: () => getAuthSettings(),
     })
 
 export const getEmailPasswordAuthSettings = createServerFn({ method: "GET" })
@@ -48,12 +41,6 @@ export const updateEmailPasswordAuthSettings = createServerFn({ method: "POST" }
         return await setEmailPasswordSettings(data)
     })
 
-export const emailPasswordAuthSettingsQueryOptions = () =>
-    queryOptions({
-        queryKey: ["emailPasswordAuthSettings"],
-        queryFn: () => getEmailPasswordAuthSettings(),
-    })
-
 export const getSecurityAuthSettings = createServerFn({ method: "GET" })
     .handler(async () => {
         return await getSecuritySettings()
@@ -66,12 +53,6 @@ export const updateSecurityAuthSettings = createServerFn({ method: "POST" })
         return await setSecuritySettings(data)
     })
 
-export const securityAuthSettingsQueryOptions = () =>
-    queryOptions({
-        queryKey: ["securityAuthSettings"],
-        queryFn: () => getSecurityAuthSettings(),
-    })
-
 export const getTrustedOrigins = createServerFn({ method: "GET" })
     .handler(async () => {
         return await getTrustedHostnamePatterns()
@@ -82,10 +63,4 @@ export const updateTrustedOrigins = createServerFn({ method: "POST" })
     .validator((data: string[]) => data)
     .handler(async ({ data }) => {
         return await setTrustedHostnamePatterns(data)
-    })
-
-export const trustedOriginsQueryOptions = () =>
-    queryOptions({
-        queryKey: ["trustedOrigins"],
-        queryFn: () => getTrustedOrigins(),
     })

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port=3000",
+    "dev": "X_LOCAL_OBSERVABILITY=false vite dev --port=3000",
     "build": "vite build",
     "preview": "vite preview --port=3000",
     "deploy": "vite build && wrangler deploy",

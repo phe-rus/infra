@@ -12,10 +12,9 @@ export const queryContext = () => {
         defaultOptions: {
             queries: {
                 networkMode: 'offlineFirst',
-                staleTime: 1000 * 60 * 60, // 1 hour
+                staleTime: 1000 * 30, // 30 seconds: short enough that a page revisited after a beat re-syncs, long enough to skip refetching on quick back-and-forth navigation
                 gcTime: 1000 * 60 * 60, // 1 hour
                 refetchOnWindowFocus: false,
-                refetchOnMount: false,
                 refetchOnReconnect: false,
                 retry: (count, error) => {
                     const status = (error as any)?.status

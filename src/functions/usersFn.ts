@@ -1,10 +1,17 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
-import { queryOptions } from "@tanstack/react-query"
 import { auth } from "@/auth"
-import { forwardAuthCookies } from "@/auth/forward-cookies"
-import { AdminMiddleware, OwnerMiddleware } from "./protectionFn"
-import { z } from "zod"
+import { forwardAuthHeaders } from "@/auth/forward-headers"
+import { AdminMiddleware } from "@/middleware/admin-middleware"
+import { OwnerMiddleware } from "@/middleware/owner-middleware"
+import {
+    banUserSchema,
+    createUserSchema,
+    revokeUserSessionSchema,
+    setUserPasswordSchema,
+    setUserRoleSchema,
+    userIdSchema,
+} from "@/schemas/users"
 
 export const listUsersFn = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
@@ -17,21 +24,6 @@ export const listUsersFn = createServerFn({ method: "GET" })
         return { users, total }
     })
 
-export type ListedUser = Awaited<ReturnType<typeof listUsersFn>>["users"][number]
-
-export const usersQueryOptions = () =>
-    queryOptions({
-        queryKey: ["users"],
-        queryFn: () => listUsersFn(),
-    })
-
-const createUserSchema = z.object({
-    name: z.string().min(1),
-    email: z.email(),
-    password: z.string().min(8).max(48),
-    role: z.string().min(1),
-})
-
 export const createUserFn = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(createUserSchema)
@@ -42,8 +34,12 @@ export const createUserFn = createServerFn({ method: "POST" })
             throw new Error("Only an owner can create admin, owner, or custom-role accounts")
         }
         const headers = getRequestHeaders()
-        const { user } = await auth.api.createUser({
+        const {
+            response: { user },
+            headers: responseHeaders,
+        } = await auth.api.createUser({
             headers,
+            returnHeaders: true,
             body: {
                 name: data.name,
                 email: data.email,
@@ -54,13 +50,9 @@ export const createUserFn = createServerFn({ method: "POST" })
                 role: data.role as "owner" | "admin" | "user",
             },
         })
+        forwardAuthHeaders(responseHeaders)
         return user
     })
-
-const setUserRoleSchema = z.object({
-    userId: z.string().min(1),
-    role: z.string().min(1),
-})
 
 export const setUserRoleFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
@@ -70,32 +62,34 @@ export const setUserRoleFn = createServerFn({ method: "POST" })
             throw new Error("You can't change your own role here")
         }
         const headers = getRequestHeaders()
-        const { user } = await auth.api.setRole({
+        const {
+            response: { user },
+            headers: responseHeaders,
+        } = await auth.api.setRole({
             headers,
+            returnHeaders: true,
             body: { userId: data.userId, role: data.role as "owner" | "admin" | "user" },
         })
+        forwardAuthHeaders(responseHeaders)
         return user
     })
 
-const removeUserSchema = z.object({
-    userId: z.string().min(1),
-})
-
 export const removeUserFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
-    .validator(removeUserSchema)
+    .validator(userIdSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
             throw new Error("You can't remove your own account")
         }
         const headers = getRequestHeaders()
-        return await auth.api.removeUser({
+        const { headers: responseHeaders, ...result } = await auth.api.removeUser({
             headers,
+            returnHeaders: true,
             body: { userId: data.userId },
         })
+        forwardAuthHeaders(responseHeaders)
+        return result
     })
-
-const userIdSchema = z.object({ userId: z.string().min(1) })
 
 export const getUserDetailFn = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
@@ -107,7 +101,7 @@ export const getUserDetailFn = createServerFn({ method: "GET" })
             auth.api.listUserSessions({ headers, body: { userId: data.userId } }),
             auth.$context,
         ])
-        // only the identifying fields — never tokens or password hashes
+        // only the identifying fields, never tokens or password hashes
         const accounts = await ctx.adapter.findMany<{
             id: string
             providerId: string
@@ -123,21 +117,6 @@ export const getUserDetailFn = createServerFn({ method: "GET" })
         return { user, sessions, accounts }
     })
 
-export type UserDetail = Awaited<ReturnType<typeof getUserDetailFn>>
-
-export const userDetailQueryOptions = (userId: string) =>
-    queryOptions({
-        queryKey: ["users", userId],
-        queryFn: () => getUserDetailFn({ data: { userId } }),
-        enabled: Boolean(userId),
-    })
-
-const banUserSchema = z.object({
-    userId: z.string().min(1),
-    banReason: z.string().optional(),
-    banExpiresIn: z.number().positive().optional(),
-})
-
 export const banUserFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(banUserSchema)
@@ -146,14 +125,19 @@ export const banUserFn = createServerFn({ method: "POST" })
             throw new Error("You can't ban your own account")
         }
         const headers = getRequestHeaders()
-        const { user } = await auth.api.banUser({
+        const {
+            response: { user },
+            headers: responseHeaders,
+        } = await auth.api.banUser({
             headers,
+            returnHeaders: true,
             body: {
                 userId: data.userId,
                 banReason: data.banReason,
                 banExpiresIn: data.banExpiresIn,
             },
         })
+        forwardAuthHeaders(responseHeaders)
         return user
     })
 
@@ -162,24 +146,30 @@ export const unbanUserFn = createServerFn({ method: "POST" })
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const { user } = await auth.api.unbanUser({
+        const {
+            response: { user },
+            headers: responseHeaders,
+        } = await auth.api.unbanUser({
             headers,
+            returnHeaders: true,
             body: { userId: data.userId },
         })
+        forwardAuthHeaders(responseHeaders)
         return user
     })
-
-const revokeUserSessionSchema = z.object({ sessionToken: z.string().min(1) })
 
 export const revokeUserSessionFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(revokeUserSessionSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        return await auth.api.revokeUserSession({
+        const { headers: responseHeaders, ...result } = await auth.api.revokeUserSession({
             headers,
+            returnHeaders: true,
             body: { sessionToken: data.sessionToken },
         })
+        forwardAuthHeaders(responseHeaders)
+        return result
     })
 
 export const revokeUserSessionsFn = createServerFn({ method: "POST" })
@@ -187,26 +177,27 @@ export const revokeUserSessionsFn = createServerFn({ method: "POST" })
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        return await auth.api.revokeUserSessions({
+        const { headers: responseHeaders, ...result } = await auth.api.revokeUserSessions({
             headers,
+            returnHeaders: true,
             body: { userId: data.userId },
         })
+        forwardAuthHeaders(responseHeaders)
+        return result
     })
-
-const setUserPasswordSchema = z.object({
-    userId: z.string().min(1),
-    newPassword: z.string().min(8).max(48),
-})
 
 export const setUserPasswordFn = createServerFn({ method: "POST" })
     .middleware([OwnerMiddleware])
     .validator(setUserPasswordSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        return await auth.api.setUserPassword({
+        const { headers: responseHeaders, ...result } = await auth.api.setUserPassword({
             headers,
+            returnHeaders: true,
             body: { userId: data.userId, newPassword: data.newPassword },
         })
+        forwardAuthHeaders(responseHeaders)
+        return result
     })
 
 export const impersonateUserFn = createServerFn({ method: "POST" })
@@ -222,10 +213,10 @@ export const impersonateUserFn = createServerFn({ method: "POST" })
             body: { userId: data.userId },
             returnHeaders: true,
         })
-        forwardAuthCookies(responseHeaders)
+        forwardAuthHeaders(responseHeaders)
     })
 
-// gated only by an active session, not owner/admin — while impersonating, the
+// gated only by an active session, not owner/admin: while impersonating, the
 // current session's role is the impersonated *target's* role, so an
 // owner/admin check here would lock the admin out of their own escape hatch
 export const stopImpersonatingFn = createServerFn({ method: "POST" })
@@ -235,5 +226,5 @@ export const stopImpersonatingFn = createServerFn({ method: "POST" })
             headers,
             returnHeaders: true,
         })
-        forwardAuthCookies(responseHeaders)
+        forwardAuthHeaders(responseHeaders)
     })

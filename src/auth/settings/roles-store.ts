@@ -1,13 +1,5 @@
 import { env } from "cloudflare:workers"
-
-export type CustomRole = {
-    name: string
-    permissions: {
-        user: string[]
-        session: string[]
-    }
-    adminTier: boolean
-}
+import type { CustomRole } from "@/types"
 
 const SETTINGS_KEY = "custom-roles"
 

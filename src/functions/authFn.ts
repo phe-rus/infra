@@ -1,16 +1,10 @@
-import { AuthMiddleware } from "./protectionFn"
-import { forwardAuthCookies } from "@/auth/forward-cookies"
+import { AuthMiddleware } from "@/middleware/auth-middleware"
+import { forwardAuthHeaders } from "@/auth/forward-headers"
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { APIError } from "better-auth/api"
 import { auth } from "@/auth"
-import { z } from "zod"
-
-const signInSchema = z.object({
-    email: z.email(),
-    password: z.string().min(1),
-    rememberMe: z.boolean().optional(),
-})
+import { signInSchema } from "@/schemas/auth"
 
 export const getSession = createServerFn({ method: "GET" })
     .middleware([AuthMiddleware])
@@ -35,7 +29,7 @@ export const signInEmail = createServerFn({ method: "POST" })
                 body: data,
                 returnHeaders: true
             })
-            forwardAuthCookies(headers)
+            forwardAuthHeaders(headers)
             return { error: null }
         } catch (error) {
             if (error instanceof APIError) return { error: error.message }
@@ -50,5 +44,5 @@ export const signOutUser = createServerFn({ method: "POST" })
             headers: requestHeaders,
             returnHeaders: true
         })
-        forwardAuthCookies(headers)
+        forwardAuthHeaders(headers)
     })

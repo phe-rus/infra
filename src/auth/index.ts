@@ -201,6 +201,14 @@ export const auth = betterAuth({
             handler: (p) => execCtxStorage.getStore()?.waitUntil(p),
         },
     },
+    logger: {
+        disabled: false,
+        disableColors: false,
+        level: "warn",
+        log: (level, message, ...args) => {
+            console.log(`[${level}] ${message}`, ...args)
+        },
+    },
     plugins: [
         admin({
             ac,

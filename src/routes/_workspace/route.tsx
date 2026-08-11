@@ -1,21 +1,13 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { allowedRolesQueryOptions } from '@/functions/rolesFn'
-import { isRoleAllowed } from '@/auth/permissions'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { Dashboard } from '@/components/dashboard'
 
+// session presence and role-allowed are both already enforced by AuthMiddleware
+// inside root's getSession() call (see __root.tsx's beforeLoad and
+// middleware/auth-middleware.ts), so by the time this runs `session` is
+// guaranteed to be a session belonging to an allowed role. Nothing left to
+// check here beyond handing it down as `user`.
 export const Route = createFileRoute('/_workspace')({
-  beforeLoad: async ({ context: { session, q } }) => {
-    if (!session) throw redirect({
-      to: '/sign-in',
-      replace: true,
-      search: { reason: 'session-expired' }
-    })
-
-    const allowedRoles = await q.ensureQueryData(allowedRolesQueryOptions())
-    if (!isRoleAllowed(session.user.role ?? '', allowedRoles)) {
-      throw redirect({ to: '/unauthorized', replace: true })
-    }
-
+  beforeLoad: ({ context: { session } }) => {
     return {
       user: session.user
     }

@@ -2,9 +2,9 @@ import {
     authSettingsQueryOptions,
     emailPasswordAuthSettingsQueryOptions,
     securityAuthSettingsQueryOptions,
-} from "@/functions/settingsFn"
-import { instanceAppNameQueryOptions } from "@/functions/instanceFn"
-import { customRolesQueryOptions } from "@/functions/rolesFn"
+} from "@/hooks/settingsHooks"
+import { instanceAppNameQueryOptions } from "@/hooks/instanceHooks"
+import { customRolesQueryOptions } from "@/hooks/rolesHooks"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { SetupWizard } from "@/components/auth"
 

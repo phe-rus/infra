@@ -2,11 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router"
 import { AuthForm } from "@/components/auth"
 import { t } from "@/components/ui/sonner"
 import { useEffect } from "react"
-import { z } from "zod"
-
-const signInSearchSchema = z.object({
-    reason: z.enum(["session-expired"]).optional(),
-})
+import { signInSearchSchema } from "@/schemas/auth"
 
 export const Route = createFileRoute("/_auth/sign-in")({
     validateSearch: signInSearchSchema,

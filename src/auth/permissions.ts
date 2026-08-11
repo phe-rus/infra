@@ -1,6 +1,6 @@
 import { createAccessControl } from "better-auth/plugins/access"
 import { adminAc, defaultStatements } from "better-auth/plugins/admin/access"
-import type { CustomRole } from "./settings/roles-store"
+import type { CustomRole } from "@/types"
 
 export const ac = createAccessControl(defaultStatements)
 
@@ -33,8 +33,19 @@ export function permissionLabel(action: string): string {
 // owner and admin always have platform access; every other role (the fixed
 // "user" role and any custom role) needs to be explicitly granted access.
 export function isRoleAllowed(role: string, allowedRoles: string[]): boolean {
-    if (role === "owner" || role === "admin") return true
+    if (isAdminTier(role)) return true
     return allowedRoles.includes(role)
+}
+
+// broad dashboard access (add users, view everything), the split from
+// owner-only actions (promote/demote, remove, ban, impersonate) enforced
+// separately by each handler that needs it
+export function isAdminTier(role: string): boolean {
+    return role === "owner" || role === "admin"
+}
+
+export function isOwner(role: string): boolean {
+    return role === "owner"
 }
 
 export function buildRoles(customRoles: CustomRole[]) {

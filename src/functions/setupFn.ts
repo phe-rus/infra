@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start"
 import { getMigrations } from "better-auth/db/migration"
 import { APIError } from "better-auth/api"
 import { auth } from "@/auth"
-import { forwardAuthCookies } from "@/auth/forward-cookies"
-import { z } from "zod"
+import { forwardAuthHeaders } from "@/auth/forward-headers"
+import { completeSetupSchema } from "@/schemas/setup"
 import { setAppName } from "@/auth/settings/instance"
 import { setSecuritySettings } from "@/auth/settings/security"
 import { setEmailPasswordSettings } from "@/auth/settings/email-password"
@@ -30,36 +30,9 @@ export const runSetupMigrations = createServerFn({ method: "POST" }).handler(asy
     }
 })
 
-const completeSetupSchema = z.object({
-    name: z.string().min(1),
-    email: z.email(),
-    password: z.string().min(8).max(48),
-    rememberMe: z.boolean().optional(),
-    appName: z.string().min(1),
-    security: z.object({
-        useSecureCookies: z.boolean(),
-        crossSubDomainCookies: z.boolean(),
-        cookieDomain: z.string(),
-    }),
-    emailPassword: z.object({
-        requireEmailVerification: z.boolean(),
-    }),
-    authMethods: z.record(z.string(), z.boolean()),
-    customRoles: z.array(
-        z.object({
-            name: z.string().min(1),
-            permissions: z.object({
-                user: z.array(z.string()),
-                session: z.array(z.string()),
-            }),
-            adminTier: z.boolean(),
-        })
-    ),
-})
-
 // Creates the owner account and persists every wizard setting in one
 // server-side call. Deliberately does NOT go through the OwnerMiddleware-gated
-// update* server functions for this — those require an existing owner
+// update* server functions for this: those require an existing owner
 // session read back from the request's cookies, but whether that session
 // exists yet depends on auth.api.signUpEmail's autoSignIn, which better-auth
 // silently skips whenever requireEmailVerification is true. Bundling
@@ -78,7 +51,7 @@ export const completeSetup = createServerFn({ method: "POST" })
                 },
                 returnHeaders: true,
             })
-            forwardAuthCookies(headers)
+            forwardAuthHeaders(headers)
         } catch (error) {
             if (error instanceof APIError) return { error: error.message }
             throw error

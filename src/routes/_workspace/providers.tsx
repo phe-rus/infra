@@ -4,8 +4,8 @@ import {
     emailPasswordAuthSettingsQueryOptions,
     securityAuthSettingsQueryOptions,
     trustedOriginsQueryOptions,
-} from "@/functions/settingsFn"
-import { useUpdateProviderSettings } from "@/hooks/settingsHooks"
+    useUpdateProviderSettings,
+} from "@/hooks/settingsHooks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { METHOD_LABELS, TOGGLEABLE_METHODS } from "@/auth/settings/methods"
@@ -14,16 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { IconPlus, IconX } from "@tabler/icons-react"
 import { useState } from "react"
-import { z } from "zod"
-
-const providersSettingsSchema = z.object({
-    requireEmailVerification: z.boolean(),
-    authMethods: z.record(z.string(), z.boolean()),
-    useSecureCookies: z.boolean(),
-    crossSubDomainCookies: z.boolean(),
-    cookieDomain: z.string(),
-    trustedOrigins: z.array(z.string().min(1)),
-})
+import { providersSettingsSchema } from "@/schemas/providers"
 
 export const Route = createFileRoute("/_workspace/providers")({
     loader: async ({ context: { q } }) => {

@@ -1,50 +1,45 @@
-import {
-    apiKeysQueryOptions,
-    createApiKeyFn,
-    deleteApiKeyFn,
-    setApiKeyEnabledFn,
-} from "@/functions/apiKeysFn"
-import { useMutation } from "@tanstack/react-query"
-import { getContext } from "@/lib/queryClient"
-import { t } from "@/components/ui/sonner"
+import { createApiKeyFn, deleteApiKeyFn, listApiKeysFn, setApiKeyEnabledFn } from "@/functions/apiKeysFn"
+import { useAppMutation } from "@/hooks/useAppMutation"
+import { queryOptions } from "@tanstack/react-query"
+import type { ApiKey } from "@/types"
 
-export const useCreateApiKey = () => {
-    const q = getContext()
-    return useMutation({
+export const apiKeysQueryOptions = () =>
+    queryOptions({
+        queryKey: ["apiKeys"],
+        queryFn: () => listApiKeysFn(),
+    })
+
+export const useCreateApiKey = () =>
+    useAppMutation({
         mutationFn: createApiKeyFn,
-        onSuccess: () => {
-            q.invalidateQueries(apiKeysQueryOptions())
-        },
-        onError: (error) => {
-            t.error("Could not create key", { description: error.message })
-        },
+        invalidates: [apiKeysQueryOptions().queryKey],
+        errorMessage: "Could not create key",
     })
-}
 
-export const useDeleteApiKey = () => {
-    const q = getContext()
-    return useMutation({
+export const useDeleteApiKey = () =>
+    useAppMutation({
         mutationFn: deleteApiKeyFn,
-        onSuccess: () => {
-            t.success("Key deleted")
-            q.invalidateQueries(apiKeysQueryOptions())
+        invalidates: [apiKeysQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: apiKeysQueryOptions().queryKey,
+            updater: (old: ApiKey[] | undefined, variables) =>
+                (old ?? []).filter((key) => key.id !== variables.data.keyId),
         },
-        onError: (error) => {
-            t.error("Could not delete key", { description: error.message })
-        },
+        successMessage: "Key deleted",
+        errorMessage: "Could not delete key",
     })
-}
 
-export const useSetApiKeyEnabled = () => {
-    const q = getContext()
-    return useMutation({
+export const useSetApiKeyEnabled = () =>
+    useAppMutation({
         mutationFn: setApiKeyEnabledFn,
-        onSuccess: (_, variables) => {
-            t.success(variables.data.enabled ? "Key enabled" : "Key disabled")
-            q.invalidateQueries(apiKeysQueryOptions())
+        invalidates: [apiKeysQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: apiKeysQueryOptions().queryKey,
+            updater: (old: ApiKey[] | undefined, variables) =>
+                (old ?? []).map((key) =>
+                    key.id === variables.data.keyId ? { ...key, enabled: variables.data.enabled } : key
+                ),
         },
-        onError: (error) => {
-            t.error("Could not update key", { description: error.message })
-        },
+        successMessage: (_, variables) => (variables.data.enabled ? "Key enabled" : "Key disabled"),
+        errorMessage: "Could not update key",
     })
-}

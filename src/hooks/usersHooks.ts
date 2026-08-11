@@ -1,7 +1,9 @@
 import {
     banUserFn,
     createUserFn,
+    getUserDetailFn,
     impersonateUserFn,
+    listUsersFn,
     removeUserFn,
     revokeUserSessionFn,
     revokeUserSessionsFn,
@@ -9,56 +11,74 @@ import {
     setUserRoleFn,
     stopImpersonatingFn,
     unbanUserFn,
-    userDetailQueryOptions,
-    usersQueryOptions,
 } from "@/functions/usersFn"
 import { useMeOptions } from "@/hooks/authHooks"
+import { useAppMutation } from "@/hooks/useAppMutation"
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@/components/ui/sonner"
+import type { ListedUser } from "@/types"
 
-export const useCreateUser = () => {
-    const q = getContext()
-    return useMutation({
+type UsersListData = Awaited<ReturnType<typeof listUsersFn>>
+
+function updateUser(old: UsersListData | undefined, userId: string, patch: Partial<ListedUser>): UsersListData {
+    if (!old) return { users: [], total: 0 }
+    return { ...old, users: old.users.map((u) => (u.id === userId ? { ...u, ...patch } : u)) }
+}
+
+export const usersQueryOptions = () =>
+    queryOptions({
+        queryKey: ["users"],
+        queryFn: () => listUsersFn(),
+    })
+
+export const userDetailQueryOptions = (userId: string) =>
+    queryOptions({
+        queryKey: ["users", userId],
+        queryFn: () => getUserDetailFn({ data: { userId } }),
+        enabled: Boolean(userId),
+    })
+
+export const useCreateUser = () =>
+    useAppMutation({
         mutationFn: createUserFn,
-        onSuccess: () => {
-            t.success("User added")
-            q.invalidateQueries(usersQueryOptions())
-        },
-        onError: (error) => {
-            t.error("Could not add user", { description: error.message })
-        },
+        invalidates: [usersQueryOptions().queryKey],
+        successMessage: "User added",
+        errorMessage: "Could not add user",
     })
-}
 
-export const useSetUserRole = () => {
-    const q = getContext()
-    return useMutation({
+export const useSetUserRole = () =>
+    useAppMutation({
         mutationFn: setUserRoleFn,
-        onSuccess: () => {
-            t.success("Role updated")
-            q.invalidateQueries({ queryKey: ["users"] })
+        invalidates: [usersQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: usersQueryOptions().queryKey,
+            updater: (old: UsersListData | undefined, variables) =>
+                updateUser(old, variables.data.userId, { role: variables.data.role }),
         },
-        onError: (error) => {
-            t.error("Could not update role", { description: error.message })
-        },
+        successMessage: "Role updated",
+        errorMessage: "Could not update role",
     })
-}
 
-export const useRemoveUser = () => {
-    const q = getContext()
-    return useMutation({
+export const useRemoveUser = () =>
+    useAppMutation({
         mutationFn: removeUserFn,
-        onSuccess: () => {
-            t.success("User removed")
-            q.invalidateQueries({ queryKey: ["users"] })
+        invalidates: [usersQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: usersQueryOptions().queryKey,
+            updater: (old: UsersListData | undefined, variables) =>
+                old
+                    ? {
+                          ...old,
+                          users: old.users.filter((u) => u.id !== variables.data.userId),
+                          total: Math.max(0, old.total - 1),
+                      }
+                    : { users: [], total: 0 },
         },
-        onError: (error) => {
-            t.error("Could not remove user", { description: error.message })
-        },
+        successMessage: "User removed",
+        errorMessage: "Could not remove user",
     })
-}
 
 export const useUserDetail = (userId: string | null) => {
     return useQuery(
@@ -69,74 +89,57 @@ export const useUserDetail = (userId: string | null) => {
     )
 }
 
-export const useBanUser = () => {
-    const q = getContext()
-    return useMutation({
+export const useBanUser = () =>
+    useAppMutation({
         mutationFn: banUserFn,
-        onSuccess: () => {
-            t.success("User banned")
-            q.invalidateQueries({ queryKey: ["users"] })
+        invalidates: [usersQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: usersQueryOptions().queryKey,
+            updater: (old: UsersListData | undefined, variables) =>
+                updateUser(old, variables.data.userId, { banned: true }),
         },
-        onError: (error) => {
-            t.error("Could not ban user", { description: error.message })
-        },
+        successMessage: "User banned",
+        errorMessage: "Could not ban user",
     })
-}
 
-export const useUnbanUser = () => {
-    const q = getContext()
-    return useMutation({
+export const useUnbanUser = () =>
+    useAppMutation({
         mutationFn: unbanUserFn,
-        onSuccess: () => {
-            t.success("User unbanned")
-            q.invalidateQueries({ queryKey: ["users"] })
+        invalidates: [usersQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: usersQueryOptions().queryKey,
+            updater: (old: UsersListData | undefined, variables) =>
+                updateUser(old, variables.data.userId, { banned: false }),
         },
-        onError: (error) => {
-            t.error("Could not unban user", { description: error.message })
-        },
+        successMessage: "User unbanned",
+        errorMessage: "Could not unban user",
     })
-}
 
-export const useRevokeUserSession = () => {
-    const q = getContext()
-    return useMutation({
+export const useRevokeUserSession = () =>
+    useAppMutation({
         mutationFn: revokeUserSessionFn,
-        onSuccess: () => {
-            t.success("Session revoked")
-            q.invalidateQueries({ queryKey: ["users"] })
-        },
-        onError: (error) => {
-            t.error("Could not revoke session", { description: error.message })
-        },
+        invalidates: [usersQueryOptions().queryKey],
+        successMessage: "Session revoked",
+        errorMessage: "Could not revoke session",
     })
-}
 
-export const useRevokeUserSessions = () => {
-    const q = getContext()
-    return useMutation({
+export const useRevokeUserSessions = () =>
+    useAppMutation({
         mutationFn: revokeUserSessionsFn,
-        onSuccess: () => {
-            t.success("All sessions revoked")
-            q.invalidateQueries({ queryKey: ["users"] })
-        },
-        onError: (error) => {
-            t.error("Could not revoke sessions", { description: error.message })
-        },
+        invalidates: [usersQueryOptions().queryKey],
+        successMessage: "All sessions revoked",
+        errorMessage: "Could not revoke sessions",
     })
-}
 
-export const useSetUserPassword = () => {
-    return useMutation({
+export const useSetUserPassword = () =>
+    useAppMutation({
         mutationFn: setUserPasswordFn,
-        onSuccess: () => {
-            t.success("Password updated")
-        },
-        onError: (error) => {
-            t.error("Could not set password", { description: error.message })
-        },
+        successMessage: "Password updated",
+        errorMessage: "Could not set password",
     })
-}
 
+// impersonation swaps out the entire session identity, so it needs a full
+// cache wipe and a navigation, not the generic invalidate-and-toast pattern
 export const useImpersonateUser = () => {
     const router = useRouter()
     const q = getContext()

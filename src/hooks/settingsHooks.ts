@@ -1,16 +1,39 @@
 import {
-    authSettingsQueryOptions,
-    emailPasswordAuthSettingsQueryOptions,
-    securityAuthSettingsQueryOptions,
-    trustedOriginsQueryOptions,
+    getAuthSettings,
+    getEmailPasswordAuthSettings,
+    getSecurityAuthSettings,
+    getTrustedOrigins,
     updateAuthSettings,
     updateEmailPasswordAuthSettings,
     updateSecurityAuthSettings,
     updateTrustedOrigins,
 } from "@/functions/settingsFn"
-import { useMutation } from "@tanstack/react-query"
-import { getContext } from "@/lib/queryClient"
-import { t } from "@/components/ui/sonner"
+import { useAppMutation } from "@/hooks/useAppMutation"
+import { queryOptions } from "@tanstack/react-query"
+
+export const authSettingsQueryOptions = () =>
+    queryOptions({
+        queryKey: ["authSettings"],
+        queryFn: () => getAuthSettings(),
+    })
+
+export const emailPasswordAuthSettingsQueryOptions = () =>
+    queryOptions({
+        queryKey: ["emailPasswordAuthSettings"],
+        queryFn: () => getEmailPasswordAuthSettings(),
+    })
+
+export const securityAuthSettingsQueryOptions = () =>
+    queryOptions({
+        queryKey: ["securityAuthSettings"],
+        queryFn: () => getSecurityAuthSettings(),
+    })
+
+export const trustedOriginsQueryOptions = () =>
+    queryOptions({
+        queryKey: ["trustedOrigins"],
+        queryFn: () => getTrustedOrigins(),
+    })
 
 type ProviderSettingsInput = {
     authMethods: Record<string, boolean>
@@ -21,9 +44,8 @@ type ProviderSettingsInput = {
     trustedOrigins: string[]
 }
 
-export const useUpdateProviderSettings = () => {
-    const q = getContext()
-    return useMutation({
+export const useUpdateProviderSettings = () =>
+    useAppMutation({
         mutationFn: (data: ProviderSettingsInput) =>
             Promise.all([
                 updateAuthSettings({ data: data.authMethods }),
@@ -39,17 +61,13 @@ export const useUpdateProviderSettings = () => {
                 }),
                 updateTrustedOrigins({ data: data.trustedOrigins }),
             ]),
-        onSuccess: () => {
-            t.success("Settings saved", {
-                description: "Changes take effect the next time this instance restarts.",
-            })
-            q.invalidateQueries(authSettingsQueryOptions())
-            q.invalidateQueries(emailPasswordAuthSettingsQueryOptions())
-            q.invalidateQueries(securityAuthSettingsQueryOptions())
-            q.invalidateQueries(trustedOriginsQueryOptions())
-        },
-        onError: (error) => {
-            t.error("Could not save settings", { description: error.message })
-        },
+        invalidates: [
+            authSettingsQueryOptions().queryKey,
+            emailPasswordAuthSettingsQueryOptions().queryKey,
+            securityAuthSettingsQueryOptions().queryKey,
+            trustedOriginsQueryOptions().queryKey,
+        ],
+        successMessage: "Settings saved",
+        successDescription: "Changes take effect the next time this instance restarts.",
+        errorMessage: "Could not save settings",
     })
-}

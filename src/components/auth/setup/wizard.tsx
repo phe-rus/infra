@@ -1,4 +1,4 @@
-import type { CustomRole } from "@/auth/settings/roles-store"
+import type { CustomRole } from "@/types"
 import type { SecuritySettings } from "@/auth/settings/security"
 import type { EmailPasswordSettings } from "@/auth/settings/email-password"
 import type { AuthMethod } from "@/auth/settings/methods"
@@ -10,7 +10,8 @@ import { useAppForm } from "@/components/widgets/blocks"
 import { t } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
-import { STEPS, wizardSchema, type WizardValues } from "./schema"
+import { wizardSchema } from "@/schemas/setup"
+import { STEPS, type WizardValues } from "./schema"
 import { BasicStep, SecurityStep, ProvidersStep, RolesStep, OwnerStep } from "./steps"
 
 const STEP_FOR_FIELD: Record<string, (typeof STEPS)[number]> = {

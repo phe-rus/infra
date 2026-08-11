@@ -2,13 +2,8 @@ import { FieldGroup } from "@/components/ui/field"
 import { useAppForm } from "@/components/widgets/blocks"
 import { useSignIn } from "@/hooks/authHooks"
 import { cn } from "@/lib/utils"
-import { z } from "zod"
-
-const signInSchema = z.object({
-    email: z.email("Enter a valid email"),
-    password: z.string().min(1, "Password is required"),
-    rememberMe: z.boolean(),
-})
+import { signInSchema } from "@/schemas/auth"
+import type { z } from "zod"
 
 export function AuthForm() {
     const { mutateAsync: signIn } = useSignIn()
