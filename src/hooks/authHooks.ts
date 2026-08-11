@@ -29,7 +29,6 @@ export const useSignIn = () => {
                 duration: 2000
             })
             q.clear()
-            q.invalidateQueries(useMeOptions())
             q.prefetchQuery(useMeOptions())
             setTimeout(() => {
                 router.navigate({ to: '/', replace: true })
