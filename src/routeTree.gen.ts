@@ -10,16 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
+import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as WorkspaceRouteRouteImport } from './routes/_workspace/route'
 import { Route as AuthSetupRouteImport } from './routes/_auth/setup'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as ProtectedUnauthorizedRouteImport } from './routes/_protected/unauthorized'
 import { Route as WorkspaceIndexRouteImport } from './routes/_workspace/index'
 import { Route as WorkspaceProvidersRouteImport } from './routes/_workspace/providers'
+import { Route as WorkspaceTeamRolesRouteImport } from './routes/_workspace/team-roles'
+import { Route as WorkspaceUsersRouteImport } from './routes/_workspace/users'
 import { Route as ApiMigrateRouteImport } from './routes/api/migrate'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WorkspaceRouteRoute = WorkspaceRouteRouteImport.update({
@@ -36,6 +44,11 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const ProtectedUnauthorizedRoute = ProtectedUnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -44,6 +57,16 @@ const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
 const WorkspaceProvidersRoute = WorkspaceProvidersRouteImport.update({
   id: '/providers',
   path: '/providers',
+  getParentRoute: () => WorkspaceRouteRoute,
+} as any)
+const WorkspaceTeamRolesRoute = WorkspaceTeamRolesRouteImport.update({
+  id: '/team-roles',
+  path: '/team-roles',
+  getParentRoute: () => WorkspaceRouteRoute,
+} as any)
+const WorkspaceUsersRoute = WorkspaceUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => WorkspaceRouteRoute,
 } as any)
 const ApiMigrateRoute = ApiMigrateRouteImport.update({
@@ -61,7 +84,10 @@ export interface FileRoutesByFullPath {
   '/': typeof WorkspaceIndexRoute
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
+  '/unauthorized': typeof ProtectedUnauthorizedRoute
   '/providers': typeof WorkspaceProvidersRoute
+  '/team-roles': typeof WorkspaceTeamRolesRoute
+  '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -69,17 +95,24 @@ export interface FileRoutesByTo {
   '/': typeof WorkspaceIndexRoute
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
+  '/unauthorized': typeof ProtectedUnauthorizedRoute
   '/providers': typeof WorkspaceProvidersRoute
+  '/team-roles': typeof WorkspaceTeamRolesRoute
+  '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
+  '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_workspace': typeof WorkspaceRouteRouteWithChildren
   '/_auth/setup': typeof AuthSetupRoute
   '/_auth/sign-in': typeof AuthSignInRoute
+  '/_protected/unauthorized': typeof ProtectedUnauthorizedRoute
   '/_workspace/providers': typeof WorkspaceProvidersRoute
+  '/_workspace/team-roles': typeof WorkspaceTeamRolesRoute
+  '/_workspace/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/_workspace/': typeof WorkspaceIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -87,17 +120,37 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/setup' | '/sign-in' | '/providers' | '/api/migrate' | '/api/auth/$'
+    | '/'
+    | '/setup'
+    | '/sign-in'
+    | '/unauthorized'
+    | '/providers'
+    | '/team-roles'
+    | '/users'
+    | '/api/migrate'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/setup' | '/sign-in' | '/providers' | '/api/migrate' | '/api/auth/$'
+    | '/'
+    | '/setup'
+    | '/sign-in'
+    | '/unauthorized'
+    | '/providers'
+    | '/team-roles'
+    | '/users'
+    | '/api/migrate'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/_auth'
+    | '/_protected'
     | '/_workspace'
     | '/_auth/setup'
     | '/_auth/sign-in'
+    | '/_protected/unauthorized'
     | '/_workspace/providers'
+    | '/_workspace/team-roles'
+    | '/_workspace/users'
     | '/api/migrate'
     | '/_workspace/'
     | '/api/auth/$'
@@ -105,6 +158,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   WorkspaceRouteRoute: typeof WorkspaceRouteRouteWithChildren
   ApiMigrateRoute: typeof ApiMigrateRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -117,6 +171,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_workspace': {
@@ -140,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_protected/unauthorized': {
+      id: '/_protected/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof ProtectedUnauthorizedRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_workspace/': {
       id: '/_workspace/'
       path: '/'
@@ -152,6 +220,20 @@ declare module '@tanstack/react-router' {
       path: '/providers'
       fullPath: '/providers'
       preLoaderRoute: typeof WorkspaceProvidersRouteImport
+      parentRoute: typeof WorkspaceRouteRoute
+    }
+    '/_workspace/team-roles': {
+      id: '/_workspace/team-roles'
+      path: '/team-roles'
+      fullPath: '/team-roles'
+      preLoaderRoute: typeof WorkspaceTeamRolesRouteImport
+      parentRoute: typeof WorkspaceRouteRoute
+    }
+    '/_workspace/users': {
+      id: '/_workspace/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof WorkspaceUsersRouteImport
       parentRoute: typeof WorkspaceRouteRoute
     }
     '/api/migrate': {
@@ -185,13 +267,29 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface ProtectedRouteRouteChildren {
+  ProtectedUnauthorizedRoute: typeof ProtectedUnauthorizedRoute
+}
+
+const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
+  ProtectedUnauthorizedRoute: ProtectedUnauthorizedRoute,
+}
+
+const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
+  ProtectedRouteRouteChildren,
+)
+
 interface WorkspaceRouteRouteChildren {
   WorkspaceProvidersRoute: typeof WorkspaceProvidersRoute
+  WorkspaceTeamRolesRoute: typeof WorkspaceTeamRolesRoute
+  WorkspaceUsersRoute: typeof WorkspaceUsersRoute
   WorkspaceIndexRoute: typeof WorkspaceIndexRoute
 }
 
 const WorkspaceRouteRouteChildren: WorkspaceRouteRouteChildren = {
   WorkspaceProvidersRoute: WorkspaceProvidersRoute,
+  WorkspaceTeamRolesRoute: WorkspaceTeamRolesRoute,
+  WorkspaceUsersRoute: WorkspaceUsersRoute,
   WorkspaceIndexRoute: WorkspaceIndexRoute,
 }
 
@@ -201,6 +299,7 @@ const WorkspaceRouteRouteWithChildren = WorkspaceRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   WorkspaceRouteRoute: WorkspaceRouteRouteWithChildren,
   ApiMigrateRoute: ApiMigrateRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

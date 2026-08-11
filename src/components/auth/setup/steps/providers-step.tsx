@@ -1,5 +1,5 @@
 import { FieldDescription, FieldGroup } from "@/components/ui/field"
-import { withForm } from "@/components/blocks"
+import { withForm } from "@/components/widgets/blocks"
 import { METHOD_LABELS, TOGGLEABLE_METHODS } from "@/auth/settings/methods"
 import { wizardDefaultValues } from "../schema"
 

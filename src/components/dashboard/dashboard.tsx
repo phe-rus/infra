@@ -3,7 +3,9 @@ import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 import { useIsMobile } from "@/lib/use-media-query"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { useLogout } from "@/hooks/authHooks"
+import { useLogout, useMeOptions } from "@/hooks/authHooks"
+import { useStopImpersonating } from "@/hooks/usersHooks"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 
 type DashboardProps = PropsWithChildren<{}>
@@ -16,6 +18,9 @@ export const Dashboard: FC<DashboardProps> = ({
     children
 }) => {
     const { isPending, mutateAsync: signOut } = useLogout()
+    const { data: session } = useSuspenseQuery(useMeOptions())
+    const { mutateAsync: stopImpersonating, isPending: isStoppingImpersonation } = useStopImpersonating()
+    const impersonatedBy = session?.session.impersonatedBy
     const [open, setOpen] = useState<boolean>(true)
     const ref = useRef<HTMLDivElement>(null)
     const isMobile = useIsMobile()
@@ -56,7 +61,7 @@ export const Dashboard: FC<DashboardProps> = ({
             path: "/environment-variables"
         },
         {
-            label: "Team & roles",
+            label: "Teams & roles",
             path: "/team-roles"
         },
         {
@@ -68,7 +73,6 @@ export const Dashboard: FC<DashboardProps> = ({
             path: "/billing"
         }
     ]
-
 
     return (
         <SidebarContext.Provider value={{
@@ -151,9 +155,24 @@ export const Dashboard: FC<DashboardProps> = ({
                             </nav>
                         </section>
                     </aside>
-                    <article className='relative flex flex-col flex-1 overflow-y-auto no-scrollbar'>
+                    <div className='relative flex flex-col flex-1 overflow-y-auto no-scrollbar'>
+                        {impersonatedBy && (
+                            <div className='sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-destructive/10 px-5 py-2 text-xs text-destructive'>
+                                <span>
+                                    Impersonating <strong>{session?.user.name}</strong> ({session?.user.email})
+                                </span>
+                                <Button
+                                    size='xs'
+                                    variant='outline'
+                                    onClick={() => void stopImpersonating({})}
+                                    isDisabled={isStoppingImpersonation}
+                                >
+                                    {isStoppingImpersonation ? "Stopping…" : "Stop impersonating"}
+                                </Button>
+                            </div>
+                        )}
                         {children}
-                    </article>
+                    </div>
                 </main>
             </div>
         </SidebarContext.Provider>

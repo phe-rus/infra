@@ -1,5 +1,5 @@
 import { FieldGroup } from "@/components/ui/field"
-import { useAppForm } from "@/components/blocks"
+import { useAppForm } from "@/components/widgets/blocks"
 import { useSignIn } from "@/hooks/authHooks"
 import { cn } from "@/lib/utils"
 import { z } from "zod"

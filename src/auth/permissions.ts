@@ -30,6 +30,13 @@ export function permissionLabel(action: string): string {
     return PERMISSION_LABELS[action] ?? action
 }
 
+// owner and admin always have platform access; every other role (the fixed
+// "user" role and any custom role) needs to be explicitly granted access.
+export function isRoleAllowed(role: string, allowedRoles: string[]): boolean {
+    if (role === "owner" || role === "admin") return true
+    return allowedRoles.includes(role)
+}
+
 export function buildRoles(customRoles: CustomRole[]) {
     const fixed = {
         owner: ac.newRole({ ...adminAc.statements }),

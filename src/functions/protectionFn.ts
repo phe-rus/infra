@@ -31,6 +31,23 @@ export const OwnerMiddleware = createMiddleware()
         return next({
             context: {
                 sessions,
+                headers: request.headers,
+            },
+        })
+    })
+
+// owner has every admin privilege too, so this simply widens OwnerMiddleware
+// to also let the admin role through.
+export const AdminMiddleware = createMiddleware()
+    .server(async ({ request, next }) => {
+        const sessions = await auth.api.getSession({ headers: request.headers })
+        if (!sessions || (sessions.user.role !== "owner" && sessions.user.role !== "admin")) {
+            throw new Error("Forbidden")
+        }
+        return next({
+            context: {
+                sessions,
+                headers: request.headers,
             },
         })
     })

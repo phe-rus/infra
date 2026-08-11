@@ -1,5 +1,5 @@
 import { FieldDescription, FieldGroup } from "@/components/ui/field"
-import { withForm } from "@/components/blocks"
+import { withForm } from "@/components/widgets/blocks"
 import { wizardDefaultValues } from "../schema"
 
 export const BasicStep = withForm({
