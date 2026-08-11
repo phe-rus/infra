@@ -17,6 +17,7 @@ import { useAppMutation } from "@/hooks/useAppMutation"
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import { getContext } from "@/lib/queryClient"
+import { withTimeout } from "@/lib/with-timeout"
 import { t } from "@/components/ui/sonner"
 import type { ListedUser } from "@/types"
 
@@ -30,19 +31,19 @@ function updateUser(old: UsersListData | undefined, userId: string, patch: Parti
 export const usersQueryOptions = () =>
     queryOptions({
         queryKey: ["users"],
-        queryFn: () => listUsersFn(),
+        queryFn: () => withTimeout(listUsersFn)(),
     })
 
 export const userDetailQueryOptions = (userId: string) =>
     queryOptions({
         queryKey: ["users", userId],
-        queryFn: () => getUserDetailFn({ data: { userId } }),
+        queryFn: () => withTimeout(getUserDetailFn)({ data: { userId } }),
         enabled: Boolean(userId),
     })
 
 export const useCreateUser = () =>
     useAppMutation({
-        mutationFn: createUserFn,
+        mutationFn: withTimeout(createUserFn),
         invalidates: [usersQueryOptions().queryKey],
         successMessage: "User added",
         errorMessage: "Could not add user",
@@ -50,7 +51,7 @@ export const useCreateUser = () =>
 
 export const useSetUserRole = () =>
     useAppMutation({
-        mutationFn: setUserRoleFn,
+        mutationFn: withTimeout(setUserRoleFn),
         invalidates: [usersQueryOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersQueryOptions().queryKey,
@@ -63,7 +64,7 @@ export const useSetUserRole = () =>
 
 export const useRemoveUser = () =>
     useAppMutation({
-        mutationFn: removeUserFn,
+        mutationFn: withTimeout(removeUserFn),
         invalidates: [usersQueryOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersQueryOptions().queryKey,
@@ -91,7 +92,7 @@ export const useUserDetail = (userId: string | null) => {
 
 export const useBanUser = () =>
     useAppMutation({
-        mutationFn: banUserFn,
+        mutationFn: withTimeout(banUserFn),
         invalidates: [usersQueryOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersQueryOptions().queryKey,
@@ -104,7 +105,7 @@ export const useBanUser = () =>
 
 export const useUnbanUser = () =>
     useAppMutation({
-        mutationFn: unbanUserFn,
+        mutationFn: withTimeout(unbanUserFn),
         invalidates: [usersQueryOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersQueryOptions().queryKey,
@@ -117,7 +118,7 @@ export const useUnbanUser = () =>
 
 export const useRevokeUserSession = () =>
     useAppMutation({
-        mutationFn: revokeUserSessionFn,
+        mutationFn: withTimeout(revokeUserSessionFn),
         invalidates: [usersQueryOptions().queryKey],
         successMessage: "Session revoked",
         errorMessage: "Could not revoke session",
@@ -125,7 +126,7 @@ export const useRevokeUserSession = () =>
 
 export const useRevokeUserSessions = () =>
     useAppMutation({
-        mutationFn: revokeUserSessionsFn,
+        mutationFn: withTimeout(revokeUserSessionsFn),
         invalidates: [usersQueryOptions().queryKey],
         successMessage: "All sessions revoked",
         errorMessage: "Could not revoke sessions",
@@ -133,7 +134,7 @@ export const useRevokeUserSessions = () =>
 
 export const useSetUserPassword = () =>
     useAppMutation({
-        mutationFn: setUserPasswordFn,
+        mutationFn: withTimeout(setUserPasswordFn),
         successMessage: "Password updated",
         errorMessage: "Could not set password",
     })
@@ -144,7 +145,7 @@ export const useImpersonateUser = () => {
     const router = useRouter()
     const q = getContext()
     return useMutation({
-        mutationFn: impersonateUserFn,
+        mutationFn: withTimeout(impersonateUserFn),
         onSuccess: () => {
             t.success("Impersonating user")
             q.clear()
@@ -162,7 +163,7 @@ export const useStopImpersonating = () => {
     const router = useRouter()
     const q = getContext()
     return useMutation({
-        mutationFn: stopImpersonatingFn,
+        mutationFn: withTimeout(stopImpersonatingFn),
         onSuccess: () => {
             t.success("Back to your account")
             q.clear()

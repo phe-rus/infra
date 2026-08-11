@@ -62,6 +62,7 @@ export function DataTablePagination<TData extends RowData>({
             </div>
 
             <Select
+                aria-label="Rows per page"
                 selectedKey={String(pageSize)}
                 onSelectionChange={(key) => table.setPageSize(Number(key))}
             >

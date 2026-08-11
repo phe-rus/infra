@@ -4,11 +4,6 @@ import { APIError } from "better-auth/api"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/auth/forward-headers"
 import { completeSetupSchema } from "@/schemas/setup"
-import { setAppName } from "@/auth/settings/instance"
-import { setSecuritySettings } from "@/auth/settings/security"
-import { setEmailPasswordSettings } from "@/auth/settings/email-password"
-import { setEnabledMethods } from "@/auth/settings/methods-store"
-import { setCustomRoles } from "@/auth/settings/roles-store"
 
 export const runSetupMigrations = createServerFn({ method: "POST" }).handler(async () => {
     const ctx = await auth.$context
@@ -30,14 +25,12 @@ export const runSetupMigrations = createServerFn({ method: "POST" }).handler(asy
     }
 })
 
-// Creates the owner account and persists every wizard setting in one
-// server-side call. Deliberately does NOT go through the OwnerMiddleware-gated
-// update* server functions for this: those require an existing owner
-// session read back from the request's cookies, but whether that session
-// exists yet depends on auth.api.signUpEmail's autoSignIn, which better-auth
-// silently skips whenever requireEmailVerification is true. Bundling
-// everything into one request sidesteps that session/cookie round-trip
-// entirely, since this is a one-time bootstrap with no session to check.
+// Just creates the owner account. Everything else (app name, security,
+// email verification, which sign-in methods are on, custom roles) already
+// has a sensible default the moment KV has never been written to (see
+// each src/auth/settings/*.ts getter), and stays editable afterward from
+// the dashboard's own Settings/Providers/Team & roles pages, so none of
+// it needs to be collected here.
 export const completeSetup = createServerFn({ method: "POST" })
     .validator(completeSetupSchema)
     .handler(async ({ data }) => {
@@ -52,18 +45,9 @@ export const completeSetup = createServerFn({ method: "POST" })
                 returnHeaders: true,
             })
             forwardAuthHeaders(headers)
+            return { error: null }
         } catch (error) {
             if (error instanceof APIError) return { error: error.message }
             throw error
         }
-
-        await Promise.all([
-            setAppName(data.appName),
-            setSecuritySettings(data.security),
-            setEmailPasswordSettings(data.emailPassword),
-            setEnabledMethods(data.authMethods),
-            setCustomRoles(data.customRoles),
-        ])
-
-        return { error: null }
     })

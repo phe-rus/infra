@@ -8,10 +8,16 @@ export type SecuritySettings = {
 
 const SETTINGS_KEY = "security"
 
+// crossSubDomainCookies stays off by default, cookieDomain just has a
+// sensible value ready the moment an owner turns it on via the Providers
+// page, instead of an empty field. env.COOKIE_DOMAIN is a wrangler.jsonc
+// var (".pherus.org" for the real deployment); nothing needs to be set
+// for local dev, since the toggle it's paired with defaults to off there
+// too.
 const DEFAULT_SECURITY_SETTINGS: SecuritySettings = {
-    useSecureCookies: false,
+    useSecureCookies: true,
     crossSubDomainCookies: false,
-    cookieDomain: "",
+    cookieDomain: env.COOKIE_DOMAIN ?? "",
 }
 
 export async function getSecuritySettings(): Promise<SecuritySettings> {

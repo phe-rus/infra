@@ -10,6 +10,7 @@ export function FieldCheckbox({ label }: { label: string }) {
             <Checkbox
                 id={field.name}
                 name={field.name}
+                aria-label={label}
                 isSelected={field.state.value}
                 onChange={field.handleChange}
             />

@@ -1,11 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useLogout } from "@/hooks/authHooks"
 import { Button } from "@/components/ui/button"
 
-// root's getSession() call already guarantees a session for every route
-// (AuthMiddleware redirects to /sign-in otherwise), so there's nothing
-// left to check here.
+// root's own session fetch is deliberately non-throwing (see authFn.ts's
+// getSession), so this route checks for itself: no session means nothing
+// sent you here, bounce to sign-in instead of showing "access restricted"
+// to someone who isn't signed in at all.
 export const Route = createFileRoute("/_protected/unauthorized")({
+    beforeLoad: ({ context: { session } }) => {
+        if (!session) throw redirect({ to: "/sign-in", replace: true })
+    },
     component: RouteComponent,
 })
 

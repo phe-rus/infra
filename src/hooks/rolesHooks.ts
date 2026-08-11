@@ -6,19 +6,20 @@ import {
 } from "@/functions/rolesFn"
 import type { z } from "zod"
 import type { teamRolesSchema } from "@/schemas/team-roles"
-import { useAppMutation } from "@/hooks/useAppMutation"
+import { settleAll, useAppMutation } from "@/hooks/useAppMutation"
 import { queryOptions } from "@tanstack/react-query"
+import { withTimeout } from "@/lib/with-timeout"
 
 export const customRolesQueryOptions = () =>
     queryOptions({
         queryKey: ["customRoles"],
-        queryFn: () => getCustomRolesFn(),
+        queryFn: () => withTimeout(getCustomRolesFn)(),
     })
 
 export const allowedRolesQueryOptions = () =>
     queryOptions({
         queryKey: ["allowedRoles"],
-        queryFn: () => getAllowedRolesFn(),
+        queryFn: () => withTimeout(getAllowedRolesFn)(),
     })
 
 type TeamRolesInput = z.infer<typeof teamRolesSchema>
@@ -26,9 +27,9 @@ type TeamRolesInput = z.infer<typeof teamRolesSchema>
 export const useUpdateTeamRoles = () =>
     useAppMutation({
         mutationFn: (data: TeamRolesInput) =>
-            Promise.all([
-                updateCustomRolesFn({ data: data.customRoles }),
-                updateAllowedRolesFn({ data: data.allowedRoles }),
+            settleAll([
+                () => withTimeout(updateCustomRolesFn)({ data: data.customRoles }),
+                () => withTimeout(updateAllowedRolesFn)({ data: data.allowedRoles }),
             ]),
         invalidates: [customRolesQueryOptions().queryKey, allowedRolesQueryOptions().queryKey],
         successMessage: "Roles saved",

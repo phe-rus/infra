@@ -378,6 +378,7 @@ function RouteComponent() {
                         <Input
                             id="new-user-password"
                             type="password"
+                            autoComplete="new-password"
                             value={draftPassword}
                             onChange={(e) => setDraftPassword(e.target.value)}
                         />
@@ -387,6 +388,7 @@ function RouteComponent() {
                             <FieldLabel htmlFor="new-user-role">Role</FieldLabel>
                             <Select
                                 id="new-user-role"
+                                aria-label="Role"
                                 selectedKey={draftRole}
                                 onSelectionChange={(key) => setDraftRole(String(key))}
                             >
@@ -477,6 +479,7 @@ function RouteComponent() {
                                                 <FieldLabel htmlFor="ban-duration">Duration</FieldLabel>
                                                 <Select
                                                     id="ban-duration"
+                                                    aria-label="Duration"
                                                     selectedKey={banDuration}
                                                     onSelectionChange={(key) => setBanDuration(String(key))}
                                                 >
@@ -582,6 +585,7 @@ function RouteComponent() {
                                         <Input
                                             id="new-password"
                                             type="password"
+                                            autoComplete="new-password"
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="At least 8 characters"

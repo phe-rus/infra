@@ -1,24 +1,25 @@
 import { createApiKeyFn, deleteApiKeyFn, listApiKeysFn, setApiKeyEnabledFn } from "@/functions/apiKeysFn"
 import { useAppMutation } from "@/hooks/useAppMutation"
 import { queryOptions } from "@tanstack/react-query"
+import { withTimeout } from "@/lib/with-timeout"
 import type { ApiKey } from "@/types"
 
 export const apiKeysQueryOptions = () =>
     queryOptions({
         queryKey: ["apiKeys"],
-        queryFn: () => listApiKeysFn(),
+        queryFn: () => withTimeout(listApiKeysFn)(),
     })
 
 export const useCreateApiKey = () =>
     useAppMutation({
-        mutationFn: createApiKeyFn,
+        mutationFn: withTimeout(createApiKeyFn),
         invalidates: [apiKeysQueryOptions().queryKey],
         errorMessage: "Could not create key",
     })
 
 export const useDeleteApiKey = () =>
     useAppMutation({
-        mutationFn: deleteApiKeyFn,
+        mutationFn: withTimeout(deleteApiKeyFn),
         invalidates: [apiKeysQueryOptions().queryKey],
         optimisticUpdate: {
             queryKey: apiKeysQueryOptions().queryKey,
@@ -31,7 +32,7 @@ export const useDeleteApiKey = () =>
 
 export const useSetApiKeyEnabled = () =>
     useAppMutation({
-        mutationFn: setApiKeyEnabledFn,
+        mutationFn: withTimeout(setApiKeyEnabledFn),
         invalidates: [apiKeysQueryOptions().queryKey],
         optimisticUpdate: {
             queryKey: apiKeysQueryOptions().queryKey,

@@ -1,15 +1,23 @@
-import { completeSetup } from "@/functions/setupFn"
+import { completeSetup, runSetupMigrations } from "@/functions/setupFn"
 import { useMutation } from "@tanstack/react-query"
 import { useMeOptions, useSetupOptions } from "./authHooks"
+import { useAppMutation } from "@/hooks/useAppMutation"
 import { getContext } from "@/lib/queryClient"
+import { withTimeout } from "@/lib/with-timeout"
 import { t } from "@/components/ui/sonner"
 import { useRouter } from "@tanstack/react-router"
+
+export const useRunSetupMigrations = () =>
+    useAppMutation({
+        mutationFn: () => withTimeout(runSetupMigrations, 30000)(),
+        errorMessage: "Could not prepare the database",
+    })
 
 export const useCompleteSetup = () => {
     const router = useRouter()
     const q = getContext()
     return useMutation({
-        mutationFn: completeSetup,
+        mutationFn: withTimeout(completeSetup),
         onSuccess: (data) => {
             if (data.error) {
                 t.error("Setup failed", { description: data.error })

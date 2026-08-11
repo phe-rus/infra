@@ -8,31 +8,32 @@ import {
     updateSecurityAuthSettings,
     updateTrustedOrigins,
 } from "@/functions/settingsFn"
-import { useAppMutation } from "@/hooks/useAppMutation"
+import { settleAll, useAppMutation } from "@/hooks/useAppMutation"
 import { queryOptions } from "@tanstack/react-query"
+import { withTimeout } from "@/lib/with-timeout"
 
 export const authSettingsQueryOptions = () =>
     queryOptions({
         queryKey: ["authSettings"],
-        queryFn: () => getAuthSettings(),
+        queryFn: () => withTimeout(getAuthSettings)(),
     })
 
 export const emailPasswordAuthSettingsQueryOptions = () =>
     queryOptions({
         queryKey: ["emailPasswordAuthSettings"],
-        queryFn: () => getEmailPasswordAuthSettings(),
+        queryFn: () => withTimeout(getEmailPasswordAuthSettings)(),
     })
 
 export const securityAuthSettingsQueryOptions = () =>
     queryOptions({
         queryKey: ["securityAuthSettings"],
-        queryFn: () => getSecurityAuthSettings(),
+        queryFn: () => withTimeout(getSecurityAuthSettings)(),
     })
 
 export const trustedOriginsQueryOptions = () =>
     queryOptions({
         queryKey: ["trustedOrigins"],
-        queryFn: () => getTrustedOrigins(),
+        queryFn: () => withTimeout(getTrustedOrigins)(),
     })
 
 type ProviderSettingsInput = {
@@ -47,19 +48,21 @@ type ProviderSettingsInput = {
 export const useUpdateProviderSettings = () =>
     useAppMutation({
         mutationFn: (data: ProviderSettingsInput) =>
-            Promise.all([
-                updateAuthSettings({ data: data.authMethods }),
-                updateEmailPasswordAuthSettings({
-                    data: { requireEmailVerification: data.requireEmailVerification },
-                }),
-                updateSecurityAuthSettings({
-                    data: {
-                        useSecureCookies: data.useSecureCookies,
-                        crossSubDomainCookies: data.crossSubDomainCookies,
-                        cookieDomain: data.cookieDomain,
-                    },
-                }),
-                updateTrustedOrigins({ data: data.trustedOrigins }),
+            settleAll([
+                () => withTimeout(updateAuthSettings)({ data: data.authMethods }),
+                () =>
+                    withTimeout(updateEmailPasswordAuthSettings)({
+                        data: { requireEmailVerification: data.requireEmailVerification },
+                    }),
+                () =>
+                    withTimeout(updateSecurityAuthSettings)({
+                        data: {
+                            useSecureCookies: data.useSecureCookies,
+                            crossSubDomainCookies: data.crossSubDomainCookies,
+                            cookieDomain: data.cookieDomain,
+                        },
+                    }),
+                () => withTimeout(updateTrustedOrigins)({ data: data.trustedOrigins }),
             ]),
         invalidates: [
             authSettingsQueryOptions().queryKey,

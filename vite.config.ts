@@ -8,6 +8,9 @@ import tailwindcss from "@tailwindcss/vite"
 import path from "path"
 
 const config = defineConfig({
+  server: {
+    cors: false
+  },
   resolve: {
     tsconfigPaths: true,
     alias: {

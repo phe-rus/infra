@@ -242,6 +242,7 @@ export function DataTable<TData extends RowData>({
                 <InputGroup className="max-w-full">
                     <InputGroupInput
                         placeholder={searchPlaceholder}
+                        autoComplete="off"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />

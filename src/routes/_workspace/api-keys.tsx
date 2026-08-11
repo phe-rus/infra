@@ -204,6 +204,7 @@ function RouteComponent() {
                                 <FieldLabel htmlFor="new-key-expiration">Expires</FieldLabel>
                                 <Select
                                     id="new-key-expiration"
+                                    aria-label="Expires"
                                     selectedKey={draftExpiration}
                                     onSelectionChange={(key) => setDraftExpiration(String(key))}
                                 >

@@ -1,12 +1,9 @@
 import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
-import { APIError } from "better-auth/api"
+import { APIError, createAuthMiddleware } from "better-auth/api"
 import {
     admin,
-    anonymous,
-    emailOTP,
     magicLink,
-    phoneNumber,
     twoFactor,
     username,
 } from "better-auth/plugins"
@@ -16,6 +13,7 @@ import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { ac, buildRoles } from "./permissions"
 import { password } from "./password"
 import { getEnabledMethods } from "./settings/methods-store"
+import type { AuthMethod } from "./settings/methods"
 import { getAppName } from "./settings/instance"
 import { getSecuritySettings } from "./settings/security"
 import { getEmailPasswordSettings } from "./settings/email-password"
@@ -27,7 +25,6 @@ const FIRST_USER_ROLE = "owner"
 
 const appName = await getAppName()
 const security = await getSecuritySettings()
-const enabledMethods = await getEnabledMethods()
 const emailPassword = await getEmailPasswordSettings()
 const customRoles = await getCustomRoles()
 const roles = buildRoles(customRoles)
@@ -52,6 +49,32 @@ const trustedOrigins = async (
     }
 }
 
+// Every toggleable method below (twoFactor, username, passkey, magicLink,
+// apiKey) is registered unconditionally, then gated per-request in
+// hooks.before. They used to be registered conditionally on
+// getEnabledMethods(), read once at Worker isolate cold start, while the
+// KV flag they were reading is dynamic and can change at any time. An
+// isolate that booted before a method was last toggled on would have the
+// plugin missing entirely while a fresh per-request read of the same KV
+// flag said it was enabled, throwing instead of working, inconsistently
+// depending on which isolate a request landed on. Registering
+// unconditionally and gating access with a fresh KV read on every request
+// removes that inconsistency, this is better-auth's own documented
+// pattern for conditional endpoint access (hooks.before +
+// createAuthMiddleware), not a bespoke workaround.
+const GATED_PATH_PREFIXES: Array<{ prefix: string; method: AuthMethod }> = [
+    { prefix: "/two-factor/", method: "twoFactor" },
+    { prefix: "/passkey/", method: "passkey" },
+    { prefix: "/magic-link/", method: "magicLink" },
+    { prefix: "/api-key/", method: "apiKey" },
+]
+
+const GATED_EXACT_PATHS: Array<{ path: string; method: AuthMethod }> = [
+    { path: "/sign-in/username", method: "username" },
+    { path: "/is-username-available", method: "username" },
+    { path: "/sign-in/magic-link", method: "magicLink" },
+]
+
 export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
     appName: appName,
@@ -59,7 +82,11 @@ export const auth = betterAuth({
     experimental: { joins: true },
     trustedOrigins: trustedOrigins,
     emailAndPassword: {
-        enabled: enabledMethods.emailAndPassword,
+        // always on, never gated: this is the only method the dashboard's
+        // own sign-in page uses, and the only one owner/admin access can
+        // ever depend on, it can't be a toggle without risking locking
+        // every admin out of their own instance
+        enabled: true,
         revokeSessionsOnPasswordReset: true,
         resetPasswordTokenExpiresIn: 3600, // 1 hour
         password: password,
@@ -177,6 +204,21 @@ export const auth = betterAuth({
             },
         },
     },
+    hooks: {
+        before: createAuthMiddleware(async (ctx) => {
+            const prefixMatch = GATED_PATH_PREFIXES.find((p) => ctx.path.startsWith(p.prefix))
+            const exactMatch = GATED_EXACT_PATHS.find((p) => p.path === ctx.path)
+            const method = prefixMatch?.method ?? exactMatch?.method
+            if (!method) return
+
+            const enabledMethods = await getEnabledMethods()
+            if (!enabledMethods[method]) {
+                throw new APIError("NOT_FOUND", {
+                    message: "This sign-in method is disabled for this instance.",
+                })
+            }
+        }),
+    },
     advanced: {
         cookiePrefix: appName,
         useSecureCookies: security.useSecureCookies,
@@ -220,7 +262,7 @@ export const auth = betterAuth({
                 ...customRoles.filter((role) => role.adminTier).map((role) => role.name),
             ],
         }),
-        ...(enabledMethods.twoFactor ? [twoFactor({
+        twoFactor({
             issuer: appName,
             backupCodeOptions: {
                 amount: 10,
@@ -228,41 +270,18 @@ export const auth = betterAuth({
             },
             twoFactorCookieMaxAge: 600, // 10 min 2 FA challenge window
             trustDeviceMaxAge: 60 * 60 * 24 * 30, // 30 day trusted device
-        })] : []),
-        ...(enabledMethods.username ? [username()] : []),
-        ...(enabledMethods.anonymous ? [anonymous()] : []),
-        ...(enabledMethods.passkey ? [passkey({
+        }),
+        username(),
+        passkey({
             rpName: appName,
             rpID: security.crossSubDomainCookies ? security.cookieDomain : undefined
-        })] : []),
-        ...(enabledMethods.apiKey ? [apiKey()] : []),
-        ...(enabledMethods.phoneNumber
-            ? [
-                phoneNumber({
-                    sendOTP: async ({ phoneNumber, code }) => {
-                        console.log(`[dev] SMS OTP for ${phoneNumber}: ${code}`)
-                    },
-                }),
-            ]
-            : []),
-        ...(enabledMethods.magicLink
-            ? [
-                magicLink({
-                    sendMagicLink: async ({ email, url }) => {
-                        console.log(`[dev] Magic link for ${email}: ${url}`)
-                    },
-                }),
-            ]
-            : []),
-        ...(enabledMethods.emailOTP
-            ? [
-                emailOTP({
-                    sendVerificationOTP: async ({ email, otp }) => {
-                        console.log(`[dev] Email OTP for ${email}: ${otp}`)
-                    },
-                }),
-            ]
-            : []),
+        }),
+        apiKey(),
+        magicLink({
+            sendMagicLink: async ({ email, url }) => {
+                console.log(`[dev] Magic link for ${email}: ${url}`)
+            },
+        }),
         tanstackStartCookies(),
     ],
 })
