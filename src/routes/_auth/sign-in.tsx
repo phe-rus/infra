@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { AuthForm } from "@/components/auth"
+import { Login } from "@/features/auth/login"
 import { t } from "@/components/ui/sonner"
 import { useEffect } from "react"
 import { signInSearchSchema } from "@/kit/schemas"
@@ -21,5 +21,5 @@ function RouteComponent() {
         }
     }, [reason])
 
-    return <AuthForm />
+    return <Login />
 }

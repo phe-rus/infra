@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { signInSchema } from "@/kit/schemas"
 import type { z } from "zod"
 
-export function AuthForm() {
+export function Login() {
     const { mutateAsync: signIn } = useSignIn()
 
     const form = useAppForm({
@@ -18,18 +18,21 @@ export function AuthForm() {
             onChange: signInSchema,
         },
         onSubmit: async ({ value }) => {
-            await signIn({
-                data: {
-                    email: value.email,
-                    password: value.password,
-                    rememberMe: value.rememberMe,
+            await signIn(
+                {
+                    data: {
+                        email: value.email,
+                        password: value.password,
+                        rememberMe: value.rememberMe,
+                    },
+                },
+                {
+                    onSettled: () => {
+                        form.reset()
+                    },
                 }
-            }, {
-                onSettled: () => {
-                    form.reset()
-                }
-            })
-        }
+            )
+        },
     })
 
     return (
@@ -50,7 +53,12 @@ export function AuthForm() {
                     <form.AppField
                         name="email"
                         children={(field) => (
-                            <field.input label="Email" type="email" autoComplete="email" placeholder="Enter your email" />
+                            <field.input
+                                label="Email"
+                                type="email"
+                                autoComplete="email"
+                                placeholder="Enter your email"
+                            />
                         )}
                     />
 
