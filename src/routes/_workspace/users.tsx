@@ -6,7 +6,10 @@ import { UsersPage } from "@/features/users"
 export const Route = createFileRoute("/_workspace/users")({
     beforeLoad: ({ context: { user } }) => {
         if (!isAdminTier(user.role ?? "")) {
-            throw redirect({ to: "/unauthorized", replace: true })
+            throw redirect({
+                to: "/unauthorized",
+                replace: true
+            })
         }
     },
     loader: async ({ context: { q } }) => {

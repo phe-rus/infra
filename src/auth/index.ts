@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth"
 import { APIError } from "better-auth/api"
 import {
     admin,
+    openAPI,
     twoFactor,
 } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
@@ -10,6 +11,7 @@ import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { ac, buildRoles } from "./permissions"
 import { password } from "./password"
 import { execCtxStorage } from "./execution-context"
+import { objects } from "./plugins/objects"
 
 const roles = buildRoles()
 
@@ -214,6 +216,10 @@ export const auth = betterAuth({
             rpName: env.VITE_APPNAME,
             rpID: env.NODE_ENV === 'production' ? env.COOKIE_DOMAIN : undefined,
         }),
+        openAPI({
+            path: 'docs'
+        }),
+        objects(),
         tanstackStartCookies(),
     ],
 })
