@@ -46,22 +46,11 @@ type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
 }
 
 /**
- * Every domain mutation hook (users, api keys, roles, settings) builds on
- * this instead of calling useMutation directly. It reads the query client
- * from React context via useQueryClient(), the same instance every
+ * Every domain mutation hook (users, roles, settings) builds on this
+ * instead of calling useMutation directly. It reads the query client from
+ * React context via useQueryClient(), the same instance every
  * useSuspenseQuery in the tree reads from, rather than each hook reaching
  * for its own reference.
- *
- * Every mutationFn passed in should already be wrapped with withTimeout
- * (src/lib/with-timeout.ts), see any use*Hooks.ts file. That's what
- * actually bounds how long a mutation can sit "pending": a plain fetch()
- * has no default timeout, and the local dev runtime has been observed
- * accepting a request and never responding to it at all, neither
- * resolving nor rejecting. react-query's isPending only flips to false
- * once the mutationFn promise itself settles, so without a timeout that
- * fetch is the one thing here that can genuinely hang forever, no amount
- * of tuning onMutate/onSuccess/onSettled changes that, they only run once
- * mutationFn has already settled one way or the other.
  *
  * Invalidation happens in onSettled, not onSuccess, so it runs whether the
  * mutation succeeds or fails: an optimistic rollback below restores a

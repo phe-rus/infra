@@ -16,9 +16,6 @@ import { Route as AuthSetupRouteImport } from './routes/_auth/setup'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ProtectedUnauthorizedRouteImport } from './routes/_protected/unauthorized'
 import { Route as WorkspaceIndexRouteImport } from './routes/_workspace/index'
-import { Route as WorkspaceApiKeysRouteImport } from './routes/_workspace/api-keys'
-import { Route as WorkspaceProvidersRouteImport } from './routes/_workspace/providers'
-import { Route as WorkspaceTeamRolesRouteImport } from './routes/_workspace/team-roles'
 import { Route as WorkspaceUsersRouteImport } from './routes/_workspace/users'
 import { Route as ApiMigrateRouteImport } from './routes/api/migrate'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -55,21 +52,6 @@ const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
   path: '/',
   getParentRoute: () => WorkspaceRouteRoute,
 } as any)
-const WorkspaceApiKeysRoute = WorkspaceApiKeysRouteImport.update({
-  id: '/api-keys',
-  path: '/api-keys',
-  getParentRoute: () => WorkspaceRouteRoute,
-} as any)
-const WorkspaceProvidersRoute = WorkspaceProvidersRouteImport.update({
-  id: '/providers',
-  path: '/providers',
-  getParentRoute: () => WorkspaceRouteRoute,
-} as any)
-const WorkspaceTeamRolesRoute = WorkspaceTeamRolesRouteImport.update({
-  id: '/team-roles',
-  path: '/team-roles',
-  getParentRoute: () => WorkspaceRouteRoute,
-} as any)
 const WorkspaceUsersRoute = WorkspaceUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -91,9 +73,6 @@ export interface FileRoutesByFullPath {
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
   '/unauthorized': typeof ProtectedUnauthorizedRoute
-  '/api-keys': typeof WorkspaceApiKeysRoute
-  '/providers': typeof WorkspaceProvidersRoute
-  '/team-roles': typeof WorkspaceTeamRolesRoute
   '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -103,9 +82,6 @@ export interface FileRoutesByTo {
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
   '/unauthorized': typeof ProtectedUnauthorizedRoute
-  '/api-keys': typeof WorkspaceApiKeysRoute
-  '/providers': typeof WorkspaceProvidersRoute
-  '/team-roles': typeof WorkspaceTeamRolesRoute
   '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -118,9 +94,6 @@ export interface FileRoutesById {
   '/_auth/setup': typeof AuthSetupRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_protected/unauthorized': typeof ProtectedUnauthorizedRoute
-  '/_workspace/api-keys': typeof WorkspaceApiKeysRoute
-  '/_workspace/providers': typeof WorkspaceProvidersRoute
-  '/_workspace/team-roles': typeof WorkspaceTeamRolesRoute
   '/_workspace/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/_workspace/': typeof WorkspaceIndexRoute
@@ -133,9 +106,6 @@ export interface FileRouteTypes {
     | '/setup'
     | '/sign-in'
     | '/unauthorized'
-    | '/api-keys'
-    | '/providers'
-    | '/team-roles'
     | '/users'
     | '/api/migrate'
     | '/api/auth/$'
@@ -145,9 +115,6 @@ export interface FileRouteTypes {
     | '/setup'
     | '/sign-in'
     | '/unauthorized'
-    | '/api-keys'
-    | '/providers'
-    | '/team-roles'
     | '/users'
     | '/api/migrate'
     | '/api/auth/$'
@@ -159,9 +126,6 @@ export interface FileRouteTypes {
     | '/_auth/setup'
     | '/_auth/sign-in'
     | '/_protected/unauthorized'
-    | '/_workspace/api-keys'
-    | '/_workspace/providers'
-    | '/_workspace/team-roles'
     | '/_workspace/users'
     | '/api/migrate'
     | '/_workspace/'
@@ -227,27 +191,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceIndexRouteImport
       parentRoute: typeof WorkspaceRouteRoute
     }
-    '/_workspace/api-keys': {
-      id: '/_workspace/api-keys'
-      path: '/api-keys'
-      fullPath: '/api-keys'
-      preLoaderRoute: typeof WorkspaceApiKeysRouteImport
-      parentRoute: typeof WorkspaceRouteRoute
-    }
-    '/_workspace/providers': {
-      id: '/_workspace/providers'
-      path: '/providers'
-      fullPath: '/providers'
-      preLoaderRoute: typeof WorkspaceProvidersRouteImport
-      parentRoute: typeof WorkspaceRouteRoute
-    }
-    '/_workspace/team-roles': {
-      id: '/_workspace/team-roles'
-      path: '/team-roles'
-      fullPath: '/team-roles'
-      preLoaderRoute: typeof WorkspaceTeamRolesRouteImport
-      parentRoute: typeof WorkspaceRouteRoute
-    }
     '/_workspace/users': {
       id: '/_workspace/users'
       path: '/users'
@@ -299,17 +242,11 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
 )
 
 interface WorkspaceRouteRouteChildren {
-  WorkspaceApiKeysRoute: typeof WorkspaceApiKeysRoute
-  WorkspaceProvidersRoute: typeof WorkspaceProvidersRoute
-  WorkspaceTeamRolesRoute: typeof WorkspaceTeamRolesRoute
   WorkspaceUsersRoute: typeof WorkspaceUsersRoute
   WorkspaceIndexRoute: typeof WorkspaceIndexRoute
 }
 
 const WorkspaceRouteRouteChildren: WorkspaceRouteRouteChildren = {
-  WorkspaceApiKeysRoute: WorkspaceApiKeysRoute,
-  WorkspaceProvidersRoute: WorkspaceProvidersRoute,
-  WorkspaceTeamRolesRoute: WorkspaceTeamRolesRoute,
   WorkspaceUsersRoute: WorkspaceUsersRoute,
   WorkspaceIndexRoute: WorkspaceIndexRoute,
 }

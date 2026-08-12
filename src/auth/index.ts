@@ -1,36 +1,18 @@
 import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
-import { APIError, createAuthMiddleware } from "better-auth/api"
+import { APIError } from "better-auth/api"
 import {
     admin,
-    magicLink,
     twoFactor,
     username,
 } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
-import { apiKey } from "@better-auth/api-key"
 import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { ac, buildRoles } from "./permissions"
 import { password } from "./password"
-import { getEnabledMethods } from "./settings/methods-store"
-import type { AuthMethod } from "./settings/methods"
-import { getAppName } from "./settings/instance"
-import { getSecuritySettings } from "./settings/security"
-import { getEmailPasswordSettings } from "./settings/email-password"
-import { getCustomRoles } from "./settings/roles-store"
-import { getTrustedHostnamePatterns } from "./settings/trusted-origins"
 import { execCtxStorage } from "./execution-context"
 
-const FIRST_USER_ROLE = "owner"
-
-const appName = await getAppName()
-const security = await getSecuritySettings()
-const emailPassword = await getEmailPasswordSettings()
-const customRoles = await getCustomRoles()
-const roles = buildRoles(customRoles)
-const trustedHostnamePatterns = (await getTrustedHostnamePatterns()).map(
-    (pattern) => new RegExp(pattern)
-)
+const roles = buildRoles()
 
 const trustedOrigins = async (
     request: Request | undefined
@@ -42,50 +24,23 @@ const trustedOrigins = async (
     }
     try {
         const { hostname } = new URL(origin)
-        const isTrusted = trustedHostnamePatterns.some((pattern) => pattern.test(hostname))
+        const isTrusted = env.TRUSTED_ORIGINS.split(",").some((suffix) => {
+            const trusted = suffix.trim()
+            return hostname === trusted || hostname.endsWith(`.${trusted}`)
+        })
         return isTrusted ? [origin] : [fallbackOrigin]
     } catch {
         return [fallbackOrigin]
     }
 }
 
-// Every toggleable method below (twoFactor, username, passkey, magicLink,
-// apiKey) is registered unconditionally, then gated per-request in
-// hooks.before. They used to be registered conditionally on
-// getEnabledMethods(), read once at Worker isolate cold start, while the
-// KV flag they were reading is dynamic and can change at any time. An
-// isolate that booted before a method was last toggled on would have the
-// plugin missing entirely while a fresh per-request read of the same KV
-// flag said it was enabled, throwing instead of working, inconsistently
-// depending on which isolate a request landed on. Registering
-// unconditionally and gating access with a fresh KV read on every request
-// removes that inconsistency, this is better-auth's own documented
-// pattern for conditional endpoint access (hooks.before +
-// createAuthMiddleware), not a bespoke workaround.
-const GATED_PATH_PREFIXES: Array<{ prefix: string; method: AuthMethod }> = [
-    { prefix: "/two-factor/", method: "twoFactor" },
-    { prefix: "/passkey/", method: "passkey" },
-    { prefix: "/magic-link/", method: "magicLink" },
-    { prefix: "/api-key/", method: "apiKey" },
-]
-
-const GATED_EXACT_PATHS: Array<{ path: string; method: AuthMethod }> = [
-    { path: "/sign-in/username", method: "username" },
-    { path: "/is-username-available", method: "username" },
-    { path: "/sign-in/magic-link", method: "magicLink" },
-]
-
 export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
-    appName: appName,
+    appName: env.VITE_APPNAME,
     database: env.AUTH_DB,
     experimental: { joins: true },
     trustedOrigins: trustedOrigins,
     emailAndPassword: {
-        // always on, never gated: this is the only method the dashboard's
-        // own sign-in page uses, and the only one owner/admin access can
-        // ever depend on, it can't be a toggle without risking locking
-        // every admin out of their own instance
         enabled: true,
         revokeSessionsOnPasswordReset: true,
         resetPasswordTokenExpiresIn: 3600, // 1 hour
@@ -93,7 +48,7 @@ export const auth = betterAuth({
         autoSignIn: true,
         maxPasswordLength: 48,
         minPasswordLength: 8,
-        requireEmailVerification: emailPassword.requireEmailVerification,
+        requireEmailVerification: false
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
@@ -190,45 +145,40 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (user, ctx) => {
-                    const adapter = ctx?.context?.adapter
-                    if (!adapter) return { data: user }
+                    // this gate is only for the public self-service sign-up flow
+                    // (/sign-up/email, used by setupFn.ts's completeSetup); a user
+                    // created via /admin/create-user (the dashboard's "Add user")
+                    // is already an authenticated owner/admin action and must not
+                    // be blocked just because an owner already exists
+                    if (ctx?.path !== "/sign-up/email") return { data: user }
 
+                    const adapter = ctx.context.adapter
                     const count = await adapter.count({ model: "user" })
                     if (count > 0) {
                         throw new APIError("FORBIDDEN", {
                             message: "Sign-up is disabled: this instance already has an owner account.",
                         })
                     }
-                    return { data: { ...user, role: FIRST_USER_ROLE } }
+                    return {
+                        data: {
+                            ...user,
+                            role: 'owner'
+                        }
+                    }
                 },
             },
         },
     },
-    hooks: {
-        before: createAuthMiddleware(async (ctx) => {
-            const prefixMatch = GATED_PATH_PREFIXES.find((p) => ctx.path.startsWith(p.prefix))
-            const exactMatch = GATED_EXACT_PATHS.find((p) => p.path === ctx.path)
-            const method = prefixMatch?.method ?? exactMatch?.method
-            if (!method) return
-
-            const enabledMethods = await getEnabledMethods()
-            if (!enabledMethods[method]) {
-                throw new APIError("NOT_FOUND", {
-                    message: "This sign-in method is disabled for this instance.",
-                })
-            }
-        }),
-    },
     advanced: {
-        cookiePrefix: appName,
-        useSecureCookies: security.useSecureCookies,
+        cookiePrefix: env.VITE_APPNAME,
+        useSecureCookies: true,
         crossSubDomainCookies: {
-            enabled: security.crossSubDomainCookies,
-            domain: security.crossSubDomainCookies ? security.cookieDomain : undefined,
+            enabled: true,
+            domain: env.NODE_ENV === 'production' ? env.COOKIE_DOMAIN : undefined,
         },
         defaultCookieAttributes: {
             httpOnly: true,
-            secure: security.useSecureCookies,
+            secure: true,
             sameSite: "lax",
         },
         ipAddress: {
@@ -253,17 +203,13 @@ export const auth = betterAuth({
     },
     plugins: [
         admin({
-            ac,
-            roles,
+            ac: ac,
+            roles: roles,
             defaultRole: "user",
-            adminRoles: [
-                FIRST_USER_ROLE,
-                "admin",
-                ...customRoles.filter((role) => role.adminTier).map((role) => role.name),
-            ],
+            adminRoles: ['owner', "admin"],
         }),
         twoFactor({
-            issuer: appName,
+            issuer: env.VITE_APPNAME,
             backupCodeOptions: {
                 amount: 10,
                 storeBackupCodes: 'encrypted'
@@ -273,14 +219,8 @@ export const auth = betterAuth({
         }),
         username(),
         passkey({
-            rpName: appName,
-            rpID: security.crossSubDomainCookies ? security.cookieDomain : undefined
-        }),
-        apiKey(),
-        magicLink({
-            sendMagicLink: async ({ email, url }) => {
-                console.log(`[dev] Magic link for ${email}: ${url}`)
-            },
+            rpName: env.VITE_APPNAME,
+            rpID: env.NODE_ENV === 'production' ? env.COOKIE_DOMAIN : undefined,
         }),
         tanstackStartCookies(),
     ],

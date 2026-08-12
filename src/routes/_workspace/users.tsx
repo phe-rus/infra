@@ -1,6 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { customRolesQueryOptions } from "@/hooks/rolesHooks"
 import {
     useBanUser,
     useCreateUser,
@@ -57,10 +56,7 @@ export const Route = createFileRoute("/_workspace/users")({
         }
     },
     loader: async ({ context: { q } }) => {
-        await Promise.all([
-            q.ensureQueryData(usersQueryOptions()),
-            q.ensureQueryData(customRolesQueryOptions()),
-        ])
+        await q.ensureQueryData(usersQueryOptions())
     },
     component: RouteComponent,
 })
@@ -68,7 +64,6 @@ export const Route = createFileRoute("/_workspace/users")({
 function RouteComponent() {
     const { user } = Route.useRouteContext()
     const { data: usersData } = useSuspenseQuery(usersQueryOptions())
-    const { data: customRoles } = useSuspenseQuery(customRolesQueryOptions())
     const isOwner = isOwnerRole(user.role ?? "")
 
     const { mutateAsync: createUser } = useCreateUser()
@@ -79,7 +74,7 @@ function RouteComponent() {
     const [draftName, setDraftName] = useState("")
     const [draftEmail, setDraftEmail] = useState("")
     const [draftPassword, setDraftPassword] = useState("")
-    const [draftRole, setDraftRole] = useState("user")
+    const [draftRole, setDraftRole] = useState<"owner" | "admin" | "user">("user")
 
     const [viewUserId, setViewUserId] = useState<string | null>(null)
     const { data: viewUser, isLoading: viewUserLoading } = useUserDetail(viewUserId)
@@ -94,7 +89,7 @@ function RouteComponent() {
     const [newPassword, setNewPassword] = useState("")
     const isViewingSelf = viewUserId === user.id
 
-    const assignableRoles = [...FIXED_ROLE_NAMES, ...customRoles.map((role) => role.name)]
+    const assignableRoles = FIXED_ROLE_NAMES
 
     async function handleAddUser() {
         await createUser({
@@ -216,6 +211,7 @@ function RouteComponent() {
                     const role = rowUser.role ?? "user"
                     const isSelf = rowUser.id === user.id
                     const canManageRole = isOwner && !isSelf
+                    const canRemove = !isSelf && (isOwner || !isOwnerRole(role))
 
                     return (
                         <DropdownMenuTrigger>
@@ -270,6 +266,10 @@ function RouteComponent() {
                                                 Demote to admin
                                             </DropdownMenuItem>
                                         )}
+                                    </>
+                                )}
+                                {canRemove && (
+                                    <>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             variant="destructive"
@@ -300,7 +300,7 @@ function RouteComponent() {
                     </div>
                     <p className="text-muted-foreground">
                         Everyone with an account on this instance.
-                        {!isOwner && " Only an owner can change roles or remove a member."}
+                        {!isOwner && " Only an owner can change roles or remove another owner."}
                     </p>
                 </div>
             </section>
@@ -312,25 +312,21 @@ function RouteComponent() {
                 getRowId={(row) => row.id}
                 emptyMessage="No members yet."
                 searchPlaceholder="Search by name or email…"
-                bulkActions={
-                    isOwner
-                        ? (selectedRows, clearSelection) => (
-                              <Button
-                                  type="button"
-                                  variant="destructive"
-                                  size="xs"
-                                  onClick={() => {
-                                      selectedRows
-                                          .filter((row) => row.id !== user.id)
-                                          .forEach((row) => void removeUser({ data: { userId: row.id } }))
-                                      clearSelection()
-                                  }}
-                              >
-                                  Remove selected
-                              </Button>
-                          )
-                        : undefined
-                }
+                bulkActions={(selectedRows, clearSelection) => (
+                    <Button
+                        type="button"
+                        variant="destructive"
+                        size="xs"
+                        onClick={() => {
+                            selectedRows
+                                .filter((row) => row.id !== user.id && (isOwner || !isOwnerRole(row.role ?? "user")))
+                                .forEach((row) => void removeUser({ data: { userId: row.id } }))
+                            clearSelection()
+                        }}
+                    >
+                        Remove selected
+                    </Button>
+                )}
             />
 
             <DialogWidget
@@ -390,7 +386,9 @@ function RouteComponent() {
                                 id="new-user-role"
                                 aria-label="Role"
                                 selectedKey={draftRole}
-                                onSelectionChange={(key) => setDraftRole(String(key))}
+                                onSelectionChange={(key) =>
+                                    setDraftRole(key as "owner" | "admin" | "user")
+                                }
                             >
                                 <SelectTrigger>
                                     <SelectValue />

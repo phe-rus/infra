@@ -6,12 +6,12 @@ export const createUserSchema = z.object({
     name: z.string().min(1),
     email: z.email(),
     password: z.string().min(8).max(48),
-    role: z.string().min(1),
+    role: z.enum(["owner", "admin", "user"]),
 })
 
 export const setUserRoleSchema = z.object({
     userId: z.string().min(1),
-    role: z.string().min(1),
+    role: z.enum(["owner", "admin", "user"]),
 })
 
 export const banUserSchema = z.object({

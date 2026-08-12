@@ -25,12 +25,10 @@ export const runSetupMigrations = createServerFn({ method: "POST" }).handler(asy
     }
 })
 
-// Just creates the owner account. Everything else (app name, security,
-// email verification, which sign-in methods are on, custom roles) already
-// has a sensible default the moment KV has never been written to (see
-// each src/auth/settings/*.ts getter), and stays editable afterward from
-// the dashboard's own Settings/Providers/Team & roles pages, so none of
-// it needs to be collected here.
+// Just creates the owner account. App name, security, email verification,
+// and sign-in methods are now static constants in src/auth/index.ts; only
+// custom roles/instance access stay editable afterward, from the
+// dashboard's Team & roles page, so none of it needs to be collected here.
 export const completeSetup = createServerFn({ method: "POST" })
     .validator(completeSetupSchema)
     .handler(async ({ data }) => {

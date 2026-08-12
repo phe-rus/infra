@@ -37,10 +37,6 @@ export const Dashboard: FC<DashboardProps> = ({
 
     const navLists = [
         {
-            label: "Providers",
-            path: "/providers"
-        },
-        {
             label: "Users",
             path: "/users"
         },
@@ -51,18 +47,6 @@ export const Dashboard: FC<DashboardProps> = ({
         {
             label: "Storage",
             path: "/storage"
-        },
-        {
-            label: "API keys",
-            path: "/api-keys"
-        },
-        {
-            label: "Environment variables",
-            path: "/environment-variables"
-        },
-        {
-            label: "Teams & roles",
-            path: "/team-roles"
         },
         {
             label: "Logs",

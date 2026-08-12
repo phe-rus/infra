@@ -21,8 +21,7 @@ export const queryContext = () => {
                 retry: (count, error) => {
                     const status = (error as any)?.status
                     return status !== 401 && status !== 403 && count < 2
-                },
-                retryDelay: 1000
+                }
             }
         },
         queryCache: new QueryCache({

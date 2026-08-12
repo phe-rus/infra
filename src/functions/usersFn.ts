@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/auth/forward-headers"
+import { isOwner } from "@/auth/permissions"
 import { AdminMiddleware } from "@/middleware/admin-middleware"
 import { OwnerMiddleware } from "@/middleware/owner-middleware"
 import {
@@ -29,9 +30,8 @@ export const createUserFn = createServerFn({ method: "POST" })
     .validator(createUserSchema)
     .handler(async ({ data, context: { sessions } }) => {
         // admins can only add plain users; only an owner can hand out admin/owner
-        // or any custom (potentially elevated) role
         if (sessions.user.role !== "owner" && data.role !== "user") {
-            throw new Error("Only an owner can create admin, owner, or custom-role accounts")
+            throw new Error("Only an owner can create admin or owner accounts")
         }
         const headers = getRequestHeaders()
         const {
@@ -44,10 +44,7 @@ export const createUserFn = createServerFn({ method: "POST" })
                 name: data.name,
                 email: data.email,
                 password: data.password,
-                // custom role names are loaded at runtime, so better-auth's
-                // inferred role union (derived from defaultRole/adminRoles)
-                // can't statically include them
-                role: data.role as "owner" | "admin" | "user",
+                role: data.role,
             },
         })
         forwardAuthHeaders(responseHeaders)
@@ -68,20 +65,27 @@ export const setUserRoleFn = createServerFn({ method: "POST" })
         } = await auth.api.setRole({
             headers,
             returnHeaders: true,
-            body: { userId: data.userId, role: data.role as "owner" | "admin" | "user" },
+            body: { userId: data.userId, role: data.role },
         })
         forwardAuthHeaders(responseHeaders)
         return user
     })
 
 export const removeUserFn = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
             throw new Error("You can't remove your own account")
         }
         const headers = getRequestHeaders()
+        // admins can remove anyone except an owner; only an owner can remove an owner
+        if (!isOwner(sessions.user.role ?? "")) {
+            const target = await auth.api.getUser({ headers, query: { id: data.userId } })
+            if (isOwner(target?.role ?? "")) {
+                throw new Error("Only an owner can remove an owner account")
+            }
+        }
         const { headers: responseHeaders, ...result } = await auth.api.removeUser({
             headers,
             returnHeaders: true,

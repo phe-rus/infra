@@ -1,25 +1,24 @@
 import { getSession, getSetupStatus, signInEmail, signOutUser } from "@/functions/authFn"
 import { queryOptions, useMutation } from "@tanstack/react-query"
 import { getContext } from "@/lib/queryClient"
-import { withTimeout } from "@/lib/with-timeout"
 import { t } from "@/components/ui/sonner"
 import { useRouter } from "@tanstack/react-router"
 
 export const useMeOptions = () => queryOptions({
     queryKey: ['me'],
-    queryFn: () => withTimeout(getSession)()
+    queryFn: () => getSession()
 })
 
 export const useSetupOptions = () => queryOptions({
     queryKey: ["setup"],
-    queryFn: () => withTimeout(getSetupStatus)()
+    queryFn: getSetupStatus
 })
 
 export const useSignIn = () => {
     const router = useRouter()
     const q = getContext()
     return useMutation({
-        mutationFn: withTimeout(signInEmail),
+        mutationFn: signInEmail,
         onSuccess: (data) => {
             if (data.error) {
                 t.error("Sign in failed", { description: data.error })
@@ -48,7 +47,7 @@ export const useLogout = () => {
     const q = getContext()
 
     return useMutation({
-        mutationFn: withTimeout(signOutUser),
+        mutationFn: signOutUser,
         onSuccess: () => {
             t.success("Signed out", {
                 description: "You have been signed out successfully",
