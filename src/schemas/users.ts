@@ -14,6 +14,12 @@ export const setUserRoleSchema = z.object({
     role: z.enum(["owner", "admin", "user"]),
 })
 
+export const updateUserDetailsSchema = z.object({
+    userId: z.string().min(1),
+    name: z.string().min(1),
+    email: z.email(),
+})
+
 export const banUserSchema = z.object({
     userId: z.string().min(1),
     banReason: z.string().optional(),

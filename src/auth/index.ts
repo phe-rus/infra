@@ -4,7 +4,6 @@ import { APIError } from "better-auth/api"
 import {
     admin,
     twoFactor,
-    username,
 } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
 import { tanstackStartCookies } from "better-auth/tanstack-start"
@@ -145,13 +144,7 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (user, ctx) => {
-                    // this gate is only for the public self-service sign-up flow
-                    // (/sign-up/email, used by setupFn.ts's completeSetup); a user
-                    // created via /admin/create-user (the dashboard's "Add user")
-                    // is already an authenticated owner/admin action and must not
-                    // be blocked just because an owner already exists
                     if (ctx?.path !== "/sign-up/email") return { data: user }
-
                     const adapter = ctx.context.adapter
                     const count = await adapter.count({ model: "user" })
                     if (count > 0) {
@@ -217,7 +210,6 @@ export const auth = betterAuth({
             twoFactorCookieMaxAge: 600, // 10 min 2 FA challenge window
             trustDeviceMaxAge: 60 * 60 * 24 * 30, // 30 day trusted device
         }),
-        username(),
         passkey({
             rpName: env.VITE_APPNAME,
             rpID: env.NODE_ENV === 'production' ? env.COOKIE_DOMAIN : undefined,

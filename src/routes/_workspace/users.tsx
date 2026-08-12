@@ -10,6 +10,7 @@ import {
     useSetUserPassword,
     useSetUserRole,
     useUnbanUser,
+    useUpdateUserDetails,
     useUserDetail,
     usersQueryOptions,
 } from "@/hooks/usersHooks"
@@ -40,7 +41,7 @@ import { type ListedUser } from "@/types"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { format } from "date-fns/format"
 import { cn } from "@/lib/utils"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 const BAN_DURATIONS = [
     { id: "permanent", label: "Permanent", seconds: undefined },
@@ -78,16 +79,26 @@ function RouteComponent() {
 
     const [viewUserId, setViewUserId] = useState<string | null>(null)
     const { data: viewUser, isLoading: viewUserLoading } = useUserDetail(viewUserId)
+    const { mutateAsync: updateUserDetails } = useUpdateUserDetails()
     const { mutateAsync: banUser } = useBanUser()
     const { mutateAsync: unbanUser } = useUnbanUser()
     const { mutateAsync: revokeSession } = useRevokeUserSession()
     const { mutateAsync: revokeSessions } = useRevokeUserSessions()
     const { mutateAsync: setPassword } = useSetUserPassword()
     const { mutateAsync: impersonateUser } = useImpersonateUser()
+    const [editName, setEditName] = useState("")
+    const [editEmail, setEditEmail] = useState("")
     const [banReason, setBanReason] = useState("")
     const [banDuration, setBanDuration] = useState<string>("permanent")
     const [newPassword, setNewPassword] = useState("")
     const isViewingSelf = viewUserId === user.id
+
+    useEffect(() => {
+        if (viewUser) {
+            setEditName(viewUser.user.name)
+            setEditEmail(viewUser.user.email)
+        }
+    }, [viewUser?.user.id])
 
     const assignableRoles = FIXED_ROLE_NAMES
 
@@ -115,6 +126,11 @@ function RouteComponent() {
         })
         setBanReason("")
         setBanDuration("permanent")
+    }
+
+    async function handleUpdateDetails() {
+        if (!viewUserId) return
+        await updateUserDetails({ data: { userId: viewUserId, name: editName.trim(), email: editEmail.trim() } })
     }
 
     async function handleSetPassword() {
@@ -435,6 +451,40 @@ function RouteComponent() {
                             </div>
                             <div>Created {format(viewUser.user.createdAt, "PPPp")}</div>
                             <div>Updated {format(viewUser.user.updatedAt, "PPPp")}</div>
+                        </section>
+
+                        <Separator />
+                        <section className="flex flex-col gap-2">
+                            <h3 className="text-sm font-medium">Details</h3>
+                            <Field>
+                                <FieldLabel htmlFor="edit-user-name">Name</FieldLabel>
+                                <Input
+                                    id="edit-user-name"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                />
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor="edit-user-email">Email</FieldLabel>
+                                <Input
+                                    id="edit-user-email"
+                                    type="email"
+                                    value={editEmail}
+                                    onChange={(e) => setEditEmail(e.target.value)}
+                                />
+                            </Field>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                isDisabled={
+                                    !editName.trim() ||
+                                    !editEmail.trim() ||
+                                    (editName.trim() === viewUser.user.name && editEmail.trim() === viewUser.user.email)
+                                }
+                                onClick={() => void handleUpdateDetails()}
+                            >
+                                Save details
+                            </Button>
                         </section>
 
                         {isOwner && !isViewingSelf && (

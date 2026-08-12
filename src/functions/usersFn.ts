@@ -11,6 +11,7 @@ import {
     revokeUserSessionSchema,
     setUserPasswordSchema,
     setUserRoleSchema,
+    updateUserDetailsSchema,
     userIdSchema,
 } from "@/schemas/users"
 
@@ -93,6 +94,34 @@ export const removeUserFn = createServerFn({ method: "POST" })
         })
         forwardAuthHeaders(responseHeaders)
         return result
+    })
+
+// admin, no restriction: any admin-tier caller can edit anyone's name/email,
+// including an owner's, unlike removeUserFn there's no owner-target carve-out
+// here. auth.api.adminUpdateUser does its own field-level permission checks
+// (set-email for the email field), and both owner and admin are built with
+// identical adminAc statements in permissions.ts, so this is never blocked.
+export const updateUserFn = createServerFn({ method: "POST" })
+    .middleware([AdminMiddleware])
+    .validator(updateUserDetailsSchema)
+    .handler(async ({ data }) => {
+        const headers = getRequestHeaders()
+        // unlike createUser/setRole/banUser, adminUpdateUser's handler
+        // returns the user directly (ctx.json(parseUserOutput(...))), not
+        // wrapped in { user }, so response IS the user here
+        const {
+            response: user,
+            headers: responseHeaders,
+        } = await auth.api.adminUpdateUser({
+            headers,
+            returnHeaders: true,
+            body: {
+                userId: data.userId,
+                data: { name: data.name, email: data.email },
+            },
+        })
+        forwardAuthHeaders(responseHeaders)
+        return user
     })
 
 export const getUserDetailFn = createServerFn({ method: "GET" })

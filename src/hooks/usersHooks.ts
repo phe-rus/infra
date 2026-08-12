@@ -11,6 +11,7 @@ import {
     setUserRoleFn,
     stopImpersonatingFn,
     unbanUserFn,
+    updateUserFn,
 } from "@/functions/usersFn"
 import { useMeOptions } from "@/hooks/authHooks"
 import { useAppMutation } from "@/hooks/useAppMutation"
@@ -59,6 +60,19 @@ export const useSetUserRole = () =>
         },
         successMessage: "Role updated",
         errorMessage: "Could not update role",
+    })
+
+export const useUpdateUserDetails = () =>
+    useAppMutation({
+        mutationFn: updateUserFn,
+        invalidates: [usersQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: usersQueryOptions().queryKey,
+            updater: (old: UsersListData | undefined, variables) =>
+                updateUser(old, variables.data.userId, { name: variables.data.name, email: variables.data.email }),
+        },
+        successMessage: "Details updated",
+        errorMessage: "Could not update details",
     })
 
 export const useRemoveUser = () =>
