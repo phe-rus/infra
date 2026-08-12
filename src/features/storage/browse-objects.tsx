@@ -1,8 +1,8 @@
-import type { FC } from "react"
+import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
 import { useBrowseObjects } from "@/kit/hypermedia/objects"
-import { IconFile, IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import type { FC } from "react"
 
 export type BrowseObjectsProps = {
     prefix: string
@@ -18,11 +18,6 @@ function formatBytes(bytes: number): string {
 function downloadUrl(key: string): string {
     return `/api/auth/objects/download?key=${encodeURIComponent(key)}`
 }
-
-const fileTileClassName = cn(
-    "flex flex-col items-center gap-2 rounded border border-input p-4 text-center",
-    "hover:bg-accent"
-)
 
 export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) => {
     const { data, isLoading } = useBrowseObjects(prefix)
