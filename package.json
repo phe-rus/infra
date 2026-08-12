@@ -3,10 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "X_LOCAL_OBSERVABILITY=false vite dev --port=3000",
+    "dev": "vite dev --port=3000",
     "build": "vite build",
     "preview": "vite preview --port=3000",
-    "deploy": "vite build && wrangler deploy",
+    "deploy": "wrangler deploy",
     "type-gen": "wrangler types",
     "test": "vitest run",
     "lint": "eslint",
@@ -45,7 +45,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.51.1",
+    "@cloudflare/vite-plugin": "^1.51.3",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tanstack/devtools-vite": "^0.8.3",
     "@tanstack/eslint-config": "latest",
@@ -63,7 +63,7 @@
     "typescript": "^7",
     "vite": "^8",
     "vitest": "^4",
-    "wrangler": "^4.120.0"
+    "wrangler": "^4.121.0"
   },
   "packageManager": "bun"
 }
