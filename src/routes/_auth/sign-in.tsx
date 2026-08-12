@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router"
 import { AuthForm } from "@/components/auth"
 import { t } from "@/components/ui/sonner"
 import { useEffect } from "react"
-import { signInSearchSchema } from "@/schemas/auth"
+import { signInSearchSchema } from "@/kit/schemas"
 
 export const Route = createFileRoute("/_auth/sign-in")({
     validateSearch: signInSearchSchema,

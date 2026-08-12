@@ -3,8 +3,8 @@ import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 import { useIsMobile } from "@/lib/use-media-query"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { useLogout, useMeOptions } from "@/hooks/authHooks"
-import { useStopImpersonating } from "@/hooks/usersHooks"
+import { useLogout, meQueryOptions } from "@/kit/auth"
+import { useStopImpersonating } from "@/kit/hypermedia/users"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 
@@ -18,7 +18,7 @@ export const Dashboard: FC<DashboardProps> = ({
     children
 }) => {
     const { isPending, mutateAsync: signOut } = useLogout()
-    const { data: session } = useSuspenseQuery(useMeOptions())
+    const { data: session } = useSuspenseQuery(meQueryOptions())
     const { mutateAsync: stopImpersonating, isPending: isStoppingImpersonation } = useStopImpersonating()
     const impersonatedBy = session?.session.impersonatedBy
     const [open, setOpen] = useState<boolean>(true)

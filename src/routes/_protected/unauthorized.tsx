@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { useLogout } from "@/hooks/authHooks"
+import { useLogout } from "@/kit/auth"
 import { Button } from "@/components/ui/button"
 
 export const Route = createFileRoute("/_protected/unauthorized")({

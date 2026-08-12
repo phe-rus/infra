@@ -1,8 +1,8 @@
 import { FieldGroup } from "@/components/ui/field"
 import { useAppForm } from "@/components/widgets/blocks"
-import { useSignIn } from "@/hooks/authHooks"
+import { useSignIn } from "@/kit/auth"
 import { cn } from "@/lib/utils"
-import { signInSchema } from "@/schemas/auth"
+import { signInSchema } from "@/kit/schemas"
 import type { z } from "zod"
 
 export function AuthForm() {

@@ -1,7 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
-import { useMeOptions, useSetupOptions } from "@/hooks/authHooks"
+import { meQueryOptions, setupStatusQueryOptions } from "@/kit/auth"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
 import tailwind from "@/styles/globals.css?url"
@@ -37,10 +37,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   }),
   beforeLoad: async ({ context }) => {
     const session = await context.q.ensureQueryData(
-      useMeOptions()
+      meQueryOptions()
     )
     const { hasOwner } = await context.q.ensureQueryData(
-      useSetupOptions()
+      setupStatusQueryOptions()
     )
     return {
       session: session,
