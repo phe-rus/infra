@@ -1,3 +1,7 @@
 export { browseObjects } from "./browse-objects"
 export { browseQueryOptions } from "./browse-query-options"
 export { useBrowseObjects } from "./use-browse-objects"
+export { deleteObject } from "./delete-object"
+export { deleteFolder } from "./delete-folder"
+export { useDeleteObject } from "./use-delete-object"
+export { useDeleteFolder } from "./use-delete-folder"

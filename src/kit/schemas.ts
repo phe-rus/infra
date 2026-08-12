@@ -31,11 +31,19 @@ export const setUserRoleSchema = z.object({
     role: z.enum(["owner", "admin", "user"]),
 })
 
-export const updateUserDetailsSchema = z.object({
-    userId: z.string().min(1),
-    name: z.string().min(1),
-    email: z.email(),
-})
+export const updateUserDetailsSchema = z
+    .object({
+        userId: z.string().min(1),
+        name: z.string().min(1).optional(),
+        email: z.email().optional(),
+    })
+    .refine((data) => data.name !== undefined || data.email !== undefined, {
+        message: "Nothing to update",
+    })
+
+export const deleteObjectSchema = z.object({ key: z.string().min(1) })
+
+export const deleteFolderSchema = z.object({ prefix: z.string().min(1) })
 
 export const banUserSchema = z.object({
     userId: z.string().min(1),

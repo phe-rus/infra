@@ -23,7 +23,10 @@ export const updateUser = createServerFn({ method: "POST" })
             returnHeaders: true,
             body: {
                 userId: data.userId,
-                data: { name: data.name, email: data.email },
+                data: {
+                    ...(data.name !== undefined && { name: data.name }),
+                    ...(data.email !== undefined && { email: data.email }),
+                },
             },
         })
         forwardAuthHeaders(responseHeaders)

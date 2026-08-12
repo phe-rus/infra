@@ -1,5 +1,5 @@
 import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
-import { useBrowseObjects } from "@/kit/hypermedia/objects"
+import { useBrowseObjects, useDeleteFolder, useDeleteObject } from "@/kit/hypermedia/objects"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { FC } from "react"
@@ -21,6 +21,8 @@ function downloadUrl(key: string): string {
 
 export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) => {
     const { data, isLoading } = useBrowseObjects(prefix)
+    const { mutate: deleteFolder } = useDeleteFolder()
+    const { mutate: deleteObject } = useDeleteObject()
 
     if (isLoading) return <p className="text-xs text-muted-foreground">Loading…</p>
     if (!data) return null
@@ -44,7 +46,15 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                         >
                             <IconFolderFilled className="size-7! shrink-0" />
                             <span className="min-w-0 flex-1 truncate text-xs">{folder.name}</span>
-                            <Button size='icon-xs' variant='destructive' className='mr-auto size-5!'>
+                            <Button
+                                size='icon-xs'
+                                variant='destructive'
+                                className='mr-auto size-5!'
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    deleteFolder({ data: { prefix: folder.key } })
+                                }}
+                            >
                                 <IconMinus />
                             </Button>
                         </div>
@@ -85,7 +95,16 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                                 <span className="text-xs break-all">{file.name}</span>
                                 <span className="text-[8px] font-light text-muted-foreground">{formatBytes(file.size)}</span>
                             </div>
-                            <Button size='icon-xs' variant='destructive' className='absolute top-1 right-1 size-5!'>
+                            <Button
+                                size='icon-xs'
+                                variant='destructive'
+                                className='absolute top-1 right-1 size-5!'
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    deleteObject({ data: { key: file.key } })
+                                }}
+                            >
                                 <IconMinus />
                             </Button>
                         </a>

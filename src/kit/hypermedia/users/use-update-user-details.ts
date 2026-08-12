@@ -11,7 +11,10 @@ export const useUpdateUserDetails = () =>
         optimisticUpdate: {
             queryKey: usersQueryOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, { name: variables.data.name, email: variables.data.email }),
+                patchUserInCache(old, variables.data.userId, {
+                    ...(variables.data.name !== undefined && { name: variables.data.name }),
+                    ...(variables.data.email !== undefined && { email: variables.data.email }),
+                }),
         },
         successMessage: "Details updated",
         errorMessage: "Could not update details",

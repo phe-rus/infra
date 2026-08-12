@@ -25,6 +25,17 @@ function readUploadedFile(body: unknown): File {
     return file
 }
 
+function resolveTargetUserId(ctx: { body: unknown; context: { session: { user: { id: string; role?: string | null } } } }): string {
+    const requested = (ctx.body as Record<string, unknown> | undefined)?.userId
+    if (typeof requested !== "string" || requested.length === 0 || requested === ctx.context.session.user.id) {
+        return ctx.context.session.user.id
+    }
+    if (!isAdminTier(ctx.context.session.user.role ?? "")) {
+        throw new APIError("FORBIDDEN", { message: "Admin access required to change another user's image" })
+    }
+    return requested
+}
+
 async function sniffAndValidate(file: File) {
     const bytes = new Uint8Array(await file.arrayBuffer())
     const ext = sniffExtension(bytes)
@@ -54,9 +65,10 @@ export function objects() {
                     method: "POST",
                     use: [sessionMiddleware],
                     metadata: { allowedMediaTypes: ["multipart/form-data"] },
+                    body: z.object({ file: z.instanceof(File), userId: z.string().optional() }),
                 },
                 async (ctx) => {
-                    const userId = ctx.context.session.user.id
+                    const userId = resolveTargetUserId(ctx)
                     const file = readUploadedFile(ctx.body)
                     const { ext, contentType, bytes } = await sniffAndValidate(file)
                     if (!isImageExtension(ext)) {
@@ -152,6 +164,40 @@ export function objects() {
                             contentType: obj.httpMetadata?.contentType ?? null,
                         })),
                     })
+                }
+            ),
+            deleteObject: createAuthEndpoint(
+                "/objects/delete",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    body: z.object({ key: z.string().min(1) }),
+                },
+                async (ctx) => {
+                    if (!isAdminTier(ctx.context.session.user.role ?? "")) {
+                        throw new APIError("FORBIDDEN", { message: "Admin access required" })
+                    }
+                    await env.STORAGE.delete(ctx.body.key)
+                    return ctx.json({ success: true })
+                }
+            ),
+            deleteFolder: createAuthEndpoint(
+                "/objects/delete-folder",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    body: z.object({ prefix: z.string().min(1) }),
+                },
+                async (ctx) => {
+                    if (!isAdminTier(ctx.context.session.user.role ?? "")) {
+                        throw new APIError("FORBIDDEN", { message: "Admin access required" })
+                    }
+                    const objects = await listAllObjects(env.STORAGE, ctx.body.prefix)
+                    const keys = objects.map((obj) => obj.key)
+                    for (let i = 0; i < keys.length; i += 1000) {
+                        await env.STORAGE.delete(keys.slice(i, i + 1000))
+                    }
+                    return ctx.json({ success: true, deleted: keys.length })
                 }
             ),
             downloadFile: createAuthEndpoint(
