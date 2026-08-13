@@ -1,6 +1,5 @@
 import { type FC, useMemo } from "react"
 import { Link } from "@tanstack/react-router"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -11,7 +10,6 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { DataTable, type DataTableColumnDef } from "@/components/widgets/tables"
-import { FrameworkIcon } from "@/components/widgets/framework-icon"
 import { CLIENT_TYPE_INFO, type ClientType, type ListedApp } from "@/kit/console"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { format } from "date-fns/format"
@@ -50,37 +48,25 @@ export const ListApplications: FC<ListApplicationsProps> = ({ applications, onSe
                 ),
             },
             {
-                accessorKey: "clientId",
-                header: "Client ID",
+                accessorKey: "id",
+                header: "ID",
                 cell: ({ row }) => <Link
                     to="/console/$client_id"
                     params={{ client_id: row.original.clientId }}
                     className={cn("bg-accent rounded px-3 py-1 text-xs!", "cursor-pointer")}
                 >
-                    {row.original.clientId}
+                    {row.original.id}
                 </Link>
+            },
+            {
+                accessorKey: "clientId",
+                header: "Client ID",
+                cell: ({ row }) => <span>{row.original.clientId}</span>
             },
             {
                 accessorKey: "name",
                 header: "Application",
-                cell: ({ row }) => (
-                    <Link
-                        to="/console/$client_id"
-                        params={{ client_id: row.original.clientId }}
-                        className="flex items-center gap-2"
-                    >
-                        <Avatar size="sm">
-                            <AvatarFallback>
-                                {row.original.framework ? (
-                                    <FrameworkIcon framework={row.original.framework} className="size-4" />
-                                ) : (
-                                    (row.original.name ?? "?").slice(0, 1).toUpperCase()
-                                )}
-                            </AvatarFallback>
-                        </Avatar>
-                        <span>{row.original.name ?? "Untitled"}</span>
-                    </Link>
-                ),
+                cell: ({ row }) => <span>{row.original.name ?? "Untitled"}</span>
             },
             {
                 accessorKey: "type",

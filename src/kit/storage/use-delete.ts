@@ -1,18 +1,10 @@
-import { deleteFolder, deleteObject } from "./fnc"
+import { deleteObjects } from "./fnc"
 import { useAppMutation } from "@/kit/shared"
 
-export const useDeleteObject = () =>
+export const useDeleteObjects = () =>
     useAppMutation({
-        mutationFn: deleteObject,
-        invalidates: [["objects", "browse"]],
+        mutationFn: deleteObjects,
+        invalidates: [["objects", "list"]],
         successMessage: "Deleted",
         errorMessage: "Could not delete",
-    })
-
-export const useDeleteFolder = () =>
-    useAppMutation({
-        mutationFn: deleteFolder,
-        invalidates: [["objects", "browse"]],
-        successMessage: "Folder deleted",
-        errorMessage: "Could not delete folder",
     })

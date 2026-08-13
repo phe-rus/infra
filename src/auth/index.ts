@@ -8,7 +8,7 @@ import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
 import { secondaryStorage, trustedOrigins, databaseHooks, customStorage } from "./configs"
 import { advanced } from './advanced'
-import { r2 } from "./plugins/r2"
+import { r2Provider } from "./plugins/r2"
 import {
     admin,
     jwt,
@@ -25,6 +25,9 @@ export const auth = betterAuth({
     database: env.AUTH_DB,
     experimental: { joins: true },
     trustedOrigins: trustedOrigins,
+    disabledPaths: [
+        "/token"
+    ],
     emailAndPassword: {
         enabled: true,
         revokeSessionsOnPasswordReset: true,
@@ -43,10 +46,6 @@ export const auth = betterAuth({
     session: {
         expiresIn: 60 * 60 * 24 * 30, // 30 days
         updateAge: 60 * 60 * 24, // refresh if older than 24 h
-        // required by oauthProvider: it needs to look sessions up by id
-        // directly from the DB during the authorize/consent continuation,
-        // not just from the KV-cached copy. D1's write budget (100K/day
-        // free) easily absorbs this at self-hosted login volume
         storeSessionInDatabase: true,
         cookieCache: {
             enabled: true,
@@ -94,7 +93,7 @@ export const auth = betterAuth({
         openAPI({
             path: 'docs'
         }),
-        r2(),
+        r2Provider({ binding: env.STORAGE }),
         jwt({
             disableSettingJwtHeader: true,
         }),

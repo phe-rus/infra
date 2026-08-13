@@ -46,6 +46,18 @@ export default {
                 headers: newHeaders
             })
         }
+        if (url.pathname.endsWith('/jwks')) {
+            const res = await auth.handler(request)
+
+            const newHeaders = new Headers(res.headers)
+            newHeaders.set("Access-Control-Allow-Methods", "GET")
+            newHeaders.set("Access-Control-Allow-Origin", "*")
+
+            return new Response(res.body, {
+                status: res.status,
+                headers: newHeaders
+            })
+        }
         return handler.fetch(request, {
             context: {
                 // @ts-ignore

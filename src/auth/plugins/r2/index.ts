@@ -1,18 +1,10 @@
-import { env } from "cloudflare:workers"
 import { createAuthEndpoint, sessionMiddleware, APIError } from "better-auth/api"
 import * as z from "zod"
 import { isAdminTier } from "@/auth/utils/permissions"
 import { ALLOWED_TYPES, MAX_FILE_BYTES, MAX_USER_QUOTA_BYTES } from "./constants"
 import { sniffExtension, isImageExtension } from "./sniff-file-type"
 import { sanitizeSvg } from "./sanitize-svg"
-import {
-    avatarKey,
-    avatarPrefix,
-    fileKey,
-    getUserUsageBytes,
-    listAllObjects,
-    stripExtension,
-} from "./r2-paths"
+import { avatarKey, avatarPrefix, fileKey, getUserUsageBytes, listAllObjects, stripExtension } from "./r2-paths"
 
 function readUploadedFile(body: unknown): File {
     const file = (body as Record<string, unknown> | undefined)?.file
@@ -50,17 +42,26 @@ async function sniffAndValidate(file: File) {
     return { ext, contentType, bytes }
 }
 
-function avatarUrl(userId: string, version: number): string {
-    const base = env.BETTER_AUTH_URL ?? ""
-    return `${base}/api/auth/objects/avatar/${userId}?v=${version}`
+// ctx.context.baseURL already resolves to the full mounted base including
+// the basePath (e.g. http://localhost:3000/api/auth), not just the origin —
+// confirmed live (an earlier version of this appended /api/auth a second
+// time here, producing a doubled path)
+function cdnUrl(baseURL: string, key: string, version: number): string {
+    return `${baseURL}/cdn/${key}?v=${version}`
 }
 
-export function r2() {
+export type R2ProviderOptions = {
+    /** The R2 bucket binding this instance reads/writes to. */
+    binding: R2Bucket
+}
+
+export function r2Provider(options: R2ProviderOptions) {
+    const { binding } = options
     return {
         id: "r2",
         endpoints: {
             uploadAvatar: createAuthEndpoint(
-                "/objects/avatar",
+                "/r2/avatar",
                 {
                     method: "POST",
                     use: [sessionMiddleware],
@@ -75,10 +76,9 @@ export function r2() {
                         throw new APIError("BAD_REQUEST", { message: "Avatar must be an image" })
                     }
 
-                    const bucket = env.STORAGE
                     const [usage, existingAvatarObjects] = await Promise.all([
-                        getUserUsageBytes(bucket, userId),
-                        listAllObjects(bucket, avatarPrefix(userId)),
+                        getUserUsageBytes(binding, userId),
+                        listAllObjects(binding, avatarPrefix(userId)),
                     ])
                     const existingAvatarSize = existingAvatarObjects.reduce((sum, obj) => sum + obj.size, 0)
                     const projectedUsage = usage - existingAvatarSize + bytes.byteLength
@@ -87,19 +87,20 @@ export function r2() {
                     }
 
                     for (const obj of existingAvatarObjects) {
-                        await bucket.delete(obj.key)
+                        await binding.delete(obj.key)
                     }
-                    await bucket.put(avatarKey(userId, ext), bytes, { httpMetadata: { contentType } })
+                    const key = avatarKey(userId, ext)
+                    await binding.put(key, bytes, { httpMetadata: { contentType } })
 
                     const version = Date.now()
-                    const url = avatarUrl(userId, version)
+                    const url = cdnUrl(ctx.context.baseURL, key, version)
                     await ctx.context.internalAdapter.updateUser(userId, { image: url })
 
                     return ctx.json({ url })
                 }
             ),
             uploadFile: createAuthEndpoint(
-                "/objects/files",
+                "/r2/upload",
                 {
                     method: "POST",
                     use: [sessionMiddleware],
@@ -108,36 +109,22 @@ export function r2() {
                 async (ctx) => {
                     const userId = ctx.context.session.user.id
                     const file = readUploadedFile(ctx.body)
-                    const { ext, bytes } = await sniffAndValidate(file)
+                    const { ext, bytes, contentType } = await sniffAndValidate(file)
 
-                    const bucket = env.STORAGE
-                    const usage = await getUserUsageBytes(bucket, userId)
+                    const usage = await getUserUsageBytes(binding, userId)
                     if (usage + bytes.byteLength > MAX_USER_QUOTA_BYTES) {
                         throw new APIError("BAD_REQUEST", { message: "Storage quota exceeded" })
                     }
 
                     const filename = `${stripExtension(file.name || "file")}.${ext}`
                     const key = fileKey(userId, filename)
-                    await bucket.put(key, bytes, { httpMetadata: { contentType: ALLOWED_TYPES[ext] } })
+                    await binding.put(key, bytes, { httpMetadata: { contentType } })
 
-                    return ctx.json({ filename, size: bytes.byteLength })
+                    return ctx.json({ key, filename, size: bytes.byteLength })
                 }
             ),
-            deleteFile: createAuthEndpoint(
-                "/objects/files/delete",
-                {
-                    method: "POST",
-                    use: [sessionMiddleware],
-                    body: z.object({ filename: z.string().min(1) }),
-                },
-                async (ctx) => {
-                    const userId = ctx.context.session.user.id
-                    await env.STORAGE.delete(fileKey(userId, ctx.body.filename))
-                    return ctx.json({ success: true })
-                }
-            ),
-            browseObjects: createAuthEndpoint(
-                "/objects/browse",
+            listObjects: createAuthEndpoint(
+                "/r2/list",
                 {
                     method: "GET",
                     use: [sessionMiddleware],
@@ -148,7 +135,7 @@ export function r2() {
                         throw new APIError("FORBIDDEN", { message: "Admin access required" })
                     }
                     const prefix = ctx.query.prefix ?? ""
-                    const result = await env.STORAGE.list({ prefix, delimiter: "/", include: ["httpMetadata"] })
+                    const result = await binding.list({ prefix, delimiter: "/", include: ["httpMetadata"] })
 
                     return ctx.json({
                         prefix,
@@ -166,79 +153,65 @@ export function r2() {
                     })
                 }
             ),
-            deleteObject: createAuthEndpoint(
-                "/objects/delete",
+            // single file, multiple files, or a whole folder (prefix) — all
+            // through one endpoint. Admins can delete anything; a plain
+            // user can only delete keys under their own userId/ prefix
+            // (covers what used to be the separate self-service
+            // files/delete endpoint)
+            deleteObjects: createAuthEndpoint(
+                "/r2/delete",
                 {
                     method: "POST",
                     use: [sessionMiddleware],
-                    body: z.object({ key: z.string().min(1) }),
+                    body: z.object({
+                        keys: z.array(z.string().min(1)).optional(),
+                        prefix: z.string().min(1).optional(),
+                    }),
                 },
                 async (ctx) => {
-                    if (!isAdminTier(ctx.context.session.user.role ?? "")) {
+                    if (!ctx.body.keys?.length && !ctx.body.prefix) {
+                        throw new APIError("BAD_REQUEST", { message: "Provide keys or prefix" })
+                    }
+                    const isAdmin = isAdminTier(ctx.context.session.user.role ?? "")
+                    const ownPrefix = `${ctx.context.session.user.id}/`
+
+                    if (!isAdmin && ctx.body.prefix && !ctx.body.prefix.startsWith(ownPrefix)) {
                         throw new APIError("FORBIDDEN", { message: "Admin access required" })
                     }
-                    await env.STORAGE.delete(ctx.body.key)
-                    return ctx.json({ success: true })
-                }
-            ),
-            deleteFolder: createAuthEndpoint(
-                "/objects/delete-folder",
-                {
-                    method: "POST",
-                    use: [sessionMiddleware],
-                    body: z.object({ prefix: z.string().min(1) }),
-                },
-                async (ctx) => {
-                    if (!isAdminTier(ctx.context.session.user.role ?? "")) {
+
+                    const targetKeys = ctx.body.prefix
+                        ? (await listAllObjects(binding, ctx.body.prefix)).map((obj) => obj.key)
+                        : (ctx.body.keys ?? [])
+
+                    if (!isAdmin && targetKeys.some((key) => !key.startsWith(ownPrefix))) {
                         throw new APIError("FORBIDDEN", { message: "Admin access required" })
                     }
-                    const objects = await listAllObjects(env.STORAGE, ctx.body.prefix)
-                    const keys = objects.map((obj) => obj.key)
-                    for (let i = 0; i < keys.length; i += 1000) {
-                        await env.STORAGE.delete(keys.slice(i, i + 1000))
+
+                    for (let i = 0; i < targetKeys.length; i += 1000) {
+                        await binding.delete(targetKeys.slice(i, i + 1000))
                     }
-                    return ctx.json({ success: true, deleted: keys.length })
+                    return ctx.json({ success: true, deleted: targetKeys.length })
                 }
             ),
-            downloadFile: createAuthEndpoint(
-                "/objects/download",
-                {
-                    method: "GET",
-                    use: [sessionMiddleware],
-                    query: z.object({ key: z.string().min(1) }),
-                },
-                async (ctx) => {
-                    if (!isAdminTier(ctx.context.session.user.role ?? "")) {
-                        throw new APIError("FORBIDDEN", { message: "Admin access required" })
-                    }
-                    const object = await env.STORAGE.get(ctx.query.key)
-                    if (!object) {
-                        return new Response(null, { status: 404 })
-                    }
-                    return new Response(object.body, {
-                        headers: {
-                            "Content-Type": object.httpMetadata?.contentType ?? "application/octet-stream",
-                        },
-                    })
-                }
-            ),
-            getAvatar: createAuthEndpoint(
-                "/objects/avatar/:userId",
+            // public, unauthenticated, by design — serves anything in the
+            // bucket by its exact key. There's no separate admin-only
+            // "download" path: this is the one way to read object content
+            // back out, for avatars and everything else alike
+            getCdnFile: createAuthEndpoint(
+                "/cdn/**:key",
                 { method: "GET" },
                 async (ctx) => {
-                    const objectsForUser = await listAllObjects(env.STORAGE, avatarPrefix(ctx.params.userId))
-                    const avatarObject = objectsForUser[0]
-                    if (!avatarObject) {
-                        return new Response(null, { status: 404 })
-                    }
-                    const object = await env.STORAGE.get(avatarObject.key)
+                    const object = await binding.get(ctx.params.key)
                     if (!object) {
                         return new Response(null, { status: 404 })
                     }
                     return new Response(object.body, {
+                        status: 200,
                         headers: {
                             "Content-Type": object.httpMetadata?.contentType ?? "application/octet-stream",
-                            "Cache-Control": "public, max-age=31536000, immutable",
+                            ...(object.httpEtag ? { ETag: object.httpEtag } : {}),
+                            "Cache-Control": "public, max-age=31536000, stale-while-revalidate=60",
+                            "X-Content-Type-Options": "nosniff",
                         },
                     })
                 }

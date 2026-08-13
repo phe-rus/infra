@@ -1,5 +1,5 @@
 import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
-import { useBrowseObjects, useDeleteFolder, useDeleteObject } from "@/kit/storage"
+import { useListObjects, useDeleteObjects } from "@/kit/storage"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { FC } from "react"
@@ -15,14 +15,13 @@ function formatBytes(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
-function downloadUrl(key: string): string {
-    return `/api/auth/objects/download?key=${encodeURIComponent(key)}`
+function cdnUrl(key: string): string {
+    return `/api/auth/cdn/${key}`
 }
 
 export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) => {
-    const { data, isLoading } = useBrowseObjects(prefix)
-    const { mutate: deleteFolder } = useDeleteFolder()
-    const { mutate: deleteObject } = useDeleteObject()
+    const { data, isLoading } = useListObjects(prefix)
+    const { mutate: deleteObjects } = useDeleteObjects()
 
     if (isLoading) return <p className="text-xs text-muted-foreground">Loading…</p>
     if (!data) return null
@@ -52,7 +51,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                                 className='mr-auto size-5!'
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    deleteFolder({ data: { prefix: folder.key } })
+                                    deleteObjects({ data: { prefix: folder.key } })
                                 }}
                             >
                                 <IconMinus />
@@ -67,7 +66,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                     {data.files.map((file) => (
                         <a
                             key={file.key}
-                            href={downloadUrl(file.key)}
+                            href={cdnUrl(file.key)}
                             target="_blank"
                             rel="noreferrer"
                             className={cn('relative flex flex-col')}
@@ -80,7 +79,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                             )}>
                                 {file.contentType?.startsWith("image/") ? (
                                     <img
-                                        src={downloadUrl(file.key)}
+                                        src={cdnUrl(file.key)}
                                         alt=""
                                         className={cn(
                                             "aspect-video rounded-none! object-cover",
@@ -102,7 +101,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
-                                    deleteObject({ data: { key: file.key } })
+                                    deleteObjects({ data: { keys: [file.key] } })
                                 }}
                             >
                                 <IconMinus />
