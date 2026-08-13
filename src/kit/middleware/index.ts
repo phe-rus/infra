@@ -1,2 +1,2 @@
-export { AdminMiddleware } from "./admin-middleware"
-export { OwnerMiddleware } from "./owner-middleware"
+export * from "./admin-middleware"
+export * from "./owner-middleware"

@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
-import { completeSetup } from "./complete-setup"
+import { completeSetup } from "./fnc"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@/components/ui/sonner"
-import { meQueryOptions } from "./me-query-options"
-import { setupStatusQueryOptions } from "./setup-status-query-options"
+import { meQueryOptions } from "./get-session"
+import { setupStatusQueryOptions } from "./get-setup-status"
 
 export const useCompleteSetup = () => {
     const router = useRouter()

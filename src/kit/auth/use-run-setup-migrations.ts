@@ -1,4 +1,4 @@
-import { runSetupMigrations } from "./run-setup-migrations"
+import { runSetupMigrations } from "./fnc"
 import { useAppMutation } from "@/kit/shared"
 
 export const useRunSetupMigrations = () =>

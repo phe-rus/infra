@@ -1,6 +1,5 @@
 import { useState } from "react"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { usersQueryOptions, useSetUserRole, useRemoveUser } from "@/kit/hypermedia/users"
+import { useUsers, useSetUserRole, useRemoveUser } from "@/kit/hypermedia/users"
 import { isOwner as isOwnerRole } from "@/auth/permissions"
 import { Button } from "@/components/ui/button"
 import { ListUsers } from "./list-users"
@@ -13,7 +12,7 @@ export type UsersPageProps = {
 }
 
 export function UsersPage({ currentUserId, currentUserRole }: UsersPageProps) {
-    const { data: usersData } = useSuspenseQuery(usersQueryOptions())
+    const { data: usersData } = useUsers()
     const isOwner = isOwnerRole(currentUserRole)
     const { mutateAsync: setUserRole } = useSetUserRole()
     const { mutateAsync: removeUser } = useRemoveUser()

@@ -1,5 +1,13 @@
-import { deleteFolder } from "./delete-folder"
+import { deleteFolder, deleteObject } from "./fnc"
 import { useAppMutation } from "@/kit/shared"
+
+export const useDeleteObject = () =>
+    useAppMutation({
+        mutationFn: deleteObject,
+        invalidates: [["objects", "browse"]],
+        successMessage: "Deleted",
+        errorMessage: "Could not delete",
+    })
 
 export const useDeleteFolder = () =>
     useAppMutation({

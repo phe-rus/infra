@@ -2,8 +2,13 @@ import { createFileRoute } from "@tanstack/react-router"
 import { IconInfoCircle } from '@tabler/icons-react'
 import { cn } from "@/lib/utils"
 import { Button, LinkButton } from "@/components/ui/button"
+import { statsQueryOptions } from "@/kit/hypermedia/stats"
+import { BusinessStats } from "@/features/dashboard"
 
 export const Route = createFileRoute("/_workspace/")({
+  loader: async ({ context: { q } }) => {
+    await q.ensureQueryData(statsQueryOptions())
+  },
   component: RouteComponent
 })
 
@@ -30,21 +35,7 @@ function RouteComponent() {
 
       <section className="flex flex-col gap-3">
         <h2>Your business</h2>
-        <article className='flex items-center gap-5 p-5 rounded-2xl bg-card'>
-          <div className='flex items-center justify-evenly gap-5 w-full mx-auto'>
-            <div>
-              <h3>Monthly active users</h3>
-              <p>Last 30 days</p>
-              <h1>0</h1>
-            </div>
-            <span className="bg-border w-px h-16" />
-            <div>
-              <h3>Total users</h3>
-              <p>Current</p>
-              <h1>0</h1>
-            </div>
-          </div>
-        </article>
+        <BusinessStats />
       </section>
 
       <section>

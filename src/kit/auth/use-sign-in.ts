@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
-import { signIn } from "./sign-in"
+import { signIn } from "./fnc"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@/components/ui/sonner"
-import { meQueryOptions } from "./me-query-options"
+import { meQueryOptions } from "./get-session"
 
 export const useSignIn = () => {
     const router = useRouter()
