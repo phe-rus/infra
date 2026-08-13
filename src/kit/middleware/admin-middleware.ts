@@ -1,5 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start"
-import { isAdminTier } from "@/auth/permissions"
+import { isAdminTier } from "@/auth/utils/permissions"
 import { auth } from "@/auth"
 
 export const AdminMiddleware = createMiddleware()

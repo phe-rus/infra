@@ -3,8 +3,7 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useUpdateUserDetails, useUploadUserImage } from "@/kit/hypermedia/users"
-import type { UserDetail } from "@/kit/types"
+import { useUpdateUserDetails, useUploadUserImage, type UserDetail } from "@/kit/users"
 
 export type UpdateUserProps = {
     viewUser: UserDetail

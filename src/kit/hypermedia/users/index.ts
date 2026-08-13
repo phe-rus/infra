@@ -1,5 +1,0 @@
-export * from "./fnc"
-export * from "./get-users"
-export * from "./get-user-detail"
-export * from "./use-users"
-export * from "./use-sessions"

@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { isAdminTier } from '@/auth/permissions'
+import { isAdminTier } from '@/auth/utils/permissions'
 import { Dashboard } from '@/components/dashboard'
 
 export const Route = createFileRoute('/_workspace')({

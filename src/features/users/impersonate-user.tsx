@@ -1,6 +1,6 @@
 import type { FC } from "react"
 import { Button } from "@/components/ui/button"
-import { useImpersonateUser } from "@/kit/hypermedia/users"
+import { useImpersonateUser } from "@/kit/users"
 
 export type ImpersonateUserProps = {
     userId: string

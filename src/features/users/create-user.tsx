@@ -11,8 +11,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { FIXED_ROLE_NAMES } from "@/auth/permissions"
-import { useCreateUser } from "@/kit/hypermedia/users"
+import { FIXED_ROLE_NAMES } from "@/auth/utils/permissions"
+import { useCreateUser } from "@/kit/users"
 
 export type CreateUserProps = {
     open: boolean

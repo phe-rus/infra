@@ -9,8 +9,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { DataTable, type DataTableColumnDef } from "@/components/widgets/tables"
-import { isAdminTier, isOwner as isOwnerRole } from "@/auth/permissions"
-import type { ListedUser } from "@/kit/types"
+import { isAdminTier, isOwner as isOwnerRole } from "@/auth/utils/permissions"
+import type { ListedUser } from "@/kit/users"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { format } from "date-fns/format"
 import { cn } from "@/lib/utils"

@@ -1,5 +1,5 @@
 import type { FC } from "react"
-import type { UserDetail } from "@/kit/types"
+import type { UserDetail } from "@/kit/users"
 import { format } from "date-fns/format"
 
 export type UserAccountsProps = {

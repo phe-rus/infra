@@ -1,40 +1,23 @@
+import { tanstackStartCookies } from "better-auth/tanstack-start"
+import { oauthProvider } from "@better-auth/oauth-provider"
+import { AsyncLocalStorage } from "async_hooks"
+import { passkey } from "@better-auth/passkey"
+import { ac, buildRoles, isAdminTier } from "./utils/permissions"
+import { password } from "./utils/password"
 import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
-import { APIError } from "better-auth/api"
+import { secondaryStorage, trustedOrigins, databaseHooks, customStorage } from "./configs"
+import { advanced } from './advanced'
+import { r2 } from "./plugins/r2"
 import {
     admin,
+    jwt,
     openAPI,
     twoFactor,
 } from "better-auth/plugins"
-import { passkey } from "@better-auth/passkey"
-import { tanstackStartCookies } from "better-auth/tanstack-start"
-import { ac, buildRoles } from "./permissions"
-import { password } from "./password"
-import { execCtxStorage } from "./execution-context"
-import { objects } from "./plugins/objects"
-import { applications } from "./plugins/applications"
 
+export const execCtxStorage = new AsyncLocalStorage<ExecutionContext>()
 const roles = buildRoles()
-
-const trustedOrigins = async (
-    request: Request | undefined
-): Promise<string[]> => {
-    const origin = request?.headers.get("origin") ?? ''
-    const fallbackOrigin = env.BETTER_AUTH_URL ?? 'https://pass.pherus.org'
-    if (!origin) {
-        return [fallbackOrigin]
-    }
-    try {
-        const { hostname } = new URL(origin)
-        const isTrusted = env.TRUSTED_ORIGINS.split(",").some((suffix) => {
-            const trusted = suffix.trim()
-            return hostname === trusted || hostname.endsWith(`.${trusted}`)
-        })
-        return isTrusted ? [origin] : [fallbackOrigin]
-    } catch {
-        return [fallbackOrigin]
-    }
-}
 
 export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
@@ -60,10 +43,14 @@ export const auth = betterAuth({
     session: {
         expiresIn: 60 * 60 * 24 * 30, // 30 days
         updateAge: 60 * 60 * 24, // refresh if older than 24 h
-        storeSessionInDatabase: false,
+        // required by oauthProvider: it needs to look sessions up by id
+        // directly from the DB during the authorize/consent continuation,
+        // not just from the KV-cached copy. D1's write budget (100K/day
+        // free) easily absorbs this at self-hosted login volume
+        storeSessionInDatabase: true,
         cookieCache: {
             enabled: true,
-            maxAge: 60 * 5, // 5-min browser-side cache
+            maxAge: 60 * 30, // 30-min browser-side cache
         },
     },
     rateLimit: {
@@ -71,124 +58,11 @@ export const auth = betterAuth({
         window: 60,
         max: 100,
         storage: 'secondary-storage',
-        customStorage: {
-            get: async (key) => {
-                const ipKey = key.split("|")[0];
-                const value = await env.RL.get(ipKey);
-                if (!value) return null;
-
-                const data = JSON.parse(value);
-                if (data && typeof data === 'object') {
-                    data.key = ipKey;
-                }
-                return data;
-            },
-            set: async (key, value, ttl) => {
-                const ipKey = key.split("|")[0];
-
-                if (value && typeof value === 'object') {
-                    value.key = ipKey;
-                }
-
-                const stringValue = JSON.stringify(value);
-                const expirationTtl = typeof ttl === 'number' ? Math.max(ttl, 60) : 60;
-                await env.RL.put(ipKey, stringValue, { expirationTtl });
-            },
-            consume: async (key, rule) => {
-                const ipKey = key.split("|")[0];
-
-                const now = Math.floor(Date.now() / 1000);
-                const value = await env.RL.get(ipKey);
-
-                let data = value ? JSON.parse(value) as { key?: string; count: number; lastRequest: number } : null;
-
-                if (!data || (now - data.lastRequest) > rule.window) {
-                    data = { key: ipKey, count: 0, lastRequest: now };
-                }
-
-                if (data.count >= rule.max) {
-                    const retryAfter = Math.max(0, (data.lastRequest + rule.window) - now);
-                    return {
-                        allowed: false,
-                        retryAfter: retryAfter || 1
-                    };
-                }
-
-                data.count += 1;
-                data.key = ipKey;
-
-                const kvTtl = Math.max(rule.window, 60);
-                await env.RL.put(ipKey, JSON.stringify(data), {
-                    expirationTtl: kvTtl
-                });
-
-                return {
-                    allowed: true,
-                    retryAfter: null
-                };
-            }
-        }
+        customStorage: customStorage
     },
-    secondaryStorage: {
-        get: (key) => env.CACHE.get(key),
-        set: (key, value, ttl) => {
-            return env.CACHE.put(key, value, ttl ? {
-                expirationTtl: Math.max(ttl, 60)
-            } : undefined)
-        },
-        delete: (key) => env.CACHE.delete(key),
-        getAndDelete: async (key) => {
-            const value = await env.CACHE.get(key)
-            if (value !== null) await env.CACHE.delete(key)
-            return value
-        }
-    },
-    databaseHooks: {
-        user: {
-            create: {
-                before: async (user, ctx) => {
-                    if (ctx?.path !== "/sign-up/email") return { data: user }
-                    const adapter = ctx.context.adapter
-                    const count = await adapter.count({ model: "user" })
-                    if (count > 0) {
-                        throw new APIError("FORBIDDEN", {
-                            message: "Sign-up is disabled: this instance already has an owner account.",
-                        })
-                    }
-                    return {
-                        data: {
-                            ...user,
-                            role: 'owner'
-                        }
-                    }
-                },
-            },
-        },
-    },
-    advanced: {
-        cookiePrefix: env.VITE_APPNAME,
-        useSecureCookies: true,
-        crossSubDomainCookies: {
-            enabled: true,
-            domain: env.NODE_ENV === 'production' ? env.COOKIE_DOMAIN : undefined,
-        },
-        defaultCookieAttributes: {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-        },
-        ipAddress: {
-            ipv6Subnet: 64,
-            ipAddressHeaders: ["cf-connecting-ip"],
-            disableIpTracking: false,
-        },
-        database: {
-            generateId: 'uuid',
-        },
-        backgroundTasks: {
-            handler: (p) => execCtxStorage.getStore()?.waitUntil(p),
-        },
-    },
+    secondaryStorage: secondaryStorage,
+    databaseHooks: databaseHooks,
+    advanced: advanced,
     logger: {
         disabled: false,
         disableColors: false,
@@ -220,8 +94,41 @@ export const auth = betterAuth({
         openAPI({
             path: 'docs'
         }),
-        objects(),
-        applications(),
+        r2(),
+        jwt({
+            disableSettingJwtHeader: true,
+        }),
+        oauthProvider({
+            loginPage: "/sign-in",
+            consentPage: "/consent",
+            signUp: {
+                page: "/create-account",
+            },
+            storeClientSecret: 'hashed',
+            allowDynamicClientRegistration: false,
+            // admin-created clients (via adminCreateOAuthClient, no session)
+            // have no matching userId, so the default "caller owns this
+            // client" privilege check would reject every admin action on
+            // them — admin/owner manage every client instance-wide instead
+            clientPrivileges: async ({ user }) => isAdminTier((user?.role as string | undefined) ?? ""),
+            scopes: ["openid", "profile", "email", "offline_access"],
+            rateLimit: {
+                authorize: { window: 60, max: 50 },
+                token: { window: 60, max: 30 },
+                register: { window: 60, max: 5 },
+            },
+            accessTokenExpiresIn: 60 * 60, // 1 hour
+            refreshTokenExpiresIn: 60 * 60 * 24 * 365, // 1 year, rotates forward on every use
+            codeExpiresIn: 60 * 10, // 10 minutes
+            refreshTokenGracePeriod: 30,
+            // defaults to [baseURL] when omitted; add this instance's other
+            // deployed services here as they exist, not guessed in advance
+            validAudiences: [env.BETTER_AUTH_URL],
+            customUserInfoClaims: async ({ user, scopes }) => ({
+                scopes: scopes,
+                ...user
+            }),
+        }),
         tanstackStartCookies()
     ]
 })

@@ -12,15 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as WorkspaceRouteRouteImport } from './routes/_workspace/route'
+import { Route as AuthConsentRouteImport } from './routes/_auth/consent'
+import { Route as AuthCreateAccountRouteImport } from './routes/_auth/create-account'
 import { Route as AuthSetupRouteImport } from './routes/_auth/setup'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ProtectedUnauthorizedRouteImport } from './routes/_protected/unauthorized'
 import { Route as WorkspaceIndexRouteImport } from './routes/_workspace/index'
-import { Route as WorkspaceDatabaseRouteImport } from './routes/_workspace/database'
+import { Route as WorkspaceConsoleRouteRouteImport } from './routes/_workspace/console/route'
 import { Route as WorkspaceStorageRouteImport } from './routes/_workspace/storage'
 import { Route as WorkspaceUsersRouteImport } from './routes/_workspace/users'
 import { Route as ApiMigrateRouteImport } from './routes/api/migrate'
+import { Route as WorkspaceConsoleIndexRouteImport } from './routes/_workspace/console/index'
+import { Route as WorkspaceConsoleClient_idRouteRouteImport } from './routes/_workspace/console/$client_id/route'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as WorkspaceConsoleClient_idIndexRouteImport } from './routes/_workspace/console/$client_id/index'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
@@ -33,6 +38,16 @@ const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
 const WorkspaceRouteRoute = WorkspaceRouteRouteImport.update({
   id: '/_workspace',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthConsentRoute = AuthConsentRouteImport.update({
+  id: '/consent',
+  path: '/consent',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthCreateAccountRoute = AuthCreateAccountRouteImport.update({
+  id: '/create-account',
+  path: '/create-account',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthSetupRoute = AuthSetupRouteImport.update({
   id: '/setup',
@@ -54,9 +69,9 @@ const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
   path: '/',
   getParentRoute: () => WorkspaceRouteRoute,
 } as any)
-const WorkspaceDatabaseRoute = WorkspaceDatabaseRouteImport.update({
-  id: '/database',
-  path: '/database',
+const WorkspaceConsoleRouteRoute = WorkspaceConsoleRouteRouteImport.update({
+  id: '/console',
+  path: '/console',
   getParentRoute: () => WorkspaceRouteRoute,
 } as any)
 const WorkspaceStorageRoute = WorkspaceStorageRouteImport.update({
@@ -74,86 +89,129 @@ const ApiMigrateRoute = ApiMigrateRouteImport.update({
   path: '/api/migrate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceConsoleIndexRoute = WorkspaceConsoleIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorkspaceConsoleRouteRoute,
+} as any)
+const WorkspaceConsoleClient_idRouteRoute =
+  WorkspaceConsoleClient_idRouteRouteImport.update({
+    id: '/$client_id',
+    path: '/$client_id',
+    getParentRoute: () => WorkspaceConsoleRouteRoute,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceConsoleClient_idIndexRoute =
+  WorkspaceConsoleClient_idIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceConsoleClient_idRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof WorkspaceIndexRoute
+  '/console': typeof WorkspaceConsoleRouteRouteWithChildren
+  '/consent': typeof AuthConsentRoute
+  '/create-account': typeof AuthCreateAccountRoute
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
   '/unauthorized': typeof ProtectedUnauthorizedRoute
-  '/database': typeof WorkspaceDatabaseRoute
   '/storage': typeof WorkspaceStorageRoute
   '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
+  '/console/$client_id': typeof WorkspaceConsoleClient_idRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/console/': typeof WorkspaceConsoleIndexRoute
+  '/console/$client_id/': typeof WorkspaceConsoleClient_idIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof WorkspaceIndexRoute
+  '/consent': typeof AuthConsentRoute
+  '/create-account': typeof AuthCreateAccountRoute
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
   '/unauthorized': typeof ProtectedUnauthorizedRoute
-  '/database': typeof WorkspaceDatabaseRoute
   '/storage': typeof WorkspaceStorageRoute
   '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/console': typeof WorkspaceConsoleIndexRoute
+  '/console/$client_id': typeof WorkspaceConsoleClient_idIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_workspace': typeof WorkspaceRouteRouteWithChildren
+  '/_workspace/console': typeof WorkspaceConsoleRouteRouteWithChildren
+  '/_auth/consent': typeof AuthConsentRoute
+  '/_auth/create-account': typeof AuthCreateAccountRoute
   '/_auth/setup': typeof AuthSetupRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_protected/unauthorized': typeof ProtectedUnauthorizedRoute
-  '/_workspace/database': typeof WorkspaceDatabaseRoute
   '/_workspace/storage': typeof WorkspaceStorageRoute
   '/_workspace/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
   '/_workspace/': typeof WorkspaceIndexRoute
+  '/_workspace/console/$client_id': typeof WorkspaceConsoleClient_idRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_workspace/console/': typeof WorkspaceConsoleIndexRoute
+  '/_workspace/console/$client_id/': typeof WorkspaceConsoleClient_idIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/console'
+    | '/consent'
+    | '/create-account'
     | '/setup'
     | '/sign-in'
     | '/unauthorized'
-    | '/database'
     | '/storage'
     | '/users'
     | '/api/migrate'
+    | '/console/$client_id'
     | '/api/auth/$'
+    | '/console/'
+    | '/console/$client_id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/consent'
+    | '/create-account'
     | '/setup'
     | '/sign-in'
     | '/unauthorized'
-    | '/database'
     | '/storage'
     | '/users'
     | '/api/migrate'
     | '/api/auth/$'
+    | '/console'
+    | '/console/$client_id'
   id:
     | '__root__'
     | '/_auth'
     | '/_protected'
     | '/_workspace'
+    | '/_workspace/console'
+    | '/_auth/consent'
+    | '/_auth/create-account'
     | '/_auth/setup'
     | '/_auth/sign-in'
     | '/_protected/unauthorized'
-    | '/_workspace/database'
     | '/_workspace/storage'
     | '/_workspace/users'
     | '/api/migrate'
     | '/_workspace/'
+    | '/_workspace/console/$client_id'
     | '/api/auth/$'
+    | '/_workspace/console/'
+    | '/_workspace/console/$client_id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -187,6 +245,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/consent': {
+      id: '/_auth/consent'
+      path: '/consent'
+      fullPath: '/consent'
+      preLoaderRoute: typeof AuthConsentRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/create-account': {
+      id: '/_auth/create-account'
+      path: '/create-account'
+      fullPath: '/create-account'
+      preLoaderRoute: typeof AuthCreateAccountRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/_auth/setup': {
       id: '/_auth/setup'
       path: '/setup'
@@ -215,11 +287,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceIndexRouteImport
       parentRoute: typeof WorkspaceRouteRoute
     }
-    '/_workspace/database': {
-      id: '/_workspace/database'
-      path: '/database'
-      fullPath: '/database'
-      preLoaderRoute: typeof WorkspaceDatabaseRouteImport
+    '/_workspace/console': {
+      id: '/_workspace/console'
+      path: '/console'
+      fullPath: '/console'
+      preLoaderRoute: typeof WorkspaceConsoleRouteRouteImport
       parentRoute: typeof WorkspaceRouteRoute
     }
     '/_workspace/storage': {
@@ -243,6 +315,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMigrateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_workspace/console/': {
+      id: '/_workspace/console/'
+      path: '/'
+      fullPath: '/console/'
+      preLoaderRoute: typeof WorkspaceConsoleIndexRouteImport
+      parentRoute: typeof WorkspaceConsoleRouteRoute
+    }
+    '/_workspace/console/$client_id': {
+      id: '/_workspace/console/$client_id'
+      path: '/$client_id'
+      fullPath: '/console/$client_id'
+      preLoaderRoute: typeof WorkspaceConsoleClient_idRouteRouteImport
+      parentRoute: typeof WorkspaceConsoleRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -250,15 +336,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_workspace/console/$client_id/': {
+      id: '/_workspace/console/$client_id/'
+      path: '/'
+      fullPath: '/console/$client_id/'
+      preLoaderRoute: typeof WorkspaceConsoleClient_idIndexRouteImport
+      parentRoute: typeof WorkspaceConsoleClient_idRouteRoute
+    }
   }
 }
 
 interface AuthRouteRouteChildren {
+  AuthConsentRoute: typeof AuthConsentRoute
+  AuthCreateAccountRoute: typeof AuthCreateAccountRoute
   AuthSetupRoute: typeof AuthSetupRoute
   AuthSignInRoute: typeof AuthSignInRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthConsentRoute: AuthConsentRoute,
+  AuthCreateAccountRoute: AuthCreateAccountRoute,
   AuthSetupRoute: AuthSetupRoute,
   AuthSignInRoute: AuthSignInRoute,
 }
@@ -279,15 +376,45 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
   ProtectedRouteRouteChildren,
 )
 
+interface WorkspaceConsoleClient_idRouteRouteChildren {
+  WorkspaceConsoleClient_idIndexRoute: typeof WorkspaceConsoleClient_idIndexRoute
+}
+
+const WorkspaceConsoleClient_idRouteRouteChildren: WorkspaceConsoleClient_idRouteRouteChildren =
+  {
+    WorkspaceConsoleClient_idIndexRoute: WorkspaceConsoleClient_idIndexRoute,
+  }
+
+const WorkspaceConsoleClient_idRouteRouteWithChildren =
+  WorkspaceConsoleClient_idRouteRoute._addFileChildren(
+    WorkspaceConsoleClient_idRouteRouteChildren,
+  )
+
+interface WorkspaceConsoleRouteRouteChildren {
+  WorkspaceConsoleClient_idRouteRoute: typeof WorkspaceConsoleClient_idRouteRouteWithChildren
+  WorkspaceConsoleIndexRoute: typeof WorkspaceConsoleIndexRoute
+}
+
+const WorkspaceConsoleRouteRouteChildren: WorkspaceConsoleRouteRouteChildren = {
+  WorkspaceConsoleClient_idRouteRoute:
+    WorkspaceConsoleClient_idRouteRouteWithChildren,
+  WorkspaceConsoleIndexRoute: WorkspaceConsoleIndexRoute,
+}
+
+const WorkspaceConsoleRouteRouteWithChildren =
+  WorkspaceConsoleRouteRoute._addFileChildren(
+    WorkspaceConsoleRouteRouteChildren,
+  )
+
 interface WorkspaceRouteRouteChildren {
-  WorkspaceDatabaseRoute: typeof WorkspaceDatabaseRoute
+  WorkspaceConsoleRouteRoute: typeof WorkspaceConsoleRouteRouteWithChildren
   WorkspaceStorageRoute: typeof WorkspaceStorageRoute
   WorkspaceUsersRoute: typeof WorkspaceUsersRoute
   WorkspaceIndexRoute: typeof WorkspaceIndexRoute
 }
 
 const WorkspaceRouteRouteChildren: WorkspaceRouteRouteChildren = {
-  WorkspaceDatabaseRoute: WorkspaceDatabaseRoute,
+  WorkspaceConsoleRouteRoute: WorkspaceConsoleRouteRouteWithChildren,
   WorkspaceStorageRoute: WorkspaceStorageRoute,
   WorkspaceUsersRoute: WorkspaceUsersRoute,
   WorkspaceIndexRoute: WorkspaceIndexRoute,

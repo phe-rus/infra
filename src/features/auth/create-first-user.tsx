@@ -1,8 +1,7 @@
 import { FieldGroup } from "@/components/ui/field"
 import { useAppForm } from "@/components/widgets/blocks"
-import { useCompleteSetup } from "@/kit/auth"
+import { completeSetupSchema, useCompleteSetup } from "@/kit/auth"
 import { cn } from "@/lib/utils"
-import { completeSetupSchema } from "@/kit/schemas"
 import type { z } from "zod"
 
 export function CreateFirstUser() {
@@ -41,7 +40,11 @@ export function CreateFirstUser() {
                     <form.AppField
                         name="name"
                         children={(field) => (
-                            <field.input label="Name" autoComplete="name" placeholder="Enter your name" />
+                            <field.input
+                                label="Name"
+                                autoComplete="name"
+                                placeholder="Enter your name"
+                            />
                         )}
                     />
 

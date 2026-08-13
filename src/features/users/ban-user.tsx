@@ -9,8 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useBanUser, useUnbanUser } from "@/kit/hypermedia/users"
-import type { UserDetail } from "@/kit/types"
+import { useBanUser, useUnbanUser, type UserDetail } from "@/kit/users"
 import { format } from "date-fns/format"
 
 const BAN_DURATIONS = [

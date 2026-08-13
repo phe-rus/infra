@@ -1,5 +1,5 @@
 import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
-import { useBrowseObjects, useDeleteFolder, useDeleteObject } from "@/kit/hypermedia/objects"
+import { useBrowseObjects, useDeleteFolder, useDeleteObject } from "@/kit/storage"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { FC } from "react"

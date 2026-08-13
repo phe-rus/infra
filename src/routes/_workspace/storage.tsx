@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { browseQueryOptions } from "@/kit/hypermedia/objects"
-import { isAdminTier } from "@/auth/permissions"
+import { browseQueryOptions } from "@/kit/storage"
+import { isAdminTier } from "@/auth/utils/permissions"
 import { Button } from "@/components/ui/button"
 import { BrowseObjects } from "@/features/storage"
 

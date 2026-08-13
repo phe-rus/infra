@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers"
 import { createAuthEndpoint, sessionMiddleware, APIError } from "better-auth/api"
 import * as z from "zod"
-import { isAdminTier } from "@/auth/permissions"
+import { isAdminTier } from "@/auth/utils/permissions"
 import { ALLOWED_TYPES, MAX_FILE_BYTES, MAX_USER_QUOTA_BYTES } from "./constants"
 import { sniffExtension, isImageExtension } from "./sniff-file-type"
 import { sanitizeSvg } from "./sanitize-svg"
@@ -55,9 +55,9 @@ function avatarUrl(userId: string, version: number): string {
     return `${base}/api/auth/objects/avatar/${userId}?v=${version}`
 }
 
-export function objects() {
+export function r2() {
     return {
-        id: "objects",
+        id: "r2",
         endpoints: {
             uploadAvatar: createAuthEndpoint(
                 "/objects/avatar",

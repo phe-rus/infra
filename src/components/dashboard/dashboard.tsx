@@ -4,7 +4,7 @@ import { useIsMobile } from "@/lib/use-media-query"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
 import { useLogout, meQueryOptions } from "@/kit/auth"
-import { useStopImpersonating } from "@/kit/hypermedia/users"
+import { useStopImpersonating } from "@/kit/users"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 
@@ -14,6 +14,28 @@ type SidebarProps = {
     setOpen: (open: boolean) => void
 }
 const SidebarContext = createContext<SidebarProps | null>(null)
+const navLists = [
+    {
+        label: "Users",
+        path: "/users"
+    },
+    {
+        label: "Console",
+        path: "/console"
+    },
+    {
+        label: "Storage",
+        path: "/storage"
+    },
+    {
+        label: "Logs",
+        path: "/logs"
+    },
+    {
+        label: "Billing",
+        path: "/billing"
+    }
+]
 export const Dashboard: FC<DashboardProps> = ({
     children
 }) => {
@@ -34,29 +56,6 @@ export const Dashboard: FC<DashboardProps> = ({
             setOpen(true)
         }
     }, [isMobile])
-
-    const navLists = [
-        {
-            label: "Users",
-            path: "/users"
-        },
-        {
-            label: "Database",
-            path: "/database"
-        },
-        {
-            label: "Storage",
-            path: "/storage"
-        },
-        {
-            label: "Logs",
-            path: "/logs"
-        },
-        {
-            label: "Billing",
-            path: "/billing"
-        }
-    ]
 
     return (
         <SidebarContext.Provider value={{

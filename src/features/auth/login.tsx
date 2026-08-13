@@ -1,8 +1,7 @@
 import { FieldGroup } from "@/components/ui/field"
 import { useAppForm } from "@/components/widgets/blocks"
-import { useSignIn } from "@/kit/auth"
+import { signInSchema, useSignIn } from "@/kit/auth"
 import { cn } from "@/lib/utils"
-import { signInSchema } from "@/kit/schemas"
 import type { z } from "zod"
 
 export function Login() {
@@ -18,12 +17,18 @@ export function Login() {
             onChange: signInSchema,
         },
         onSubmit: async ({ value }) => {
+            // the oauth-provider plugin redirects here with the entire
+            // signed authorize query as flat params (client_id, sig, ...),
+            // not a single wrapped oauth_query param — forward it verbatim
+            const search = window.location.search
+            const oauthQuery = search.length > 1 ? search.slice(1) : undefined
             await signIn(
                 {
                     data: {
                         email: value.email,
                         password: value.password,
                         rememberMe: value.rememberMe,
+                        oauthQuery,
                     },
                 },
                 {

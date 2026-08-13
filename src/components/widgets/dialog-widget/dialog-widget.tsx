@@ -8,7 +8,7 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer"
 import { cn } from "@/lib/utils"
-import type { ReactNode } from "react"
+import type { FormEvent, ReactNode } from "react"
 
 type DialogWidgetProps = {
     open: boolean
@@ -19,6 +19,12 @@ type DialogWidgetProps = {
     footer?: ReactNode
     swipeDirection?: NonNullable<DrawerPrimitive.Root.Props["swipeDirection"]>
     className?: string
+    // when given, body + footer are wrapped in a real <form> so a
+    // useAppForm submit button in `footer` reaches the fields in
+    // `children` via native form submission — required because
+    // DrawerContent portals its content, so a <form> at the call site
+    // (outside DialogWidget) would never physically contain either
+    onSubmit?: (e: FormEvent<HTMLFormElement>) => void
 }
 
 /**
@@ -36,7 +42,15 @@ export function DialogWidget({
     footer,
     swipeDirection = "right",
     className,
+    onSubmit,
 }: DialogWidgetProps) {
+    const body = (
+        <>
+            <div className="flex flex-col gap-3 overflow-y-auto p-4">{children}</div>
+            {footer && <DrawerFooter>{footer}</DrawerFooter>}
+        </>
+    )
+
     return (
         <Drawer open={open} onOpenChange={onOpenChange} swipeDirection={swipeDirection}>
             <DrawerContent className={cn("bg-background", className)}>
@@ -44,8 +58,13 @@ export function DialogWidget({
                     <DrawerTitle>{title}</DrawerTitle>
                     {description && <DrawerDescription>{description}</DrawerDescription>}
                 </DrawerHeader>
-                <div className="flex flex-col gap-3 overflow-y-auto p-4">{children}</div>
-                {footer && <DrawerFooter>{footer}</DrawerFooter>}
+                {onSubmit ? (
+                    <form className="contents" onSubmit={onSubmit}>
+                        {body}
+                    </form>
+                ) : (
+                    body
+                )}
             </DrawerContent>
         </Drawer>
     )

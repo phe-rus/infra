@@ -1,4 +1,4 @@
-import { useStats } from "@/kit/hypermedia/stats"
+import { useStats } from "@/kit/stats"
 
 export function BusinessStats() {
     const { data } = useStats()

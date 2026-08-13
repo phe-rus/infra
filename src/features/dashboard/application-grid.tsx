@@ -1,21 +1,11 @@
-import { useApplications } from "@/kit/hypermedia/applications"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { useConsole } from "@/kit/console"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { FrameworkIcon } from "@/components/widgets/framework-icon"
 import { Link } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 
-function logoUrl(logoKey: string): string {
-    return `/api/auth/objects/download?key=${encodeURIComponent(logoKey)}`
-}
-
-const STATUS_COLOR: Record<string, string> = {
-    verified: "bg-green-500",
-    unverified: "bg-red-500",
-    locked: "bg-amber-500",
-}
-
 export function ApplicationGrid() {
-    const { data } = useApplications()
+    const { data } = useConsole()
 
     if (data.applications.length === 0) {
         return <p className="text-sm text-muted-foreground">No applications yet.</p>
@@ -26,26 +16,30 @@ export function ApplicationGrid() {
             {data.applications.map((app) => (
                 <Link
                     key={app.id}
-                    to="/database"
+                    to="/console/$client_id"
+                    params={{ client_id: app.clientId }}
                     className={cn(
-                        "flex items-center gap-3 rounded-2xl bg-card p-4",
+                        "flex gap-3 rounded-lg bg-card p-4",
                         "hover:bg-accent transition-colors"
                     )}
                 >
-                    <Avatar size="lg" className="shrink-0">
-                        {app.logoKey && <AvatarImage src={logoUrl(app.logoKey)} alt="" />}
-                        <AvatarFallback>{app.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                    <Avatar size='sm' className="shrink-0">
+                        <AvatarFallback>
+                            {app.framework ? (
+                                <FrameworkIcon framework={app.framework} className="size-4" />
+                            ) : (
+                                (app.name ?? "?").slice(0, 1).toUpperCase()
+                            )}
+                        </AvatarFallback>
                     </Avatar>
-                    <div className="flex min-w-0 flex-1 flex-col gap-1">
-                        <span className="truncate text-sm font-medium">{app.name}</span>
-                        <code className="truncate text-xs text-muted-foreground">{app.identifier}</code>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="outline">{app.type}</Badge>
-                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <span className={cn("size-2 rounded-full", STATUS_COLOR[app.status])} />
-                                {app.status}
+                    <div className="flex min-w-0 flex-1 flex-col">
+                        <h4 className="truncate font-medium">{app.name ?? "Untitled"}</h4>
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground">{app.type}</span>
+                            <span className="text-xs text-muted-foreground"> • </span>
+                            <span className="text-xs text-muted-foreground">
+                                {app.disabled ? "inactive" : "active"}
                             </span>
-                            {!app.active && <Badge variant="destructive">Disabled</Badge>}
                         </div>
                     </div>
                 </Link>

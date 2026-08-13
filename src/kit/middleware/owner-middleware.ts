@@ -1,5 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start"
-import { isOwner } from "@/auth/permissions"
+import { isOwner } from "@/auth/utils/permissions"
 import { auth } from "@/auth"
 
 export const OwnerMiddleware = createMiddleware()

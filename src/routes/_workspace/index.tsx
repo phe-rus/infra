@@ -2,15 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { IconInfoCircle } from '@tabler/icons-react'
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { statsQueryOptions } from "@/kit/hypermedia/stats"
-import { applicationsQueryOptions } from "@/kit/hypermedia/applications"
+import { statsQueryOptions } from "@/kit/stats"
+import { consoleOptions, CREATE_CLIENT_ID } from "@/kit/console"
 import { BusinessStats, ApplicationGrid } from "@/features/dashboard"
 
 export const Route = createFileRoute("/_workspace/")({
   loader: async ({ context: { q } }) => {
     await Promise.all([
       q.ensureQueryData(statsQueryOptions()),
-      q.ensureQueryData(applicationsQueryOptions()),
+      q.ensureQueryData(consoleOptions()),
     ])
   },
   component: RouteComponent
@@ -45,7 +45,11 @@ function RouteComponent() {
       <section className="flex flex-col gap-3">
         <div className='flex items-center justify-between'>
           <h2>Your applications</h2>
-          <Link to="/database" className={cn(buttonVariants({ size: 'sm' }))}>
+          <Link
+            to="/console/$client_id"
+            params={{ client_id: CREATE_CLIENT_ID }}
+            className={cn(buttonVariants({ size: "sm" }))}
+          >
             Add application
           </Link>
         </div>
