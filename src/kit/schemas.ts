@@ -57,3 +57,19 @@ export const setUserPasswordSchema = z.object({
     userId: z.string().min(1),
     newPassword: z.string().min(8).max(48),
 })
+
+export const applicationIdSchema = z.object({ applicationId: z.string().min(1) })
+
+export const createApplicationSchema = z.object({
+    name: z.string().min(1),
+    type: z.enum(["mobile", "web", "cli", "desktop", "other"]),
+    identifier: z
+        .string()
+        .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "lowercase letters, numbers, and hyphens only")
+        .optional(),
+})
+
+export const setApplicationActiveSchema = z.object({
+    applicationId: z.string().min(1),
+    active: z.boolean(),
+})

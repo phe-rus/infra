@@ -12,6 +12,7 @@ import { ac, buildRoles } from "./permissions"
 import { password } from "./password"
 import { execCtxStorage } from "./execution-context"
 import { objects } from "./plugins/objects"
+import { applications } from "./plugins/applications"
 
 const roles = buildRoles()
 
@@ -220,6 +221,7 @@ export const auth = betterAuth({
             path: 'docs'
         }),
         objects(),
+        applications(),
         tanstackStartCookies()
     ]
 })

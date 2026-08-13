@@ -16,6 +16,7 @@ import { Route as AuthSetupRouteImport } from './routes/_auth/setup'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ProtectedUnauthorizedRouteImport } from './routes/_protected/unauthorized'
 import { Route as WorkspaceIndexRouteImport } from './routes/_workspace/index'
+import { Route as WorkspaceDatabaseRouteImport } from './routes/_workspace/database'
 import { Route as WorkspaceStorageRouteImport } from './routes/_workspace/storage'
 import { Route as WorkspaceUsersRouteImport } from './routes/_workspace/users'
 import { Route as ApiMigrateRouteImport } from './routes/api/migrate'
@@ -53,6 +54,11 @@ const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
   path: '/',
   getParentRoute: () => WorkspaceRouteRoute,
 } as any)
+const WorkspaceDatabaseRoute = WorkspaceDatabaseRouteImport.update({
+  id: '/database',
+  path: '/database',
+  getParentRoute: () => WorkspaceRouteRoute,
+} as any)
 const WorkspaceStorageRoute = WorkspaceStorageRouteImport.update({
   id: '/storage',
   path: '/storage',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
   '/unauthorized': typeof ProtectedUnauthorizedRoute
+  '/database': typeof WorkspaceDatabaseRoute
   '/storage': typeof WorkspaceStorageRoute
   '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/setup': typeof AuthSetupRoute
   '/sign-in': typeof AuthSignInRoute
   '/unauthorized': typeof ProtectedUnauthorizedRoute
+  '/database': typeof WorkspaceDatabaseRoute
   '/storage': typeof WorkspaceStorageRoute
   '/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/_auth/setup': typeof AuthSetupRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_protected/unauthorized': typeof ProtectedUnauthorizedRoute
+  '/_workspace/database': typeof WorkspaceDatabaseRoute
   '/_workspace/storage': typeof WorkspaceStorageRoute
   '/_workspace/users': typeof WorkspaceUsersRoute
   '/api/migrate': typeof ApiMigrateRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/sign-in'
     | '/unauthorized'
+    | '/database'
     | '/storage'
     | '/users'
     | '/api/migrate'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/sign-in'
     | '/unauthorized'
+    | '/database'
     | '/storage'
     | '/users'
     | '/api/migrate'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/_auth/setup'
     | '/_auth/sign-in'
     | '/_protected/unauthorized'
+    | '/_workspace/database'
     | '/_workspace/storage'
     | '/_workspace/users'
     | '/api/migrate'
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceIndexRouteImport
       parentRoute: typeof WorkspaceRouteRoute
     }
+    '/_workspace/database': {
+      id: '/_workspace/database'
+      path: '/database'
+      fullPath: '/database'
+      preLoaderRoute: typeof WorkspaceDatabaseRouteImport
+      parentRoute: typeof WorkspaceRouteRoute
+    }
     '/_workspace/storage': {
       id: '/_workspace/storage'
       path: '/storage'
@@ -261,12 +280,14 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
 )
 
 interface WorkspaceRouteRouteChildren {
+  WorkspaceDatabaseRoute: typeof WorkspaceDatabaseRoute
   WorkspaceStorageRoute: typeof WorkspaceStorageRoute
   WorkspaceUsersRoute: typeof WorkspaceUsersRoute
   WorkspaceIndexRoute: typeof WorkspaceIndexRoute
 }
 
 const WorkspaceRouteRouteChildren: WorkspaceRouteRouteChildren = {
+  WorkspaceDatabaseRoute: WorkspaceDatabaseRoute,
   WorkspaceStorageRoute: WorkspaceStorageRoute,
   WorkspaceUsersRoute: WorkspaceUsersRoute,
   WorkspaceIndexRoute: WorkspaceIndexRoute,

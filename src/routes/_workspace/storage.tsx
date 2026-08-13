@@ -1,7 +1,9 @@
+import { useState } from "react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { browseQueryOptions } from "@/kit/hypermedia/objects"
 import { isAdminTier } from "@/auth/permissions"
-import { StoragePage } from "@/features/storage"
+import { Button } from "@/components/ui/button"
+import { BrowseObjects } from "@/features/storage"
 
 export const Route = createFileRoute("/_workspace/storage")({
     beforeLoad: ({ context: { user } }) => {
@@ -19,13 +21,35 @@ export const Route = createFileRoute("/_workspace/storage")({
 })
 
 function RouteComponent() {
+    const [prefix, setPrefix] = useState("")
+    const segments = prefix.split("/").filter(Boolean)
+
+    function crumbPrefix(index: number): string {
+        return `${segments.slice(0, index + 1).join("/")}/`
+    }
+
     return (
         <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-3xl">
             <section>
                 <h1 className="text-3xl md:text-4xl">Storage</h1>
                 <p className="text-muted-foreground">Browse everything in the bucket.</p>
             </section>
-            <StoragePage />
+
+            <nav className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Button type="button" variant="ghost" size="xs" onClick={() => setPrefix("")}>
+                    Storage
+                </Button>
+                {segments.map((segment, index) => (
+                    <span key={index} className="flex items-center gap-1">
+                        <span>/</span>
+                        <Button type="button" variant="ghost" size="xs" onClick={() => setPrefix(crumbPrefix(index))}>
+                            {segment}
+                        </Button>
+                    </span>
+                ))}
+            </nav>
+
+            <BrowseObjects prefix={prefix} onNavigate={setPrefix} />
         </article>
     )
 }
