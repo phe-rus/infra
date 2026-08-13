@@ -220,6 +220,6 @@ export const auth = betterAuth({
             path: 'docs'
         }),
         objects(),
-        tanstackStartCookies(),
-    ],
+        tanstackStartCookies()
+    ]
 })
