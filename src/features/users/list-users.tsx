@@ -99,6 +99,16 @@ export const ListUsers: FC<ListUsersProps> = ({
                 ),
         },
         {
+            accessorKey: "twoFactorEnabled",
+            header: "2FA",
+            cell: ({ row }) =>
+                row.original.twoFactorEnabled ? (
+                    <Badge variant="outline">On</Badge>
+                ) : (
+                    <Badge variant="secondary">Off</Badge>
+                ),
+        },
+        {
             accessorKey: "updatedAt",
             header: "Updated",
             cell: ({ row }) => format(row.original.updatedAt, "PPP"),

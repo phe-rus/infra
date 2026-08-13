@@ -3,6 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import {
     banUser,
     createUser,
+    disableUserTwoFactor,
     impersonateUser,
     removeUser,
     revokeUserSession,
@@ -93,6 +94,19 @@ export const useSetUserPassword = () =>
         mutationFn: setUserPassword,
         successMessage: "Password updated",
         errorMessage: "Could not set password",
+    })
+
+export const useDisableUserTwoFactor = () =>
+    useAppMutation({
+        mutationFn: disableUserTwoFactor,
+        invalidates: [usersQueryOptions().queryKey],
+        optimisticUpdate: {
+            queryKey: usersQueryOptions().queryKey,
+            updater: (old: UsersListData | undefined, variables) =>
+                patchUserInCache(old, variables.data.userId, { twoFactorEnabled: false }),
+        },
+        successMessage: "Two-factor disabled",
+        errorMessage: "Could not disable two-factor",
     })
 
 export const useBanUser = () =>

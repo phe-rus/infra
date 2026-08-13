@@ -12,6 +12,7 @@ import { RevokeUserSessions } from "./revoke-user-sessions"
 import { UserAccounts } from "./user-accounts"
 import { SetUserPassword } from "./set-user-password"
 import { ImpersonateUser } from "./impersonate-user"
+import { DisableTwoFactor } from "./disable-two-factor"
 
 export type GetUserDetailProps = {
     userId: string | null
@@ -51,6 +52,9 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                         <Badge variant={viewUser.user.banned ? "destructive" : "outline"}>
                             {viewUser.user.banned ? "Banned" : "Active"}
                         </Badge>
+                        <Badge variant={viewUser.user.twoFactorEnabled ? "outline" : "secondary"}>
+                            {viewUser.user.twoFactorEnabled ? "2FA on" : "2FA off"}
+                        </Badge>
                     </section>
 
                     <section className="flex flex-col gap-1 text-xs text-muted-foreground">
@@ -81,6 +85,13 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                         <>
                             <Separator />
                             <SetUserPassword userId={viewUser.user.id} />
+                        </>
+                    )}
+
+                    {isOwner && viewUser.user.twoFactorEnabled && (
+                        <>
+                            <Separator />
+                            <DisableTwoFactor viewUser={viewUser} />
                         </>
                     )}
 

@@ -16,7 +16,6 @@ import {
     userIdSchema,
 } from "./schema"
 
-export type ListedUser = UserWithRole
 export type UserSession = SessionWithImpersonatedBy
 
 function readImageUpload(data: unknown): { file: File; userId: string } {
@@ -42,6 +41,14 @@ export const listUsers = createServerFn({ method: "GET" })
         return { users, total }
     })
 
+// UserWithRole is better-auth's admin plugin's own declared return type for
+// listUsers, hardcoded regardless of what other plugins are registered —
+// deriving from Awaited<ReturnType<typeof listUsers>> doesn't help, it
+// resolves back to this same declared type. twoFactorEnabled is real at
+// runtime (the twoFactor plugin adds it to every user row, confirmed live)
+// but missing from the static type, so it's added here by hand
+export type ListedUser = UserWithRole & { twoFactorEnabled?: boolean }
+
 export const getUserDetail = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
@@ -65,7 +72,9 @@ export const getUserDetail = createServerFn({ method: "GET" })
             limit: 50,
             select: ["id", "providerId", "accountId", "createdAt", "updatedAt"],
         })
-        return { user, sessions, accounts }
+        // same static-type gap as ListedUser above — auth.api.getUser's
+        // declared return doesn't know about the twoFactor plugin either
+        return { user: user as ListedUser, sessions, accounts }
     })
 
 export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>
@@ -192,6 +201,28 @@ export const setUserPassword = createServerFn({ method: "POST" })
         })
         forwardAuthHeaders(responseHeaders)
         return result
+    })
+
+// better-auth's own disableTwoFactor endpoint is self-service only (it
+// requires the CALLER's password to confirm), so an admin can't call it on
+// someone else's behalf — this clears the flag and the stored secret/backup
+// codes directly, for when a user has lost their authenticator and needs
+// an owner to reset it for them
+export const disableUserTwoFactor = createServerFn({ method: "POST" })
+    .middleware([OwnerMiddleware])
+    .validator(userIdSchema)
+    .handler(async ({ data }): Promise<{ success: true }> => {
+        const ctx = await auth.$context
+        await ctx.adapter.update({
+            model: "user",
+            where: [{ field: "id", value: data.userId }],
+            update: { twoFactorEnabled: false },
+        })
+        await ctx.adapter.deleteMany({
+            model: "twoFactor",
+            where: [{ field: "userId", value: data.userId }],
+        })
+        return { success: true }
     })
 
 export const banUser = createServerFn({ method: "POST" })

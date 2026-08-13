@@ -16,7 +16,7 @@ export const advanced = {
     },
     ipAddress: {
         ipv6Subnet: 64,
-        ipAddressHeaders: ["cf-connecting-ip"],
+        ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'],
         disableIpTracking: false,
     },
     database: {
