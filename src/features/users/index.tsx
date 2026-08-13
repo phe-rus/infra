@@ -21,7 +21,7 @@ export function UsersPage({ currentUserId, currentUserRole }: UsersPageProps) {
     const [viewUserId, setViewUserId] = useState<string | null>(null)
 
     return (
-        <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-2xl">
+        <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-3xl">
             <section className="flex items-center justify-between gap-3">
                 <div>
                     <div className="flex items-center gap-2">

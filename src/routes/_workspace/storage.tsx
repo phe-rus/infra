@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_workspace/storage")({
 
 function RouteComponent() {
     return (
-        <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-2xl">
+        <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-3xl">
             <section>
                 <h1 className="text-3xl md:text-4xl">Storage</h1>
                 <p className="text-muted-foreground">Browse everything in the bucket.</p>

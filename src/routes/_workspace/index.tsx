@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_workspace/")({
 function RouteComponent() {
   return (
     <article className={cn(
-      "container flex flex-col w-full md:max-w-2xl mx-auto",
+      "container flex flex-col w-full md:max-w-3xl mx-auto",
       'py-20 gap-5'
     )}>
       <section>
