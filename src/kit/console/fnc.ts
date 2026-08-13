@@ -137,7 +137,7 @@ export const createApp = createServerFn({ method: "POST" })
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
         const client = await auth.api.adminCreateOAuthClient({
-            headers,
+            headers: headers,
             body: {
                 client_name: data.client_name,
                 client_uri: data.client_uri,
@@ -151,7 +151,11 @@ export const createApp = createServerFn({ method: "POST" })
                 require_pkce: data.require_pkce,
                 skip_consent: data.skip_consent,
                 enable_end_session: data.enable_end_session,
-                ...(data.framework && { metadata: { framework: data.framework } }),
+                ...(data.framework && {
+                    metadata: {
+                        framework: data.framework
+                    }
+                }),
             },
         })
         return {
@@ -200,13 +204,18 @@ export const rotateApp = createServerFn({ method: "POST" })
     .validator(appIdSchema)
     .handler(async ({ data }): Promise<{ clientSecret: string | null }> => {
         const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } = await auth.api.rotateClientSecret({
+        const {
+            response,
+            headers: responseHeaders
+        } = await auth.api.rotateClientSecret({
             headers,
             returnHeaders: true,
             body: { client_id: data.clientId },
         })
         forwardAuthHeaders(responseHeaders)
-        return { clientSecret: response.client_secret ?? null }
+        return {
+            clientSecret: response.client_secret ?? null
+        }
     })
 
 export const removeApp = createServerFn({ method: "POST" })
@@ -214,7 +223,9 @@ export const removeApp = createServerFn({ method: "POST" })
     .validator(appIdSchema)
     .handler(async ({ data }): Promise<{ success: true }> => {
         const headers = getRequestHeaders()
-        const { headers: responseHeaders } = await auth.api.deleteOAuthClient({
+        const {
+            headers: responseHeaders
+        } = await auth.api.deleteOAuthClient({
             headers,
             returnHeaders: true,
             body: { client_id: data.clientId },

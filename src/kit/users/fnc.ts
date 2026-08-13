@@ -132,7 +132,7 @@ export const updateUser = createServerFn({ method: "POST" })
             response: user,
             headers: responseHeaders,
         } = await auth.api.adminUpdateUser({
-            headers,
+            headers: headers,
             returnHeaders: true,
             body: {
                 userId: data.userId,

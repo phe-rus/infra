@@ -1,7 +1,9 @@
-import type { FC } from "react"
-import { Button } from "@/components/ui/button"
 import { useRevokeUserSession, useRevokeUserSessions, type UserDetail } from "@/kit/users"
-import { format } from "date-fns/format"
+import { formatDistanceToNow } from "date-fns"
+import { Button } from "@/components/ui/button"
+import { UAParser } from "ua-parser-js"
+import type { FC } from "react"
+import { cn } from "@/lib/utils"
 
 export type RevokeUserSessionsProps = {
     viewUser: UserDetail
@@ -32,32 +34,53 @@ export const RevokeUserSessions: FC<RevokeUserSessionsProps> = ({ viewUser, isOw
             )}
             {[...viewUser.sessions]
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                .map((session) => (
-                    <div
-                        key={session.id}
-                        className="flex items-center justify-between gap-2 border border-input px-2.5 py-1.5 text-xs"
-                    >
-                        <div className="flex flex-col gap-0.5">
-                            <span>{session.userAgent ?? "Unknown device"}</span>
-                            <span className="text-muted-foreground">
-                                {session.ipAddress ?? "Unknown IP"}
-                                · signed in {format(session.createdAt, "PPpp")}
-                                {" · expires "}
-                                {format(session.expiresAt, "PPpp")}
-                            </span>
+                .map((session) => {
+                    const parser = new UAParser(session.userAgent ?? '');
+
+                    return (
+                        <div
+                            key={session.id}
+                            className={cn("flex flex-col border", 'p-5')}
+                        >
+                            <div className={cn("flex w-full items-center")}>
+                                <div className="flex flex-col">
+                                    <h4>{parser.getOS().name} • <span className="text-muted-foreground">{session.ipAddress ?? "Unknown IP"}</span></h4>
+                                    <p className="text-xs text-muted-foreground">
+                                        <span className='text-primary mr-1'>Browser:</span>
+                                        {parser.getBrowser().name} v{parser.getBrowser().version}
+                                        <span className='text-primary mx-1'>•</span>
+                                        <span className='text-primary mr-1'>Engine:</span>
+                                        {parser.getEngine().name} v{parser.getEngine().version}
+                                    </p>
+                                </div>
+                                {isOwner && (
+                                    <Button
+                                        type="button"
+                                        variant='destructive'
+                                        size="xs"
+                                        className='ml-auto'
+                                        onClick={() => void revokeSession({ data: { sessionToken: session.token } })}
+                                    >
+                                        Revoke
+                                    </Button>
+                                )}
+                            </div>
+                            <span className='bg-destructive h-px my-2' />
+                            <div className="flex items-center gap-3 mt-1 truncate">
+                                <span className="text-xs! text-muted-foreground">
+                                    {formatDistanceToNow(session.createdAt, {
+                                        addSuffix: true,
+                                    })}
+                                </span>
+                                <span className="text-xs! text-muted-foreground">
+                                    Expires {formatDistanceToNow(session.expiresAt, {
+                                        addSuffix: true,
+                                    })}
+                                </span>
+                            </div>
                         </div>
-                        {isOwner && (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="xs"
-                                onClick={() => void revokeSession({ data: { sessionToken: session.token } })}
-                            >
-                                Revoke
-                            </Button>
-                        )}
-                    </div>
-                ))}
+                    )
+                })}
         </section>
     )
 }

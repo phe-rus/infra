@@ -37,19 +37,23 @@ export const signIn = createServerFn({ method: "POST" })
     .validator(signInSchema)
     .handler(async ({ data }) => {
         try {
-            const { response, headers } = await auth.api.signInEmail({
+            const headers = getRequestHeaders()
+            const {
+                response,
+                headers: responseHeaders
+            } = await auth.api.signInEmail({
                 body: {
                     email: data.email,
                     password: data.password,
                     rememberMe: data.rememberMe,
-                    ...(data.oauthQuery && { oauth_query: data.oauthQuery }),
+                    ...(data.oauthQuery && {
+                        oauth_query: data.oauthQuery
+                    }),
                 },
+                headers: headers,
                 returnHeaders: true,
             })
-            forwardAuthHeaders(headers)
-            // present only when this sign-in was mid-OAuth-authorize-flow —
-            // the oauth-provider plugin's own after-hook replaces the normal
-            // sign-in response with this once a session gets created
+            forwardAuthHeaders(responseHeaders)
             const redirectUri = (response as { redirect_uri?: string } | undefined)?.redirect_uri
             return { error: null, redirectUri: redirectUri ?? null }
         } catch (error) {
@@ -58,29 +62,36 @@ export const signIn = createServerFn({ method: "POST" })
         }
     })
 
-export const signOut = createServerFn({ method: "POST" }).handler(async () => {
-    const headers = getRequestHeaders()
-    const { headers: responseHeaders } = await auth.api.signOut({
-        headers,
-        returnHeaders: true,
+export const signOut = createServerFn({ method: "POST" })
+    .handler(async () => {
+        const headers = getRequestHeaders()
+        const {
+            headers: responseHeaders
+        } = await auth.api.signOut({
+            headers,
+            returnHeaders: true,
+        })
+        forwardAuthHeaders(responseHeaders)
     })
-    forwardAuthHeaders(responseHeaders)
-})
 
 export const completeSetup = createServerFn({ method: "POST" })
     .validator(completeSetupSchema)
     .handler(async ({ data }) => {
         try {
-            const { headers } = await auth.api.signUpEmail({
+            const headers = getRequestHeaders()
+            const {
+                headers: responseHeaders
+            } = await auth.api.signUpEmail({
                 body: {
                     name: data.name,
                     email: data.email,
                     password: data.password,
                     rememberMe: data.rememberMe,
                 },
+                headers: headers,
                 returnHeaders: true,
             })
-            forwardAuthHeaders(headers)
+            forwardAuthHeaders(responseHeaders)
             return { error: null }
         } catch (error) {
             if (error instanceof APIError) return { error: error.message }
@@ -92,16 +103,21 @@ export const createAccount = createServerFn({ method: "POST" })
     .validator(createAccountSchema)
     .handler(async ({ data }) => {
         try {
-            const { response, headers } = await auth.api.signUpEmail({
+            const headers = getRequestHeaders()
+            const {
+                response,
+                headers: responseHeaders
+            } = await auth.api.signUpEmail({
                 body: {
                     name: data.name,
                     email: data.email,
                     password: data.password,
                     ...(data.oauthQuery && { oauth_query: data.oauthQuery }),
                 },
+                headers: headers,
                 returnHeaders: true,
             })
-            forwardAuthHeaders(headers)
+            forwardAuthHeaders(responseHeaders)
             // same continuation mechanism as signIn — present only when this
             // signup was mid-OAuth-authorize-flow
             const redirectUri = (response as { redirect_uri?: string } | undefined)?.redirect_uri
@@ -117,8 +133,14 @@ export const getConsentClient = createServerFn({ method: "GET" })
     .validator(consentClientSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const client = await auth.api.getOAuthClientPublic({ headers, query: { client_id: data.clientId } })
-        return { name: client.client_name ?? null, uri: client.client_uri ?? null }
+        const client = await auth.api.getOAuthClientPublic({
+            headers: headers,
+            query: { client_id: data.clientId }
+        })
+        return {
+            name: client.client_name ?? null,
+            uri: client.client_uri ?? null
+        }
     })
 
 export const submitConsent = createServerFn({ method: "POST" })
@@ -130,10 +152,17 @@ export const submitConsent = createServerFn({ method: "POST" })
         // field, but the endpoint's real return type (confirmed against
         // the compiled plugin source) is `{ redirect: boolean; url: string }`
         const result = await auth.api.oauth2Consent({
-            headers,
-            body: { accept: data.accept, ...(data.oauthQuery && { oauth_query: data.oauthQuery }) },
+            headers: headers,
+            body: {
+                accept: data.accept,
+                ...(data.oauthQuery && {
+                    oauth_query: data.oauthQuery
+                })
+            },
         })
-        return { redirectUri: result.url }
+        return {
+            redirectUri: result.url
+        }
     })
 
 export const runSetupMigrations = createServerFn({ method: "POST" })
@@ -144,7 +173,11 @@ export const runSetupMigrations = createServerFn({ method: "POST" })
             throw new Error("Setup is already complete: this instance already has an owner account.")
         }
 
-        const { toBeCreated, toBeAdded, runMigrations } = await getMigrations(auth.options)
+        const {
+            toBeCreated,
+            toBeAdded,
+            runMigrations
+        } = await getMigrations(auth.options)
         if (toBeCreated.length === 0 && toBeAdded.length === 0) {
             return { message: "No migrations needed" }
         }

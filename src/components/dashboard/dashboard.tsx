@@ -102,7 +102,7 @@ export const Dashboard: FC<DashboardProps> = ({
                             "p-5 flex-col min-h-svh gap-5",
                             !open ? "hidden" : "flex"
                         )}>
-                            <section className='flex flex-col gap-5 p-5'>
+                            <section className='flex flex-col gap-2 p-5'>
                                 <nav>
                                     <Link to='/' className={cn(
                                         'text-primary text-2xl',
