@@ -17,64 +17,6 @@ const secondaryStorage = {
     }
 } satisfies OptionsProps['secondaryStorage']
 
-const customStorage = {
-    get: async (key) => {
-        const ipKey = key.split("|")[0];
-        const value = await env.RL.get(ipKey);
-        if (!value) return null;
-
-        const data = JSON.parse(value);
-        if (data && typeof data === 'object') {
-            data.key = ipKey;
-        }
-        return data;
-    },
-    set: async (key, value, ttl) => {
-        const ipKey = key.split("|")[0];
-
-        if (value && typeof value === 'object') {
-            value.key = ipKey;
-        }
-
-        const stringValue = JSON.stringify(value);
-        const expirationTtl = typeof ttl === 'number' ? Math.max(ttl, 60) : 60;
-        await env.RL.put(ipKey, stringValue, { expirationTtl });
-    },
-    consume: async (key, rule) => {
-        const ipKey = key.split("|")[0];
-
-        const now = Math.floor(Date.now() / 1000);
-        const value = await env.RL.get(ipKey);
-
-        let data = value ? JSON.parse(value) as { key?: string; count: number; lastRequest: number } : null;
-
-        if (!data || (now - data.lastRequest) > rule.window) {
-            data = { key: ipKey, count: 0, lastRequest: now };
-        }
-
-        if (data.count >= rule.max) {
-            const retryAfter = Math.max(0, (data.lastRequest + rule.window) - now);
-            return {
-                allowed: false,
-                retryAfter: retryAfter || 1
-            };
-        }
-
-        data.count += 1;
-        data.key = ipKey;
-
-        const kvTtl = Math.max(rule.window, 60);
-        await env.RL.put(ipKey, JSON.stringify(data), {
-            expirationTtl: kvTtl
-        });
-
-        return {
-            allowed: true,
-            retryAfter: null
-        };
-    }
-} satisfies NonNullable<OptionsProps['rateLimit']>['customStorage']
-
 const databaseHooks = {
     user: {
         create: {
@@ -115,7 +57,6 @@ const trustedOrigins = async (
 
 export {
     secondaryStorage,
-    customStorage,
     databaseHooks,
     trustedOrigins
 }
