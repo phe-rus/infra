@@ -118,11 +118,34 @@ export const completeSetup = createServerFn({ method: "POST" })
     .handler(async ({ data }) => {
         try {
             const headers = getRequestHeaders()
-            const {
-                headers: responseHeaders
-            } = await auth.api.signUpEmail({
+            const { response: signUpResponse } = await auth.api.signUpEmail({
                 body: {
                     name: data.name,
+                    email: data.email,
+                    password: data.password,
+                    rememberMe: data.rememberMe,
+                },
+                headers: headers,
+                returnHeaders: true,
+            })
+
+            // requireEmailVerification exists to protect OAuth end-user
+            // signups (/create-account), not to gate the one account that
+            // has to sign in before anything else on a fresh instance can
+            // happen — signUpEmail withholds the session for every signup
+            // uniformly when it's on, with no per-call override, so the
+            // owner is verified directly here, then signed in for real
+            const ctx = await auth.$context
+            await ctx.adapter.update({
+                model: "user",
+                where: [{ field: "id", value: signUpResponse.user.id }],
+                update: { emailVerified: true },
+            })
+
+            const {
+                headers: responseHeaders
+            } = await auth.api.signInEmail({
+                body: {
                     email: data.email,
                     password: data.password,
                     rememberMe: data.rememberMe,
@@ -151,6 +174,11 @@ export const createAccount = createServerFn({ method: "POST" })
                     name: data.name,
                     email: data.email,
                     password: data.password,
+                    // where the verification email's link lands after
+                    // confirming — this is an OAuth end-user account, not
+                    // a dashboard one, so there's no in-progress state
+                    // worth trying to resume, just send them to sign in
+                    callbackURL: "/sign-in",
                     ...(data.oauthQuery && { oauth_query: data.oauthQuery }),
                 },
                 headers: headers,
@@ -160,9 +188,14 @@ export const createAccount = createServerFn({ method: "POST" })
             // same continuation mechanism as signIn — present only when this
             // signup was mid-OAuth-authorize-flow
             const redirectUri = (response as { redirect_uri?: string } | undefined)?.redirect_uri
-            return { error: null, redirectUri: redirectUri ?? null }
+            // requireEmailVerification withholds the session (token: null)
+            // until the address is confirmed — don't claim "signed in" when
+            // that happened, the caller needs to tell the user to go check
+            // their email instead
+            const needsVerification = !(response as { token?: string | null } | undefined)?.token
+            return { error: null, redirectUri: redirectUri ?? null, needsVerification }
         } catch (error) {
-            if (error instanceof APIError) return { error: error.message, redirectUri: null }
+            if (error instanceof APIError) return { error: error.message, redirectUri: null, needsVerification: false }
             throw error
         }
     })

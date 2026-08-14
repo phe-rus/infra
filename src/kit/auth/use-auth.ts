@@ -57,6 +57,14 @@ export const useCreateAccount = () => {
                 t.error("Could not create account", { description: data.error })
                 return
             }
+            if (data.needsVerification) {
+                t.success("Check your email", {
+                    description: "Verify your address, then sign in to continue.",
+                    duration: 4000,
+                })
+                router.navigate({ to: "/sign-in", replace: true })
+                return
+            }
             t.success("Account created", {
                 description: "You have been signed in successfully",
                 duration: 2000,
