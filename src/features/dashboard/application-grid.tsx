@@ -6,14 +6,13 @@ import { cn } from "@/lib/utils"
 
 export function ApplicationGrid() {
     const { data } = useConsole()
-
     if (data.applications.length === 0) {
         return <p className="text-sm text-muted-foreground">No applications yet.</p>
     }
 
     return (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
-            {data.applications.map((app) => (
+            {data.applications.slice(0, 4).map((app) => (
                 <Link
                     key={app.id}
                     to="/console/$client_id"
@@ -26,7 +25,7 @@ export function ApplicationGrid() {
                     <Avatar size='sm' className="shrink-0">
                         <AvatarFallback>
                             {app.framework ? (
-                                <FrameworkIcon framework={app.framework} className="size-4" />
+                                <FrameworkIcon framework={app.framework.trim()} className="size-4" />
                             ) : (
                                 (app.name ?? "?").slice(0, 1).toUpperCase()
                             )}

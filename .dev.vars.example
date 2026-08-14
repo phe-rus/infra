@@ -1,0 +1,27 @@
+# Copy this file to .dev.vars and fill in real values.
+# .dev.vars is gitignored — never commit it, it holds real secrets.
+
+# Authorizes requests to /api/migrate. Generate your own: openssl rand -hex 32
+MIGRATION_SECRET=
+
+# better-auth's signing secret. Generate your own: openssl rand -base64 32
+BETTER_AUTH_SECRET=
+
+BETTER_AUTH_URL=http://localhost:3000
+NODE_ENV=development
+VITE_APPNAME=infra
+
+# Cookie domain for cross-subdomain sessions in production; leave blank for local dev
+COOKIE_DOMAIN=
+
+# Comma-separated list of trusted origins (bare hostnames, no protocol/port)
+TRUSTED_ORIGINS=localhost
+
+# Cloudflare Vite plugin's local request/span capture during dev — see
+# CLAUDE.md's "Known issues" section before enabling, it has real overhead
+X_LOCAL_OBSERVABILITY=false
+
+# PawaPay API token — from the sandbox dashboard (dashboard.sandbox.pawapay.io)
+# or the production dashboard, depending on PAWAPAY_ENV below
+PAWAPAY_API_TOKEN=
+PAWAPAY_ENV=sandbox

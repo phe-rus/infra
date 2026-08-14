@@ -1,4 +1,10 @@
 import { z } from "zod"
+// the plugin's own redirect_uris/post_logout_redirect_uris validation
+// (require HTTPS except for loopback hosts, reject fragments/dangerous
+// schemes) — reused here instead of plain z.url() so a rejected URL fails
+// fast with a clear message from our own form, not a mystery "could not
+// save" once it reaches auth.api.adminUpdateOAuthClient's stricter schema
+import { SafeUrlSchema } from "@better-auth/core/utils/redirect-uri"
 
 export const CLIENT_TYPES = ["web", "native", "user-agent-based"] as const
 export type ClientType = (typeof CLIENT_TYPES)[number]
@@ -108,8 +114,12 @@ export const createAppSchema = z.object({
     framework: z.enum(FRAMEWORKS).optional(),
     type: z.enum(CLIENT_TYPES),
     token_endpoint_auth_method: z.enum(TOKEN_ENDPOINT_AUTH_METHODS),
-    redirect_uris: z.array(z.url()).optional(),
-    post_logout_redirect_uris: z.array(z.url()).optional(),
+    // no .min(1) here, unlike updateAppSchema below: the create form lets
+    // redirect_uris come through empty on purpose (createApp's own handler
+    // falls back to PENDING_REDIRECT_URI when it does), so requiring at
+    // least one here would reject the exact input that fallback exists for
+    redirect_uris: z.array(SafeUrlSchema).optional(),
+    post_logout_redirect_uris: z.array(SafeUrlSchema).min(1).optional(),
     scope: z.array(z.enum(SCOPES)),
     grant_types: z.array(z.enum(GRANT_TYPES)),
     require_pkce: z.boolean(),
@@ -118,15 +128,18 @@ export const createAppSchema = z.object({
 })
 
 // diff-only, matching updateUserDetailsSchema's convention — every field is
-// optional, the console page only ever sends what actually changed
+// optional, the console page only ever sends what actually changed. The
+// .min(1) on both URL arrays matches adminUpdateOAuthClient's own schema:
+// neither list can be cleared to empty, only replaced with a new non-empty
+// list — sending [] here fails validation before it ever reaches the plugin
 export const updateAppSchema = z.object({
     clientId: z.string().min(1),
     client_name: z.string().min(1).optional(),
     client_uri: z.url().optional(),
     logo_uri: z.url().optional(),
     framework: z.enum(FRAMEWORKS).optional(),
-    redirect_uris: z.array(z.url()).min(1).optional(),
-    post_logout_redirect_uris: z.array(z.url()).optional(),
+    redirect_uris: z.array(SafeUrlSchema).min(1).optional(),
+    post_logout_redirect_uris: z.array(SafeUrlSchema).min(1).optional(),
     scope: z.array(z.enum(SCOPES)).optional(),
     grant_types: z.array(z.enum(GRANT_TYPES)).optional(),
     skip_consent: z.boolean().optional(),

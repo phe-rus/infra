@@ -1,6 +1,5 @@
 import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { oauthProvider } from "@better-auth/oauth-provider"
-import { AsyncLocalStorage } from "async_hooks"
 import { passkey } from "@better-auth/passkey"
 import { ac, buildRoles, isAdminTier } from "./utils/permissions"
 import { password } from "./utils/password"
@@ -9,6 +8,7 @@ import { betterAuth } from "better-auth"
 import { secondaryStorage, trustedOrigins, databaseHooks, customStorage } from "./configs"
 import { advanced } from './advanced'
 import { r2Provider } from "./plugins/r2"
+import { infraPayment } from "./plugins/infra-payment"
 import {
     admin,
     jwt,
@@ -16,7 +16,6 @@ import {
     twoFactor,
 } from "better-auth/plugins"
 
-export const execCtxStorage = new AsyncLocalStorage<ExecutionContext>()
 const roles = buildRoles()
 
 export const auth = betterAuth({
@@ -94,6 +93,11 @@ export const auth = betterAuth({
             path: 'docs'
         }),
         r2Provider({ binding: env.STORAGE }),
+        infraPayment({
+            apiToken: env.PAWAPAY_API_TOKEN,
+            environment: env.PAWAPAY_ENV === "production" ? "production" : "sandbox",
+            cache: env.PAYMENTS,
+        }),
         jwt({
             disableSettingJwtHeader: true,
         }),
@@ -110,7 +114,7 @@ export const auth = betterAuth({
             // client" privilege check would reject every admin action on
             // them — admin/owner manage every client instance-wide instead
             clientPrivileges: async ({ user }) => isAdminTier((user?.role as string | undefined) ?? ""),
-            scopes: ["openid", "profile", "email", "offline_access"],
+            scopes: ["openid", "profile", "email", "offline_access", "payments"],
             rateLimit: {
                 authorize: { window: 60, max: 50 },
                 token: { window: 60, max: 30 },

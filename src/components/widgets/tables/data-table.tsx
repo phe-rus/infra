@@ -29,7 +29,7 @@ import {
     type SortingState,
 } from "@tanstack/react-table"
 import { IconChevronDown, IconChevronUp, IconSearch, IconX } from "@tabler/icons-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
@@ -107,6 +107,8 @@ type DataTableProps<TData extends RowData> = {
     pagination?: boolean
     pageSizeOptions?: number[]
     onSelectedRowsChange?: (rows: TData[]) => void
+    /** A summary row rendered inside the table's own <tfoot>, below the data rows — e.g. a totals line. Gets the visible column count for its colSpan. */
+    footer?: (columnCount: number) => ReactNode
 }
 
 /** Whether any row actually holds an array for this column, checked against real data rather than requiring a caller to declare it. */
@@ -173,6 +175,7 @@ export function DataTable<TData extends RowData>({
     pagination = true,
     pageSizeOptions,
     onSelectedRowsChange,
+    footer,
     "aria-label": ariaLabel,
 }: DataTableProps<TData>) {
     const [globalFilter, setGlobalFilter] = useState("")
@@ -388,9 +391,14 @@ export function DataTable<TData extends RowData>({
 
             <Table aria-label={ariaLabel} className='divide-none!'>
                 <TableHeader>
-                    {table.getHeaderGroups().flatMap((headerGroup) =>
-                        headerGroup.headers.map((header) => (
-                            <TableHead key={header.id}>
+                    {table.getHeaderGroups().flatMap((headerGroup) => {
+                        // react-aria's Table throws unless at least one
+                        // Column declares isRowHeader — the first column
+                        // that isn't the bulk-select checkbox is the one
+                        // that actually identifies the row
+                        const rowHeaderId = headerGroup.headers.find((h) => h.column.id !== "select")?.id
+                        return headerGroup.headers.map((header) => (
+                            <TableHead key={header.id} isRowHeader={header.id === rowHeaderId}>
                                 {header.isPlaceholder ? null : header.column.getCanSort() ? (
                                     <div
                                         className="flex w-fit cursor-pointer items-center gap-1 text-muted-foreground hover:text-foreground"
@@ -417,7 +425,7 @@ export function DataTable<TData extends RowData>({
                                 )}
                             </TableHead>
                         ))
-                    )}
+                    })}
                 </TableHeader>
                 <TableBody>
                     {rows.length ? (
@@ -446,6 +454,7 @@ export function DataTable<TData extends RowData>({
                         </TableRow>
                     )}
                 </TableBody>
+                {footer && <TableFooter>{footer(columnCount)}</TableFooter>}
             </Table>
 
             {pagination && <DataTablePagination table={table} pageSizeOptions={pageSizeOptions} />}

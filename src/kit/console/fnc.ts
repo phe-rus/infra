@@ -1,8 +1,11 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { auth } from "@/auth"
-import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { AdminMiddleware } from "@/kit/middleware"
+import { APIError } from "better-auth/api"
+import { createHash } from "@better-auth/utils/hash"
+import { base64Url } from "@better-auth/utils/base64"
+import { createRandomStringGenerator } from "@better-auth/utils/random"
 import {
     appIdSchema,
     createAppSchema,
@@ -11,31 +14,35 @@ import {
     updateAppSchema,
 } from "./schema"
 
-// array-typed oauthClient columns (redirectUris, postLogoutRedirectUris,
-// grantTypes, responseTypes, scopes) are stored as JSON text — the plugin's
-// own endpoints deserialize these through schemaToOAuth, but a raw
-// ctx.adapter.* call bypasses that entirely and hands back the column as
-// stored (confirmed live), so every read here parses them itself
-function parseJsonArray(value: string | null | undefined): string[] {
-    if (!value) return []
-    try {
-        const parsed = JSON.parse(value)
-        return Array.isArray(parsed) ? parsed : []
-    } catch {
-        return []
-    }
+// oauth-provider's own rotateClientSecret/deleteOAuthClient endpoints
+// re-check ownership via client.userId after assertClientPrivileges already
+// passed, and unconditionally reject any client with no userId — exactly
+// the shape of every client this console creates through
+// adminCreateOAuthClient (no session, so no userId), so those endpoints
+// would 401 on every single console-created app. Bypassed here via a
+// direct ctx.adapter call instead, matching setAppActive's existing
+// pattern — AdminMiddleware already guarantees the caller is admin/owner,
+// so there's no privilege check left to replicate, just the actual work
+const generateSecret = createRandomStringGenerator("a-z", "A-Z")
+
+// matches oauth-provider's own defaultHasher exactly (confirmed by reading
+// its bundled source): SHA-256, base64url, no padding — required so a
+// rotated secret still verifies at /oauth2/token against storeClientSecret:
+// "hashed"
+async function hashClientSecret(secret: string): Promise<string> {
+    const digest = await createHash("SHA-256").digest(new TextEncoder().encode(secret))
+    return base64Url.encode(new Uint8Array(digest), { padding: false })
 }
 
-function parseFramework(metadata: string | null | undefined): string | null {
-    if (!metadata) return null
-    try {
-        const parsed = JSON.parse(metadata)
-        return typeof parsed?.framework === "string" ? parsed.framework : null
-    } catch {
-        return null
-    }
-}
-
+// the oauthClient schema declares redirectUris/postLogoutRedirectUris/
+// grantTypes/scopes as type:"string[]" and metadata as type:"json" — the
+// adapter deserializes those into real arrays/objects itself before a raw
+// ctx.adapter.* call ever sees them (confirmed live: a JSON.parse layered
+// on top, as this file used to do, receives an array/object rather than a
+// string, coerces it to a comma-joined string via JSON.parse's implicit
+// String() call, fails to parse as JSON, and silently returns [] — every
+// scope/grant-type/redirect-uri/framework value was being discarded on
+// every read)
 type OAuthClientRow = {
     id: string
     clientId: string
@@ -44,15 +51,15 @@ type OAuthClientRow = {
     icon: string | null
     type: string | null
     disabled: boolean | null
-    redirectUris: string | null
-    postLogoutRedirectUris: string | null
-    grantTypes: string | null
-    scopes: string | null
+    redirectUris: string[] | null
+    postLogoutRedirectUris: string[] | null
+    grantTypes: string[] | null
+    scopes: string[] | null
     tokenEndpointAuthMethod: string | null
     requirePKCE: boolean | null
     skipConsent: boolean | null
     enableEndSession: boolean | null
-    metadata: string | null
+    metadata: { framework?: string } | null
     createdAt: Date
     updatedAt: Date
 }
@@ -87,15 +94,15 @@ function toAppDetail(row: OAuthClientRow) {
         icon: row.icon,
         type: row.type,
         disabled: row.disabled,
-        redirectUris: parseJsonArray(row.redirectUris),
-        postLogoutRedirectUris: parseJsonArray(row.postLogoutRedirectUris),
-        grantTypes: parseJsonArray(row.grantTypes),
-        scopes: parseJsonArray(row.scopes),
+        redirectUris: row.redirectUris ?? [],
+        postLogoutRedirectUris: row.postLogoutRedirectUris ?? [],
+        grantTypes: row.grantTypes ?? [],
+        scopes: row.scopes ?? [],
         tokenEndpointAuthMethod: row.tokenEndpointAuthMethod,
         requirePKCE: row.requirePKCE,
         skipConsent: row.skipConsent,
         enableEndSession: row.enableEndSession,
-        framework: parseFramework(row.metadata),
+        framework: row.metadata?.framework ?? null,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
     }
@@ -203,33 +210,42 @@ export const rotateApp = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(appIdSchema)
     .handler(async ({ data }): Promise<{ clientSecret: string | null }> => {
-        const headers = getRequestHeaders()
-        const {
-            response,
-            headers: responseHeaders
-        } = await auth.api.rotateClientSecret({
-            headers,
-            returnHeaders: true,
-            body: { client_id: data.clientId },
+        const ctx = await auth.$context
+        const client = await ctx.adapter.findOne<{
+            clientSecret: string | null
+            tokenEndpointAuthMethod: string | null
+        }>({
+            model: "oauthClient",
+            where: [{ field: "clientId", value: data.clientId }],
+            select: ["clientSecret", "tokenEndpointAuthMethod"],
         })
-        forwardAuthHeaders(responseHeaders)
-        return {
-            clientSecret: response.client_secret ?? null
+        if (!client) {
+            throw new APIError("NOT_FOUND", { message: "Application not found" })
         }
+        // matches rotateClientSecretEndpoint's own guard: public clients
+        // (no secret, or explicitly token_endpoint_auth_method: "none")
+        // have nothing to rotate
+        if (!client.clientSecret || client.tokenEndpointAuthMethod === "none") {
+            throw new APIError("BAD_REQUEST", { message: "Public clients cannot be rotated" })
+        }
+
+        const clientSecret = generateSecret(32)
+        await ctx.adapter.update({
+            model: "oauthClient",
+            where: [{ field: "clientId", value: data.clientId }],
+            update: { clientSecret: await hashClientSecret(clientSecret), updatedAt: new Date() },
+        })
+        return { clientSecret }
     })
 
 export const removeApp = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(appIdSchema)
     .handler(async ({ data }): Promise<{ success: true }> => {
-        const headers = getRequestHeaders()
-        const {
-            headers: responseHeaders
-        } = await auth.api.deleteOAuthClient({
-            headers,
-            returnHeaders: true,
-            body: { client_id: data.clientId },
+        const ctx = await auth.$context
+        await ctx.adapter.delete({
+            model: "oauthClient",
+            where: [{ field: "clientId", value: data.clientId }],
         })
-        forwardAuthHeaders(responseHeaders)
         return { success: true }
     })

@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { IconInfoCircle } from '@tabler/icons-react'
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { statsQueryOptions } from "@/kit/stats"
 import { consoleOptions, CREATE_CLIENT_ID } from "@/kit/console"
 import { BusinessStats, ApplicationGrid } from "@/features/dashboard"
+import { WalletBalances } from "@/features/payments"
 
 export const Route = createFileRoute("/_workspace/")({
   loader: async ({ context: { q } }) => {
@@ -56,20 +57,7 @@ function RouteComponent() {
         <ApplicationGrid />
       </section>
 
-      <section className='bg-card rounded-2xl'>
-        <div className='flex flex-col p-10'>
-          <h1>Refer a friend and get started</h1>
-          <p>The Kinde Referral Program lets you earn rewards for customers you refer to Kinde</p>
-          <div className='mt-5 ml-auto'>
-            <Button>
-              Learn more
-            </Button>
-            <Button>
-              Share referral link
-            </Button>
-          </div>
-        </div>
-      </section>
+      <WalletBalances />
     </article>
   )
 }
