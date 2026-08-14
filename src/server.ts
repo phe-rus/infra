@@ -14,6 +14,18 @@ declare module "@tanstack/react-start" {
     }
 }
 
+// this whole instance — dashboard, sign-in, OAuth flows, the auth API
+// itself — is a private admin/owner tool, never something to appear in
+// search results, so every response gets this regardless of path. A
+// robots.txt disallow only stops well-behaved crawlers from *starting*
+// a crawl; this header is what actually keeps an already-linked page
+// (e.g. someone pasting a URL somewhere public) out of an index.
+function withNoIndex(res: Response): Response {
+    const headers = new Headers(res.headers)
+    headers.set("X-Robots-Tag", "noindex, nofollow")
+    return new Response(res.body, { status: res.status, headers })
+}
+
 export default {
     async fetch(
         request: Request,
@@ -28,10 +40,10 @@ export default {
             newHeaders.set("Access-Control-Allow-Methods", "GET")
             newHeaders.set("Access-Control-Allow-Origin", "*")
 
-            return new Response(res.body, {
+            return withNoIndex(new Response(res.body, {
                 status: res.status,
                 headers: newHeaders
-            })
+            }))
         }
         if (url.pathname.includes('/.well-known/oauth-authorization-server')) {
             const authServerHandler = oauthProviderAuthServerMetadata(auth)
@@ -40,10 +52,10 @@ export default {
             const newHeaders = new Headers(res.headers)
             newHeaders.set("Access-Control-Allow-Methods", "GET")
             newHeaders.set("Access-Control-Allow-Origin", "*")
-            return new Response(res.body, {
+            return withNoIndex(new Response(res.body, {
                 status: res.status,
                 headers: newHeaders
-            })
+            }))
         }
         if (url.pathname.endsWith('/jwks')) {
             const res = await auth.handler(request)
@@ -51,12 +63,12 @@ export default {
             newHeaders.set("Access-Control-Allow-Methods", "GET")
             newHeaders.set("Access-Control-Allow-Origin", "*")
 
-            return new Response(res.body, {
+            return withNoIndex(new Response(res.body, {
                 status: res.status,
                 headers: newHeaders
-            })
+            }))
         }
-        return handler.fetch(request, {
+        const res = await handler.fetch(request, {
             context: {
                 // @ts-ignore
                 env: env,
@@ -64,5 +76,6 @@ export default {
                 passThroughOnException: ctx.passThroughOnException.bind(ctx),
             }
         })
+        return withNoIndex(res)
     }
 }

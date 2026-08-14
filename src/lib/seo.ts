@@ -17,6 +17,10 @@ export const seo = ({
 }: seoProps) => {
     const tags = [
         { title },
+        // admin/owner-only platform, never meant to appear in search results —
+        // robots.txt only stops well-behaved crawlers from starting a crawl,
+        // this is what keeps an already-linked page out of an index
+        { name: 'robots', content: 'noindex, nofollow' },
         ...(description ? [{ name: 'description', content: description }] : []),
         ...(keywords ? [{ name: 'keywords', content: keywords.join(', ') }] : []),
 
