@@ -19,8 +19,8 @@ Infra is a third option: a centralized auth server, the same shape as Auth0 or C
 
 Most self-hosted auth servers assume you have a server — something always running, that you provision, patch, and pay for by the month whether you're using it or not. Infra is built to not need that. The target is serverless: Cloudflare Workers today, with Vercel planned next. There's no box to rent or keep alive; you deploy to a platform you likely already use for the rest of your stack, and it scales with you instead of sitting there as a fixed monthly cost.
 
-Continue to **[Getting Started](getting-started.md)** to deploy your own instance, or jump to a specific piece:
+Continue to **[Getting Started](getting-started.md)** to deploy your own instance, or **[Connect Your App](connect-your-app.md)** if you already have an instance running and just want to sign users in from Next.js, a plain backend, a SPA, or machine-to-machine — code examples included. Or jump to a specific piece:
 
 - [Architecture](architecture.md) — what's actually running, and where your data lives
-- [OAuth Provider](oauth-provider.md) — registering applications and signing users in via OAuth 2.1 / OIDC
+- [OAuth Provider](oauth-provider.md) — the concepts behind registering applications and signing users in via OAuth 2.1 / OIDC
 - [Payments](payments.md) — mobile-money deposits, payouts, and refunds via PawaPay
