@@ -1,5 +1,7 @@
 # Infra
 
+📖 **[Documentation](https://phe-rus.github.io/infra/)**
+
 Infra is a centralized, self-hosted authentication server. It runs on your own Cloudflare account and is meant to be the thing every application you build points at to authenticate its users, instead of paying a per-user bill to Auth0, Clerk, Firebase Auth, or Supabase Auth.
 
 Infra is open source, published by Pherus. Pherus uses it, but Infra is not Pherus's product. It is its own project, and anyone can deploy their own instance.
@@ -45,5 +47,7 @@ bun run dev        # start a local dev instance on port 3000
 bun run build      # production build
 bun run deploy     # build and deploy to your Cloudflare account
 ```
+
+See the [Getting Started](https://phe-rus.github.io/infra/#/getting-started) guide for prerequisites and first-run setup, or the full [docs site](https://phe-rus.github.io/infra/) for architecture, the OAuth provider, and payments.
 
 The first time you visit a fresh instance, you'll be walked through a short setup flow to create the owner account. Everything else — sign-in methods, access control, OAuth clients, payments configuration — is either fixed in code or configured through `.dev.vars`/`wrangler.jsonc` rather than a settings page, by design: this project favors sensible defaults you can change in code over a large "editable after setup" surface.
