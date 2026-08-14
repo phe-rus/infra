@@ -46,7 +46,11 @@ export const GRANT_TYPE_OPTIONS: { label: string; value: GrantType }[] = [
 ]
 
 // matches the scopes configured on the oauthProvider plugin (auth/index.ts)
-export const SCOPES = ["openid", "profile", "email", "offline_access"] as const
+// — "payments" was added there without being added here, which meant it
+// could never actually be granted to a client: not selectable in this form,
+// and createAppSchema/updateAppSchema's z.enum(SCOPES) would reject it even
+// via a direct API call
+export const SCOPES = ["openid", "profile", "email", "offline_access", "payments"] as const
 export type Scope = (typeof SCOPES)[number]
 
 export const SCOPE_OPTIONS: { label: string; value: Scope }[] = SCOPES.map((s) => ({ label: s, value: s }))

@@ -1,6 +1,7 @@
 import { createAuthEndpoint, sessionMiddleware, APIError } from "better-auth/api"
 import * as z from "zod"
 import { isAdminTier } from "@/auth/utils/permissions"
+import { sendPaymentReceiptEmail } from "@/auth/emails"
 import { schema } from "./schema"
 import { PawaPayClient, type PawaPayEnvironment } from "./client"
 import { verifyPawaPayCallback } from "./verify-signature"
@@ -344,7 +345,17 @@ export function infraPayment(options: InfraPaymentOptions) {
                         throw new APIError("BAD_REQUEST", { message: "Missing depositId/payoutId/refundId" })
                     }
 
-                    const existing = await ctx.context.adapter.findOne<{ id: string }>({
+                    const existing = await ctx.context.adapter.findOne<{
+                        id: string
+                        userId: string
+                        type: string
+                        provider: string | null
+                        phoneNumber: string | null
+                        amount: string
+                        currency: string
+                        pawapayReferenceId: string
+                        status: string
+                    }>({
                         model: "payment",
                         where: [{ field: "pawapayReferenceId", value: referenceId }],
                     })
@@ -367,6 +378,34 @@ export function infraPayment(options: InfraPaymentOptions) {
                                 : {}),
                         },
                     })
+
+                    // only the first time this reference transitions to
+                    // completed — PawaPay can retry a webhook delivery, and
+                    // this shouldn't email a receipt twice for the same payment
+                    if (status === "completed" && existing.status !== "completed") {
+                        const user = await ctx.context.internalAdapter.findUserById(existing.userId)
+                        if (user) {
+                            await sendPaymentReceiptEmail(user.email, {
+                                userName: user.name,
+                                type: existing.type as "deposit" | "payout" | "refund",
+                                amount: existing.amount,
+                                currency: existing.currency,
+                                provider: existing.provider,
+                                phoneNumber: existing.phoneNumber,
+                                referenceId: existing.pawapayReferenceId,
+                                date: new Date().toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                }),
+                            }).catch((error) => {
+                                // a failed receipt email shouldn't fail the
+                                // webhook ack — PawaPay would just retry
+                                // delivery forever on a 500
+                                ctx.context.logger.error("Failed to send payment receipt email", error)
+                            })
+                        }
+                    }
 
                     return ctx.json({ received: true })
                 }

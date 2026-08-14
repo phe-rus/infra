@@ -1,6 +1,15 @@
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
-import { completeSetup, createAccount, runSetupMigrations, signIn, signOut, submitConsent } from "./fnc"
+import {
+    completeSetup,
+    createAccount,
+    requestPasswordReset,
+    resetPassword,
+    runSetupMigrations,
+    signIn,
+    signOut,
+    submitConsent,
+} from "./fnc"
 import { useAppMutation } from "@/kit/shared"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@/components/ui/sonner"
@@ -126,6 +135,37 @@ export const useRunSetupMigrations = () =>
         mutationFn: () => runSetupMigrations(),
         errorMessage: "Could not prepare the database",
     })
+
+export const useRequestPasswordReset = () =>
+    useMutation({
+        mutationFn: requestPasswordReset,
+        onSuccess: (data) => {
+            t.success("Check your email", { description: data.message })
+        },
+        onError: (error) => {
+            t.error("Could not send reset email", { description: error.message })
+        },
+    })
+
+export const useResetPassword = () => {
+    const router = useRouter()
+    return useMutation({
+        mutationFn: resetPassword,
+        onSuccess: (data) => {
+            if (data.error) {
+                t.error("Could not reset password", { description: data.error })
+                return
+            }
+            t.success("Password reset", { description: "Sign in with your new password." })
+            setTimeout(() => {
+                router.navigate({ to: "/sign-in", replace: true })
+            }, 50)
+        },
+        onError: (error) => {
+            t.error("Could not reset password", { description: error.message })
+        },
+    })
+}
 
 // mirrors useSignIn: this either redirects the browser back to the
 // connecting application or (on deny) leaves the caller to navigate away

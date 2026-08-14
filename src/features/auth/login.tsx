@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router"
 import { FieldGroup } from "@/components/ui/field"
 import { useAppForm } from "@/components/widgets/blocks"
 import { signInSchema, useSignIn } from "@/kit/auth"
@@ -79,10 +80,15 @@ export function Login() {
                         )}
                     />
 
-                    <form.AppField
-                        name="rememberMe"
-                        children={(field) => <field.checkbox label="Remember me" />}
-                    />
+                    <div className="flex items-center justify-between">
+                        <form.AppField
+                            name="rememberMe"
+                            children={(field) => <field.checkbox label="Remember me" />}
+                        />
+                        <Link to="/forgot-password" className="text-muted-foreground text-xs hover:underline">
+                            Forgot password?
+                        </Link>
+                    </div>
                 </FieldGroup>
 
                 <form.submit label="Sign in" />

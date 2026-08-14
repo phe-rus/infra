@@ -25,3 +25,10 @@ X_LOCAL_OBSERVABILITY=false
 # or the production dashboard, depending on PAWAPAY_ENV below
 PAWAPAY_API_TOKEN=
 PAWAPAY_ENV=sandbox
+
+# Resend API key — from https://resend.com/api-keys. RESEND_FROM_EMAIL
+# defaults to Resend's shared onboarding@resend.dev test sender, which works
+# without verifying a domain but may restrict which recipients can receive
+# mail — verify your own domain in Resend and swap this once you have one
+RESEND_API_KEY=
+RESEND_FROM_EMAIL="infra <onboarding@resend.dev>"

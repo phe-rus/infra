@@ -45,3 +45,12 @@ export const completeSetupSchema = z.object({
     password: z.string().min(8, "At least 8 characters").max(48, "At most 48 characters"),
     rememberMe: z.boolean().optional(),
 })
+
+export const forgotPasswordSchema = z.object({
+    email: z.email("Enter a valid email"),
+})
+
+export const resetPasswordSchema = z.object({
+    newPassword: z.string().min(8, "At least 8 characters").max(48, "At most 48 characters"),
+    token: z.string().min(1),
+})

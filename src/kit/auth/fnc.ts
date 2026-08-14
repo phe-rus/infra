@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { getMigrations } from "better-auth/db/migration"
 import { APIError } from "better-auth/api"
+import { env } from "cloudflare:workers"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { SessionMiddleware } from "@/kit/middleware"
@@ -9,6 +10,8 @@ import {
     completeSetupSchema,
     consentClientSchema,
     createAccountSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema,
     signInSchema,
     submitConsentSchema,
 } from "./schema"
@@ -72,6 +75,42 @@ export const signOut = createServerFn({ method: "POST" })
             returnHeaders: true,
         })
         forwardAuthHeaders(responseHeaders)
+    })
+
+// requestPasswordReset's own url (sent in the email) points at better-auth's
+// own /reset-password/:token callback, which validates the token then
+// redirects the browser here with ?token= appended — this is just what
+// kicks that off, no cookies/response headers involved
+export const requestPasswordReset = createServerFn({ method: "POST" })
+    .validator(forgotPasswordSchema)
+    .handler(async ({ data }) => {
+        await auth.api.requestPasswordReset({
+            body: {
+                email: data.email,
+                redirectTo: `${env.BETTER_AUTH_URL}/reset-password`,
+            },
+        })
+        // deliberately the same response whether or not the email exists —
+        // better-auth's own endpoint already does this to avoid leaking
+        // account existence, matched here rather than undone by branching
+        return { message: "If this email exists, check your inbox for a reset link" }
+    })
+
+export const resetPassword = createServerFn({ method: "POST" })
+    .validator(resetPasswordSchema)
+    .handler(async ({ data }) => {
+        try {
+            await auth.api.resetPassword({
+                body: {
+                    newPassword: data.newPassword,
+                    token: data.token,
+                },
+            })
+            return { error: null }
+        } catch (error) {
+            if (error instanceof APIError) return { error: error.message }
+            throw error
+        }
     })
 
 export const completeSetup = createServerFn({ method: "POST" })

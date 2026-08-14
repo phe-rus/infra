@@ -3,6 +3,7 @@ import { oauthProvider } from "@better-auth/oauth-provider"
 import { passkey } from "@better-auth/passkey"
 import { ac, buildRoles, isAdminTier } from "./utils/permissions"
 import { password } from "./utils/password"
+import { sendDeleteAccountEmail, sendResetPasswordEmail, sendVerificationEmail } from "./emails"
 import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
 import { secondaryStorage, trustedOrigins, databaseHooks } from "./configs"
@@ -35,11 +36,16 @@ export const auth = betterAuth({
         autoSignIn: true,
         maxPasswordLength: 48,
         minPasswordLength: 8,
-        requireEmailVerification: false
+        requireEmailVerification: true,
+        sendResetPassword: sendResetPasswordEmail,
     },
     emailVerification: {
-        sendVerificationEmail: async ({ user, url }) => {
-            console.log(`[dev] Verification email for ${user.email}: ${url}`)
+        sendVerificationEmail: sendVerificationEmail,
+    },
+    user: {
+        deleteUser: {
+            enabled: true,
+            sendDeleteAccountVerification: sendDeleteAccountEmail,
         },
     },
     session: {
