@@ -39,7 +39,7 @@ const trustedOrigins = async (
     request: Request | undefined
 ): Promise<string[]> => {
     const origin = request?.headers.get("origin") ?? ''
-    const fallbackOrigin = env.BETTER_AUTH_URL ?? 'https://pass.pherus.org'
+    const fallbackOrigin = env.BETTER_AUTH_URL ?? 'https://infra.pherus.org'
     if (!origin) {
         return [fallbackOrigin]
     }
