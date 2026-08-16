@@ -1,6 +1,6 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "Infra",
+  "name": "Infra - self-hosted serverless auth infrastructure platform",
   "icons": [
     {
       "src": "favicon.ico",

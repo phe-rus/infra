@@ -80,7 +80,7 @@ export function Login() {
                         )}
                     />
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between truncate">
                         <form.AppField
                             name="rememberMe"
                             children={(field) => <field.checkbox label="Remember me" />}

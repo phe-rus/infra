@@ -4,6 +4,8 @@ import { useAppForm } from "@/components/widgets/blocks"
 import { forgotPasswordSchema, useRequestPasswordReset } from "@/kit/auth"
 import { cn } from "@/lib/utils"
 import type { z } from "zod"
+import { buttonVariants } from "@/components/ui/button"
+import { IconArrowLeft } from "@tabler/icons-react"
 
 export const Route = createFileRoute("/_auth/forgot-password")({
     component: RouteComponent,
@@ -57,8 +59,13 @@ function RouteComponent() {
                 </form.AppForm>
             )}
 
-            <Link to="/sign-in" className="text-muted-foreground text-xs hover:underline">
-                ← Back to sign in
+            <Link to="/sign-in" className={cn(buttonVariants({
+                variant: 'link',
+                size: 'sm',
+                className: 'px-0 mr-auto'
+            }))}>
+                <IconArrowLeft />
+                Back to sign in
             </Link>
         </form>
     )

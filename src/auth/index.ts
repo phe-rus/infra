@@ -40,9 +40,24 @@ export const auth = betterAuth({
         sendResetPassword: sendResetPasswordEmail,
     },
     emailVerification: {
+        autoSignInAfterVerification: true,
+        sendOnSignIn: true,
         sendVerificationEmail: sendVerificationEmail,
     },
+    account: {
+        accountLinking: {
+            enabled: true,
+            trustedProviders: ['email-password'],
+            allowDifferentEmails: false
+        }
+    },
     user: {
+        additionalFields: {
+            bio: {
+                type: "string",
+                required: false
+            }
+        },
         deleteUser: {
             enabled: true,
             sendDeleteAccountVerification: sendDeleteAccountEmail,
@@ -62,40 +77,11 @@ export const auth = betterAuth({
         window: 60,
         max: 100,
         storage: 'secondary-storage',
-        // Explicit placeholders, not a behavior change on their own: each
-        // endpoint already gets its own independent bucket per IP (the
-        // customStorage key below is per-path, not per-IP), and 60s/100 here
-        // matches the top-level default exactly, so this changes nothing
-        // numerically today. What it buys is a single place to tighten
-        // /pay/*, /r2/*, or /cdn/** later (e.g. a stricter cap on
-        // /pay/payout) without touching the platform-wide default. "/pay/*"
-        // and "/r2/*" use a single-path-segment wildcard (better-auth's
-        // wildcardMatch), matching config/balances/deposit/payout/refund/
-        // webhook and avatar/upload/list/delete respectively — each still
-        // gets its own separate counter, this doesn't merge them into one
-        // shared bucket. "/cdn/**" needs the multi-segment form since CDN
-        // keys are real object paths (e.g. "/cdn/<userId>/avatar.png") —
-        // worth flagging that getCdnFile takes no session at all, so unlike
-        // /pay and /r2 this one bucket is the only thing standing between a
-        // single caller and unlimited free reads against R2 egress; still
-        // matching the platform default here rather than picking a stricter
-        // number unasked, but this is the one of the three where a lower
-        // cap would be the more defensible default.
         customRules: {
             "/pay/*": { window: 60, max: 100 },
             "/r2/*": { window: 60, max: 100 },
             "/cdn/**": { window: 60, max: 100 },
         },
-        // Keyed on the full "ip|path" string better-auth builds (see
-        // createRateLimitKey), not just the ip. An earlier version of this
-        // collapsed every key to its ip segment before touching KV, which
-        // meant every path for a given IP shared one counter — not just
-        // making customRules above a no-op, but also silently defeating
-        // better-auth's own built-in stricter rules (3 req/10s on
-        // sign-in/sign-up, 3 req/60s on password-reset/verification-email),
-        // since a request checked against one rule could still be counted
-        // against — or itself absorb quota meant for — a completely
-        // different rule sharing the same collapsed bucket.
         customStorage: {
             get: async (key) => {
                 const value = await env.RL.get(key);
