@@ -14,7 +14,10 @@ VITE_APPNAME=infra
 # Cookie domain for cross-subdomain sessions in production; leave blank for local dev
 COOKIE_DOMAIN=
 
-# Comma-separated list of trusted origins (bare hostnames, no protocol/port)
+# Comma-separated list of trusted origins (bare hostnames, no protocol/port —
+# only the hostname is checked, so "localhost" already covers every local app
+# regardless of port, e.g. www/ on :3001; in production list the shared parent
+# domain, e.g. "pherus.org", to cover every *.pherus.org subdomain via suffix match)
 TRUSTED_ORIGINS=localhost
 
 # Cloudflare Vite plugin's local request/span capture during dev — see
