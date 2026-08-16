@@ -1,7 +1,7 @@
-import { FieldGroup } from "@/components/ui/field"
-import { useAppForm } from "@/components/widgets/blocks"
+import { FieldGroup } from "@infra/ui/components/ui/field"
+import { useAppForm } from "@infra/ui/components/widgets/blocks"
 import { completeSetupSchema, useCompleteSetup } from "@/kit/auth"
-import { cn } from "@/lib/utils"
+import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
 
 export function CreateFirstUser() {

@@ -1,7 +1,7 @@
 import type { FC } from "react"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Field, FieldLabel } from "@infra/ui/components/ui/field"
+import { Input } from "@infra/ui/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@infra/ui/components/ui/select"
 import type { usePaymentFields } from "./use-payment-fields"
 
 export type PaymentFieldsProps = {

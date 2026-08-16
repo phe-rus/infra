@@ -15,6 +15,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@infra/ui": "workspace:*",
+    "@infra/r2": "workspace:*",
+    "@infra/payment": "workspace:*",
     "@base-ui/react": "^1.7.0",
     "@better-auth/core": "1.6.26",
     "@better-auth/oauth-provider": "^1.6.27",

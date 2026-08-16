@@ -2,7 +2,7 @@ import { useState } from "react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { listQueryOptions } from "@/kit/storage"
 import { isAdminTier } from "@/auth/utils/permissions"
-import { Button } from "@/components/ui/button"
+import { Button } from "@infra/ui/components/ui/button"
 import { BrowseObjects } from "@/features/storage"
 
 export const Route = createFileRoute("/_workspace/storage")({

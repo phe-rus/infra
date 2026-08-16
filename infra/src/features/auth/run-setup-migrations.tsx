@@ -1,7 +1,7 @@
 import type { FC } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@infra/ui/components/ui/button"
 import { useRunSetupMigrations } from "@/kit/auth"
-import { cn } from "@/lib/utils"
+import { cn } from "@infra/ui/lib/utils"
 import { IconLoader2 } from "@tabler/icons-react"
 
 export type RunSetupMigrationsProps = {

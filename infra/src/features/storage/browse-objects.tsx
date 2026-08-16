@@ -1,7 +1,7 @@
 import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
 import { useListObjects, useDeleteObjects } from "@/kit/storage"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Button } from "@infra/ui/components/ui/button"
+import { cn } from "@infra/ui/lib/utils"
 import type { FC } from "react"
 
 export type BrowseObjectsProps = {

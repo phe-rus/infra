@@ -42,7 +42,7 @@ Not built yet: a **Logs** page exists as a placeholder in the dashboard's naviga
 
 ```bash
 bun install       # install dependencies
-cp .dev.vars.example .dev.vars   # fill in real secrets — see comments in the file
+cp .env.example .env.local   # fill in real secrets — see comments in the file
 bun run dev        # start a local dev instance on port 3000
 bun run build      # production build
 bun run deploy     # build and deploy to your Cloudflare account
@@ -50,4 +50,4 @@ bun run deploy     # build and deploy to your Cloudflare account
 
 See the [Getting Started](https://phe-rus.github.io/infra/#/getting-started) guide for prerequisites and first-run setup, or the full [docs site](https://phe-rus.github.io/infra/) for architecture, the OAuth provider, and payments.
 
-The first time you visit a fresh instance, you'll be walked through a short setup flow to create the owner account. Everything else — sign-in methods, access control, OAuth clients, payments configuration — is either fixed in code or configured through `.dev.vars`/`wrangler.jsonc` rather than a settings page, by design: this project favors sensible defaults you can change in code over a large "editable after setup" surface.
+The first time you visit a fresh instance, you'll be walked through a short setup flow to create the owner account. Everything else — sign-in methods, access control, OAuth clients, payments configuration — is either fixed in code or configured through `.env.local`/`wrangler.jsonc` rather than a settings page, by design: this project favors sensible defaults you can change in code over a large "editable after setup" surface.

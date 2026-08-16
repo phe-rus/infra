@@ -1,5 +1,5 @@
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
-import { DefaultBoundary, DefaultLoader, NotFound } from '@/components/defaults'
+import { DefaultBoundary, DefaultLoader, NotFound } from '@infra/ui/components/defaults'
 import { createRouter as createTanStackRouter } from "@tanstack/react-router"
 import { QueryProvider, getContext } from "@/lib/queryClient"
 import { routeTree } from "@/routeTree.gen"

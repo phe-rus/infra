@@ -1,0 +1,26 @@
+{
+    "name": "@infra/payment",
+    "version": "0.0.0",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "lint": "eslint",
+        "format": "prettier --write \"**/*.ts\"",
+        "typecheck": "tsc --noEmit"
+    },
+    "peerDependencies": {
+        "better-auth": "^1.6.27"
+    },
+    "dependencies": {
+        "zod": "^4.4.3"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4",
+        "@types/node": "^26",
+        "typescript": "7"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./client": "./src/auth-client.ts"
+    }
+}

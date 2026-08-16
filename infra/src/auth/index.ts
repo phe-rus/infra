@@ -3,13 +3,13 @@ import { oauthProvider } from "@better-auth/oauth-provider"
 import { passkey } from "@better-auth/passkey"
 import { ac, buildRoles, isAdminTier } from "./utils/permissions"
 import { password } from "./utils/password"
-import { sendDeleteAccountEmail, sendResetPasswordEmail, sendVerificationEmail } from "./emails"
+import { sendDeleteAccountEmail, sendPaymentReceiptEmail, sendResetPasswordEmail, sendVerificationEmail } from "./emails"
 import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
 import { secondaryStorage, trustedOrigins, databaseHooks } from "./configs"
 import { advanced } from './advanced'
-import { r2Provider } from "./plugins/r2"
-import { infraPayment } from "./plugins/infra-payment"
+import { r2Provider } from "@infra/r2"
+import { infraPayment } from "@infra/payment"
 import {
     admin,
     jwt,
@@ -169,20 +169,27 @@ export const auth = betterAuth({
         openAPI({
             path: 'docs'
         }),
-        r2Provider({ binding: env.STORAGE }),
+        r2Provider({
+            binding: env.STORAGE,
+            isAdmin: isAdminTier
+        }),
         infraPayment({
             apiToken: env.PAWAPAY_API_TOKEN,
             environment: env.PAWAPAY_ENV === "production" ? "production" : "sandbox",
             cache: env.PAYMENTS,
+            isAdmin: isAdminTier,
+            onPaymentCompleted: sendPaymentReceiptEmail,
         }),
         jwt({
             disableSettingJwtHeader: true,
         }),
         oauthProvider({
-            loginPage: "/sign-in",
-            consentPage: "/consent",
+            // hosted on www, not infra itself — infra only keeps /setup,
+            // admin /sign-in, and /forgot-password
+            loginPage: `${env.WWW_URL}/sign-in`,
+            consentPage: `${env.WWW_URL}/consent`,
             signUp: {
-                page: "/create-account",
+                page: `${env.WWW_URL}/create-account`,
             },
             storeClientSecret: 'hashed',
             allowDynamicClientRegistration: false,

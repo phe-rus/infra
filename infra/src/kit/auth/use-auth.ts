@@ -2,17 +2,15 @@ import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import {
     completeSetup,
-    createAccount,
     requestPasswordReset,
     resetPassword,
     runSetupMigrations,
     signIn,
     signOut,
-    submitConsent,
 } from "./fnc"
 import { useAppMutation } from "@/kit/shared"
 import { getContext } from "@/lib/queryClient"
-import { t } from "@/components/ui/sonner"
+import { t } from "@infra/ui/components/ui/sonner"
 import { meQueryOptions, setupStatusQueryOptions } from "./get-auth"
 
 export const useSignIn = () => {
@@ -43,46 +41,6 @@ export const useSignIn = () => {
         },
         onError: (error) => {
             t.error("Sign in failed", { description: error.message })
-        },
-    })
-}
-
-export const useCreateAccount = () => {
-    const router = useRouter()
-    const q = getContext()
-    return useMutation({
-        mutationFn: createAccount,
-        onSuccess: (data) => {
-            if (data.error) {
-                t.error("Could not create account", { description: data.error })
-                return
-            }
-            if (data.needsVerification) {
-                t.success("Check your email", {
-                    description: "Verify your address, then sign in to continue.",
-                    duration: 4000,
-                })
-                router.navigate({ to: "/sign-in", replace: true })
-                return
-            }
-            t.success("Account created", {
-                description: "You have been signed in successfully",
-                duration: 2000,
-            })
-            q.clear()
-            // mid-OAuth-authorize-flow: hand the browser back to the
-            // connecting application instead of landing on the dashboard
-            if (data.redirectUri) {
-                window.location.href = data.redirectUri
-                return
-            }
-            q.prefetchQuery(meQueryOptions())
-            setTimeout(() => {
-                router.navigate({ to: "/", replace: true })
-            }, 50)
-        },
-        onError: (error) => {
-            t.error("Could not create account", { description: error.message })
         },
     })
 }
@@ -174,14 +132,3 @@ export const useResetPassword = () => {
         },
     })
 }
-
-// mirrors useSignIn: this either redirects the browser back to the
-// connecting application or (on deny) leaves the caller to navigate away
-// itself, so it bypasses useAppMutation's own-app cache invalidation
-export const useSubmitConsent = () =>
-    useMutation({
-        mutationFn: submitConsent,
-        onError: (error) => {
-            t.error("Could not submit consent", { description: error.message })
-        },
-    })

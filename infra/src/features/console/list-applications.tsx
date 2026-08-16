@@ -1,19 +1,19 @@
 import { type FC, useMemo } from "react"
 import { Link } from "@tanstack/react-router"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@infra/ui/components/ui/badge"
+import { Button } from "@infra/ui/components/ui/button"
+import { Checkbox } from "@infra/ui/components/ui/checkbox"
 import {
     DropdownMenu,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { DataTable, type DataTableColumnDef } from "@/components/widgets/tables"
+} from "@infra/ui/components/ui/dropdown-menu"
+import { DataTable, type DataTableColumnDef } from "@infra/ui/components/widgets/tables"
 import { CLIENT_TYPE_INFO, type ClientType, type ListedApp } from "@/kit/console"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { format } from "date-fns/format"
-import { cn } from "@/lib/utils"
+import { cn } from "@infra/ui/lib/utils"
 
 export type ListApplicationsProps = {
     applications: ListedApp[]

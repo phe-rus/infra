@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { FieldGroup } from "@/components/ui/field"
-import { useAppForm } from "@/components/widgets/blocks"
+import { FieldGroup } from "@infra/ui/components/ui/field"
+import { useAppForm } from "@infra/ui/components/widgets/blocks"
 import { forgotPasswordSchema, useRequestPasswordReset } from "@/kit/auth"
-import { cn } from "@/lib/utils"
+import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@infra/ui/components/ui/button"
 import { IconArrowLeft } from "@tabler/icons-react"
 
 export const Route = createFileRoute("/_auth/forgot-password")({

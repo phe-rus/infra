@@ -1,8 +1,8 @@
 import { useConsole } from "@/kit/console"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@infra/ui/components/ui/avatar"
 import { FrameworkIcon } from "@/components/widgets/framework-icon"
 import { Link } from "@tanstack/react-router"
-import { cn } from "@/lib/utils"
+import { cn } from "@infra/ui/lib/utils"
 
 export function ApplicationGrid() {
     const { data } = useConsole()

@@ -1,16 +1,16 @@
 import { type FC, useState } from "react"
-import { DrawerClose } from "@/components/ui/drawer"
-import { DialogWidget } from "@/components/widgets/dialog-widget"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { DrawerClose } from "@infra/ui/components/ui/drawer"
+import { DialogWidget } from "@infra/ui/components/widgets/dialog-widget"
+import { Field, FieldGroup, FieldLabel } from "@infra/ui/components/ui/field"
+import { Input } from "@infra/ui/components/ui/input"
+import { Button } from "@infra/ui/components/ui/button"
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@infra/ui/components/ui/select"
 import { FIXED_ROLE_NAMES } from "@/auth/utils/permissions"
 import { useCreateUser } from "@/kit/users"
 

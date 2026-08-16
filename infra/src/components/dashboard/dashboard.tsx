@@ -1,12 +1,12 @@
 import { createContext, useContext, type PropsWithChildren, type FC, useState, useRef, useEffect, useCallback } from "react"
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
-import { useIsMobile } from "@/lib/use-media-query"
-import { Button } from "@/components/ui/button"
+import { useIsMobile } from "@infra/ui/lib/use-media-query"
+import { Button } from "@infra/ui/components/ui/button"
 import { Link } from "@tanstack/react-router"
 import { useLogout, meQueryOptions } from "@/kit/auth"
 import { useStopImpersonating } from "@/kit/users"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { cn } from "@/lib/utils"
+import { cn } from "@infra/ui/lib/utils"
 
 type DashboardProps = PropsWithChildren<{}>
 type SidebarProps = {

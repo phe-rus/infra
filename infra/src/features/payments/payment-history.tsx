@@ -1,6 +1,6 @@
 import { type FC, useMemo } from "react"
-import { Badge } from "@/components/ui/badge"
-import { DataTable, type DataTableColumnDef } from "@/components/widgets/tables"
+import { Badge } from "@infra/ui/components/ui/badge"
+import { DataTable, type DataTableColumnDef } from "@infra/ui/components/widgets/tables"
 import type { ListedPayment } from "@/kit/payments"
 import { format } from "date-fns/format"
 

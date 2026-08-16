@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { CREATE_CLIENT_ID, useConsole, useRemoveApp, useRotateApp, useSetAppActive } from "@/kit/console"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@infra/ui/components/ui/button"
 import { ListApplications } from "@/features/console"
-import { cn } from "@/lib/utils"
+import { cn } from "@infra/ui/lib/utils"
 
 export const Route = createFileRoute("/_workspace/console/")({
     component: RouteComponent,

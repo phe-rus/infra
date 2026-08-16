@@ -3,10 +3,10 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { format } from "date-fns/format"
 import { paymentOptions, usePayment } from "@/kit/payments"
 import type { ListedPayment } from "@/kit/payments"
-import { Badge } from "@/components/ui/badge"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
+import { Badge } from "@infra/ui/components/ui/badge"
+import { Button, buttonVariants } from "@infra/ui/components/ui/button"
+import { Separator } from "@infra/ui/components/ui/separator"
+import { cn } from "@infra/ui/lib/utils"
 
 export const Route = createFileRoute("/_workspace/billing/$paymentId")({
     loader: async ({ context: { q }, params }) => {

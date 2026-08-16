@@ -5,15 +5,11 @@ import { APIError } from "better-auth/api"
 import { env } from "cloudflare:workers"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
-import { SessionMiddleware } from "@/kit/middleware"
 import {
     completeSetupSchema,
-    consentClientSchema,
-    createAccountSchema,
     forgotPasswordSchema,
     resetPasswordSchema,
     signInSchema,
-    submitConsentSchema,
 } from "./schema"
 
 // Non-throwing on purpose: runs on every route including /sign-in and
@@ -158,82 +154,6 @@ export const completeSetup = createServerFn({ method: "POST" })
         } catch (error) {
             if (error instanceof APIError) return { error: error.message }
             throw error
-        }
-    })
-
-export const createAccount = createServerFn({ method: "POST" })
-    .validator(createAccountSchema)
-    .handler(async ({ data }) => {
-        try {
-            const headers = getRequestHeaders()
-            const {
-                response,
-                headers: responseHeaders
-            } = await auth.api.signUpEmail({
-                body: {
-                    name: data.name,
-                    email: data.email,
-                    password: data.password,
-                    // where the verification email's link lands after
-                    // confirming — this is an OAuth end-user account, not
-                    // a dashboard one, so there's no in-progress state
-                    // worth trying to resume, just send them to sign in
-                    callbackURL: "/sign-in",
-                    ...(data.oauthQuery && { oauth_query: data.oauthQuery }),
-                },
-                headers: headers,
-                returnHeaders: true,
-            })
-            forwardAuthHeaders(responseHeaders)
-            // same continuation mechanism as signIn — present only when this
-            // signup was mid-OAuth-authorize-flow
-            const redirectUri = (response as { redirect_uri?: string } | undefined)?.redirect_uri
-            // requireEmailVerification withholds the session (token: null)
-            // until the address is confirmed — don't claim "signed in" when
-            // that happened, the caller needs to tell the user to go check
-            // their email instead
-            const needsVerification = !(response as { token?: string | null } | undefined)?.token
-            return { error: null, redirectUri: redirectUri ?? null, needsVerification }
-        } catch (error) {
-            if (error instanceof APIError) return { error: error.message, redirectUri: null, needsVerification: false }
-            throw error
-        }
-    })
-
-export const getConsentClient = createServerFn({ method: "GET" })
-    .middleware([SessionMiddleware])
-    .validator(consentClientSchema)
-    .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const client = await auth.api.getOAuthClientPublic({
-            headers: headers,
-            query: { client_id: data.clientId }
-        })
-        return {
-            name: client.client_name ?? null,
-            uri: client.client_uri ?? null
-        }
-    })
-
-export const submitConsent = createServerFn({ method: "POST" })
-    .middleware([SessionMiddleware])
-    .validator(submitConsentSchema)
-    .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        // the openapi metadata on this endpoint documents a `redirect_uri`
-        // field, but the endpoint's real return type (confirmed against
-        // the compiled plugin source) is `{ redirect: boolean; url: string }`
-        const result = await auth.api.oauth2Consent({
-            headers: headers,
-            body: {
-                accept: data.accept,
-                ...(data.oauthQuery && {
-                    oauth_query: data.oauthQuery
-                })
-            },
-        })
-        return {
-            redirectUri: result.url
         }
     })
 

@@ -1,5 +1,8 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import type { QueryClient } from "@tanstack/react-query"
+import tailwind from "@infra/ui/globals.css?url"
+import { ThemeProvider } from "@infra/ui/theme"
+import { cn } from "@infra/ui/lib/utils"
 
 export interface RouterAppContext {
   q: QueryClient
@@ -16,8 +19,14 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "www"
+        title: "Infraccount"
       }
+    ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: tailwind
+      },
     ],
   }),
   shellComponent: RootDocument
@@ -25,12 +34,25 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className='antialiased blur-none' suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
-        <Outlet />
+      <body
+        id='root'
+        className={cn(
+          'relative min-h-dvh min-w-full border bg-background',
+          'selection:bg-olive-500/15 overflow-x-hidden',
+          'typeset wrap-anywhere duration-200',
+          'flex flex-col'
+        )}
+      >
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+        >
+          <Outlet />
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>

@@ -1,6 +1,6 @@
 import { focusManager, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState, type PropsWithChildren } from "react"
-import { t, ToasterProvider } from "@/components/ui/sonner"
+import { t, ToasterProvider } from "@infra/ui/components/ui/sonner"
 
 if (typeof window !== 'undefined') {
     focusManager.setEventListener((setFocused) => {

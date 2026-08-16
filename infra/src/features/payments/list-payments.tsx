@@ -1,15 +1,15 @@
 import { type FC, useMemo } from "react"
 import { Link } from "@tanstack/react-router"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { TableCell, TableRow } from "@/components/ui/table"
-import { DataTable, type DataTableColumnDef } from "@/components/widgets/tables"
+import { Badge } from "@infra/ui/components/ui/badge"
+import { Button } from "@infra/ui/components/ui/button"
+import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "@infra/ui/components/ui/dropdown-menu"
+import { TableCell, TableRow } from "@infra/ui/components/ui/table"
+import { DataTable, type DataTableColumnDef } from "@infra/ui/components/widgets/tables"
 import type { ListedPayment } from "@/kit/payments"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { format } from "date-fns/format"
-import { cn } from "@/lib/utils"
-import { Checkbox } from "@/components/ui/checkbox"
+import { cn } from "@infra/ui/lib/utils"
+import { Checkbox } from "@infra/ui/components/ui/checkbox"
 
 export type ListPaymentsProps = {
     payments: ListedPayment[]

@@ -4,8 +4,7 @@ dist
 dist-ssr
 *.local
 .env*
-.dev.vars
-.*.vars
+!.env.example
 .tanstack
 .wrangler
 .output

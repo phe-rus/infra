@@ -4,8 +4,9 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { meQueryOptions, setupStatusQueryOptions } from "@/kit/auth"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
-import tailwind from "@/styles/globals.css?url"
-import { cn } from "@/lib/utils"
+import tailwind from "@infra/ui/globals.css?url"
+import { ThemeProvider } from '@infra/ui/theme'
+import { cn } from "@infra/ui/lib/utils"
 import { seo } from "@/lib/seo"
 
 export interface RouterAppContext {
@@ -52,7 +53,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
   return (
-    <html lang="en" className='antialiased blur-none dark' suppressHydrationWarning>
+    <html lang="en" className='antialiased blur-none' suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -65,7 +66,12 @@ function RootDocument() {
           'flex flex-col'
         )}
       >
-        <Outlet />
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+        >
+          <Outlet />
+        </ThemeProvider>
         <TanStackDevtools
           config={{
             position: "bottom-right",
