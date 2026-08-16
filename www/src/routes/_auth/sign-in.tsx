@@ -6,6 +6,7 @@ import { Button } from "@infra/ui/components/ui/button"
 import { useAppForm } from "@infra/ui/components/widgets/blocks"
 import { cn } from "@infra/ui/lib/utils"
 import { authClient } from "@/lib/auth-client"
+import { t } from '@infra/ui/components/ui/sonner'
 
 const signInSchema = z.object({
     email: z.email("Enter a valid email"),
@@ -23,7 +24,6 @@ function continueOrGoHome(data: unknown) {
 }
 
 function RouteComponent() {
-    const [error, setError] = useState<string | null>(null)
     const [passkeyPending, setPasskeyPending] = useState(false)
 
     const form = useAppForm({
@@ -36,14 +36,13 @@ function RouteComponent() {
             onChange: signInSchema,
         },
         onSubmit: async ({ value }) => {
-            setError(null)
             const { data, error: signInError } = await authClient.signIn.email({
                 email: value.email,
                 password: value.password,
                 rememberMe: value.rememberMe,
             })
             if (signInError) {
-                setError(signInError.message ?? "Unable to sign in")
+                t.error(signInError.message ?? "Unable to sign in")
                 return
             }
             continueOrGoHome(data)
@@ -51,12 +50,11 @@ function RouteComponent() {
     })
 
     async function signInWithPasskey() {
-        setError(null)
         setPasskeyPending(true)
         const { data, error: passkeyError } = await authClient.signIn.passkey()
         setPasskeyPending(false)
         if (passkeyError) {
-            setError(passkeyError.message ?? "Unable to sign in with passkey")
+            t.error(passkeyError.message ?? "Unable to sign in with passkey")
             return
         }
         continueOrGoHome(data)
@@ -66,7 +64,7 @@ function RouteComponent() {
         <form
             onSubmit={(e) => {
                 e.preventDefault()
-                void form.handleSubmit()
+                form.handleSubmit()
             }}
             className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
         >
@@ -74,8 +72,6 @@ function RouteComponent() {
                 <h1 className="text-3xl">Sign in</h1>
                 <p className="text-muted-foreground">Sign in to your account</p>
             </section>
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
 
             <form.AppForm>
                 <FieldGroup>

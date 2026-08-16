@@ -1,6 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start"
 import { authClient } from "@/lib/auth-client"
-import { redirect } from "@tanstack/react-router"
 
 export const authMiddleware = createMiddleware()
     .server(async ({ request, next }) => {
@@ -9,12 +8,6 @@ export const authMiddleware = createMiddleware()
                 headers: request.headers,
             }
         })
-        if (!session) {
-            return redirect({
-                to: '/sign-in'
-            })
-        }
-
         return next({
             context: {
                 session: session

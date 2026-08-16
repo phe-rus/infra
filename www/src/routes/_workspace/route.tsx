@@ -1,9 +1,17 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { currentOptions } from '@/functions/get-auth'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_workspace')({
-  loader: async ({ context }) => {
-    await context.q.ensureQueryData(currentOptions())
+  loader: ({ context: { session } }) => {
+    if (!session) {
+      throw redirect({
+        to: '/sign-in',
+        replace: true,
+        search: {
+          redirect: '/'
+        }
+      })
+    }
+    return { session: session }
   },
   component: RouteComponent,
 })

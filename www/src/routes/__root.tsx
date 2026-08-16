@@ -3,6 +3,8 @@ import type { QueryClient } from "@tanstack/react-query"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { cn } from "@infra/ui/lib/utils"
+import { currentOptions } from "@/functions/get-auth"
+import { ToasterProvider } from "@infra/ui/components/ui/sonner"
 
 export interface RouterAppContext {
   q: QueryClient
@@ -29,6 +31,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       },
     ],
   }),
+  beforeLoad: async ({ context: { q } }) => {
+    const session = await q.ensureQueryData(currentOptions())
+    return { session: session }
+  },
   shellComponent: RootDocument
 })
 
@@ -52,6 +58,7 @@ function RootDocument() {
           defaultTheme='system'
         >
           <Outlet />
+          <ToasterProvider richColors />
         </ThemeProvider>
         <Scripts />
       </body>

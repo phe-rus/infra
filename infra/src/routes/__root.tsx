@@ -8,6 +8,7 @@ import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from '@infra/ui/theme'
 import { cn } from "@infra/ui/lib/utils"
 import { seo } from "@/lib/seo"
+import { ToasterProvider } from "@infra/ui/components/ui/sonner"
 
 export interface RouterAppContext {
   q: QueryClient
@@ -71,6 +72,7 @@ function RootDocument() {
           defaultTheme='system'
         >
           <Outlet />
+          <ToasterProvider richColors />
         </ThemeProvider>
         <TanStackDevtools
           config={{

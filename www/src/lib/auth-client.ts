@@ -7,13 +7,10 @@ import { paymentClient } from "@infra/payment/client"
 
 
 function hosturl(): string {
-    if (typeof window !== "undefined") {
-        return process.env.VITE_INFRA_URL
-    }
     if (import.meta.env.VITE_INFRA_URL) {
         return import.meta.env.VITE_INFRA_URL
     }
-    return process.env.VITE_INFRA_URL || 'http://localhost:3000'
+    return process.env.VITE_INFRA_URL || 'http://100.115.92.26:3000'
 }
 
 export const authClient = createAuthClient({

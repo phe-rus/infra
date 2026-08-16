@@ -4,14 +4,14 @@ import { env, waitUntil } from "cloudflare:workers"
 type OptionsProps = Partial<BetterAuthOptions>
 export const advanced = {
     cookiePrefix: env.VITE_APPNAME,
-    useSecureCookies: true,
+    useSecureCookies: env.NODE_ENV === 'production',
     crossSubDomainCookies: {
         enabled: true,
         domain: env.NODE_ENV === 'production' ? env.COOKIE_DOMAIN : undefined,
     },
     defaultCookieAttributes: {
         httpOnly: true,
-        secure: true,
+        secure: env.NODE_ENV === 'production',
         sameSite: "lax",
     },
     ipAddress: {
