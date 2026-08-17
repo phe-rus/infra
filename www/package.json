@@ -23,6 +23,7 @@
     "@tanstack/react-start": "^1.168.46",
     "better-auth": "^1.6.29",
     "date-fns": "^4.4.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "zod": "^4.4.3"

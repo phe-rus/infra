@@ -1,2 +1,1 @@
-export * from './personal-info'
-export * from './avatar-upload'
+export * from './component'

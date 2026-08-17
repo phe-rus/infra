@@ -11,6 +11,7 @@ import { z } from "zod"
 export const profileSchema = z.object({
     name: z.string().min(1, "Name is required"),
     bio: z.string().max(280, "At most 280 characters").optional(),
+    avatar: z.file().nullable(),
     email: z.email(),
     id: z.string(),
     role: z.string(),
@@ -19,34 +20,43 @@ export const profileSchema = z.object({
     emailVerified: z.string(),
 })
 
-
 export function PersonalInfo() {
     const queryClient = getContext()
     const { data } = useSuspenseQuery(currentOptions())
+    const user = data?.user
 
     const defaultValue: z.input<typeof profileSchema> = {
-        name: data?.user?.name ?? '',
-        bio: data?.user?.bio ?? '',
-        email: data?.user?.email ?? '',
-        id: data?.user?.id ?? '',
-        role: data?.user?.role ?? '',
-        createdAt: format(String(data?.user?.createdAt), 'PPP') ?? '',
-        updatedAt: format(String(data?.user?.updatedAt), 'PPP') ?? '',
-        emailVerified: String(data?.user?.emailVerified) ?? 'false',
+        name: user?.name ?? '',
+        bio: user?.bio ?? '',
+        avatar: null,
+        email: user?.email ?? '',
+        id: user?.id ?? '',
+        role: user?.role ?? '',
+        createdAt: format(String(user?.createdAt), 'PPP') ?? '',
+        updatedAt: format(String(user?.updatedAt), 'PPP') ?? '',
+        emailVerified: String(user?.emailVerified) ?? 'false',
     }
 
     const {
-        mutateAsync: handleUpdate,
-        isPending: isLoading
+        mutateAsync: handleUpdate
     } = useMutation({
         mutationFn: async (value: z.input<typeof profileSchema>) => {
-            return await authClient.updateUser({
-                name: value.name,
-                bio: value.bio,
-            })
+            if (value.avatar) {
+                const { error } = await authClient.r2.uploadAvatar(value.avatar)
+                if (error) throw new Error(error.message ?? "Could not upload avatar")
+            }
+
+            const changes: { name?: string; bio?: string } = {}
+            if (value.name !== defaultValue.name) changes.name = value.name
+            if (value.bio !== defaultValue.bio) changes.bio = value.bio
+
+            if (Object.keys(changes).length > 0) {
+                return await authClient.updateUser(changes)
+            }
         },
         onSuccess: () => {
             t.success("Profile updated")
+            form.reset()
             void queryClient.invalidateQueries(currentOptions())
         },
         onError: (error) => {
@@ -60,10 +70,13 @@ export function PersonalInfo() {
         defaultValues: defaultValue,
         validators: {
             onChange: profileSchema,
+            onSubmit: profileSchema,
+            onMount: profileSchema,
+            onBlur: profileSchema,
         },
         onSubmit: async ({ value }) => {
             await handleUpdate(value)
-        },
+        }
     })
 
     return (
@@ -75,6 +88,11 @@ export function PersonalInfo() {
             className="flex flex-col gap-5 md:max-w-md"
         >
             <form.AppForm>
+                <form.AppField
+                    name="avatar"
+                    children={(field) => <field.avatar label={user?.name ?? ""} existingImage={user?.image} />}
+                />
+
                 <FieldGroup>
                     <div className='flex flex-col gap-3'>
                         <div className='flex flex-col'>

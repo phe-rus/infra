@@ -4,6 +4,7 @@ import { FieldTextarea } from "./textarea"
 import { FieldSwitch } from "./switch"
 import { FieldRadioCard } from "./radio-card"
 import { FieldMultiselect } from "./multiselect"
+import { FieldAvatar } from "./avatar"
 
 export const fields = {
     input: FieldInput,
@@ -11,7 +12,8 @@ export const fields = {
     textarea: FieldTextarea,
     switch: FieldSwitch,
     radioCard: FieldRadioCard,
-    multiselect: FieldMultiselect
+    multiselect: FieldMultiselect,
+    avatar: FieldAvatar
 }
 
 export * from "./input"
@@ -20,3 +22,4 @@ export * from "./textarea"
 export * from "./switch"
 export * from "./radio-card"
 export * from "./multiselect"
+export * from "./avatar"
