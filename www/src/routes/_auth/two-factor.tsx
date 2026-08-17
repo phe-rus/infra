@@ -8,6 +8,7 @@ import { authClient } from "@/lib/auth-client"
 
 const codeSchema = z.object({
     code: z.string().min(1, "Enter the code"),
+    trustDevice: z.boolean(),
 })
 
 export const Route = createFileRoute("/_auth/two-factor")({
@@ -18,7 +19,7 @@ function RouteComponent() {
     const [error, setError] = useState<string | null>(null)
 
     const form = useAppForm({
-        defaultValues: { code: "" } as z.input<typeof codeSchema>,
+        defaultValues: { code: "", trustDevice: false } as z.input<typeof codeSchema>,
         validators: {
             onChange: codeSchema,
         },
@@ -29,6 +30,7 @@ function RouteComponent() {
             // to be carried over here besides the code itself
             const { data, error: verifyError } = await authClient.twoFactor.verifyTotp({
                 code: value.code,
+                trustDevice: value.trustDevice,
             })
             if (verifyError) {
                 setError(verifyError.message ?? "Invalid code")
@@ -64,6 +66,12 @@ function RouteComponent() {
                                 autoComplete="one-time-code"
                                 placeholder="123456"
                             />
+                        )}
+                    />
+                    <form.AppField
+                        name="trustDevice"
+                        children={(field) => (
+                            <field.checkbox label="Trust this device for 30 days" />
                         )}
                     />
                 </FieldGroup>

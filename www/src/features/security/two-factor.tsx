@@ -4,9 +4,13 @@ import { Button } from "@infra/ui/components/button"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { QRCodeSVG } from "qrcode.react"
-import { useState, type ReactNode } from "react"
 import { z } from "zod"
-import { useEnableTwoFactor, useVerifyTwoFactor, useDisableTwoFactor } from "@/functions/get-security"
+import {
+    useEnableTwoFactor,
+    useVerifyTwoFactor,
+    useDisableTwoFactor,
+    useGenerateBackupCodes,
+} from "@/functions/get-security"
 
 const passwordSchema = z.object({
     password: z.string().min(1, "Password is required"),
@@ -16,13 +20,17 @@ const totpCodeSchema = z.object({
     code: z.string().min(1, "Enter the code"),
 })
 
-export function EnableTwoFactorDialog({ children }: { children: ReactNode }) {
-    const [open, setOpen] = useState(false)
+type ControlledDialogProps = {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+}
+
+export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogProps) {
     const enableMutation = useEnableTwoFactor()
     const enrollment = enableMutation.data ?? null
 
     function close() {
-        setOpen(false)
+        onOpenChange(false)
         enableMutation.reset()
         passwordForm.reset()
         codeForm.reset()
@@ -52,10 +60,6 @@ export function EnableTwoFactorDialog({ children }: { children: ReactNode }) {
 
     return (
         <>
-            <Button type="button" variant="outline" className="w-fit" onClick={() => setOpen(true)}>
-                {children}
-            </Button>
-
             {!enrollment ? (
                 <DialogWidget
                     open={open}
@@ -148,8 +152,7 @@ export function EnableTwoFactorDialog({ children }: { children: ReactNode }) {
     )
 }
 
-export function DisableTwoFactorDialog({ children }: { children: ReactNode }) {
-    const [open, setOpen] = useState(false)
+export function DisableTwoFactorDialog({ open, onOpenChange }: ControlledDialogProps) {
     const disableMutation = useDisableTwoFactor()
 
     const form = useAppForm({
@@ -158,7 +161,7 @@ export function DisableTwoFactorDialog({ children }: { children: ReactNode }) {
         onSubmit: async ({ value }) => {
             await disableMutation.mutateAsync(value.password, {
                 onSuccess: () => {
-                    setOpen(false)
+                    onOpenChange(false)
                     form.reset()
                 }
             })
@@ -166,29 +169,89 @@ export function DisableTwoFactorDialog({ children }: { children: ReactNode }) {
     })
 
     return (
-        <>
-            <Button type="button" variant="outline" className="w-fit" onClick={() => setOpen(true)}>
-                {children}
-            </Button>
+        <DialogWidget
+            open={open}
+            onOpenChange={onOpenChange}
+            title="Disable two-factor authentication"
+            description="Confirm your password to turn off two-factor authentication"
+            onSubmit={(e) => {
+                e.preventDefault()
+                void form.handleSubmit()
+            }}
+            footer={
+                <>
+                    <Button type="submit" variant="destructive" isDisabled={disableMutation.isPending}>
+                        {disableMutation.isPending ? "Disabling…" : "Disable"}
+                    </Button>
+                    <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                </>
+            }
+        >
+            <form.AppForm>
+                <FieldGroup>
+                    <form.AppField
+                        name="password"
+                        children={(field) => (
+                            <field.input
+                                label="Password"
+                                type="password"
+                                autoComplete="current-password"
+                                placeholder="Enter your password"
+                            />
+                        )}
+                    />
+                </FieldGroup>
+            </form.AppForm>
+        </DialogWidget>
+    )
+}
 
-            <DialogWidget
-                open={open}
-                onOpenChange={setOpen}
-                title="Disable two-factor authentication"
-                description="Confirm your password to turn off two-factor authentication"
-                onSubmit={(e) => {
-                    e.preventDefault()
-                    void form.handleSubmit()
-                }}
-                footer={
+export function RegenerateBackupCodesDialog({ open, onOpenChange }: ControlledDialogProps) {
+    const generateMutation = useGenerateBackupCodes()
+    const backupCodes = generateMutation.data?.backupCodes ?? null
+
+    function close() {
+        onOpenChange(false)
+        generateMutation.reset()
+        form.reset()
+    }
+
+    const form = useAppForm({
+        defaultValues: { password: "" } as z.input<typeof passwordSchema>,
+        validators: { onChange: passwordSchema },
+        onSubmit: async ({ value }) => {
+            await generateMutation.mutateAsync(value.password)
+        },
+    })
+
+    return (
+        <DialogWidget
+            open={open}
+            onOpenChange={(next) => { if (!next) close() }}
+            title="Generate new backup codes"
+            description={
+                backupCodes
+                    ? "Save these somewhere safe — your old backup codes no longer work"
+                    : "Confirm your password to generate a new set of backup codes"
+            }
+            onSubmit={(e) => {
+                e.preventDefault()
+                if (!backupCodes) void form.handleSubmit()
+            }}
+            footer={
+                backupCodes ? (
+                    <Button type="button" onClick={close}>Done</Button>
+                ) : (
                     <>
-                        <Button type="submit" variant="destructive" isDisabled={disableMutation.isPending}>
-                            {disableMutation.isPending ? "Disabling…" : "Disable"}
+                        <Button type="submit" isDisabled={generateMutation.isPending}>
+                            {generateMutation.isPending ? "Generating…" : "Generate codes"}
                         </Button>
                         <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
                     </>
-                }
-            >
+                )
+            }
+        >
+            {!backupCodes ? (
                 <form.AppForm>
                     <FieldGroup>
                         <form.AppField
@@ -204,7 +267,13 @@ export function DisableTwoFactorDialog({ children }: { children: ReactNode }) {
                         />
                     </FieldGroup>
                 </form.AppForm>
-            </DialogWidget>
-        </>
+            ) : (
+                <div className="grid grid-cols-2 gap-1 font-mono text-xs">
+                    {backupCodes.map((code) => (
+                        <span key={code} className="bg-muted px-2 py-1">{code}</span>
+                    ))}
+                </div>
+            )}
+        </DialogWidget>
     )
 }

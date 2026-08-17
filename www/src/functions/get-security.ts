@@ -48,17 +48,58 @@ export const useDisableTwoFactor = () =>
         errorMessage: "Could not disable two-factor authentication",
     })
 
+export const useGenerateBackupCodes = () =>
+    useAppMutation({
+        mutationFn: async (password: string) => {
+            const { data, error } = await authClient.twoFactor.generateBackupCodes({ password })
+            if (error) throw new Error(error.message ?? "Could not generate backup codes")
+            return data
+        },
+        successMessage: "New backup codes generated",
+        errorMessage: "Could not generate backup codes",
+    })
+
 export const useAddPasskey = () =>
     useAppMutation({
-        mutationFn: async (name: string) => {
+        mutationFn: async ({
+            name,
+            authenticatorAttachment,
+        }: {
+            name: string
+            authenticatorAttachment?: "platform" | "cross-platform"
+        }) => {
             const { error } = await authClient.passkey.addPasskey({
-                name
+                name,
+                authenticatorAttachment,
             })
-            if (error) throw new Error(error.message ?? "Could not add passkey")
+            if (error) {
+                // the server excludes every credential this account already has when
+                // starting registration, so the *same* platform authenticator (Touch
+                // ID, Windows Hello, a synced password manager) refuses to create a
+                // second one for it — not a bug, WebAuthn's own duplicate guard. A
+                // genuinely additional passkey needs a different device/security key.
+                if ("code" in error && error.code === "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED") {
+                    throw new Error(
+                        "This device already has a passkey for your account. To add another, choose \"a different device or security key\"."
+                    )
+                }
+                throw new Error(error.message ?? "Could not add passkey")
+            }
         },
         invalidates: [passkeysOptions().queryKey],
         successMessage: "Passkey added",
         errorMessage: "Could not add passkey",
+    })
+
+export const useUpdatePasskey = () =>
+    useAppMutation({
+        mutationFn: async ({ id, name }: { id: string; name: string }) => {
+            const { error } = await authClient.passkey.updatePasskey({ id, name })
+            if (error) throw new Error(error.message ?? "Could not rename passkey")
+        },
+        invalidates: [passkeysOptions().queryKey],
+        successMessage: "Passkey renamed",
+        errorMessage: "Could not rename passkey",
     })
 
 export const useDeletePasskey = () =>
