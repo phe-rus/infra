@@ -4,7 +4,10 @@ import { IconCode } from "@tabler/icons-react"
 // simplified, hand-drawn stand-ins for each framework's mark — not traced
 // from official brand assets, just enough to be visually recognizable in a
 // small picker/avatar context
-const ICONS: Record<Exclude<Framework, "other">, (props: { className?: string }) => React.JSX.Element> = {
+const ICONS: Record<
+    Exclude<Framework, "other">,
+    (props: { className?: string }) => React.JSX.Element
+> = {
     react: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className} fill="none">
             <circle cx="12" cy="12" r="2" fill="#61DAFB" />
@@ -24,7 +27,10 @@ const ICONS: Record<Exclude<Framework, "other">, (props: { className?: string })
     angular: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className}>
             <path d="M12 2 21 5.5 19.6 18 12 22 4.4 18 3 5.5 12 2Z" fill="#DD0031" />
-            <path d="M12 4.4 18 17h-2.3l-1.2-3H9.5l-1.2 3H6L12 4.4Zm0 3.6-1.7 4h3.4L12 8Z" fill="#fff" />
+            <path
+                d="M12 4.4 18 17h-2.3l-1.2-3H9.5l-1.2 3H6L12 4.4Zm0 3.6-1.7 4h3.4L12 8Z"
+                fill="#fff"
+            />
         </svg>
     ),
     next: ({ className }) => (
@@ -54,8 +60,17 @@ const ICONS: Record<Exclude<Framework, "other">, (props: { className?: string })
     ),
 }
 
-export function FrameworkIcon({ framework, className }: { framework: string | null; className?: string }) {
-    const Icon = framework && framework !== "other" ? ICONS[framework as Exclude<Framework, "other">] : undefined
+export function FrameworkIcon({
+    framework,
+    className,
+}: {
+    framework: string | null
+    className?: string
+}) {
+    const Icon =
+        framework && framework !== "other"
+            ? ICONS[framework as Exclude<Framework, "other">]
+            : undefined
     if (!Icon) return <IconCode className={className} />
     return <Icon className={className} />
 }

@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_workspace/users")({
         if (!isAdminTier(user.role ?? "")) {
             throw redirect({
                 to: "/unauthorized",
-                replace: true
+                replace: true,
             })
         }
     },

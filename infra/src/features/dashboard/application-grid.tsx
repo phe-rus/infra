@@ -19,13 +19,16 @@ export function ApplicationGrid() {
                     params={{ client_id: app.clientId }}
                     className={cn(
                         "flex gap-3 rounded-lg bg-card p-4",
-                        "hover:bg-accent transition-colors"
+                        "transition-colors hover:bg-accent"
                     )}
                 >
-                    <Avatar size='sm' className="shrink-0">
+                    <Avatar size="sm" className="shrink-0">
                         <AvatarFallback>
                             {app.framework ? (
-                                <FrameworkIcon framework={app.framework.trim()} className="size-4" />
+                                <FrameworkIcon
+                                    framework={app.framework.trim()}
+                                    className="size-4"
+                                />
                             ) : (
                                 (app.name ?? "?").slice(0, 1).toUpperCase()
                             )}

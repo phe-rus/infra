@@ -38,17 +38,17 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                             key={folder.key}
                             onClick={() => onNavigate(folder.key)}
                             className={cn(
-                                "flex items-center gap-2 overflow-hidden min-w-0",
-                                'bg-card px-2 col-span-1 py-2',
-                                'cursor-pointer hover:bg-accent'
+                                "flex min-w-0 items-center gap-2 overflow-hidden",
+                                "col-span-1 bg-card px-2 py-2",
+                                "cursor-pointer hover:bg-accent"
                             )}
                         >
                             <IconFolderFilled className="size-7! shrink-0" />
                             <span className="min-w-0 flex-1 truncate text-xs">{folder.name}</span>
                             <Button
-                                size='icon-xs'
-                                variant='destructive'
-                                className='mr-auto size-5!'
+                                size="icon-xs"
+                                variant="destructive"
+                                className="mr-auto size-5!"
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     deleteObjects({ data: { prefix: folder.key } })
@@ -69,35 +69,39 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                             href={cdnUrl(file.key)}
                             target="_blank"
                             rel="noreferrer"
-                            className={cn('relative flex flex-col')}
+                            className={cn("relative flex flex-col")}
                         >
-                            <div className={cn(
-                                "relative flex aspect-video border",
-                                'hover:scale-[0.99] ease-out',
-                                'transition-transform duration-50',
-                                'border-dashed'
-                            )}>
+                            <div
+                                className={cn(
+                                    "relative flex aspect-video border",
+                                    "ease-out hover:scale-[0.99]",
+                                    "transition-transform duration-50",
+                                    "border-dashed"
+                                )}
+                            >
                                 {file.contentType?.startsWith("image/") ? (
                                     <img
                                         src={cdnUrl(file.key)}
                                         alt=""
                                         className={cn(
                                             "aspect-video rounded-none! object-cover",
-                                            'flex shrink-0'
+                                            "flex shrink-0"
                                         )}
                                     />
                                 ) : (
-                                    <IconFileFilled className="size-8 m-auto" />
+                                    <IconFileFilled className="m-auto size-8" />
                                 )}
                             </div>
-                            <div className='flex flex-col mb-auto p-1'>
+                            <div className="mb-auto flex flex-col p-1">
                                 <span className="text-xs break-all">{file.name}</span>
-                                <span className="text-[8px] font-light text-muted-foreground">{formatBytes(file.size)}</span>
+                                <span className="text-[8px] font-light text-muted-foreground">
+                                    {formatBytes(file.size)}
+                                </span>
                             </div>
                             <Button
-                                size='icon-xs'
-                                variant='destructive'
-                                className='absolute top-1 right-1 size-5!'
+                                size="icon-xs"
+                                variant="destructive"
+                                className="absolute top-1 right-1 size-5!"
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
@@ -109,8 +113,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                         </a>
                     ))}
                 </div>
-            )
-            }
-        </section >
+            )}
+        </section>
     )
 }

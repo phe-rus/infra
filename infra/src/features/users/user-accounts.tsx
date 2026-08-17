@@ -18,7 +18,9 @@ export const UserAccounts: FC<UserAccountsProps> = ({ viewUser }) => (
                 className="flex items-center justify-between border border-input px-2.5 py-1.5 text-xs"
             >
                 <span className="capitalize">{account.providerId}</span>
-                <span className="text-muted-foreground">linked {format(account.createdAt, "PPP")}</span>
+                <span className="text-muted-foreground">
+                    linked {format(account.createdAt, "PPP")}
+                </span>
             </div>
         ))}
     </section>

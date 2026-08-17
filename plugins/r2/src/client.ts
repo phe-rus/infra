@@ -19,7 +19,11 @@ export const r2Client = () => {
         getActions: ($fetch) => {
             return {
                 r2: {
-                    uploadAvatar: async (file: File, options?: { userId?: string }, fetchOptions?: Parameters<typeof $fetch>[1]) => {
+                    uploadAvatar: async (
+                        file: File,
+                        options?: { userId?: string },
+                        fetchOptions?: Parameters<typeof $fetch>[1]
+                    ) => {
                         const formData = new FormData()
                         formData.append("file", file)
                         if (options?.userId) formData.append("userId", options.userId)

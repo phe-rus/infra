@@ -13,7 +13,13 @@ import {
 const appName = env.VITE_APPNAME.charAt(0).toUpperCase() + env.VITE_APPNAME.slice(1)
 
 // matches emailVerification.sendVerificationEmail's exact callback shape
-export async function sendVerificationEmail({ user, url }: { user: { name: string; email: string }; url: string }) {
+export async function sendVerificationEmail({
+    user,
+    url,
+}: {
+    user: { name: string; email: string }
+    url: string
+}) {
     await sendEmail({
         to: user.email,
         subject: `${appName}: Verify your email`,
@@ -22,7 +28,13 @@ export async function sendVerificationEmail({ user, url }: { user: { name: strin
 }
 
 // matches emailAndPassword.sendResetPassword's exact callback shape
-export async function sendResetPasswordEmail({ user, url }: { user: { name: string; email: string }; url: string }) {
+export async function sendResetPasswordEmail({
+    user,
+    url,
+}: {
+    user: { name: string; email: string }
+    url: string
+}) {
     await sendEmail({
         to: user.email,
         subject: `${appName}: Reset your password`,
@@ -31,7 +43,13 @@ export async function sendResetPasswordEmail({ user, url }: { user: { name: stri
 }
 
 // matches user.deleteUser.sendDeleteAccountVerification's exact callback shape
-export async function sendDeleteAccountEmail({ user, url }: { user: { name: string; email: string }; url: string }) {
+export async function sendDeleteAccountEmail({
+    user,
+    url,
+}: {
+    user: { name: string; email: string }
+    url: string
+}) {
     await sendEmail({
         to: user.email,
         subject: `${appName}: Confirm account deletion`,

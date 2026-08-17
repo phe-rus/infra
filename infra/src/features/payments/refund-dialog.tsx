@@ -46,14 +46,22 @@ export const RefundDialog: FC<RefundDialogProps> = ({ payment, onOpenChange }) =
                     >
                         Refund
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                        Cancel
+                    </DrawerClose>
                 </>
             }
         >
             <FieldGroup>
                 <Field>
-                    <FieldLabel htmlFor="refund-amount">Amount {payment ? `(${payment.currency})` : ""}</FieldLabel>
-                    <Input id="refund-amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                    <FieldLabel htmlFor="refund-amount">
+                        Amount {payment ? `(${payment.currency})` : ""}
+                    </FieldLabel>
+                    <Input
+                        id="refund-amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
                 </Field>
             </FieldGroup>
         </DialogWidget>

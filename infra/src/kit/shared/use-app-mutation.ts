@@ -1,4 +1,9 @@
-import { useMutation, useQueryClient, type QueryKey, type UseMutationOptions } from "@tanstack/react-query"
+import {
+    useMutation,
+    useQueryClient,
+    type QueryKey,
+    type UseMutationOptions,
+} from "@tanstack/react-query"
 import { t } from "@infra/ui/components/sonner"
 
 // runs several independent calls for one logical save, reports every
@@ -8,7 +13,9 @@ export async function settleAll(calls: Array<() => Promise<unknown>>): Promise<v
     const failures = results.filter((r): r is PromiseRejectedResult => r.status === "rejected")
     if (failures.length > 0) {
         throw new Error(
-            failures.map((f) => (f.reason instanceof Error ? f.reason.message : String(f.reason))).join("; ")
+            failures
+                .map((f) => (f.reason instanceof Error ? f.reason.message : String(f.reason)))
+                .join("; ")
         )
     }
 }
@@ -19,7 +26,8 @@ type OptimisticUpdate<TOptimisticData, TVariables> = {
     updater: (old: TOptimisticData | undefined, variables: TVariables) => TOptimisticData
 }
 
-type MutationContext<TOptimisticData> = { previous: TOptimisticData | undefined; next: TOptimisticData } | undefined
+type MutationContext<TOptimisticData> =
+    { previous: TOptimisticData | undefined; next: TOptimisticData } | undefined
 
 type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
     UseMutationOptions<TData, Error, TVariables, MutationContext<TOptimisticData>>,
@@ -62,12 +70,17 @@ export function useAppMutation<TData, TVariables = void, TOptimisticData = unkno
         },
         onSuccess: (data, variables) => {
             if (successMessage) {
-                t.success(typeof successMessage === "function" ? successMessage(data, variables) : successMessage, {
-                    description:
-                        typeof successDescription === "function"
-                            ? successDescription(data, variables)
-                            : successDescription,
-                })
+                t.success(
+                    typeof successMessage === "function"
+                        ? successMessage(data, variables)
+                        : successMessage,
+                    {
+                        description:
+                            typeof successDescription === "function"
+                                ? successDescription(data, variables)
+                                : successDescription,
+                    }
+                )
             }
             onSuccess?.(data, variables)
         },

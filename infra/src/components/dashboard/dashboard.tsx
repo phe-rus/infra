@@ -1,5 +1,22 @@
-import { createContext, useContext, type PropsWithChildren, type FC, useState, useRef, useEffect, useCallback } from "react"
-import { IconChevronLeft, IconChevronRight, IconLogs, IconMoneybag, IconPackage, IconTerminal, IconUser } from "@tabler/icons-react"
+import {
+    createContext,
+    useContext,
+    type PropsWithChildren,
+    type FC,
+    useState,
+    useRef,
+    useEffect,
+    useCallback,
+} from "react"
+import {
+    IconChevronLeft,
+    IconChevronRight,
+    IconLogs,
+    IconMoneybag,
+    IconPackage,
+    IconTerminal,
+    IconUser,
+} from "@tabler/icons-react"
 import { useIsMobile } from "@infra/ui/lib/use-media-query"
 import { Button } from "@infra/ui/components/button"
 import { Link } from "@tanstack/react-router"
@@ -18,35 +35,34 @@ const navLists = [
     {
         label: "Users",
         path: "/users",
-        Icon: IconUser
+        Icon: IconUser,
     },
     {
         label: "Console",
         path: "/console",
-        Icon: IconTerminal
+        Icon: IconTerminal,
     },
     {
         label: "Storage",
         path: "/storage",
-        Icon: IconPackage
+        Icon: IconPackage,
     },
     {
         label: "Logs",
         path: "/logs",
-        Icon: IconLogs
+        Icon: IconLogs,
     },
     {
         label: "Billing",
         path: "/billing",
-        Icon: IconMoneybag
-    }
+        Icon: IconMoneybag,
+    },
 ]
-export const Dashboard: FC<DashboardProps> = ({
-    children
-}) => {
+export const Dashboard: FC<DashboardProps> = ({ children }) => {
     const { isPending, mutateAsync: signOut } = useLogout()
     const { data: session } = useSuspenseQuery(meQueryOptions())
-    const { mutateAsync: stopImpersonating, isPending: isStoppingImpersonation } = useStopImpersonating()
+    const { mutateAsync: stopImpersonating, isPending: isStoppingImpersonation } =
+        useStopImpersonating()
     const impersonatedBy = session?.session.impersonatedBy
     const [open, setOpen] = useState<boolean>(true)
     const ref = useRef<HTMLDivElement>(null)
@@ -63,17 +79,19 @@ export const Dashboard: FC<DashboardProps> = ({
     }, [isMobile])
 
     return (
-        <SidebarContext.Provider value={{
-            open: open,
-            setOpen: toggleSidebar
-        }}>
-            <div className='fixed inset-0 overflow-hidden'>
-                <main className='relative flex w-full h-svh overflow-hidden'>
+        <SidebarContext.Provider
+            value={{
+                open: open,
+                setOpen: toggleSidebar,
+            }}
+        >
+            <div className="fixed inset-0 overflow-hidden">
+                <main className="relative flex h-svh w-full overflow-hidden">
                     {open && (
                         <div
                             className={cn(
                                 "fixed inset-0 backdrop-blur-sm",
-                                "backdrop-blur-xs z-30 md:hidden"
+                                "z-30 backdrop-blur-xs md:hidden"
                             )}
                             onClick={toggleSidebar}
                         />
@@ -81,20 +99,20 @@ export const Dashboard: FC<DashboardProps> = ({
                     <aside
                         ref={ref}
                         className={cn(
-                            "fixed md:relative shrink-0 h-full border-r backdrop-blur bg-background/85 shadow-sm",
-                            "transition-transform duration-300 ease-in-out ease-initial border-primary/5 z-55",
-                            'inset-y-0',
-                            open ? "translate-x-0 w-78" : "-translate-x-full w-fit"
+                            "fixed h-full shrink-0 border-r bg-background/85 shadow-sm backdrop-blur md:relative",
+                            "z-55 border-primary/5 transition-transform duration-300 ease-in-out ease-initial",
+                            "inset-y-0",
+                            open ? "w-78 translate-x-0" : "w-fit -translate-x-full"
                         )}
                     >
                         <Button
                             size="icon-xs"
-                            variant='secondary'
+                            variant="secondary"
                             aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
                             className={cn(
-                                "absolute top-10 -translate-y-1/2 z-56 cursor-pointer",
-                                "transition-all duration-300 select-none rounded-full",
-                                !open && 'hidden md:flex',
+                                "absolute top-10 z-56 -translate-y-1/2 cursor-pointer",
+                                "rounded-full transition-all duration-300 select-none",
+                                !open && "hidden md:flex",
                                 open
                                     ? "left-full -translate-x-1/2"
                                     : "left-[calc(100%+8px)] translate-x-0.5"
@@ -103,43 +121,47 @@ export const Dashboard: FC<DashboardProps> = ({
                         >
                             {!open ? <IconChevronRight /> : <IconChevronLeft />}
                         </Button>
-                        <section className={cn(
-                            "p-5 flex-col min-h-svh gap-5",
-                            !open ? "hidden" : "flex"
-                        )}>
-                            <section className='flex flex-col gap-2 p-5'>
+                        <section
+                            className={cn(
+                                "min-h-svh flex-col gap-5 p-5",
+                                !open ? "hidden" : "flex"
+                            )}
+                        >
+                            <section className="flex flex-col gap-2 p-5">
                                 <nav>
-                                    <Link to='/' className={cn(
-                                        'text-primary text-2xl',
-                                        'hover:text-primary/65'
-                                    )}>Infra</Link>
+                                    <Link
+                                        to="/"
+                                        className={cn(
+                                            "text-2xl text-primary",
+                                            "hover:text-primary/65"
+                                        )}
+                                    >
+                                        Infra
+                                    </Link>
                                 </nav>
-                                <nav className='flex flex-col'>
+                                <nav className="flex flex-col">
                                     {navLists.map((nav, index) => (
                                         <Link
                                             key={index}
                                             to={nav.path}
                                             className={cn(
-                                                'text-lg group',
-                                                'flex items-center gap-2'
+                                                "group text-lg",
+                                                "flex items-center gap-2"
                                             )}
                                             activeProps={{
-                                                className: 'text-primary!'
+                                                className: "text-primary!",
                                             }}
                                         >
-                                            <nav.Icon className='size-4.5' />
+                                            <nav.Icon className="size-4.5" />
                                             {nav.label}
                                         </Link>
                                     ))}
                                 </nav>
                             </section>
                             <span className="flex-1" />
-                            <nav className={cn(
-                                'sticky bottom-0 p-5 mb-auto',
-                                'flex flex-col'
-                            )}>
+                            <nav className={cn("sticky bottom-0 mb-auto p-5", "flex flex-col")}>
                                 <Button
-                                    className='w-fit!'
+                                    className="w-fit!"
                                     onClick={() => signOut({})}
                                     isDisabled={isPending}
                                 >
@@ -148,15 +170,16 @@ export const Dashboard: FC<DashboardProps> = ({
                             </nav>
                         </section>
                     </aside>
-                    <div className='relative flex flex-col flex-1 overflow-y-auto no-scrollbar'>
+                    <div className="relative no-scrollbar flex flex-1 flex-col overflow-y-auto">
                         {impersonatedBy && (
-                            <div className='sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-destructive/10 px-5 py-2 text-xs text-destructive'>
+                            <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-destructive/10 px-5 py-2 text-xs text-destructive">
                                 <span>
-                                    Impersonating <strong>{session?.user.name}</strong> ({session?.user.email})
+                                    Impersonating <strong>{session?.user.name}</strong> (
+                                    {session?.user.email})
                                 </span>
                                 <Button
-                                    size='xs'
-                                    variant='outline'
+                                    size="xs"
+                                    variant="outline"
                                     onClick={() => void stopImpersonating({})}
                                     isDisabled={isStoppingImpersonation}
                                 >

@@ -10,8 +10,8 @@ export const Route = createFileRoute("/_auth/create-account")({
     loader: async ({ context: { session } }) => {
         if (session) {
             throw redirect({
-                to: '/',
-                replace: true
+                to: "/",
+                replace: true,
             })
         }
     },
@@ -66,10 +66,11 @@ function RouteComponent() {
 
     if (needsVerification) {
         return (
-            <div className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}>
+            <div className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}>
                 <h1 className="text-3xl">Check your email</h1>
                 <p className="text-muted-foreground">
-                    We sent a verification link to your email address. Follow it to finish creating your account.
+                    We sent a verification link to your email address. Follow it to finish creating
+                    your account.
                 </p>
             </div>
         )
@@ -81,7 +82,7 @@ function RouteComponent() {
                 e.preventDefault()
                 void form.handleSubmit()
             }}
-            className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
+            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
         >
             <section>
                 <h1 className="text-3xl">Create an account</h1>
@@ -93,7 +94,9 @@ function RouteComponent() {
                 <FieldGroup>
                     <form.AppField
                         name="name"
-                        children={(field) => <field.input label="Name" autoComplete="name" placeholder="Your name" />}
+                        children={(field) => (
+                            <field.input label="Name" autoComplete="name" placeholder="Your name" />
+                        )}
                     />
 
                     <form.AppField
@@ -124,7 +127,7 @@ function RouteComponent() {
                 <form.submit label="Create account" />
             </form.AppForm>
 
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <Link to="/sign-in" className="text-foreground hover:underline">
                     Sign in

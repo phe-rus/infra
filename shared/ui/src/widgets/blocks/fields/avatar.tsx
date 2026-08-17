@@ -31,25 +31,25 @@ export function FieldAvatar({
     }, [field.state.value])
 
     return (
-        <div className={cn(
-            "relative group flex flex-col items-center gap-4 w-fit",
-            'rounded-full justify-center'
-        )}>
+        <div
+            className={cn(
+                "group relative flex w-fit flex-col items-center gap-4",
+                "justify-center rounded-full"
+            )}
+        >
             <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="rounded-full"
                 aria-label="Change avatar"
             >
-                <Avatar size="lg" className='size-43!'>
+                <Avatar size="lg" className="size-43!">
                     <AvatarImage
                         src={preview ?? existingImage ?? undefined}
                         alt={label}
-                        className='group-hover:opacity-50 transition-opacity'
+                        className="transition-opacity group-hover:opacity-50"
                     />
-                    <AvatarFallback>
-                        {label.charAt(0)?.toUpperCase() ?? "?"}
-                    </AvatarFallback>
+                    <AvatarFallback>{label.charAt(0)?.toUpperCase() ?? "?"}</AvatarFallback>
                 </Avatar>
             </button>
             <input
@@ -64,11 +64,11 @@ export function FieldAvatar({
             />
             <Button
                 type="button"
-                variant='secondary'
-                size='icon'
+                variant="secondary"
+                size="icon"
                 className={cn(
-                    'absolute m-auto flex opacity-70 group-hover:opacity-100',
-                    'rounded-full! shadow-md shadow-accent'
+                    "absolute m-auto flex opacity-70 group-hover:opacity-100",
+                    "rounded-full! shadow-md shadow-accent"
                 )}
                 onClick={() => fileInputRef.current?.click()}
             >

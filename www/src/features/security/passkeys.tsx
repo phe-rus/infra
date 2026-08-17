@@ -36,7 +36,7 @@ export function RenamePasskeyDialog({
                 {
                     onSuccess: () => {
                         setOpen(false)
-                    }
+                    },
                 }
             )
         },
@@ -62,7 +62,9 @@ export function RenamePasskeyDialog({
                         <Button type="submit" isDisabled={updateMutation.isPending}>
                             {updateMutation.isPending ? "Saving…" : "Save"}
                         </Button>
-                        <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                        <DrawerClose render={<Button type="button" variant="outline" />}>
+                            Cancel
+                        </DrawerClose>
                     </>
                 }
             >
@@ -81,15 +83,14 @@ export function RenamePasskeyDialog({
     )
 }
 
-export function AddPasskeyDialog({
-    children,
-    ...props
-}: PropsWithChildren<TriggerProps>) {
+export function AddPasskeyDialog({ children, ...props }: PropsWithChildren<TriggerProps>) {
     const [open, setOpen] = useState(false)
     const addMutation = useAddPasskey()
 
     const form = useAppForm({
-        defaultValues: { name: "", authenticatorAttachment: "platform" } as z.input<typeof addPasskeySchema>,
+        defaultValues: { name: "", authenticatorAttachment: "platform" } as z.input<
+            typeof addPasskeySchema
+        >,
         validators: { onChange: addPasskeySchema },
         onSubmit: async ({ value }) => {
             await addMutation.mutateAsync(
@@ -98,7 +99,7 @@ export function AddPasskeyDialog({
                     onSuccess: () => {
                         setOpen(false)
                         form.reset()
-                    }
+                    },
                 }
             )
         },
@@ -124,7 +125,9 @@ export function AddPasskeyDialog({
                         <Button type="submit" isDisabled={addMutation.isPending}>
                             {addMutation.isPending ? "Waiting for passkey…" : "Continue"}
                         </Button>
-                        <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                        <DrawerClose render={<Button type="button" variant="outline" />}>
+                            Cancel
+                        </DrawerClose>
                     </>
                 }
             >
@@ -145,12 +148,14 @@ export function AddPasskeyDialog({
                                         {
                                             value: "platform",
                                             label: "This device",
-                                            description: "Touch ID, Windows Hello, or your synced password manager",
+                                            description:
+                                                "Touch ID, Windows Hello, or your synced password manager",
                                         },
                                         {
                                             value: "cross-platform",
                                             label: "A different device or security key",
-                                            description: "Use this if you already have a passkey on this device",
+                                            description:
+                                                "Use this if you already have a passkey on this device",
                                         },
                                     ]}
                                 />

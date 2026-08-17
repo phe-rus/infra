@@ -3,16 +3,13 @@ import { fieldContext, formContext } from "./contexts"
 import { Submit } from "./elements/submit"
 import { fields } from "./fields"
 
-export const {
-    useAppForm,
-    withForm
-} = createFormHook({
+export const { useAppForm, withForm } = createFormHook({
     fieldComponents: {
-        ...fields
+        ...fields,
     },
     formComponents: {
-        submit: Submit
+        submit: Submit,
     },
     fieldContext,
-    formContext
+    formContext,
 })

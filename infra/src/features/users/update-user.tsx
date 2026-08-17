@@ -54,8 +54,13 @@ export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
                     className="cursor-pointer disabled:opacity-50"
                 >
                     <Avatar size="lg">
-                        <AvatarImage src={viewUser.user.image ?? undefined} alt={viewUser.user.name} />
-                        <AvatarFallback>{viewUser.user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                        <AvatarImage
+                            src={viewUser.user.image ?? undefined}
+                            alt={viewUser.user.name}
+                        />
+                        <AvatarFallback>
+                            {viewUser.user.name.slice(0, 1).toUpperCase()}
+                        </AvatarFallback>
                     </Avatar>
                 </button>
                 <input
@@ -71,7 +76,11 @@ export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
             </div>
             <Field>
                 <FieldLabel htmlFor="edit-user-name">Name</FieldLabel>
-                <Input id="edit-user-name" value={editName} onChange={(e) => setEditName(e.target.value)} />
+                <Input
+                    id="edit-user-name"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                />
             </Field>
             <Field>
                 <FieldLabel htmlFor="edit-user-email">Email</FieldLabel>
@@ -88,7 +97,8 @@ export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
                 isDisabled={
                     !editName.trim() ||
                     !editEmail.trim() ||
-                    (editName.trim() === viewUser.user.name && editEmail.trim() === viewUser.user.email)
+                    (editName.trim() === viewUser.user.name &&
+                        editEmail.trim() === viewUser.user.email)
                 }
                 onClick={() => void handleUpdateDetails()}
             >

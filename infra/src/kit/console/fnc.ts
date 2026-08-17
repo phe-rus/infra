@@ -151,7 +151,9 @@ export const createApp = createServerFn({ method: "POST" })
                 logo_uri: data.logo_uri,
                 type: data.type,
                 token_endpoint_auth_method: data.token_endpoint_auth_method,
-                redirect_uris: data.redirect_uris?.length ? data.redirect_uris : [PENDING_REDIRECT_URI],
+                redirect_uris: data.redirect_uris?.length
+                    ? data.redirect_uris
+                    : [PENDING_REDIRECT_URI],
                 post_logout_redirect_uris: data.post_logout_redirect_uris,
                 scope: data.scope.join(" "),
                 grant_types: data.grant_types,
@@ -160,8 +162,8 @@ export const createApp = createServerFn({ method: "POST" })
                 enable_end_session: data.enable_end_session,
                 ...(data.framework && {
                     metadata: {
-                        framework: data.framework
-                    }
+                        framework: data.framework,
+                    },
                 }),
             },
         })

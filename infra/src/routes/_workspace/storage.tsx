@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_workspace/storage")({
         if (!isAdminTier(user.role ?? "")) {
             throw redirect({
                 to: "/unauthorized",
-                replace: true
+                replace: true,
             })
         }
     },
@@ -42,7 +42,12 @@ function RouteComponent() {
                 {segments.map((segment, index) => (
                     <span key={index} className="flex items-center gap-1">
                         <span>/</span>
-                        <Button type="button" variant="ghost" size="xs" onClick={() => setPrefix(crumbPrefix(index))}>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="xs"
+                            onClick={() => setPrefix(crumbPrefix(index))}
+                        >
                             {segment}
                         </Button>
                     </span>

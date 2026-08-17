@@ -1,24 +1,30 @@
+import { createServerFn } from "@tanstack/react-start"
+import { getRequestHeaders } from "@tanstack/react-start/server"
 import { queryOptions } from "@tanstack/react-query"
 import { authClient } from "@/lib/auth-client"
 import { useAppMutation } from "./use-app-mutation"
 import { currentOptions } from "./get-auth"
 
-export const passkeysOptions = () => queryOptions({
-    queryKey: ["passkeys"],
-    queryFn: async () => {
-        const { data } = await authClient.passkey.listUserPasskeys()
-        return data
-    }
+const fetchPasskeys = createServerFn({ method: "GET" }).handler(async () => {
+    const headers = getRequestHeaders()
+    const { data, error } = await authClient.passkey.listUserPasskeys({
+        fetchOptions: { headers },
+    })
+    if (error) throw new Error(error.message ?? "Could not load your passkeys")
+    return data
 })
+
+export const passkeysOptions = () =>
+    queryOptions({
+        queryKey: ["passkeys"],
+        queryFn: () => fetchPasskeys(),
+    })
 
 export const useEnableTwoFactor = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
-            const {
-                data,
-                error
-            } = await authClient.twoFactor.enable({
-                password
+            const { data, error } = await authClient.twoFactor.enable({
+                password,
             })
             if (error) throw new Error(error.message ?? "Could not start two-factor setup")
             return data
@@ -41,7 +47,8 @@ export const useDisableTwoFactor = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
             const { error } = await authClient.twoFactor.disable({ password })
-            if (error) throw new Error(error.message ?? "Could not disable two-factor authentication")
+            if (error)
+                throw new Error(error.message ?? "Could not disable two-factor authentication")
         },
         invalidates: [currentOptions().queryKey],
         successMessage: "Two-factor authentication disabled",
@@ -80,7 +87,7 @@ export const useAddPasskey = () =>
                 // genuinely additional passkey needs a different device/security key.
                 if ("code" in error && error.code === "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED") {
                     throw new Error(
-                        "This device already has a passkey for your account. To add another, choose \"a different device or security key\"."
+                        'This device already has a passkey for your account. To add another, choose "a different device or security key".'
                     )
                 }
                 throw new Error(error.message ?? "Could not add passkey")
@@ -105,10 +112,8 @@ export const useUpdatePasskey = () =>
 export const useDeletePasskey = () =>
     useAppMutation({
         mutationFn: async (id: string) => {
-            const {
-                error
-            } = await authClient.passkey.deletePasskey({
-                id
+            const { error } = await authClient.passkey.deletePasskey({
+                id,
             })
             if (error) throw new Error(error.message ?? "Could not remove passkey")
         },

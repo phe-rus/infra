@@ -1,7 +1,18 @@
 import type { ReactTable, RowData } from "@tanstack/react-table"
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
+import {
+    IconChevronLeft,
+    IconChevronRight,
+    IconChevronsLeft,
+    IconChevronsRight,
+} from "@tabler/icons-react"
 import { Button } from "../../components/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/select"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../../components/select"
 import type { DataTableFeatures } from "./data-table"
 
 type DataTablePaginationProps<TData extends RowData> = {

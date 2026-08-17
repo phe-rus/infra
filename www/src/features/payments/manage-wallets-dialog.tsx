@@ -5,9 +5,23 @@ import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@infra/ui/components/select"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@infra/ui/components/select"
 import { cn } from "@infra/ui/lib/utils"
-import { IconLoader2, IconStar, IconStarFilled, IconTrash } from "@tabler/icons-react"
+import {
+    IconCircleCheckFilled,
+    IconClock,
+    IconLoader2,
+    IconNfc,
+    IconPlus,
+    IconStar,
+    IconTrash,
+} from "@tabler/icons-react"
 import { useWallets, usePaymentConfig } from "@/functions/get-payments"
 import { useAddWallet, useRemoveWallet, useSetPrimaryWallet } from "@/functions/use-payments"
 import { useWalletFields } from "./use-wallet-fields"
@@ -16,7 +30,12 @@ type Wallet = ReturnType<typeof useWallets>["data"]["wallets"][number]
 
 type TriggerProps = Omit<ComponentProps<"button">, "children" | "onClick" | "type">
 
-function providerDisplayName(countries: ReturnType<typeof usePaymentConfig>["data"]["countries"], code: string) {
+const WALLET_PENDING_HOURS = 24
+
+function providerDisplayName(
+    countries: ReturnType<typeof usePaymentConfig>["data"]["countries"],
+    code: string
+) {
     for (const country of countries) {
         const match = country.providers.find((p) => p.provider === code)
         if (match) return match.displayName
@@ -24,22 +43,59 @@ function providerDisplayName(countries: ReturnType<typeof usePaymentConfig>["dat
     return code
 }
 
+function formatPhoneNumber(raw: string) {
+    return raw
+        .replace(/\D/g, "")
+        .replace(/(\d{3})(?=\d)/g, "$1 ")
+        .trim()
+}
+
+function hoursLeft(createdAt: Date | string) {
+    const elapsedMs = Date.now() - new Date(createdAt).getTime()
+    const remaining = WALLET_PENDING_HOURS - elapsedMs / (60 * 60 * 1000)
+    return Math.max(0, Math.ceil(remaining))
+}
+
 function WalletRow({ wallet }: { wallet: Wallet }) {
     const { data: config } = usePaymentConfig()
     const setPrimaryMutation = useSetPrimaryWallet()
     const removeMutation = useRemoveWallet()
+    const isVerified = wallet.status === "verified"
 
     return (
-        <div className={cn("flex items-center justify-between gap-3", "p-3 bg-accent rounded-md")}>
+        <div className={cn("flex items-center justify-between gap-3", "rounded-md bg-accent p-3")}>
             <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold">{wallet.label || providerDisplayName(config.countries, wallet.provider)}</p>
-                    {wallet.isPrimary && <Badge variant="secondary" className="rounded-full">Primary</Badge>}
+                    <p className="text-sm font-bold">
+                        {wallet.label || providerDisplayName(config.countries, wallet.provider)}
+                    </p>
+                    {wallet.isPrimary && (
+                        <Badge variant="secondary" className="rounded-full">
+                            Primary
+                        </Badge>
+                    )}
                 </div>
                 <p className="text-xs text-muted-foreground">{wallet.phoneNumber}</p>
+                <p
+                    className={cn(
+                        "flex items-center gap-1 text-xs",
+                        isVerified
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-amber-600 dark:text-amber-400"
+                    )}
+                >
+                    {isVerified ? (
+                        <IconCircleCheckFilled className="size-3" />
+                    ) : (
+                        <IconClock className="size-3" />
+                    )}
+                    {isVerified
+                        ? "Verified"
+                        : `Pending · a real payment confirms it, or it's removed in ${hoursLeft(wallet.createdAt)}h`}
+                </p>
             </div>
             <div className="flex items-center gap-2">
-                {!wallet.isPrimary && (
+                {isVerified && !wallet.isPrimary && (
                     <Button
                         type="button"
                         variant="secondary"
@@ -49,14 +105,12 @@ function WalletRow({ wallet }: { wallet: Wallet }) {
                         isDisabled={setPrimaryMutation.isPending}
                         onClick={() => setPrimaryMutation.mutate(wallet.id)}
                     >
-                        {setPrimaryMutation.isPending && setPrimaryMutation.variables === wallet.id
-                            ? <IconLoader2 className="animate-spin" />
-                            : <IconStar />}
-                    </Button>
-                )}
-                {wallet.isPrimary && (
-                    <Button type="button" variant="secondary" size="icon-xs" className="rounded-full" isDisabled aria-label="Primary">
-                        <IconStarFilled />
+                        {setPrimaryMutation.isPending &&
+                        setPrimaryMutation.variables === wallet.id ? (
+                            <IconLoader2 className="animate-spin" />
+                        ) : (
+                            <IconStar />
+                        )}
                     </Button>
                 )}
                 <Button
@@ -68,9 +122,11 @@ function WalletRow({ wallet }: { wallet: Wallet }) {
                     isDisabled={removeMutation.isPending}
                     onClick={() => removeMutation.mutate(wallet.id)}
                 >
-                    {removeMutation.isPending && removeMutation.variables === wallet.id
-                        ? <IconLoader2 className="animate-spin" />
-                        : <IconTrash />}
+                    {removeMutation.isPending && removeMutation.variables === wallet.id ? (
+                        <IconLoader2 className="animate-spin" />
+                    ) : (
+                        <IconTrash />
+                    )}
                 </Button>
             </div>
         </div>
@@ -116,7 +172,11 @@ function AddWalletForm() {
                         {fields.countries.map((c) => (
                             <SelectItem key={c.country} id={c.country} textValue={c.name}>
                                 <span className="flex items-center gap-2">
-                                    <img src={c.flag} alt="" className="h-3.5 w-5 object-cover rounded-none!" />
+                                    <img
+                                        src={c.flag}
+                                        alt=""
+                                        className="h-3.5 w-5 rounded-none! object-cover"
+                                    />
                                     {c.name}
                                 </span>
                             </SelectItem>
@@ -170,7 +230,15 @@ function AddWalletForm() {
                 />
             </Field>
 
-            <Button type="submit" isDisabled={!fields.phoneNumber.trim() || !fields.provider || addMutation.isPending}>
+            <p className="text-xs text-muted-foreground">
+                A saved number stays pending until you actually pay with it. Unused pending numbers
+                are removed after {WALLET_PENDING_HOURS}h.
+            </p>
+
+            <Button
+                type="submit"
+                isDisabled={!fields.phoneNumber.trim() || !fields.provider || addMutation.isPending}
+            >
                 {addMutation.isPending ? "Saving…" : "Save number"}
             </Button>
         </form>
@@ -183,7 +251,12 @@ export function ManageWalletsDialog({ children, ...props }: PropsWithChildren<Tr
 
     return (
         <>
-            <button type="button" onClick={() => setOpen(true)} {...props} className={cn("contents text-left", props.className)}>
+            <button
+                type="button"
+                onClick={() => setOpen(true)}
+                {...props}
+                className={cn("contents text-left", props.className)}
+            >
                 {children}
             </button>
 
@@ -192,7 +265,11 @@ export function ManageWalletsDialog({ children, ...props }: PropsWithChildren<Tr
                 onOpenChange={setOpen}
                 title="Saved numbers"
                 description="Manage the mobile money numbers linked to your account"
-                footer={<DrawerClose render={<Button type="button" variant="outline" />}>Close</DrawerClose>}
+                footer={
+                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                        Close
+                    </DrawerClose>
+                }
             >
                 <div className="flex flex-col gap-3">
                     {data.wallets.length > 0 && (
@@ -206,5 +283,84 @@ export function ManageWalletsDialog({ children, ...props }: PropsWithChildren<Tr
                 </div>
             </DialogWidget>
         </>
+    )
+}
+
+function WalletCard({ wallet }: { wallet: Wallet }) {
+    const { data: config } = usePaymentConfig()
+    const isVerified = wallet.status === "verified"
+
+    return (
+        <ManageWalletsDialog
+            className={cn(
+                "relative flex h-36 w-56 shrink-0 snap-start flex-col justify-between overflow-hidden rounded-2xl p-4",
+                "bg-primary text-primary-foreground"
+            )}
+        >
+            <div
+                aria-hidden
+                className="absolute -top-10 -right-10 size-32 rounded-full bg-primary-foreground/10"
+            />
+            <div className="flex items-start justify-between">
+                <div className="flex size-8 items-center justify-center rounded-md bg-primary-foreground/15">
+                    <IconNfc className="size-4" />
+                </div>
+                {wallet.isPrimary && (
+                    <span className="text-[10px] font-semibold tracking-widest text-primary-foreground/70 uppercase">
+                        Default
+                    </span>
+                )}
+            </div>
+            <div className="relative flex flex-col gap-1">
+                <p className="font-mono text-lg tracking-wider">
+                    {formatPhoneNumber(wallet.phoneNumber)}
+                </p>
+                <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-xs text-primary-foreground/70">
+                        {wallet.label || providerDisplayName(config.countries, wallet.provider)}
+                    </span>
+                    <span
+                        className={cn(
+                            "flex shrink-0 items-center gap-1 text-[10px] font-medium",
+                            isVerified ? "text-emerald-400" : "text-amber-400"
+                        )}
+                    >
+                        {isVerified ? (
+                            <IconCircleCheckFilled className="size-3" />
+                        ) : (
+                            <IconClock className="size-3" />
+                        )}
+                        {isVerified ? "Verified" : `${hoursLeft(wallet.createdAt)}h`}
+                    </span>
+                </div>
+            </div>
+        </ManageWalletsDialog>
+    )
+}
+
+function AddWalletCardTile() {
+    return (
+        <ManageWalletsDialog
+            className={cn(
+                "flex h-36 w-40 shrink-0 snap-start flex-col items-center justify-center gap-2",
+                "rounded-2xl border-2 border-dashed border-border text-muted-foreground"
+            )}
+        >
+            <IconPlus />
+            <span className="text-xs">Add a number</span>
+        </ManageWalletsDialog>
+    )
+}
+
+export function WalletCards() {
+    const { data } = useWallets()
+
+    return (
+        <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
+            {data.wallets.map((wallet) => (
+                <WalletCard key={wallet.id} wallet={wallet} />
+            ))}
+            <AddWalletCardTile />
+        </div>
     )
 }

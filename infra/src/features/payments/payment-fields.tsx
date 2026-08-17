@@ -1,7 +1,13 @@
 import type { FC } from "react"
 import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@infra/ui/components/select"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@infra/ui/components/select"
 import type { usePaymentFields } from "./use-payment-fields"
 
 export type PaymentFieldsProps = {
@@ -12,9 +18,24 @@ export type PaymentFieldsProps = {
     onAmountChange: (value: string) => void
 }
 
-export const PaymentFields: FC<PaymentFieldsProps> = ({ idPrefix, kind, fields, amount, onAmountChange }) => {
-    const { countries, country, countryCode, selectCountry, provider, providerCode, setProviderCode, phoneNumber, setPhoneNumber } =
-        fields
+export const PaymentFields: FC<PaymentFieldsProps> = ({
+    idPrefix,
+    kind,
+    fields,
+    amount,
+    onAmountChange,
+}) => {
+    const {
+        countries,
+        country,
+        countryCode,
+        selectCountry,
+        provider,
+        providerCode,
+        setProviderCode,
+        phoneNumber,
+        setPhoneNumber,
+    } = fields
 
     const minAmount = kind === "deposit" ? provider?.depositMinAmount : provider?.payoutMinAmount
     const maxAmount = kind === "deposit" ? provider?.depositMaxAmount : provider?.payoutMaxAmount
@@ -36,7 +57,11 @@ export const PaymentFields: FC<PaymentFieldsProps> = ({ idPrefix, kind, fields, 
                         {countries.map((c) => (
                             <SelectItem key={c.country} id={c.country} textValue={c.name}>
                                 <span className="flex items-center gap-2">
-                                    <img src={c.flag} alt="" className="h-3.5 w-5 object-cover rounded-none!" />
+                                    <img
+                                        src={c.flag}
+                                        alt=""
+                                        className="h-3.5 w-5 rounded-none! object-cover"
+                                    />
                                     {c.name}
                                 </span>
                             </SelectItem>
@@ -81,7 +106,9 @@ export const PaymentFields: FC<PaymentFieldsProps> = ({ idPrefix, kind, fields, 
             </Field>
 
             <Field className="col-span-2">
-                <FieldLabel htmlFor={`${idPrefix}-amount`}>Amount {provider ? `(${provider.currency})` : ""}</FieldLabel>
+                <FieldLabel htmlFor={`${idPrefix}-amount`}>
+                    Amount {provider ? `(${provider.currency})` : ""}
+                </FieldLabel>
                 <Input
                     id={`${idPrefix}-amount`}
                     value={amount}
@@ -89,7 +116,7 @@ export const PaymentFields: FC<PaymentFieldsProps> = ({ idPrefix, kind, fields, 
                     placeholder={minAmount ?? undefined}
                 />
                 {(minAmount || maxAmount) && (
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs text-muted-foreground">
                         {minAmount} – {maxAmount} {provider?.currency}
                     </p>
                 )}

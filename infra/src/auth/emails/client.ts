@@ -7,11 +7,7 @@ export type SendEmailOptions = {
     html: string
 }
 
-export async function sendEmail({
-    to,
-    subject,
-    html
-}: SendEmailOptions): Promise<void> {
+export async function sendEmail({ to, subject, html }: SendEmailOptions): Promise<void> {
     const resend = new Resend(env.RESEND_API_KEY)
     const { error } = await resend.emails.send({
         from: env.RESEND_FROM_EMAIL,

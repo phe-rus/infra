@@ -53,7 +53,7 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
             await verifyMutation.mutateAsync(value.code, {
                 onSuccess: () => {
                     close()
-                }
+                },
             })
         },
     })
@@ -63,7 +63,9 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
             {!enrollment ? (
                 <DialogWidget
                     open={open}
-                    onOpenChange={(next) => { if (!next) close() }}
+                    onOpenChange={(next) => {
+                        if (!next) close()
+                    }}
                     title="Enable two-factor authentication"
                     description="Confirm your password to start setup"
                     onSubmit={(e) => {
@@ -75,7 +77,9 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
                             <Button type="submit" isDisabled={enableMutation.isPending}>
                                 {enableMutation.isPending ? "Continuing…" : "Continue"}
                             </Button>
-                            <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                            <DrawerClose render={<Button type="button" variant="outline" />}>
+                                Cancel
+                            </DrawerClose>
                         </>
                     }
                 >
@@ -98,7 +102,9 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
             ) : (
                 <DialogWidget
                     open={open}
-                    onOpenChange={(next) => { if (!next) close() }}
+                    onOpenChange={(next) => {
+                        if (!next) close()
+                    }}
                     title="Scan the QR code"
                     description="Scan with your authenticator app, then enter the 6-digit code"
                     onSubmit={(e) => {
@@ -110,7 +116,9 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
                             <Button type="submit" isDisabled={verifyMutation.isPending}>
                                 {verifyMutation.isPending ? "Verifying…" : "Verify and enable"}
                             </Button>
-                            <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                            <DrawerClose render={<Button type="button" variant="outline" />}>
+                                Cancel
+                            </DrawerClose>
                         </>
                     }
                 >
@@ -122,11 +130,14 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
                         <div className="flex flex-col gap-1">
                             <p className="text-sm font-medium">Backup codes</p>
                             <p className="text-xs text-muted-foreground">
-                                Save these somewhere safe — each one can replace a code from your app if you lose access to it.
+                                Save these somewhere safe — each one can replace a code from your
+                                app if you lose access to it.
                             </p>
                             <div className="grid grid-cols-2 gap-1 font-mono text-xs">
                                 {enrollment.backupCodes.map((code) => (
-                                    <span key={code} className="bg-muted px-2 py-1">{code}</span>
+                                    <span key={code} className="bg-muted px-2 py-1">
+                                        {code}
+                                    </span>
                                 ))}
                             </div>
                         </div>
@@ -162,7 +173,7 @@ export function DisableTwoFactorDialog({ open, onOpenChange }: ControlledDialogP
                 onSuccess: () => {
                     onOpenChange(false)
                     form.reset()
-                }
+                },
             })
         },
     })
@@ -179,10 +190,16 @@ export function DisableTwoFactorDialog({ open, onOpenChange }: ControlledDialogP
             }}
             footer={
                 <>
-                    <Button type="submit" variant="destructive" isDisabled={disableMutation.isPending}>
+                    <Button
+                        type="submit"
+                        variant="destructive"
+                        isDisabled={disableMutation.isPending}
+                    >
                         {disableMutation.isPending ? "Disabling…" : "Disable"}
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                        Cancel
+                    </DrawerClose>
                 </>
             }
         >
@@ -226,7 +243,9 @@ export function RegenerateBackupCodesDialog({ open, onOpenChange }: ControlledDi
     return (
         <DialogWidget
             open={open}
-            onOpenChange={(next) => { if (!next) close() }}
+            onOpenChange={(next) => {
+                if (!next) close()
+            }}
             title="Generate new backup codes"
             description={
                 backupCodes
@@ -239,13 +258,17 @@ export function RegenerateBackupCodesDialog({ open, onOpenChange }: ControlledDi
             }}
             footer={
                 backupCodes ? (
-                    <Button type="button" onClick={close}>Done</Button>
+                    <Button type="button" onClick={close}>
+                        Done
+                    </Button>
                 ) : (
                     <>
                         <Button type="submit" isDisabled={generateMutation.isPending}>
                             {generateMutation.isPending ? "Generating…" : "Generate codes"}
                         </Button>
-                        <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                        <DrawerClose render={<Button type="button" variant="outline" />}>
+                            Cancel
+                        </DrawerClose>
                     </>
                 )
             }
@@ -269,7 +292,9 @@ export function RegenerateBackupCodesDialog({ open, onOpenChange }: ControlledDi
             ) : (
                 <div className="grid grid-cols-2 gap-1 font-mono text-xs">
                     {backupCodes.map((code) => (
-                        <span key={code} className="bg-muted px-2 py-1">{code}</span>
+                        <span key={code} className="bg-muted px-2 py-1">
+                            {code}
+                        </span>
                     ))}
                 </div>
             )}

@@ -22,7 +22,12 @@ export type ListApplicationsProps = {
     onRemove: (clientId: string) => void
 }
 
-export const ListApplications: FC<ListApplicationsProps> = ({ applications, onSetActive, onRotate, onRemove }) => {
+export const ListApplications: FC<ListApplicationsProps> = ({
+    applications,
+    onSetActive,
+    onRotate,
+    onRemove,
+}) => {
     const columns = useMemo(
         (): DataTableColumnDef<ListedApp>[] => [
             {
@@ -33,7 +38,9 @@ export const ListApplications: FC<ListApplicationsProps> = ({ applications, onSe
                     <Checkbox
                         slot={null}
                         isSelected={table.getIsAllPageRowsSelected()}
-                        isIndeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+                        isIndeterminate={
+                            table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
+                        }
                         onChange={(checked) => table.toggleAllPageRowsSelected(checked)}
                         aria-label="Select all"
                     />
@@ -50,30 +57,34 @@ export const ListApplications: FC<ListApplicationsProps> = ({ applications, onSe
             {
                 accessorKey: "id",
                 header: "ID",
-                cell: ({ row }) => <Link
-                    to="/console/$client_id"
-                    params={{ client_id: row.original.clientId }}
-                    className={cn("bg-accent rounded px-3 py-1 text-xs!", "cursor-pointer")}
-                >
-                    {row.original.id}
-                </Link>
+                cell: ({ row }) => (
+                    <Link
+                        to="/console/$client_id"
+                        params={{ client_id: row.original.clientId }}
+                        className={cn("rounded bg-accent px-3 py-1 text-xs!", "cursor-pointer")}
+                    >
+                        {row.original.id}
+                    </Link>
+                ),
             },
             {
                 accessorKey: "clientId",
                 header: "Client ID",
-                cell: ({ row }) => <span>{row.original.clientId}</span>
+                cell: ({ row }) => <span>{row.original.clientId}</span>,
             },
             {
                 accessorKey: "name",
                 header: "Application",
-                cell: ({ row }) => <span>{row.original.name ?? "Untitled"}</span>
+                cell: ({ row }) => <span>{row.original.name ?? "Untitled"}</span>,
             },
             {
                 accessorKey: "type",
                 header: "Type",
                 cell: ({ row }) => {
                     const info = CLIENT_TYPE_INFO[row.original.type as ClientType]
-                    return <Badge variant="outline">{info?.label ?? row.original.type ?? "—"}</Badge>
+                    return (
+                        <Badge variant="outline">{info?.label ?? row.original.type ?? "—"}</Badge>
+                    )
                 },
             },
             {
@@ -106,18 +117,30 @@ export const ListApplications: FC<ListApplicationsProps> = ({ applications, onSe
                     const app = row.original
                     return (
                         <DropdownMenuTrigger>
-                            <Button type="button" variant="ghost" size="icon-xs" aria-label="Row actions">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-xs"
+                                aria-label="Row actions"
+                            >
                                 <IconDotsVertical className="size-4" />
                             </Button>
                             <DropdownMenu aria-label="Row actions">
-                                <DropdownMenuItem onAction={() => onSetActive(app.clientId, Boolean(app.disabled))}>
+                                <DropdownMenuItem
+                                    onAction={() =>
+                                        onSetActive(app.clientId, Boolean(app.disabled))
+                                    }
+                                >
                                     {app.disabled ? "Enable" : "Disable"}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onAction={() => onRotate(app.clientId)}>
                                     Rotate secret
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem variant="destructive" onAction={() => onRemove(app.clientId)}>
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    onAction={() => onRemove(app.clientId)}
+                                >
                                     Remove
                                 </DropdownMenuItem>
                             </DropdownMenu>

@@ -137,10 +137,7 @@ export const updateUser = createServerFn({ method: "POST" })
         const headers = getRequestHeaders()
         // adminUpdateUser returns the user directly, not wrapped in { user }
         // like its sibling admin.* endpoints
-        const {
-            response: user,
-            headers: responseHeaders,
-        } = await auth.api.adminUpdateUser({
+        const { response: user, headers: responseHeaders } = await auth.api.adminUpdateUser({
             headers: headers,
             returnHeaders: true,
             body: {

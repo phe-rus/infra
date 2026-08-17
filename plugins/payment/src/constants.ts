@@ -6,3 +6,8 @@ export type PaymentType = (typeof PAYMENT_TYPES)[number]
 // their status into one of these when it processes a callback
 export const PAYMENT_STATUSES = ["pending", "completed", "failed", "cancelled"] as const
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number]
+
+export const WALLET_NUMBER_STATUSES = ["pending", "verified"] as const
+export type WalletNumberStatus = (typeof WALLET_NUMBER_STATUSES)[number]
+
+export const WALLET_NUMBER_PENDING_TTL_MS = 24 * 60 * 60 * 1000

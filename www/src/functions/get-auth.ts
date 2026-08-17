@@ -12,10 +12,11 @@ export const currentUser = createServerFn()
         return context.session
     })
 
-export const currentOptions = () => queryOptions({
-    queryKey: ["me"],
-    queryFn: () => currentUser(),
-})
+export const currentOptions = () =>
+    queryOptions({
+        queryKey: ["me"],
+        queryFn: () => currentUser(),
+    })
 
 export const useLogout = () => {
     const queryClient = getContext()
@@ -26,22 +27,20 @@ export const useLogout = () => {
             return await authClient.signOut()
         },
         onSuccess: async () => {
-            t.success('Successfully', {
-                description: 'Logout successfully!'
+            t.success("Successfully", {
+                description: "Logout successfully!",
             })
-            await queryClient.invalidateQueries(
-                currentOptions()
-            )
+            await queryClient.invalidateQueries(currentOptions())
             await router.navigate({
-                to: '/',
+                to: "/",
                 replace: true,
                 reloadDocument: true,
             })
         },
         onError: (error) => {
             t.error(error.name, {
-                description: error.message
+                description: error.message,
             })
-        }
+        },
     })
 }

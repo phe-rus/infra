@@ -5,7 +5,7 @@ import { PawaPayClient, type PawaPayEnvironment } from "./client"
 import { verifyPawaPayCallback } from "./verify-signature"
 import { toPaymentCountryOptions, type PaymentCountryOption } from "./active-config"
 import { convertViaUsd, fetchUsdRates, type FxRates } from "./fx"
-import type { PaymentStatus } from "./constants"
+import { WALLET_NUMBER_PENDING_TTL_MS, type PaymentStatus } from "./constants"
 
 const ACTIVE_CONFIG_CACHE_KEY = "infra-payment:active-conf:v1"
 const ACTIVE_CONFIG_CACHE_TTL = 60 * 60 // 1 hour — PawaPay's own provider list changes rarely
@@ -76,7 +76,11 @@ export function infraPayment(options: InfraPaymentOptions) {
             // them into one total is
             walletBalances: createAuthEndpoint(
                 "/pay/balances",
-                { method: "GET", use: [sessionMiddleware], query: z.object({ currency: z.string().length(3).optional() }) },
+                {
+                    method: "GET",
+                    use: [sessionMiddleware],
+                    query: z.object({ currency: z.string().length(3).optional() }),
+                },
                 async (ctx) => {
                     if (!isAdmin(ctx.context.session.user.role ?? "")) {
                         throw new APIError("FORBIDDEN", { message: "Admin access required" })
@@ -91,7 +95,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                     const usdRates: FxRates = cachedRates
                         ? JSON.parse(cachedRates)
                         : await fetchUsdRates().then(async (rates) => {
-                              await options.cache.put(FX_CACHE_KEY, JSON.stringify(rates), { expirationTtl: FX_CACHE_TTL })
+                              await options.cache.put(FX_CACHE_KEY, JSON.stringify(rates), {
+                                  expirationTtl: FX_CACHE_TTL,
+                              })
                               return rates
                           })
 
@@ -99,7 +105,12 @@ export function infraPayment(options: InfraPaymentOptions) {
                     let amount = 0
                     const unconvertedCurrencies: string[] = []
                     for (const balance of balances) {
-                        const converted = convertViaUsd(Number(balance.balance), balance.currency, targetCurrency, usdRates)
+                        const converted = convertViaUsd(
+                            Number(balance.balance),
+                            balance.currency,
+                            targetCurrency,
+                            usdRates
+                        )
                         if (converted === null) {
                             unconvertedCurrencies.push(balance.currency)
                             continue
@@ -159,7 +170,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                 },
                 async (ctx) => {
                     if (!onPaymentCompleted) {
-                        throw new APIError("BAD_REQUEST", { message: "Receipt emails are not configured on this instance" })
+                        throw new APIError("BAD_REQUEST", {
+                            message: "Receipt emails are not configured on this instance",
+                        })
                     }
 
                     const payment = await ctx.context.adapter.findOne<{
@@ -181,7 +194,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                         throw new APIError("NOT_FOUND", { message: "Payment not found" })
                     }
                     if (payment.status !== "completed") {
-                        throw new APIError("BAD_REQUEST", { message: "Only completed payments have a receipt" })
+                        throw new APIError("BAD_REQUEST", {
+                            message: "Only completed payments have a receipt",
+                        })
                     }
 
                     await onPaymentCompleted(ctx.context.session.user.email, {
@@ -204,24 +219,44 @@ export function infraPayment(options: InfraPaymentOptions) {
             ),
             // self-service: the signed-in user's own saved mobile-money
             // numbers — separate from a payment's own phoneNumber, this is
-            // what backs the "Primary" wallet card and lets the deposit form
-            // skip retyping a number every time
+            // what backs the wallet cards and lets the deposit form skip
+            // retyping a number every time. A number starts "pending" and
+            // only becomes "verified" once a real deposit clears through it
+            // (see verifyWalletNumber, called from the webhook below) — a
+            // pending one older than 24h is swept here before the list
+            // is even read, since it never proved it's real
             listWalletNumbers: createAuthEndpoint(
                 "/pay/wallets",
                 { method: "GET", use: [sessionMiddleware] },
                 async (ctx) => {
+                    const userId = ctx.context.session.user.id
+
+                    await ctx.context.adapter.deleteMany({
+                        model: "walletNumber",
+                        where: [
+                            { field: "userId", value: userId },
+                            { field: "status", value: "pending" },
+                            {
+                                field: "createdAt",
+                                operator: "lt",
+                                value: new Date(Date.now() - WALLET_NUMBER_PENDING_TTL_MS),
+                            },
+                        ],
+                    })
+
                     const wallets = await ctx.context.adapter.findMany<{
                         id: string
                         userId: string
                         phoneNumber: string
                         provider: string
                         label: string | null
+                        status: string
                         isPrimary: boolean
                         createdAt: Date
                         updatedAt: Date
                     }>({
                         model: "walletNumber",
-                        where: [{ field: "userId", value: ctx.context.session.user.id }],
+                        where: [{ field: "userId", value: userId }],
                         sortBy: { field: "createdAt", direction: "desc" },
                     })
                     // primary pinned to the top, most recently added first otherwise
@@ -229,6 +264,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                     return ctx.json({ wallets })
                 }
             ),
+            // always starts pending and never primary — a freshly added
+            // number hasn't proven it's real yet, see listWalletNumbers above
             addWalletNumber: createAuthEndpoint(
                 "/pay/wallets/add",
                 {
@@ -238,37 +275,18 @@ export function infraPayment(options: InfraPaymentOptions) {
                         phoneNumber: z.string().min(1),
                         provider: z.string().min(1),
                         label: z.string().min(1).max(40).optional(),
-                        makePrimary: z.boolean().optional(),
                     }),
                 },
                 async (ctx) => {
-                    const userId = ctx.context.session.user.id
-                    const existing = await ctx.context.adapter.findMany({
-                        model: "walletNumber",
-                        where: [{ field: "userId", value: userId }],
-                    })
-                    // the first saved number is always primary, regardless of the flag
-                    const isPrimary = existing.length === 0 || Boolean(ctx.body.makePrimary)
-
-                    if (isPrimary && existing.length > 0) {
-                        await ctx.context.adapter.updateMany({
-                            model: "walletNumber",
-                            where: [
-                                { field: "userId", value: userId },
-                                { field: "isPrimary", value: true },
-                            ],
-                            update: { isPrimary: false },
-                        })
-                    }
-
                     const wallet = await ctx.context.adapter.create({
                         model: "walletNumber",
                         data: {
-                            userId,
+                            userId: ctx.context.session.user.id,
                             phoneNumber: ctx.body.phoneNumber,
                             provider: ctx.body.provider,
                             label: ctx.body.label,
-                            isPrimary,
+                            status: "pending",
+                            isPrimary: false,
                         },
                     })
 
@@ -302,11 +320,16 @@ export function infraPayment(options: InfraPaymentOptions) {
                     })
 
                     // removing the primary number promotes the most recently
-                    // added remaining one, so the user is never left without one
+                    // verified remaining one (a still-pending number can't
+                    // become primary), so a usable number never loses its
+                    // primary status outright
                     if (wallet.isPrimary) {
                         const remaining = await ctx.context.adapter.findMany<{ id: string }>({
                             model: "walletNumber",
-                            where: [{ field: "userId", value: userId }],
+                            where: [
+                                { field: "userId", value: userId },
+                                { field: "status", value: "verified" },
+                            ],
                             sortBy: { field: "createdAt", direction: "desc" },
                             limit: 1,
                         })
@@ -331,12 +354,21 @@ export function infraPayment(options: InfraPaymentOptions) {
                 },
                 async (ctx) => {
                     const userId = ctx.context.session.user.id
-                    const wallet = await ctx.context.adapter.findOne<{ id: string; userId: string }>({
+                    const wallet = await ctx.context.adapter.findOne<{
+                        id: string
+                        userId: string
+                        status: string
+                    }>({
                         model: "walletNumber",
                         where: [{ field: "id", value: ctx.body.walletId }],
                     })
                     if (!wallet || wallet.userId !== userId) {
                         throw new APIError("NOT_FOUND", { message: "Saved number not found" })
+                    }
+                    if (wallet.status !== "verified") {
+                        throw new APIError("BAD_REQUEST", {
+                            message: "Only a verified number can be set as primary",
+                        })
                     }
 
                     await ctx.context.adapter.updateMany({
@@ -388,7 +420,10 @@ export function infraPayment(options: InfraPaymentOptions) {
                         depositId,
                         payer: {
                             type: "MMO",
-                            accountDetails: { phoneNumber: ctx.body.phoneNumber, provider: ctx.body.provider },
+                            accountDetails: {
+                                phoneNumber: ctx.body.phoneNumber,
+                                provider: ctx.body.provider,
+                            },
                         },
                         amount: ctx.body.amount,
                         currency: ctx.body.currency,
@@ -399,7 +434,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                     // ACCEPTED just means PawaPay took the request for
                     // processing — the real outcome (completed/failed)
                     // only ever arrives later via the signed webhook
-                    const status: PaymentStatus = result.status === "ACCEPTED" ? "pending" : "failed"
+                    const status: PaymentStatus =
+                        result.status === "ACCEPTED" ? "pending" : "failed"
 
                     await ctx.context.adapter.create({
                         model: "payment",
@@ -413,7 +449,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                             currency: ctx.body.currency,
                             pawapayReferenceId: depositId,
                             status,
-                            failureReason: result.failureReason ? JSON.stringify(result.failureReason) : undefined,
+                            failureReason: result.failureReason
+                                ? JSON.stringify(result.failureReason)
+                                : undefined,
                         },
                     })
 
@@ -454,7 +492,10 @@ export function infraPayment(options: InfraPaymentOptions) {
                         payoutId,
                         recipient: {
                             type: "MMO",
-                            accountDetails: { phoneNumber: ctx.body.phoneNumber, provider: ctx.body.provider },
+                            accountDetails: {
+                                phoneNumber: ctx.body.phoneNumber,
+                                provider: ctx.body.provider,
+                            },
                         },
                         amount: ctx.body.amount,
                         currency: ctx.body.currency,
@@ -462,7 +503,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                         ...(ctx.body.purpose && { customerMessage: ctx.body.purpose }),
                     })
 
-                    const status: PaymentStatus = result.status === "ACCEPTED" ? "pending" : "failed"
+                    const status: PaymentStatus =
+                        result.status === "ACCEPTED" ? "pending" : "failed"
 
                     await ctx.context.adapter.create({
                         model: "payment",
@@ -475,7 +517,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                             currency: ctx.body.currency,
                             pawapayReferenceId: payoutId,
                             status,
-                            failureReason: result.failureReason ? JSON.stringify(result.failureReason) : undefined,
+                            failureReason: result.failureReason
+                                ? JSON.stringify(result.failureReason)
+                                : undefined,
                         },
                     })
 
@@ -528,7 +572,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                         throw new APIError("NOT_FOUND", { message: "Payment not found" })
                     }
                     if (original.type !== "deposit") {
-                        throw new APIError("BAD_REQUEST", { message: "Only deposits can be refunded" })
+                        throw new APIError("BAD_REQUEST", {
+                            message: "Only deposits can be refunded",
+                        })
                     }
 
                     const refundId = crypto.randomUUID()
@@ -542,7 +588,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                         clientReferenceId: refundId,
                     })
 
-                    const status: PaymentStatus = result.status === "ACCEPTED" ? "pending" : "failed"
+                    const status: PaymentStatus =
+                        result.status === "ACCEPTED" ? "pending" : "failed"
 
                     await ctx.context.adapter.create({
                         model: "payment",
@@ -554,8 +601,13 @@ export function infraPayment(options: InfraPaymentOptions) {
                             currency: original.currency,
                             pawapayReferenceId: refundId,
                             status,
-                            failureReason: result.failureReason ? JSON.stringify(result.failureReason) : undefined,
-                            metadata: JSON.stringify({ depositId: original.pawapayReferenceId, originalPaymentId: original.id }),
+                            failureReason: result.failureReason
+                                ? JSON.stringify(result.failureReason)
+                                : undefined,
+                            metadata: JSON.stringify({
+                                depositId: original.pawapayReferenceId,
+                                originalPaymentId: original.id,
+                            }),
                         },
                     })
 
@@ -580,7 +632,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                     }
                     const rawBody = await ctx.request.text()
 
-                    const verified = await verifyPawaPayCallback(ctx.request, rawBody, () => client.getPublicKeys())
+                    const verified = await verifyPawaPayCallback(ctx.request, rawBody, () =>
+                        client.getPublicKeys()
+                    )
                     if (!verified) {
                         throw new APIError("UNAUTHORIZED", { message: "Invalid signature" })
                     }
@@ -599,7 +653,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                     }
                     const referenceId = payload.depositId ?? payload.payoutId ?? payload.refundId
                     if (!referenceId) {
-                        throw new APIError("BAD_REQUEST", { message: "Missing depositId/payoutId/refundId" })
+                        throw new APIError("BAD_REQUEST", {
+                            message: "Missing depositId/payoutId/refundId",
+                        })
                     }
 
                     const existing = await ctx.context.adapter.findOne<{
@@ -623,7 +679,11 @@ export function infraPayment(options: InfraPaymentOptions) {
                     }
 
                     const status: PaymentStatus =
-                        payload.status === "COMPLETED" ? "completed" : payload.status === "FAILED" ? "failed" : "pending"
+                        payload.status === "COMPLETED"
+                            ? "completed"
+                            : payload.status === "FAILED"
+                              ? "failed"
+                              : "pending"
 
                     await ctx.context.adapter.update({
                         model: "payment",
@@ -636,10 +696,58 @@ export function infraPayment(options: InfraPaymentOptions) {
                         },
                     })
 
+                    // a saved number graduates from "pending" to "verified"
+                    // the first time a deposit through it actually clears —
+                    // idempotent, a webhook retry on an already-verified
+                    // number is a no-op
+                    if (status === "completed" && existing.type === "deposit") {
+                        const matchingWallet =
+                            existing.phoneNumber && existing.provider
+                                ? await ctx.context.adapter.findOne<{ id: string; status: string }>(
+                                      {
+                                          model: "walletNumber",
+                                          where: [
+                                              { field: "userId", value: existing.userId },
+                                              { field: "phoneNumber", value: existing.phoneNumber },
+                                              { field: "provider", value: existing.provider },
+                                          ],
+                                      }
+                                  )
+                                : null
+
+                        if (matchingWallet && matchingWallet.status !== "verified") {
+                            await ctx.context.adapter.update({
+                                model: "walletNumber",
+                                where: [{ field: "id", value: matchingWallet.id }],
+                                update: { status: "verified" },
+                            })
+
+                            const hasPrimary = await ctx.context.adapter.findOne({
+                                model: "walletNumber",
+                                where: [
+                                    { field: "userId", value: existing.userId },
+                                    { field: "isPrimary", value: true },
+                                ],
+                            })
+                            // the first number to ever prove itself becomes primary automatically
+                            if (!hasPrimary) {
+                                await ctx.context.adapter.update({
+                                    model: "walletNumber",
+                                    where: [{ field: "id", value: matchingWallet.id }],
+                                    update: { isPrimary: true },
+                                })
+                            }
+                        }
+                    }
+
                     // only the first time this reference transitions to
                     // completed — PawaPay can retry a webhook delivery, and
                     // this shouldn't email a receipt twice for the same payment
-                    if (status === "completed" && existing.status !== "completed" && onPaymentCompleted) {
+                    if (
+                        status === "completed" &&
+                        existing.status !== "completed" &&
+                        onPaymentCompleted
+                    ) {
                         const user = await ctx.context.internalAdapter.findUserById(existing.userId)
                         if (user) {
                             await onPaymentCompleted(user.email, {
@@ -659,7 +767,10 @@ export function infraPayment(options: InfraPaymentOptions) {
                                 // a failed receipt email shouldn't fail the
                                 // webhook ack — PawaPay would just retry
                                 // delivery forever on a 500
-                                ctx.context.logger.error("Failed to send payment receipt email", error)
+                                ctx.context.logger.error(
+                                    "Failed to send payment receipt email",
+                                    error
+                                )
                             })
                         }
                     }

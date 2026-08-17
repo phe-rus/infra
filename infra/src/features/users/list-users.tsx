@@ -32,152 +32,171 @@ export const ListUsers: FC<ListUsersProps> = ({
     onSetRole,
     onRemove,
 }) => {
-    const columns = useMemo((): DataTableColumnDef<ListedUser>[] => [
-        {
-            id: "select",
-            enableColumnFilter: false,
-            enableGlobalFilter: false,
-            header: ({ table }) => (
-                <Checkbox
-                    slot={null}
-                    isSelected={table.getIsAllPageRowsSelected()}
-                    isIndeterminate={
-                        table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
-                    }
-                    onChange={(checked) => table.toggleAllPageRowsSelected(checked)}
-                    aria-label="Select all"
-                />
-            ),
-            cell: ({ row }) => (
-                <Checkbox
-                    slot={null}
-                    isSelected={row.getIsSelected()}
-                    onChange={(checked) => row.toggleSelected(checked)}
-                    aria-label="Select row"
-                />
-            ),
-        },
-        {
-            accessorKey: "id",
-            header: "ID",
-            cell: ({ row }) => {
-                const id = row.original.id
-                return (
-                    <span
-                        className={cn("bg-accent rounded px-3 py-1 text-xs!", "cursor-pointer")}
-                        onClick={() => onView(id)}
-                    >
-                        {id}
-                    </span>
-                )
-            },
-        },
-        {
-            accessorKey: "name",
-            header: "Name",
-        },
-        {
-            accessorKey: "email",
-            header: "Email",
-        },
-        {
-            accessorKey: "role",
-            header: "Role",
-            cell: ({ row }) => {
-                const role = row.original.role ?? "user"
-                return <Badge variant={role === "user" ? "outline" : "secondary"}>{role}</Badge>
-            },
-        },
-        {
-            accessorKey: "banned",
-            header: "Status",
-            cell: ({ row }) =>
-                row.original.banned ? (
-                    <Badge variant="destructive">Banned</Badge>
-                ) : (
-                    <Badge variant="outline">Active</Badge>
+    const columns = useMemo(
+        (): DataTableColumnDef<ListedUser>[] => [
+            {
+                id: "select",
+                enableColumnFilter: false,
+                enableGlobalFilter: false,
+                header: ({ table }) => (
+                    <Checkbox
+                        slot={null}
+                        isSelected={table.getIsAllPageRowsSelected()}
+                        isIndeterminate={
+                            table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
+                        }
+                        onChange={(checked) => table.toggleAllPageRowsSelected(checked)}
+                        aria-label="Select all"
+                    />
                 ),
-        },
-        {
-            accessorKey: "twoFactorEnabled",
-            header: "2FA",
-            cell: ({ row }) =>
-                row.original.twoFactorEnabled ? (
-                    <Badge variant="outline">On</Badge>
-                ) : (
-                    <Badge variant="secondary">Off</Badge>
+                cell: ({ row }) => (
+                    <Checkbox
+                        slot={null}
+                        isSelected={row.getIsSelected()}
+                        onChange={(checked) => row.toggleSelected(checked)}
+                        aria-label="Select row"
+                    />
                 ),
-        },
-        {
-            accessorKey: "updatedAt",
-            header: "Updated",
-            cell: ({ row }) => format(row.original.updatedAt, "PPP"),
-        },
-        {
-            accessorKey: "createdAt",
-            header: "Created",
-            cell: ({ row }) => format(row.original.createdAt, "PPP"),
-        },
-        {
-            id: "actions",
-            header: "",
-            enableColumnFilter: false,
-            enableGlobalFilter: false,
-            enableSorting: false,
-            cell: ({ row }) => {
-                const rowUser = row.original
-                const role = rowUser.role ?? "user"
-                const isSelf = rowUser.id === currentUserId
-                const canManageRole = isOwner && !isSelf
-                const canRemove = !isSelf && (isOwner || !isOwnerRole(role))
-
-                return (
-                    <DropdownMenuTrigger>
-                        <Button type="button" variant="ghost" size="icon-xs" aria-label="Row actions">
-                            <IconDotsVertical className="size-4" />
-                        </Button>
-                        <DropdownMenu aria-label="Row actions">
-                            <DropdownMenuItem onAction={() => onView(rowUser.id)}>View</DropdownMenuItem>
-
-                            {canManageRole && (
-                                <>
-                                    <DropdownMenuSeparator />
-                                    {!isAdminTier(role) && (
-                                        <DropdownMenuItem onAction={() => onSetRole(rowUser.id, "admin")}>
-                                            Make admin
-                                        </DropdownMenuItem>
-                                    )}
-                                    {role === "admin" && (
-                                        <>
-                                            <DropdownMenuItem onAction={() => onSetRole(rowUser.id, "owner")}>
-                                                Make owner
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onAction={() => onSetRole(rowUser.id, "user")}>
-                                                Demote to user
-                                            </DropdownMenuItem>
-                                        </>
-                                    )}
-                                    {isOwnerRole(role) && (
-                                        <DropdownMenuItem onAction={() => onSetRole(rowUser.id, "admin")}>
-                                            Demote to admin
-                                        </DropdownMenuItem>
-                                    )}
-                                </>
-                            )}
-                            {canRemove && (
-                                <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem variant="destructive" onAction={() => onRemove(rowUser.id)}>
-                                        Remove
-                                    </DropdownMenuItem>
-                                </>
-                            )}
-                        </DropdownMenu>
-                    </DropdownMenuTrigger>
-                )
             },
-        },
-    ],
+            {
+                accessorKey: "id",
+                header: "ID",
+                cell: ({ row }) => {
+                    const id = row.original.id
+                    return (
+                        <span
+                            className={cn("rounded bg-accent px-3 py-1 text-xs!", "cursor-pointer")}
+                            onClick={() => onView(id)}
+                        >
+                            {id}
+                        </span>
+                    )
+                },
+            },
+            {
+                accessorKey: "name",
+                header: "Name",
+            },
+            {
+                accessorKey: "email",
+                header: "Email",
+            },
+            {
+                accessorKey: "role",
+                header: "Role",
+                cell: ({ row }) => {
+                    const role = row.original.role ?? "user"
+                    return <Badge variant={role === "user" ? "outline" : "secondary"}>{role}</Badge>
+                },
+            },
+            {
+                accessorKey: "banned",
+                header: "Status",
+                cell: ({ row }) =>
+                    row.original.banned ? (
+                        <Badge variant="destructive">Banned</Badge>
+                    ) : (
+                        <Badge variant="outline">Active</Badge>
+                    ),
+            },
+            {
+                accessorKey: "twoFactorEnabled",
+                header: "2FA",
+                cell: ({ row }) =>
+                    row.original.twoFactorEnabled ? (
+                        <Badge variant="outline">On</Badge>
+                    ) : (
+                        <Badge variant="secondary">Off</Badge>
+                    ),
+            },
+            {
+                accessorKey: "updatedAt",
+                header: "Updated",
+                cell: ({ row }) => format(row.original.updatedAt, "PPP"),
+            },
+            {
+                accessorKey: "createdAt",
+                header: "Created",
+                cell: ({ row }) => format(row.original.createdAt, "PPP"),
+            },
+            {
+                id: "actions",
+                header: "",
+                enableColumnFilter: false,
+                enableGlobalFilter: false,
+                enableSorting: false,
+                cell: ({ row }) => {
+                    const rowUser = row.original
+                    const role = rowUser.role ?? "user"
+                    const isSelf = rowUser.id === currentUserId
+                    const canManageRole = isOwner && !isSelf
+                    const canRemove = !isSelf && (isOwner || !isOwnerRole(role))
+
+                    return (
+                        <DropdownMenuTrigger>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-xs"
+                                aria-label="Row actions"
+                            >
+                                <IconDotsVertical className="size-4" />
+                            </Button>
+                            <DropdownMenu aria-label="Row actions">
+                                <DropdownMenuItem onAction={() => onView(rowUser.id)}>
+                                    View
+                                </DropdownMenuItem>
+
+                                {canManageRole && (
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        {!isAdminTier(role) && (
+                                            <DropdownMenuItem
+                                                onAction={() => onSetRole(rowUser.id, "admin")}
+                                            >
+                                                Make admin
+                                            </DropdownMenuItem>
+                                        )}
+                                        {role === "admin" && (
+                                            <>
+                                                <DropdownMenuItem
+                                                    onAction={() => onSetRole(rowUser.id, "owner")}
+                                                >
+                                                    Make owner
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onAction={() => onSetRole(rowUser.id, "user")}
+                                                >
+                                                    Demote to user
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+                                        {isOwnerRole(role) && (
+                                            <DropdownMenuItem
+                                                onAction={() => onSetRole(rowUser.id, "admin")}
+                                            >
+                                                Demote to admin
+                                            </DropdownMenuItem>
+                                        )}
+                                    </>
+                                )}
+                                {canRemove && (
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            variant="destructive"
+                                            onAction={() => onRemove(rowUser.id)}
+                                        >
+                                            Remove
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
+                            </DropdownMenu>
+                        </DropdownMenuTrigger>
+                    )
+                },
+            },
+        ],
         [currentUserId, isOwner, onView, onSetRole, onRemove]
     )
 
@@ -196,7 +215,11 @@ export const ListUsers: FC<ListUsersProps> = ({
                     size="xs"
                     onClick={() => {
                         selectedRows
-                            .filter((row) => row.id !== currentUserId && (isOwner || !isOwnerRole(row.role ?? "user")))
+                            .filter(
+                                (row) =>
+                                    row.id !== currentUserId &&
+                                    (isOwner || !isOwnerRole(row.role ?? "user"))
+                            )
                             .forEach((row) => onRemove(row.id))
                         clearSelection()
                     }}

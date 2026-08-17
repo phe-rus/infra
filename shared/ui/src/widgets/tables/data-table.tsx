@@ -29,7 +29,15 @@ import {
     type SortingState,
 } from "@tanstack/react-table"
 import { IconChevronDown, IconChevronUp, IconSearch, IconX } from "@tabler/icons-react"
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../../components/table"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "../../components/table"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../../components/input-group"
 import { Checkbox } from "../../components/checkbox"
 import { Button } from "../../components/button"
@@ -135,13 +143,19 @@ function useQuickFilterValues<TData>(
                 const value = (row as Record<string, unknown>)[colId]
                 return Array.isArray(value) ? value : []
             })
-            const unique = [...new Set(flattened.filter((v) => v !== null && v !== undefined && v !== ""))]
+            const unique = [
+                ...new Set(flattened.filter((v) => v !== null && v !== undefined && v !== "")),
+            ]
             if (unique.length < 2 || unique.length > 20) return []
             return unique.map((v) => String(v))
         }
         const raw = data.map((row) => (row as Record<string, unknown>)[colId])
         const unique = [
-            ...new Set(raw.filter((v) => v !== null && v !== undefined && v !== "" && typeof v !== "object")),
+            ...new Set(
+                raw.filter(
+                    (v) => v !== null && v !== undefined && v !== "" && typeof v !== "object"
+                )
+            ),
         ]
         if (unique.length < 2 || unique.length > 12) return []
         return unique.map((v) => String(v))
@@ -264,12 +278,18 @@ export function DataTable<TData extends RowData>({
                         >
                             Columns
                             {hiddenCount > 0 && (
-                                <Badge variant="destructive" className="ml-0.5 size-4 p-0 text-[9px] tabular-nums">
+                                <Badge
+                                    variant="destructive"
+                                    className="ml-0.5 size-4 p-0 text-[9px] tabular-nums"
+                                >
                                     {hiddenCount}
                                 </Badge>
                             )}
                             <IconChevronDown
-                                className={cn("transition-transform duration-150", columnsOpen && "rotate-180")}
+                                className={cn(
+                                    "transition-transform duration-150",
+                                    columnsOpen && "rotate-180"
+                                )}
                             />
                         </Button>
                         <Button
@@ -283,12 +303,18 @@ export function DataTable<TData extends RowData>({
                         >
                             Filters
                             {activeFilterCount > 0 && (
-                                <Badge variant="destructive" className="ml-0.5 size-4 p-0 text-[9px] tabular-nums">
+                                <Badge
+                                    variant="destructive"
+                                    className="ml-0.5 size-4 p-0 text-[9px] tabular-nums"
+                                >
                                     {activeFilterCount}
                                 </Badge>
                             )}
                             <IconChevronDown
-                                className={cn("transition-transform duration-150", filtersOpen && "rotate-180")}
+                                className={cn(
+                                    "transition-transform duration-150",
+                                    filtersOpen && "rotate-180"
+                                )}
                             />
                         </Button>
                     </InputGroupAddon>
@@ -389,14 +415,16 @@ export function DataTable<TData extends RowData>({
                 </div>
             )}
 
-            <Table aria-label={ariaLabel} className='divide-none!'>
+            <Table aria-label={ariaLabel} className="divide-none!">
                 <TableHeader>
                     {table.getHeaderGroups().flatMap((headerGroup) => {
                         // react-aria's Table throws unless at least one
                         // Column declares isRowHeader — the first column
                         // that isn't the bulk-select checkbox is the one
                         // that actually identifies the row
-                        const rowHeaderId = headerGroup.headers.find((h) => h.column.id !== "select")?.id
+                        const rowHeaderId = headerGroup.headers.find(
+                            (h) => h.column.id !== "select"
+                        )?.id
                         return headerGroup.headers.map((header) => (
                             <TableHead key={header.id} isRowHeader={header.id === rowHeaderId}>
                                 {header.isPlaceholder ? null : header.column.getCanSort() ? (
@@ -404,18 +432,23 @@ export function DataTable<TData extends RowData>({
                                         className="flex w-fit cursor-pointer items-center gap-1 text-muted-foreground hover:text-foreground"
                                         onClick={header.column.getToggleSortingHandler()}
                                     >
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
                                         <div className="flex flex-col">
                                             <IconChevronUp
                                                 className={cn(
                                                     "size-3 opacity-20",
-                                                    header.column.getIsSorted() === "asc" && "opacity-100"
+                                                    header.column.getIsSorted() === "asc" &&
+                                                        "opacity-100"
                                                 )}
                                             />
                                             <IconChevronDown
                                                 className={cn(
                                                     "-mt-1.5 size-3 opacity-20",
-                                                    header.column.getIsSorted() === "desc" && "opacity-100"
+                                                    header.column.getIsSorted() === "desc" &&
+                                                        "opacity-100"
                                                 )}
                                             />
                                         </div>
@@ -485,7 +518,9 @@ function FilterRow<TData extends RowData>({
         const [from, to] = (column.getFilterValue() as [string?, string?] | undefined) ?? []
         return (
             <div className="flex items-center gap-3">
-                <span className="w-20 shrink-0 text-[11px] font-medium text-muted-foreground">{label}</span>
+                <span className="w-20 shrink-0 text-[11px] font-medium text-muted-foreground">
+                    {label}
+                </span>
                 <div className="flex items-center gap-2">
                     <input
                         type="date"
@@ -535,10 +570,20 @@ function FilterRow<TData extends RowData>({
                     {uniqueValues.map((value) => {
                         const active = activeValue === value
                         const setActive = () =>
-                            column.setFilterValue(active ? undefined : isArrayColumn ? [value] : value)
+                            column.setFilterValue(
+                                active ? undefined : isArrayColumn ? [value] : value
+                            )
                         return (
-                            <div key={value} className="flex cursor-pointer items-center gap-2" onClick={setActive}>
-                                <Checkbox aria-label={value} isSelected={active} onChange={setActive} />
+                            <div
+                                key={value}
+                                className="flex cursor-pointer items-center gap-2"
+                                onClick={setActive}
+                            >
+                                <Checkbox
+                                    aria-label={value}
+                                    isSelected={active}
+                                    onChange={setActive}
+                                />
                                 <span className="text-xs">{value}</span>
                             </div>
                         )
@@ -562,7 +607,9 @@ function FilterRow<TData extends RowData>({
 
     return (
         <div className="flex items-center gap-3">
-            <span className="w-20 shrink-0 text-[11px] font-medium text-muted-foreground capitalize">{label}</span>
+            <span className="w-20 shrink-0 text-[11px] font-medium text-muted-foreground capitalize">
+                {label}
+            </span>
             <div className="relative max-w-xs flex-1">
                 <input
                     type="text"
@@ -570,7 +617,11 @@ function FilterRow<TData extends RowData>({
                     value={activeValue ?? ""}
                     onChange={(e) =>
                         column.setFilterValue(
-                            e.target.value ? (isArrayColumn ? [e.target.value] : e.target.value) : undefined
+                            e.target.value
+                                ? isArrayColumn
+                                    ? [e.target.value]
+                                    : e.target.value
+                                : undefined
                         )
                     }
                     className="h-7 w-full rounded-none border border-dashed border-input/40 bg-background px-2.5 text-xs outline-none placeholder:text-muted-foreground/40"

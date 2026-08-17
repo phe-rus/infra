@@ -1,4 +1,9 @@
-import { InputGroup, InputGroupText, InputGroupAddon, InputGroupTextarea } from "../../../components/input-group"
+import {
+    InputGroup,
+    InputGroupText,
+    InputGroupAddon,
+    InputGroupTextarea,
+} from "../../../components/input-group"
 import type { ReactNode } from "react"
 import { useFieldContext } from "../contexts"
 import { FieldWrapper } from "./wrapper"
@@ -6,14 +11,22 @@ import { FieldWrapper } from "./wrapper"
 type FieldTextareaProps = {
     label: string
     icon?: ReactNode
-} & Omit<React.ComponentProps<typeof InputGroupTextarea>, "id" | "name" | "value" | "onChange" | "onBlur">
+} & Omit<
+    React.ComponentProps<typeof InputGroupTextarea>,
+    "id" | "name" | "value" | "onChange" | "onBlur"
+>
 
 export function FieldTextarea({ label, icon, ...props }: FieldTextareaProps) {
     const field = useFieldContext<string>()
     const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
 
     return (
-        <FieldWrapper name={field.name} label={label} isInvalid={isInvalid} errors={field.state.meta.errors}>
+        <FieldWrapper
+            name={field.name}
+            label={label}
+            isInvalid={isInvalid}
+            errors={field.state.meta.errors}
+        >
             <InputGroup>
                 {icon && (
                     <InputGroupAddon align="block-start">

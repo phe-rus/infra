@@ -43,7 +43,9 @@ function pemToDer(pem: string): Uint8Array<ArrayBuffer> {
 
 async function importEcPublicKey(pem: string): Promise<CryptoKey> {
     const der = pemToDer(pem)
-    return crypto.subtle.importKey("spki", der, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"])
+    return crypto.subtle.importKey("spki", der, { name: "ECDSA", namedCurve: "P-256" }, false, [
+        "verify",
+    ])
 }
 
 type SignatureInputInfo = {
@@ -67,7 +69,9 @@ function parseSignatureInput(headerValue: string): SignatureInputInfo {
     const coveredComponents = [...listMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1])
 
     const params: Record<string, string> = {}
-    for (const m of rawParamsValue.slice(listMatch[0].length).matchAll(/;(\w+)=("([^"]*)"|[^;]+)/g)) {
+    for (const m of rawParamsValue
+        .slice(listMatch[0].length)
+        .matchAll(/;(\w+)=("([^"]*)"|[^;]+)/g)) {
         params[m[1]] = m[3] ?? m[2]
     }
 
@@ -107,7 +111,8 @@ function buildSignatureBase(
                 break
             default: {
                 const headerValue = headers[component]
-                if (headerValue === undefined) throw new Error(`Missing covered header: ${component}`)
+                if (headerValue === undefined)
+                    throw new Error(`Missing covered header: ${component}`)
                 value = headerValue.trim()
             }
         }

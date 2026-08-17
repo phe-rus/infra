@@ -14,7 +14,12 @@ export const getStats = createServerFn({ method: "GET" })
             auth.api.listUsers({ headers, query: { limit: 1 } }),
             auth.api.listUsers({
                 headers,
-                query: { limit: 1, filterField: "updatedAt", filterOperator: "gte", filterValue: cutoff },
+                query: {
+                    limit: 1,
+                    filterField: "updatedAt",
+                    filterOperator: "gte",
+                    filterValue: cutoff,
+                },
             }),
         ])
         return { totalUsers, monthlyActiveUsers }

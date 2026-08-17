@@ -13,7 +13,10 @@ import { FieldWrapper } from "./wrapper"
 type FieldInputProps = {
     label: string
     icon?: ReactNode
-} & Omit<React.ComponentProps<typeof InputGroupInput>, "id" | "name" | "value" | "onChange" | "onBlur">
+} & Omit<
+    React.ComponentProps<typeof InputGroupInput>,
+    "id" | "name" | "value" | "onChange" | "onBlur"
+>
 
 export function FieldInput({ label, icon, type = "text", ...inputProps }: FieldInputProps) {
     const field = useFieldContext<string>()
@@ -22,7 +25,12 @@ export function FieldInput({ label, icon, type = "text", ...inputProps }: FieldI
     const isPassword = type === "password"
 
     return (
-        <FieldWrapper name={field.name} label={label} isInvalid={isInvalid} errors={field.state.meta.errors}>
+        <FieldWrapper
+            name={field.name}
+            label={label}
+            isInvalid={isInvalid}
+            errors={field.state.meta.errors}
+        >
             <InputGroup>
                 {icon && (
                     <InputGroupAddon align="inline-start">

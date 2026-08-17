@@ -22,7 +22,9 @@ function statusVariant(status: string): "outline" | "destructive" | "secondary" 
     return "secondary"
 }
 
-function parseFailureReason(value: string | null): { failureCode: string; failureMessage: string } | null {
+function parseFailureReason(
+    value: string | null
+): { failureCode: string; failureMessage: string } | null {
     if (!value) return null
     try {
         return JSON.parse(value)
@@ -51,7 +53,9 @@ function RelatedPaymentLink({ payment }: { payment: ListedPayment }) {
                 <span>
                     {payment.amount} {payment.currency}
                 </span>
-                <span className="text-muted-foreground text-xs">{format(payment.createdAt, "PPp")}</span>
+                <span className="text-xs text-muted-foreground">
+                    {format(payment.createdAt, "PPp")}
+                </span>
             </span>
             <Badge variant={statusVariant(payment.status)}>{payment.status}</Badge>
         </Link>
@@ -67,15 +71,24 @@ function RouteComponent() {
     const failureReason = parseFailureReason(payment.failureReason)
 
     return (
-        <article className="container mx-auto flex w-full flex-col gap-5 py-20 print:py-4 md:max-w-2xl">
+        <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-2xl print:py-4">
             <section className="flex items-center justify-between gap-2">
                 <div>
-                    <Link to="/billing" className="text-muted-foreground text-xs hover:underline print:hidden">
+                    <Link
+                        to="/billing"
+                        className="text-xs text-muted-foreground hover:underline print:hidden"
+                    >
                         ← Back to Billing
                     </Link>
                     <h1 className="text-3xl md:text-4xl">Receipt</h1>
                 </div>
-                <Button type="button" variant="outline" size="sm" className="print:hidden" onClick={() => window.print()}>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={() => window.print()}
+                >
                     Print
                 </Button>
             </section>
@@ -85,7 +98,7 @@ function RouteComponent() {
                     <p className="text-2xl font-medium">
                         {payment.amount} {payment.currency}
                     </p>
-                    <p className="text-muted-foreground text-xs">{payment.referenceId}</p>
+                    <p className="text-xs text-muted-foreground">{payment.referenceId}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                     <Badge variant="outline">{payment.type}</Badge>
@@ -130,7 +143,10 @@ function RouteComponent() {
                 </section>
             )}
 
-            <Link to="/billing" className={cn(buttonVariants({ variant: "outline" }), "w-fit print:hidden")}>
+            <Link
+                to="/billing"
+                className={cn(buttonVariants({ variant: "outline" }), "w-fit print:hidden")}
+            >
                 Back to Billing
             </Link>
         </article>

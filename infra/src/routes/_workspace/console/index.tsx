@@ -1,5 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { CREATE_CLIENT_ID, useConsole, useRemoveApp, useRotateApp, useSetAppActive } from "@/kit/console"
+import {
+    CREATE_CLIENT_ID,
+    useConsole,
+    useRemoveApp,
+    useRotateApp,
+    useSetAppActive,
+} from "@/kit/console"
 import { buttonVariants } from "@infra/ui/components/button"
 import { ListApplications } from "@/features/console"
 import { cn } from "@infra/ui/lib/utils"
@@ -27,12 +33,16 @@ function RouteComponent() {
                         Add application
                     </Link>
                 </div>
-                <p className="text-muted-foreground">Applications registered to use this instance.</p>
+                <p className="text-muted-foreground">
+                    Applications registered to use this instance.
+                </p>
             </section>
 
             <ListApplications
                 applications={data.applications}
-                onSetActive={(clientId, active) => void setAppActive({ data: { clientId, active } })}
+                onSetActive={(clientId, active) =>
+                    void setAppActive({ data: { clientId, active } })
+                }
                 onRotate={(clientId) => void rotateApp({ data: { clientId } })}
                 onRemove={(clientId) => void removeApp({ data: { clientId } })}
             />

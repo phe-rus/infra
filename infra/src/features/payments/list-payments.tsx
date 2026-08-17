@@ -2,7 +2,11 @@ import { type FC, useMemo } from "react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "@infra/ui/components/dropdown-menu"
+import {
+    DropdownMenu,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@infra/ui/components/dropdown-menu"
 import { TableCell, TableRow } from "@infra/ui/components/table"
 import { DataTable, type DataTableColumnDef } from "@infra/ui/widgets/tables"
 import type { ListedPayment } from "@/kit/payments"
@@ -29,7 +33,10 @@ function computeTotals(payments: ListedPayment[]): { currency: string; amount: n
     for (const payment of payments) {
         if (payment.status !== "completed") continue
         const sign = payment.type === "payout" || payment.type === "refund" ? -1 : 1
-        totals.set(payment.currency, (totals.get(payment.currency) ?? 0) + sign * Number(payment.amount))
+        totals.set(
+            payment.currency,
+            (totals.get(payment.currency) ?? 0) + sign * Number(payment.amount)
+        )
     }
     return [...totals.entries()].map(([currency, amount]) => ({ currency, amount }))
 }
@@ -68,7 +75,7 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                     <Link
                         to="/billing/$paymentId"
                         params={{ paymentId: row.original.id }}
-                        className={cn("bg-accent rounded px-3 py-1 text-xs!", "cursor-pointer")}
+                        className={cn("rounded bg-accent px-3 py-1 text-xs!", "cursor-pointer")}
                     >
                         {row.original.id}
                     </Link>
@@ -81,7 +88,9 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                     <div className="flex flex-col">
                         <span>{row.original.userName ?? row.original.userId}</span>
                         {row.original.userEmail && (
-                            <span className="text-muted-foreground text-xs">{row.original.userEmail}</span>
+                            <span className="text-xs text-muted-foreground">
+                                {row.original.userEmail}
+                            </span>
                         )}
                     </div>
                 ),
@@ -97,12 +106,12 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                 cell: ({ row }) => row.original.provider ?? "—",
             },
             {
-                accessorKey: 'phoneNumber',
+                accessorKey: "phoneNumber",
                 header: "Phone Number",
                 cell: ({ row }) => row.original.phoneNumber ?? "—",
             },
             {
-                accessorKey: 'currency',
+                accessorKey: "currency",
                 header: "Currency",
                 cell: ({ row }) => row.original.currency ?? "—",
             },
@@ -118,12 +127,20 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
             {
                 accessorKey: "status",
                 header: "Status",
-                cell: ({ row }) => <Badge variant={statusVariant(row.original.status)}>{row.original.status}</Badge>,
+                cell: ({ row }) => (
+                    <Badge variant={statusVariant(row.original.status)}>
+                        {row.original.status}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "referenceId",
                 header: "Reference",
-                cell: ({ row }) => <span className="text-muted-foreground text-xs">{row.original.referenceId}</span>,
+                cell: ({ row }) => (
+                    <span className="text-xs text-muted-foreground">
+                        {row.original.referenceId}
+                    </span>
+                ),
             },
             {
                 accessorKey: "createdAt",
@@ -141,11 +158,18 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                     if (payment.type !== "deposit") return null
                     return (
                         <DropdownMenuTrigger>
-                            <Button type="button" variant="ghost" size="icon-xs" aria-label="Row actions">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-xs"
+                                aria-label="Row actions"
+                            >
                                 <IconDotsVertical className="size-4" />
                             </Button>
                             <DropdownMenu aria-label="Row actions">
-                                <DropdownMenuItem onAction={() => onRefund(payment)}>Refund</DropdownMenuItem>
+                                <DropdownMenuItem onAction={() => onRefund(payment)}>
+                                    Refund
+                                </DropdownMenuItem>
                             </DropdownMenu>
                         </DropdownMenuTrigger>
                     )
@@ -171,7 +195,9 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                           <TableRow>
                               <TableCell colSpan={columnCount}>
                                   <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
-                                      <span className="text-muted-foreground">Net total (completed only):</span>
+                                      <span className="text-muted-foreground">
+                                          Net total (completed only):
+                                      </span>
                                       {totals.map(({ currency, amount }) => (
                                           <span key={currency} className="font-medium">
                                               {amount.toLocaleString()} {currency}

@@ -2,7 +2,7 @@ import { focusManager, QueryCache, QueryClient, QueryClientProvider } from "@tan
 import { useState, type PropsWithChildren } from "react"
 import { t, ToasterProvider } from "@infra/ui/components/sonner"
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
     focusManager.setEventListener((setFocused) => {
         setFocused(true)
         return undefined
@@ -21,29 +21,28 @@ export const queryContext = () => {
                 retry: (count, error) => {
                     const status = (error as any)?.status
                     return status !== 401 && status !== 403 && count < 2
-                }
-            }
+                },
+            },
         },
         queryCache: new QueryCache({
             onError: (error) => {
-                if (error.name === 'AbortError') return
-                t.error(error.name ?? 'Error', {
+                if (error.name === "AbortError") return
+                t.error(error.name ?? "Error", {
                     description: error.message,
-                    duration: 5000
+                    duration: 5000,
                 })
-            }
-        })
+            },
+        }),
     })
 }
 
 export function getContext(): QueryClient {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
         if (!query) query = queryContext()
         return query
     }
     return queryContext()
 }
-
 
 export const QueryProvider = ({ children, query }: TRProviderProps) => {
     const [client] = useState(() => query)

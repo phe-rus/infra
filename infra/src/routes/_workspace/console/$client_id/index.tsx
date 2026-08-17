@@ -100,7 +100,8 @@ function RouteComponent() {
               framework: (application?.framework as Framework | undefined) ?? undefined,
               type: (application?.type as ClientType | undefined) ?? "user-agent-based",
               token_endpoint_auth_method:
-                  (application?.tokenEndpointAuthMethod as TokenEndpointAuthMethod | undefined) ?? "none",
+                  (application?.tokenEndpointAuthMethod as TokenEndpointAuthMethod | undefined) ??
+                  "none",
               redirect_uris: (application?.redirectUris ?? []).join(","),
               post_logout_redirect_uris: (application?.postLogoutRedirectUris ?? []).join(","),
               scope: (application?.scopes as Scope[] | undefined) ?? [],
@@ -183,7 +184,8 @@ function RouteComponent() {
                     JSON.stringify(application.postLogoutRedirectUris) && {
                     post_logout_redirect_uris: postLogoutRedirectUris,
                 }),
-                ...(JSON.stringify([...value.scope].sort()) !== JSON.stringify([...application.scopes].sort()) && {
+                ...(JSON.stringify([...value.scope].sort()) !==
+                    JSON.stringify([...application.scopes].sort()) && {
                     scope: value.scope,
                 }),
                 ...(JSON.stringify([...value.grant_types].sort()) !==
@@ -222,18 +224,25 @@ function RouteComponent() {
     return (
         <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-3xl">
             <section>
-                <h1 className="text-3xl md:text-4xl">{isCreate ? "Create application" : "Edit application"}</h1>
+                <h1 className="text-3xl md:text-4xl">
+                    {isCreate ? "Create application" : "Edit application"}
+                </h1>
                 <p className="text-muted-foreground">
-                    {isCreate ? "Register a new OAuth 2.1 client." : "Manage this OAuth 2.1 application."}
+                    {isCreate
+                        ? "Register a new OAuth 2.1 client."
+                        : "Manage this OAuth 2.1 application."}
                 </p>
             </section>
 
             {snippet && (
                 <section className="flex flex-col gap-2 rounded-lg border p-4">
                     <p className="text-xs text-muted-foreground">
-                        The client secret is only shown once — copy it now, it can't be retrieved again.
+                        The client secret is only shown once — copy it now, it can't be retrieved
+                        again.
                     </p>
-                    <pre className="whitespace-pre-wrap break-all rounded bg-muted p-3 text-xs">{snippet}</pre>
+                    <pre className="rounded bg-muted p-3 text-xs break-all whitespace-pre-wrap">
+                        {snippet}
+                    </pre>
                     <Button
                         type="button"
                         variant="outline"
@@ -259,7 +268,10 @@ function RouteComponent() {
                     </div>
                     <div>Created {format(application.createdAt, "PPPp")}</div>
                     <div>Updated {format(application.updatedAt, "PPPp")}</div>
-                    <Badge variant={application.disabled ? "destructive" : "outline"} className="w-fit">
+                    <Badge
+                        variant={application.disabled ? "destructive" : "outline"}
+                        className="w-fit"
+                    >
                         {application.disabled ? "Disabled" : "Active"}
                     </Badge>
                 </section>
@@ -278,20 +290,28 @@ function RouteComponent() {
                     <FieldGroup className="grid grid-cols-1 gap-4">
                         <form.AppField
                             name="client_name"
-                            children={(field) => <field.input label="Name" placeholder="My Application" />}
+                            children={(field) => (
+                                <field.input label="Name" placeholder="My Application" />
+                            )}
                         />
 
                         <form.AppField
                             name="client_uri"
                             children={(field) => (
-                                <field.input label="Application homepage URI (optional)" placeholder="https://www.example.com" />
+                                <field.input
+                                    label="Application homepage URI (optional)"
+                                    placeholder="https://www.example.com"
+                                />
                             )}
                         />
 
                         <form.AppField
                             name="logo_uri"
                             children={(field) => (
-                                <field.input label="Logo URI (optional)" placeholder="https://www.example.com/logo.png" />
+                                <field.input
+                                    label="Logo URI (optional)"
+                                    placeholder="https://www.example.com/logo.png"
+                                />
                             )}
                         />
 
@@ -302,11 +322,18 @@ function RouteComponent() {
                                     label="Framework (optional)"
                                     description="Used to pick a display icon — has no effect on how the client behaves."
                                     columns={2}
-                                    options={FRAMEWORKS.filter((f) => f !== "other").map((framework) => ({
-                                        value: framework,
-                                        label: FRAMEWORK_LABELS[framework],
-                                        icon: <FrameworkIcon framework={framework} className="size-4" />,
-                                    }))}
+                                    options={FRAMEWORKS.filter((f) => f !== "other").map(
+                                        (framework) => ({
+                                            value: framework,
+                                            label: FRAMEWORK_LABELS[framework],
+                                            icon: (
+                                                <FrameworkIcon
+                                                    framework={framework}
+                                                    className="size-4"
+                                                />
+                                            ),
+                                        })
+                                    )}
                                 />
                             )}
                         />
@@ -319,9 +346,14 @@ function RouteComponent() {
                                     disabled={!isCreate}
                                     columns={2}
                                     description={
-                                        isCreate ? "You can't change this later." : "This can't be edited after creation."
+                                        isCreate
+                                            ? "You can't change this later."
+                                            : "This can't be edited after creation."
                                     }
-                                    options={CLIENT_TYPES.map((type) => ({ value: type, ...CLIENT_TYPE_INFO[type] }))}
+                                    options={CLIENT_TYPES.map((type) => ({
+                                        value: type,
+                                        ...CLIENT_TYPE_INFO[type],
+                                    }))}
                                 />
                             )}
                         />
@@ -333,7 +365,9 @@ function RouteComponent() {
                                     label="Client confidentiality"
                                     disabled={!isCreate}
                                     description={
-                                        isCreate ? "You can't change this later." : "This can't be edited after creation."
+                                        isCreate
+                                            ? "You can't change this later."
+                                            : "This can't be edited after creation."
                                     }
                                     options={TOKEN_ENDPOINT_AUTH_METHODS.map((method) => ({
                                         value: method,
@@ -365,12 +399,19 @@ function RouteComponent() {
 
                         <form.AppField
                             name="grant_types"
-                            children={(field) => <field.multiselect label="Grant types" options={GRANT_TYPE_OPTIONS} />}
+                            children={(field) => (
+                                <field.multiselect
+                                    label="Grant types"
+                                    options={GRANT_TYPE_OPTIONS}
+                                />
+                            )}
                         />
 
                         <form.AppField
                             name="scope"
-                            children={(field) => <field.multiselect label="Scopes" options={SCOPE_OPTIONS} />}
+                            children={(field) => (
+                                <field.multiselect label="Scopes" options={SCOPE_OPTIONS} />
+                            )}
                         />
 
                         <form.AppField
@@ -379,7 +420,11 @@ function RouteComponent() {
                                 <field.switch
                                     label="Require PKCE"
                                     disabled={!isCreate}
-                                    description={isCreate ? undefined : "This can't be edited after creation."}
+                                    description={
+                                        isCreate
+                                            ? undefined
+                                            : "This can't be edited after creation."
+                                    }
                                 />
                             )}
                         />
@@ -387,7 +432,10 @@ function RouteComponent() {
                         <form.AppField
                             name="skip_consent"
                             children={(field) => (
-                                <field.switch label="Skip consent screen" description="Trusted clients only." />
+                                <field.switch
+                                    label="Skip consent screen"
+                                    description="Trusted clients only."
+                                />
                             )}
                         />
 
@@ -423,10 +471,19 @@ function RouteComponent() {
                             >
                                 {application.disabled ? "Enable" : "Disable"}
                             </Button>
-                            <Button type="button" variant="outline" isDisabled={isRotating} onClick={() => void handleRotate()}>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                isDisabled={isRotating}
+                                onClick={() => void handleRotate()}
+                            >
                                 Rotate secret
                             </Button>
-                            <Button type="button" variant="destructive" onClick={() => void handleRemove()}>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={() => void handleRemove()}
+                            >
                                 Remove application
                             </Button>
                         </div>

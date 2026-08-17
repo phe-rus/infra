@@ -33,9 +33,20 @@ export const DepositForm: FC = () => {
             className="flex flex-col gap-3"
         >
             <FieldGroup className="grid grid-cols-2 gap-3">
-                <PaymentFields idPrefix="deposit" kind="deposit" fields={fields} amount={amount} onAmountChange={setAmount} />
+                <PaymentFields
+                    idPrefix="deposit"
+                    kind="deposit"
+                    fields={fields}
+                    amount={amount}
+                    onAmountChange={setAmount}
+                />
             </FieldGroup>
-            <Button type="submit" isDisabled={!amount.trim() || !fields.provider || !fields.phoneNumber.trim() || isPending}>
+            <Button
+                type="submit"
+                isDisabled={
+                    !amount.trim() || !fields.provider || !fields.phoneNumber.trim() || isPending
+                }
+            >
                 Pay
             </Button>
         </form>

@@ -41,7 +41,7 @@ function RouteComponent() {
                 e.preventDefault()
                 void form.handleSubmit()
             }}
-            className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
+            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
         >
             <section>
                 <h1 className="text-3xl">Two-factor verification</h1>
@@ -53,10 +53,7 @@ function RouteComponent() {
                     <form.AppField
                         name="code"
                         children={(field) => (
-                            <field.otp
-                                label="Code"
-                                onComplete={() => void form.handleSubmit()}
-                            />
+                            <field.otp label="Code" onComplete={() => void form.handleSubmit()} />
                         )}
                     />
                     <form.AppField

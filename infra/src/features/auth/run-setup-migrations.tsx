@@ -8,13 +8,8 @@ export type RunSetupMigrationsProps = {
     onInitialized: () => void
 }
 
-export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({
-    onInitialized
-}) => {
-    const {
-        mutateAsync: runMigrations,
-        isPending: migrating
-    } = useRunSetupMigrations()
+export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({ onInitialized }) => {
+    const { mutateAsync: runMigrations, isPending: migrating } = useRunSetupMigrations()
 
     async function handleInitialize() {
         await runMigrations()
@@ -22,7 +17,7 @@ export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({
     }
 
     return (
-        <div className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}>
+        <div className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}>
             <section>
                 <h1 className="text-3xl">Infra</h1>
                 <p className="text-muted-foreground">Set up your instance</p>
@@ -31,11 +26,7 @@ export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({
                 This instance hasn't been initialized yet. This prepares the database and only needs
                 to run once.
             </p>
-            <Button
-                type="button"
-                isDisabled={migrating}
-                onClick={() => void handleInitialize()}
-            >
+            <Button type="button" isDisabled={migrating} onClick={() => void handleInitialize()}>
                 {migrating && <IconLoader2 className="animate-spin" />}
                 {migrating ? "Initializing…" : "Initialize"}
             </Button>

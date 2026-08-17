@@ -47,7 +47,7 @@ export function Login() {
                 e.preventDefault()
                 void form.handleSubmit()
             }}
-            className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
+            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
         >
             <section>
                 <h1 className="text-3xl">Infra</h1>
@@ -85,7 +85,10 @@ export function Login() {
                             name="rememberMe"
                             children={(field) => <field.checkbox label="Remember me" />}
                         />
-                        <Link to="/forgot-password" className="text-muted-foreground text-xs hover:underline">
+                        <Link
+                            to="/forgot-password"
+                            className="text-xs text-muted-foreground hover:underline"
+                        >
                             Forgot password?
                         </Link>
                     </div>

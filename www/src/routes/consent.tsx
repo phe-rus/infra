@@ -52,18 +52,30 @@ function RouteComponent() {
             <section>
                 <h1 className="text-3xl">Authorize application</h1>
                 <p className="text-muted-foreground">
-                    <span className="text-foreground">{client?.client_name ?? "An application"}</span> is requesting
-                    access to your account{client?.client_uri ? ` (${client.client_uri})` : ""}.
+                    <span className="text-foreground">
+                        {client?.client_name ?? "An application"}
+                    </span>{" "}
+                    is requesting access to your account
+                    {client?.client_uri ? ` (${client.client_uri})` : ""}.
                 </p>
             </section>
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <div className="flex gap-2">
-                <Button type="button" isDisabled={decision !== null} onClick={() => void respond(true)}>
+                <Button
+                    type="button"
+                    isDisabled={decision !== null}
+                    onClick={() => void respond(true)}
+                >
                     {decision === "accept" ? "Authorizing…" : "Allow"}
                 </Button>
-                <Button type="button" variant="outline" isDisabled={decision !== null} onClick={() => void respond(false)}>
+                <Button
+                    type="button"
+                    variant="outline"
+                    isDisabled={decision !== null}
+                    onClick={() => void respond(false)}
+                >
                     {decision === "deny" ? "Denying…" : "Deny"}
                 </Button>
             </div>

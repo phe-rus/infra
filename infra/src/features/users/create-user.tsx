@@ -20,11 +20,7 @@ export type CreateUserProps = {
     isOwner: boolean
 }
 
-export const CreateUser: FC<CreateUserProps> = ({
-    open,
-    onOpenChange,
-    isOwner
-}) => {
+export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange, isOwner }) => {
     const { mutateAsync: createUser } = useCreateUser()
     const [draftName, setDraftName] = useState("")
     const [draftEmail, setDraftEmail] = useState("")
@@ -61,12 +57,16 @@ export const CreateUser: FC<CreateUserProps> = ({
                 <>
                     <Button
                         type="button"
-                        isDisabled={!draftName.trim() || !draftEmail.trim() || draftPassword.length < 8}
+                        isDisabled={
+                            !draftName.trim() || !draftEmail.trim() || draftPassword.length < 8
+                        }
                         onClick={() => void handleAddUser()}
                     >
                         Add user
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                        Cancel
+                    </DrawerClose>
                 </>
             }
         >
@@ -105,7 +105,9 @@ export const CreateUser: FC<CreateUserProps> = ({
                             id="new-user-role"
                             aria-label="Role"
                             selectedKey={draftRole}
-                            onSelectionChange={(key) => setDraftRole(key as "owner" | "admin" | "user")}
+                            onSelectionChange={(key) =>
+                                setDraftRole(key as "owner" | "admin" | "user")
+                            }
                         >
                             <SelectTrigger>
                                 <SelectValue />

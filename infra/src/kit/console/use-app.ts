@@ -29,7 +29,11 @@ export const useRemoveApp = () =>
             queryKey: consoleOptions().queryKey,
             updater: (old: AppListData | undefined, variables) =>
                 old
-                    ? { applications: old.applications.filter((a) => a.clientId !== variables.data.clientId) }
+                    ? {
+                          applications: old.applications.filter(
+                              (a) => a.clientId !== variables.data.clientId
+                          ),
+                      }
                     : { applications: [] },
         },
         successMessage: "Application removed",

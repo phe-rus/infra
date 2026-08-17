@@ -13,7 +13,10 @@ export function ExpenditureEstimateCard() {
         const dayOfMonth = now.getDate()
 
         const thisMonth = data.payments.filter(
-            (p) => p.type === "deposit" && p.status === "completed" && new Date(p.createdAt) >= monthStart
+            (p) =>
+                p.type === "deposit" &&
+                p.status === "completed" &&
+                new Date(p.createdAt) >= monthStart
         )
         const currency = thisMonth[0]?.currency ?? data.payments[0]?.currency ?? ""
         const spent = thisMonth.reduce((sum, p) => sum + Number(p.amount), 0)
@@ -23,29 +26,30 @@ export function ExpenditureEstimateCard() {
     }, [data.payments])
 
     return (
-        <article className={cn(
-            'p-5 rounded-md bg-input/35 group',
-            'relative overflow-hidden flex flex-col justify-between'
-        )}>
-            <h2 className='font-bold'>Estimated</h2>
+        <article
+            className={cn(
+                "group rounded-md bg-input/35 p-5",
+                "relative flex flex-col justify-between overflow-hidden"
+            )}
+        >
+            <h2 className="font-bold">Estimated</h2>
             <div>
-                <p className='text-sm'>
+                <p className="text-sm">
                     {estimate.currency} {estimate.spent.toLocaleString()}
                 </p>
-                <p className='text-xs text-muted-foreground'>
+                <p className="text-xs text-muted-foreground">
                     {estimate.projected > estimate.spent
                         ? `~${estimate.currency} ${Math.round(estimate.projected).toLocaleString()} projected this month`
                         : "This month"}
                 </p>
             </div>
-            <div className={cn(
-                'absolute top-0 right-0 rounded-bl-2xl',
-                'bg-input/35 p-3',
-            )}>
-                <IconTrendingUp className={cn(
-                    'group-hover:translate-x-1 group-hover:-translate-y-1',
-                    'transition-all duration-300'
-                )} />
+            <div className={cn("absolute top-0 right-0 rounded-bl-2xl", "bg-input/35 p-3")}>
+                <IconTrendingUp
+                    className={cn(
+                        "group-hover:translate-x-1 group-hover:-translate-y-1",
+                        "transition-all duration-300"
+                    )}
+                />
             </div>
         </article>
     )

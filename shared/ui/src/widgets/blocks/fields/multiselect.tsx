@@ -4,7 +4,13 @@ import { useFieldContext } from "../contexts"
 
 export type MultiselectOption = { label: string; value: string }
 
-export function FieldMultiselect({ label, options }: { label: string; options: MultiselectOption[] }) {
+export function FieldMultiselect({
+    label,
+    options,
+}: {
+    label: string
+    options: MultiselectOption[]
+}) {
     const field = useFieldContext<string[]>()
 
     function toggle(value: string, checked: boolean) {

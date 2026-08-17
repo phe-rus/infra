@@ -36,7 +36,9 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
             onOpenChange={(open) => !open && onClose()}
             title={viewUser?.user.name ?? "User"}
             description={viewUser?.user.email}
-            footer={<DrawerClose render={<Button type="button" variant="outline" />}>Close</DrawerClose>}
+            footer={
+                <DrawerClose render={<Button type="button" variant="outline" />}>Close</DrawerClose>
+            }
         >
             {isLoading && <p className="text-xs text-muted-foreground">Loading…</p>}
 

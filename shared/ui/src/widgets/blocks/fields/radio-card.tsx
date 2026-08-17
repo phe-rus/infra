@@ -3,7 +3,12 @@ import { Field, FieldLabel, FieldDescription } from "../../../components/field"
 import { cn } from "../../../lib/utils"
 import { useFieldContext } from "../contexts"
 
-export type RadioCardOption = { label: string; value: string; description?: string; icon?: ReactNode }
+export type RadioCardOption = {
+    label: string
+    value: string
+    description?: string
+    icon?: ReactNode
+}
 
 export function FieldRadioCard({
     label,
@@ -35,7 +40,9 @@ export function FieldRadioCard({
                             aria-pressed={selected}
                             className={cn(
                                 "flex flex-col items-start gap-0.5 rounded-none border p-3 text-left transition-colors",
-                                selected ? "border-primary bg-primary/5" : "border-border hover:bg-muted",
+                                selected
+                                    ? "border-primary bg-primary/5"
+                                    : "border-border hover:bg-muted",
                                 disabled && "cursor-not-allowed opacity-50"
                             )}
                         >
@@ -44,7 +51,9 @@ export function FieldRadioCard({
                                 {option.label}
                             </span>
                             {option.description && (
-                                <span className="text-xs text-muted-foreground">{option.description}</span>
+                                <span className="text-xs text-muted-foreground">
+                                    {option.description}
+                                </span>
                             )}
                         </button>
                     )

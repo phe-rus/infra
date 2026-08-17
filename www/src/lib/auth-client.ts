@@ -5,12 +5,11 @@ import { oauthProviderClient } from "@better-auth/oauth-provider/client"
 import { r2Client } from "@infra/r2/client"
 import { paymentClient } from "@infra/payment/client"
 
-
 export function hosturl(): string {
     if (import.meta.env.VITE_INFRA_URL) {
         return import.meta.env.VITE_INFRA_URL
     }
-    return process.env.VITE_INFRA_URL || 'http://localhost:3000'
+    return process.env.VITE_INFRA_URL || "http://localhost:3000"
 }
 
 export function resolveCdnUrl(path?: string | null): string | undefined {
@@ -25,20 +24,20 @@ export const authClient = createAuthClient({
             user: {
                 bio: {
                     type: "string",
-                    required: false
+                    required: false,
                 },
                 role: {
                     type: "string",
-                    required: false
-                }
-            }
+                    required: false,
+                },
+            },
         }),
         twoFactorClient({
-            twoFactorPage: "/two-factor"
+            twoFactorPage: "/two-factor",
         }),
         passkeyClient(),
         oauthProviderClient(),
         r2Client(),
-        paymentClient()
-    ]
+        paymentClient(),
+    ],
 })

@@ -104,6 +104,16 @@ export const schema = {
                 type: "string",
                 required: false,
             },
+            // "pending" until a real deposit clears through this exact
+            // phoneNumber+provider, then "verified" for good — only a
+            // verified number can be pinned primary. A pending one that
+            // never gets used is swept on the next /pay/wallets read once
+            // it's older than 24h (see listWalletNumbers)
+            status: {
+                type: "string",
+                required: true,
+                defaultValue: "pending",
+            },
             isPrimary: {
                 type: "boolean",
                 required: true,

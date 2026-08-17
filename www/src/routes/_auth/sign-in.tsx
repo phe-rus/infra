@@ -6,7 +6,7 @@ import { Button } from "@infra/ui/components/button"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { cn } from "@infra/ui/lib/utils"
 import { authClient } from "@/lib/auth-client"
-import { t } from '@infra/ui/components/sonner'
+import { t } from "@infra/ui/components/sonner"
 
 const signInSchema = z.object({
     email: z.email("Enter a valid email"),
@@ -18,8 +18,8 @@ export const Route = createFileRoute("/_auth/sign-in")({
     loader: async ({ context: { session } }) => {
         if (session) {
             throw redirect({
-                to: '/',
-                replace: true
+                to: "/",
+                replace: true,
             })
         }
     },
@@ -77,7 +77,7 @@ function RouteComponent() {
                 e.preventDefault()
                 form.handleSubmit()
             }}
-            className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
+            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
         >
             <section>
                 <h1 className="text-3xl">Sign in</h1>
@@ -119,11 +119,16 @@ function RouteComponent() {
                 <form.submit label="Sign in" />
             </form.AppForm>
 
-            <Button type="button" variant="outline" isDisabled={passkeyPending} onClick={() => void signInWithPasskey()}>
+            <Button
+                type="button"
+                variant="outline"
+                isDisabled={passkeyPending}
+                onClick={() => void signInWithPasskey()}
+            >
                 {passkeyPending ? "Waiting for passkey…" : "Sign in with a passkey"}
             </Button>
 
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
                 No account?{" "}
                 <Link to="/create-account" className="text-foreground hover:underline">
                     Create one

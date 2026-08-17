@@ -48,7 +48,9 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
             {viewUser.user.banned ? (
                 <>
                     {viewUser.user.banReason && (
-                        <p className="text-xs text-muted-foreground">Reason: {viewUser.user.banReason}</p>
+                        <p className="text-xs text-muted-foreground">
+                            Reason: {viewUser.user.banReason}
+                        </p>
                     )}
                     <p className="text-xs text-muted-foreground">
                         {viewUser.user.banExpires

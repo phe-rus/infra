@@ -28,7 +28,7 @@ function RouteComponent() {
                 e.preventDefault()
                 void form.handleSubmit()
             }}
-            className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
+            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
         >
             <section>
                 <h1 className="text-3xl">Reset your password</h1>
@@ -59,11 +59,16 @@ function RouteComponent() {
                 </form.AppForm>
             )}
 
-            <Link to="/sign-in" className={cn(buttonVariants({
-                variant: 'link',
-                size: 'sm',
-                className: 'px-0 mr-auto'
-            }))}>
+            <Link
+                to="/sign-in"
+                className={cn(
+                    buttonVariants({
+                        variant: "link",
+                        size: "sm",
+                        className: "mr-auto px-0",
+                    })
+                )}
+            >
                 <IconArrowLeft />
                 Back to sign in
             </Link>

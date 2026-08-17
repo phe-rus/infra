@@ -15,7 +15,7 @@ export const fields = {
     radioCard: FieldRadioCard,
     multiselect: FieldMultiselect,
     avatar: FieldAvatar,
-    otp: FieldOtp
+    otp: FieldOtp,
 }
 
 export * from "./input"

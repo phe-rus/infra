@@ -1,9 +1,5 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp"
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSlot,
-} from "../../../components/input-otp"
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "../../../components/input-otp"
 import { useFieldContext } from "../contexts"
 import { FieldWrapper } from "./wrapper"
 
@@ -18,7 +14,12 @@ export function FieldOtp({ label, maxLength = 6, onComplete }: FieldOtpProps) {
     const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
 
     return (
-        <FieldWrapper name={field.name} label={label} isInvalid={isInvalid} errors={field.state.meta.errors}>
+        <FieldWrapper
+            name={field.name}
+            label={label}
+            isInvalid={isInvalid}
+            errors={field.state.meta.errors}
+        >
             <InputOTP
                 id={field.name}
                 name={field.name}

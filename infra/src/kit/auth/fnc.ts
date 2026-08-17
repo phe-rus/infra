@@ -15,38 +15,33 @@ import {
 // Non-throwing on purpose: runs on every route including /sign-in and
 // /setup, which handle the no-session case themselves. A throwing
 // middleware here redirect-loops a fresh instance between the two.
-export const getSession = createServerFn({ method: "GET" })
-    .handler(async () => {
-        const headers = getRequestHeaders()
-        return await auth.api.getSession({ headers })
-    })
+export const getSession = createServerFn({ method: "GET" }).handler(async () => {
+    const headers = getRequestHeaders()
+    return await auth.api.getSession({ headers })
+})
 
-export const getSetupStatus = createServerFn({ method: "GET" })
-    .handler(async () => {
-        try {
-            const ctx = await auth.$context
-            const count = await ctx.adapter.count({ model: "user" })
-            return { hasOwner: count > 0 }
-        } catch {
-            return { hasOwner: false }
-        }
-    })
+export const getSetupStatus = createServerFn({ method: "GET" }).handler(async () => {
+    try {
+        const ctx = await auth.$context
+        const count = await ctx.adapter.count({ model: "user" })
+        return { hasOwner: count > 0 }
+    } catch {
+        return { hasOwner: false }
+    }
+})
 
 export const signIn = createServerFn({ method: "POST" })
     .validator(signInSchema)
     .handler(async ({ data }) => {
         try {
             const headers = getRequestHeaders()
-            const {
-                response,
-                headers: responseHeaders
-            } = await auth.api.signInEmail({
+            const { response, headers: responseHeaders } = await auth.api.signInEmail({
                 body: {
                     email: data.email,
                     password: data.password,
                     rememberMe: data.rememberMe,
                     ...(data.oauthQuery && {
-                        oauth_query: data.oauthQuery
+                        oauth_query: data.oauthQuery,
                     }),
                 },
                 headers: headers,
@@ -61,17 +56,14 @@ export const signIn = createServerFn({ method: "POST" })
         }
     })
 
-export const signOut = createServerFn({ method: "POST" })
-    .handler(async () => {
-        const headers = getRequestHeaders()
-        const {
-            headers: responseHeaders
-        } = await auth.api.signOut({
-            headers,
-            returnHeaders: true,
-        })
-        forwardAuthHeaders(responseHeaders)
+export const signOut = createServerFn({ method: "POST" }).handler(async () => {
+    const headers = getRequestHeaders()
+    const { headers: responseHeaders } = await auth.api.signOut({
+        headers,
+        returnHeaders: true,
     })
+    forwardAuthHeaders(responseHeaders)
+})
 
 // requestPasswordReset's own url (sent in the email) points at better-auth's
 // own /reset-password/:token callback, which validates the token then
@@ -138,9 +130,7 @@ export const completeSetup = createServerFn({ method: "POST" })
                 update: { emailVerified: true },
             })
 
-            const {
-                headers: responseHeaders
-            } = await auth.api.signInEmail({
+            const { headers: responseHeaders } = await auth.api.signInEmail({
                 body: {
                     email: data.email,
                     password: data.password,
@@ -157,27 +147,22 @@ export const completeSetup = createServerFn({ method: "POST" })
         }
     })
 
-export const runSetupMigrations = createServerFn({ method: "POST" })
-    .handler(async () => {
-        const ctx = await auth.$context
-        const count = await ctx.adapter.count({ model: "user" }).catch(() => 0)
-        if (count > 0) {
-            throw new Error("Setup is already complete: this instance already has an owner account.")
-        }
+export const runSetupMigrations = createServerFn({ method: "POST" }).handler(async () => {
+    const ctx = await auth.$context
+    const count = await ctx.adapter.count({ model: "user" }).catch(() => 0)
+    if (count > 0) {
+        throw new Error("Setup is already complete: this instance already has an owner account.")
+    }
 
-        const {
-            toBeCreated,
-            toBeAdded,
-            runMigrations
-        } = await getMigrations(auth.options)
-        if (toBeCreated.length === 0 && toBeAdded.length === 0) {
-            return { message: "No migrations needed" }
-        }
+    const { toBeCreated, toBeAdded, runMigrations } = await getMigrations(auth.options)
+    if (toBeCreated.length === 0 && toBeAdded.length === 0) {
+        return { message: "No migrations needed" }
+    }
 
-        await runMigrations()
-        return {
-            message: "Migrations completed successfully",
-            created: toBeCreated.map((t) => t.table),
-            added: toBeAdded.map((t) => t.table),
-        }
-    })
+    await runMigrations()
+    return {
+        message: "Migrations completed successfully",
+        created: toBeCreated.map((t) => t.table),
+        added: toBeAdded.map((t) => t.table),
+    }
+})

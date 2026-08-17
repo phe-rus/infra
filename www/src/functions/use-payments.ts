@@ -8,7 +8,6 @@ export const useAddWallet = () =>
             phoneNumber: string
             provider: string
             label?: string
-            makePrimary?: boolean
         }) => {
             const { data, error } = await authClient.pay.wallets.add(variables)
             if (error) throw new Error(error.message ?? "Could not save this number")
@@ -57,13 +56,20 @@ export const useResendReceipts = () =>
     useAppMutation({
         mutationFn: async (paymentIds: string[]) => {
             const results = await Promise.allSettled(
-                paymentIds.map((paymentId) => authClient.pay.receipt.resend({ paymentId }))
+                paymentIds.map((paymentId) =>
+                    authClient.pay.receipt.resend({
+                        paymentId,
+                    })
+                )
             )
             const failed = results.filter((r) => r.status === "rejected" || r.value.error).length
-            if (failed === results.length) throw new Error("Could not send any of the selected receipts")
+            if (failed === results.length)
+                throw new Error("Could not send any of the selected receipts")
             return { sent: results.length - failed, failed }
         },
         successMessage: (data) =>
-            data.failed > 0 ? `Sent ${data.sent} receipt(s), ${data.failed} failed` : `Sent ${data.sent} receipt(s)`,
+            data.failed > 0
+                ? `Sent ${data.sent} receipt(s), ${data.failed} failed`
+                : `Sent ${data.sent} receipt(s)`,
         errorMessage: "Could not send the selected receipts",
     })

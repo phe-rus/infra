@@ -33,22 +33,25 @@ function RouteComponent() {
             await resetPassword({
                 data: {
                     newPassword: value.newPassword,
-                    token: token
-                }
+                    token: token,
+                },
             })
         },
     })
 
     if (!token || error) {
         return (
-            <div className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}>
+            <div className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}>
                 <section>
                     <h1 className="text-3xl">Link expired</h1>
                     <p className="text-muted-foreground">
                         This password reset link is invalid or has expired — request a new one.
                     </p>
                 </section>
-                <Link to="/forgot-password" className="text-muted-foreground text-xs hover:underline">
+                <Link
+                    to="/forgot-password"
+                    className="text-xs text-muted-foreground hover:underline"
+                >
                     ← Request a new link
                 </Link>
             </div>
@@ -61,7 +64,7 @@ function RouteComponent() {
                 e.preventDefault()
                 void form.handleSubmit()
             }}
-            className={cn("flex w-full md:max-w-md flex-col gap-5", "container m-auto py-10")}
+            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
         >
             <section>
                 <h1 className="text-3xl">Set a new password</h1>

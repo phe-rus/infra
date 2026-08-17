@@ -11,7 +11,7 @@ export function Submit({ label }: { label: string }) {
                 state.isSubmitting,
                 state.canSubmit,
                 state.isDirty,
-                state.isTouched
+                state.isTouched,
             ]}
         >
             {([isSubmitting, canSubmit, isDirty, isTouched]) => {

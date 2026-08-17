@@ -3,7 +3,14 @@ import * as z from "zod"
 import { ALLOWED_TYPES, MAX_FILE_BYTES, MAX_USER_QUOTA_BYTES } from "./constants"
 import { sniffExtension, isImageExtension } from "./sniff-file-type"
 import { sanitizeSvg } from "./sanitize-svg"
-import { avatarKey, avatarPrefix, fileKey, getUserUsageBytes, listAllObjects, stripExtension } from "./r2-paths"
+import {
+    avatarKey,
+    avatarPrefix,
+    fileKey,
+    getUserUsageBytes,
+    listAllObjects,
+    stripExtension,
+} from "./r2-paths"
 import { cdnPath, cdnUrl } from "./cdn-url"
 
 export { cdnPath, cdnUrl }
@@ -14,7 +21,9 @@ function readUploadedFile(body: unknown): File {
         throw new APIError("BAD_REQUEST", { message: "No file provided" })
     }
     if (file.size > MAX_FILE_BYTES) {
-        throw new APIError("BAD_REQUEST", { message: `File too large, max ${MAX_FILE_BYTES} bytes` })
+        throw new APIError("BAD_REQUEST", {
+            message: `File too large, max ${MAX_FILE_BYTES} bytes`,
+        })
     }
     return file
 }
@@ -24,11 +33,17 @@ function resolveTargetUserId(
     isAdmin: (role: string) => boolean
 ): string {
     const requested = (ctx.body as Record<string, unknown> | undefined)?.userId
-    if (typeof requested !== "string" || requested.length === 0 || requested === ctx.context.session.user.id) {
+    if (
+        typeof requested !== "string" ||
+        requested.length === 0 ||
+        requested === ctx.context.session.user.id
+    ) {
         return ctx.context.session.user.id
     }
     if (!isAdmin(ctx.context.session.user.role ?? "")) {
-        throw new APIError("FORBIDDEN", { message: "Admin access required to change another user's image" })
+        throw new APIError("FORBIDDEN", {
+            message: "Admin access required to change another user's image",
+        })
     }
     return requested
 }
@@ -79,7 +94,10 @@ export function r2Provider(options: R2ProviderOptions) {
                         getUserUsageBytes(binding, userId),
                         listAllObjects(binding, avatarPrefix(userId)),
                     ])
-                    const existingAvatarSize = existingAvatarObjects.reduce((sum, obj) => sum + obj.size, 0)
+                    const existingAvatarSize = existingAvatarObjects.reduce(
+                        (sum, obj) => sum + obj.size,
+                        0
+                    )
                     const projectedUsage = usage - existingAvatarSize + bytes.byteLength
                     if (projectedUsage > MAX_USER_QUOTA_BYTES) {
                         throw new APIError("BAD_REQUEST", { message: "Storage quota exceeded" })
@@ -134,7 +152,11 @@ export function r2Provider(options: R2ProviderOptions) {
                         throw new APIError("FORBIDDEN", { message: "Admin access required" })
                     }
                     const prefix = ctx.query.prefix ?? ""
-                    const result = await binding.list({ prefix, delimiter: "/", include: ["httpMetadata"] })
+                    const result = await binding.list({
+                        prefix,
+                        delimiter: "/",
+                        include: ["httpMetadata"],
+                    })
 
                     return ctx.json({
                         prefix,
@@ -174,7 +196,11 @@ export function r2Provider(options: R2ProviderOptions) {
                     const callerIsAdmin = isAdmin(ctx.context.session.user.role ?? "")
                     const ownPrefix = `${ctx.context.session.user.id}/`
 
-                    if (!callerIsAdmin && ctx.body.prefix && !ctx.body.prefix.startsWith(ownPrefix)) {
+                    if (
+                        !callerIsAdmin &&
+                        ctx.body.prefix &&
+                        !ctx.body.prefix.startsWith(ownPrefix)
+                    ) {
                         throw new APIError("FORBIDDEN", { message: "Admin access required" })
                     }
 
@@ -196,25 +222,22 @@ export function r2Provider(options: R2ProviderOptions) {
             // bucket by its exact key. There's no separate admin-only
             // "download" path: this is the one way to read object content
             // back out, for avatars and everything else alike
-            getCdnFile: createAuthEndpoint(
-                "/cdn/**:key",
-                { method: "GET" },
-                async (ctx) => {
-                    const object = await binding.get(ctx.params.key)
-                    if (!object) {
-                        return new Response(null, { status: 404 })
-                    }
-                    return new Response(object.body, {
-                        status: 200,
-                        headers: {
-                            "Content-Type": object.httpMetadata?.contentType ?? "application/octet-stream",
-                            ...(object.httpEtag ? { ETag: object.httpEtag } : {}),
-                            "Cache-Control": "public, max-age=31536000, stale-while-revalidate=60",
-                            "X-Content-Type-Options": "nosniff",
-                        },
-                    })
+            getCdnFile: createAuthEndpoint("/cdn/**:key", { method: "GET" }, async (ctx) => {
+                const object = await binding.get(ctx.params.key)
+                if (!object) {
+                    return new Response(null, { status: 404 })
                 }
-            ),
+                return new Response(object.body, {
+                    status: 200,
+                    headers: {
+                        "Content-Type":
+                            object.httpMetadata?.contentType ?? "application/octet-stream",
+                        ...(object.httpEtag ? { ETag: object.httpEtag } : {}),
+                        "Cache-Control": "public, max-age=31536000, stale-while-revalidate=60",
+                        "X-Content-Type-Options": "nosniff",
+                    },
+                })
+            }),
         },
     }
 }

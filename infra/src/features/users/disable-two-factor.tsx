@@ -13,8 +13,8 @@ export const DisableTwoFactor: FC<DisableTwoFactorProps> = ({ viewUser }) => {
         <section className="flex flex-col gap-2">
             <h3 className="text-sm font-medium">Two-factor authentication</h3>
             <p className="text-xs text-muted-foreground">
-                This user has 2FA enabled. If they've lost access to their authenticator, disable it here so
-                they can sign in and set it up again.
+                This user has 2FA enabled. If they've lost access to their authenticator, disable it
+                here so they can sign in and set it up again.
             </p>
             <Button
                 type="button"

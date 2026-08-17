@@ -42,17 +42,30 @@ export const PayoutDialog: FC<PayoutDialogProps> = ({ open, onOpenChange }) => {
                 <>
                     <Button
                         type="button"
-                        isDisabled={!amount.trim() || !fields.provider || !fields.phoneNumber.trim() || isPending}
+                        isDisabled={
+                            !amount.trim() ||
+                            !fields.provider ||
+                            !fields.phoneNumber.trim() ||
+                            isPending
+                        }
                         onClick={() => void handlePayout()}
                     >
                         Send payout
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>Cancel</DrawerClose>
+                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                        Cancel
+                    </DrawerClose>
                 </>
             }
         >
             <FieldGroup className="grid grid-cols-2 gap-3">
-                <PaymentFields idPrefix="payout" kind="payout" fields={fields} amount={amount} onAmountChange={setAmount} />
+                <PaymentFields
+                    idPrefix="payout"
+                    kind="payout"
+                    fields={fields}
+                    amount={amount}
+                    onAmountChange={setAmount}
+                />
             </FieldGroup>
         </DialogWidget>
     )

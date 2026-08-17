@@ -8,7 +8,7 @@ export const queryContext = () => {
 }
 
 export function getContext(): QueryClient {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
         if (!query) query = queryContext()
         return query
     }
@@ -17,9 +17,5 @@ export function getContext(): QueryClient {
 
 export const QueryProvider = ({ children, query }: PropsWithChildren<{ query: QueryClient }>) => {
     const [client] = useState(() => query)
-    return (
-        <QueryClientProvider client={client}>
-            {children}
-        </QueryClientProvider>
-    )
+    return <QueryClientProvider client={client}>{children}</QueryClientProvider>
 }

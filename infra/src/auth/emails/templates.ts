@@ -50,7 +50,13 @@ function colorStyleBlock(): string {
     </style>`
 }
 
-function baseTemplate(appName: string, heading: string, body: string, ctaLabel: string, ctaUrl: string): string {
+function baseTemplate(
+    appName: string,
+    heading: string,
+    body: string,
+    ctaLabel: string,
+    ctaUrl: string
+): string {
     return `<!doctype html>
 <html>
   <head>

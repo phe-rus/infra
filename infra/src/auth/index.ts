@@ -3,19 +3,19 @@ import { oauthProvider } from "@better-auth/oauth-provider"
 import { passkey } from "@better-auth/passkey"
 import { ac, buildRoles, isAdminTier } from "./utils/permissions"
 import { password } from "./utils/password"
-import { sendDeleteAccountEmail, sendPaymentReceiptEmail, sendResetPasswordEmail, sendVerificationEmail } from "./emails"
+import {
+    sendDeleteAccountEmail,
+    sendPaymentReceiptEmail,
+    sendResetPasswordEmail,
+    sendVerificationEmail,
+} from "./emails"
 import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
 import { secondaryStorage, trustedOrigins, databaseHooks } from "./configs"
-import { advanced } from './advanced'
+import { advanced } from "./advanced"
 import { r2Provider } from "@infra/r2"
 import { infraPayment } from "@infra/payment"
-import {
-    admin,
-    jwt,
-    openAPI,
-    twoFactor,
-} from "better-auth/plugins"
+import { admin, jwt, openAPI, twoFactor } from "better-auth/plugins"
 
 const roles = buildRoles()
 
@@ -25,9 +25,7 @@ export const auth = betterAuth({
     database: env.AUTH_DB,
     experimental: { joins: true },
     trustedOrigins: trustedOrigins,
-    disabledPaths: [
-        "/token"
-    ],
+    disabledPaths: ["/token"],
     emailAndPassword: {
         enabled: true,
         revokeSessionsOnPasswordReset: true,
@@ -47,16 +45,16 @@ export const auth = betterAuth({
     account: {
         accountLinking: {
             enabled: true,
-            trustedProviders: ['email-password'],
-            allowDifferentEmails: false
-        }
+            trustedProviders: ["email-password"],
+            allowDifferentEmails: false,
+        },
     },
     user: {
         additionalFields: {
             bio: {
                 type: "string",
-                required: false
-            }
+                required: false,
+            },
         },
         deleteUser: {
             enabled: true,
@@ -76,7 +74,7 @@ export const auth = betterAuth({
         enabled: true,
         window: 60,
         max: 100,
-        storage: 'secondary-storage',
+        storage: "secondary-storage",
         customRules: {
             "/pay/*": { window: 60, max: 100 },
             "/r2/*": { window: 60, max: 100 },
@@ -84,56 +82,58 @@ export const auth = betterAuth({
         },
         customStorage: {
             get: async (key) => {
-                const value = await env.RL.get(key);
-                if (!value) return null;
+                const value = await env.RL.get(key)
+                if (!value) return null
 
-                const data = JSON.parse(value);
-                if (data && typeof data === 'object') {
-                    data.key = key;
+                const data = JSON.parse(value)
+                if (data && typeof data === "object") {
+                    data.key = key
                 }
-                return data;
+                return data
             },
             set: async (key, value, ttl) => {
-                if (value && typeof value === 'object') {
-                    value.key = key;
+                if (value && typeof value === "object") {
+                    value.key = key
                 }
 
-                const stringValue = JSON.stringify(value);
-                const expirationTtl = typeof ttl === 'number' ? Math.max(ttl, 60) : 60;
-                await env.RL.put(key, stringValue, { expirationTtl });
+                const stringValue = JSON.stringify(value)
+                const expirationTtl = typeof ttl === "number" ? Math.max(ttl, 60) : 60
+                await env.RL.put(key, stringValue, { expirationTtl })
             },
             consume: async (key, rule) => {
-                const now = Math.floor(Date.now() / 1000);
-                const value = await env.RL.get(key);
+                const now = Math.floor(Date.now() / 1000)
+                const value = await env.RL.get(key)
 
-                let data = value ? JSON.parse(value) as { key?: string; count: number; lastRequest: number } : null;
+                let data = value
+                    ? (JSON.parse(value) as { key?: string; count: number; lastRequest: number })
+                    : null
 
-                if (!data || (now - data.lastRequest) > rule.window) {
-                    data = { key, count: 0, lastRequest: now };
+                if (!data || now - data.lastRequest > rule.window) {
+                    data = { key, count: 0, lastRequest: now }
                 }
 
                 if (data.count >= rule.max) {
-                    const retryAfter = Math.max(0, (data.lastRequest + rule.window) - now);
+                    const retryAfter = Math.max(0, data.lastRequest + rule.window - now)
                     return {
                         allowed: false,
-                        retryAfter: retryAfter || 1
-                    };
+                        retryAfter: retryAfter || 1,
+                    }
                 }
 
-                data.count += 1;
-                data.key = key;
+                data.count += 1
+                data.key = key
 
-                const kvTtl = Math.max(rule.window, 60);
+                const kvTtl = Math.max(rule.window, 60)
                 await env.RL.put(key, JSON.stringify(data), {
-                    expirationTtl: kvTtl
-                });
+                    expirationTtl: kvTtl,
+                })
 
                 return {
                     allowed: true,
-                    retryAfter: null
-                };
-            }
-        }
+                    retryAfter: null,
+                }
+            },
+        },
     },
     secondaryStorage: secondaryStorage,
     databaseHooks: databaseHooks,
@@ -151,27 +151,27 @@ export const auth = betterAuth({
             ac: ac,
             roles: roles,
             defaultRole: "user",
-            adminRoles: ['owner', "admin"],
+            adminRoles: ["owner", "admin"],
         }),
         twoFactor({
             issuer: env.VITE_APPNAME,
             backupCodeOptions: {
                 amount: 10,
-                storeBackupCodes: 'encrypted'
+                storeBackupCodes: "encrypted",
             },
             twoFactorCookieMaxAge: 600, // 10 min 2 FA challenge window
             trustDeviceMaxAge: 60 * 60 * 24 * 30, // 30 day trusted device
         }),
         passkey({
             rpName: env.VITE_APPNAME,
-            rpID: env.NODE_ENV === 'production' ? env.COOKIE_DOMAIN : undefined,
+            rpID: env.NODE_ENV === "production" ? env.COOKIE_DOMAIN : undefined,
         }),
         openAPI({
-            path: 'docs'
+            path: "docs",
         }),
         r2Provider({
             binding: env.STORAGE,
-            isAdmin: isAdminTier
+            isAdmin: isAdminTier,
         }),
         infraPayment({
             apiToken: env.PAWAPAY_API_TOKEN,
@@ -191,13 +191,14 @@ export const auth = betterAuth({
             signUp: {
                 page: `${env.WWW_URL}/create-account`,
             },
-            storeClientSecret: 'hashed',
+            storeClientSecret: "hashed",
             allowDynamicClientRegistration: false,
             // admin-created clients (via adminCreateOAuthClient, no session)
             // have no matching userId, so the default "caller owns this
             // client" privilege check would reject every admin action on
             // them — admin/owner manage every client instance-wide instead
-            clientPrivileges: async ({ user }) => isAdminTier((user?.role as string | undefined) ?? ""),
+            clientPrivileges: async ({ user }) =>
+                isAdminTier((user?.role as string | undefined) ?? ""),
             scopes: ["openid", "profile", "email", "offline_access", "payments"],
             rateLimit: {
                 authorize: { window: 60, max: 50 },
@@ -213,13 +214,13 @@ export const auth = betterAuth({
             validAudiences: [env.BETTER_AUTH_URL],
             silenceWarnings: {
                 oauthAuthServerConfig: true,
-                openidConfig: true
+                openidConfig: true,
             },
             customUserInfoClaims: async ({ user, scopes }) => ({
                 scopes: scopes,
-                ...user
+                ...user,
             }),
         }),
-        tanstackStartCookies()
-    ]
+        tanstackStartCookies(),
+    ],
 })

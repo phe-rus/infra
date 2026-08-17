@@ -8,7 +8,10 @@ import { IconLoader2, IconMail, IconPdf } from "@tabler/icons-react"
 import { useMyPayments, usePaymentConfig } from "@/functions/get-payments"
 import { useResendReceipt, useResendReceipts } from "@/functions/use-payments"
 
-function providerLabel(countries: ReturnType<typeof usePaymentConfig>["data"]["countries"], code: string | null) {
+function providerLabel(
+    countries: ReturnType<typeof usePaymentConfig>["data"]["countries"],
+    code: string | null
+) {
     if (!code) return "Payment"
     for (const country of countries) {
         const match = country.providers.find((p) => p.provider === code)
@@ -77,61 +80,78 @@ export function TransactionHistory() {
                 )}
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
                 {payments.map((payment) => {
                     const canEmail = payment.status === "completed"
-                    const isSending = resendMutation.isPending && resendMutation.variables === payment.id
+                    const isSending =
+                        resendMutation.isPending && resendMutation.variables === payment.id
 
                     return (
                         <article
                             key={payment.id}
                             className={cn(
                                 "flex items-center justify-between",
-                                "p-5 rounded-md bg-input/35",
+                                "rounded-md bg-input/35 p-3",
                                 "group relative overflow-hidden"
                             )}
                         >
-                            <div className="flex items-center gap-3">
+                            <div className="flex gap-3">
                                 {canEmail && (
                                     <Checkbox
                                         aria-label="Select transaction"
                                         isSelected={selected.has(payment.id)}
                                         onChange={() => toggle(payment.id)}
+                                        className="mt-1.5 size-3! cursor-pointer"
                                     />
                                 )}
                                 <div className="flex flex-col">
-                                    <h3 className="font-semibold">{providerLabel(config.countries, payment.provider)}</h3>
-                                    <p className="text-xs text-muted-foreground md:max-w-58 line-clamp-1">
-                                        {payment.phoneNumber ?? payment.pawapayReferenceId}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {formatDistanceToNow(new Date(payment.createdAt), { addSuffix: true })}
-                                    </p>
+                                    <h3 className="font-semibold">
+                                        {providerLabel(config.countries, payment.provider)}
+                                    </h3>
+                                    <div className="flex items-center gap-2">
+                                        <p className="line-clamp-1 text-xs text-muted-foreground md:max-w-58">
+                                            {payment.phoneNumber ?? payment.pawapayReferenceId}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {formatDistanceToNow(new Date(payment.createdAt), {
+                                                addSuffix: true,
+                                            })}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex flex-col items-end gap-1 truncate">
                                 <p
                                     className={cn(
-                                        "font-semibold text-xs",
-                                        payment.status === "completed" ? "text-primary" : "text-muted-foreground"
+                                        "text-xs font-semibold",
+                                        payment.status === "completed"
+                                            ? "text-primary"
+                                            : "text-muted-foreground"
                                     )}
                                 >
                                     +{payment.currency} {Number(payment.amount).toLocaleString()}
                                 </p>
                                 {payment.status !== "completed" ? (
-                                    <Badge variant={STATUS_VARIANT[payment.status] ?? "secondary"} className="rounded-full capitalize">
+                                    <Badge
+                                        variant={STATUS_VARIANT[payment.status] ?? "secondary"}
+                                        className="cursor-pointer rounded-full capitalize"
+                                    >
                                         {payment.status}
                                     </Badge>
                                 ) : (
                                     <Button
                                         size="icon-xs"
                                         variant="secondary"
-                                        className="rounded-full ml-auto"
+                                        className="ml-auto rounded-full"
                                         aria-label="Email receipt"
                                         isDisabled={isSending}
                                         onClick={() => resendMutation.mutate(payment.id)}
                                     >
-                                        {isSending ? <IconLoader2 className="animate-spin" /> : <IconPdf />}
+                                        {isSending ? (
+                                            <IconLoader2 className="animate-spin" />
+                                        ) : (
+                                            <IconPdf />
+                                        )}
                                     </Button>
                                 )}
                             </div>

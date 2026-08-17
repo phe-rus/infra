@@ -34,7 +34,11 @@ export const PaymentHistory: FC<PaymentHistoryProps> = ({ payments }) => {
             {
                 accessorKey: "status",
                 header: "Status",
-                cell: ({ row }) => <Badge variant={statusVariant(row.original.status)}>{row.original.status}</Badge>,
+                cell: ({ row }) => (
+                    <Badge variant={statusVariant(row.original.status)}>
+                        {row.original.status}
+                    </Badge>
+                ),
             },
             {
                 accessorKey: "createdAt",

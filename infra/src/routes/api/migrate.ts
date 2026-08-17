@@ -9,18 +9,14 @@ export const Route = createFileRoute("/api/migrate")({
             POST: async ({ request }) => {
                 if (request.headers.get("x-migration-secret") !== env.MIGRATION_SECRET) {
                     return new Response("Forbidden", {
-                        status: 403
+                        status: 403,
                     })
                 }
 
-                const {
-                    toBeCreated,
-                    toBeAdded,
-                    runMigrations
-                } = await getMigrations(auth.options)
+                const { toBeCreated, toBeAdded, runMigrations } = await getMigrations(auth.options)
                 if (toBeCreated.length === 0 && toBeAdded.length === 0) {
                     return Response.json({
-                        message: "No migrations needed"
+                        message: "No migrations needed",
                     })
                 }
 
@@ -30,7 +26,7 @@ export const Route = createFileRoute("/api/migrate")({
                     created: toBeCreated.map((t) => t.table),
                     added: toBeAdded.map((t) => t.table),
                 })
-            }
-        }
-    }
+            },
+        },
+    },
 })

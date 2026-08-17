@@ -26,20 +26,18 @@ export function PersonalInfo() {
     const user = data?.user
 
     const defaultValue: z.input<typeof profileSchema> = {
-        name: user?.name ?? '',
-        bio: user?.bio ?? '',
+        name: user?.name ?? "",
+        bio: user?.bio ?? "",
         avatar: null,
-        email: user?.email ?? '',
-        id: user?.id ?? '',
-        role: user?.role ?? '',
-        createdAt: format(String(user?.createdAt), 'PPP') ?? '',
-        updatedAt: format(String(user?.updatedAt), 'PPP') ?? '',
-        emailVerified: String(user?.emailVerified) ?? 'false',
+        email: user?.email ?? "",
+        id: user?.id ?? "",
+        role: user?.role ?? "",
+        createdAt: format(String(user?.createdAt), "PPP") ?? "",
+        updatedAt: format(String(user?.updatedAt), "PPP") ?? "",
+        emailVerified: String(user?.emailVerified) ?? "false",
     }
 
-    const {
-        mutateAsync: handleUpdate
-    } = useMutation({
+    const { mutateAsync: handleUpdate } = useMutation({
         mutationFn: async (value: z.input<typeof profileSchema>) => {
             const changes: { name?: string; bio?: string; image?: string } = {}
             if (value.name !== defaultValue.name) changes.name = value.name
@@ -62,9 +60,9 @@ export function PersonalInfo() {
         },
         onError: (error) => {
             t.error(error.name ?? "Could not update profile", {
-                description: error.message ?? "Please try again later"
+                description: error.message ?? "Please try again later",
             })
-        }
+        },
     })
 
     const form = useAppForm({
@@ -77,7 +75,7 @@ export function PersonalInfo() {
         },
         onSubmit: async ({ value }) => {
             await handleUpdate(value)
-        }
+        },
     })
 
     return (
@@ -91,83 +89,85 @@ export function PersonalInfo() {
             <form.AppForm>
                 <form.AppField
                     name="avatar"
-                    children={(field) => <field.avatar label={user?.name ?? ""} existingImage={resolveCdnUrl(user?.image)} />}
+                    children={(field) => (
+                        <field.avatar
+                            label={user?.name ?? ""}
+                            existingImage={resolveCdnUrl(user?.image)}
+                        />
+                    )}
                 />
 
                 <FieldGroup>
-                    <div className='flex flex-col gap-3'>
-                        <div className='flex flex-col'>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex flex-col">
                             <h2>Basics</h2>
-                            <p className='text-sm'>The basics of you</p>
+                            <p className="text-sm">The basics of you</p>
                         </div>
                         <form.AppField
                             name="name"
-                            children={(field) => <field.input label="Name" placeholder="Your name" />}
+                            children={(field) => (
+                                <field.input label="Name" placeholder="Your name" />
+                            )}
                         />
 
                         <form.AppField
                             name="bio"
-                            children={(field) => <field.textarea label="Bio" placeholder="A short bio" />}
+                            children={(field) => (
+                                <field.textarea label="Bio" placeholder="A short bio" />
+                            )}
                         />
                     </div>
 
-                    <div className='flex flex-col gap-3'>
-                        <div className='flex flex-col'>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex flex-col">
                             <h2>Credentials</h2>
-                            <p className='text-sm'>This are protected from being changed and only happen automatically</p>
+                            <p className="text-sm">
+                                This are protected from being changed and only happen automatically
+                            </p>
                         </div>
                         <form.AppField
-                            name='email'
-                            children={(field) =>
+                            name="email"
+                            children={(field) => (
                                 <field.input
                                     disabled
                                     label="Email"
                                     placeholder="example@email.com"
                                 />
-                            }
+                            )}
                         />
 
-
                         <form.AppField
-                            name='role'
-                            children={(field) =>
+                            name="role"
+                            children={(field) => (
                                 <field.input
                                     disabled
                                     label="Role"
                                     placeholder="example@email.com"
                                 />
-                            }
+                            )}
                         />
 
                         <form.AppField
                             name="createdAt"
-                            children={(field) =>
-                                <field.input
-                                    disabled
-                                    label="Created At"
-                                    placeholder="Created At"
-                                />
-                            }
+                            children={(field) => (
+                                <field.input disabled label="Created At" placeholder="Created At" />
+                            )}
                         />
                         <form.AppField
                             name="updatedAt"
-                            children={(field) =>
-                                <field.input
-                                    disabled
-                                    label="Updated At"
-                                    placeholder="Updated At"
-                                />
-                            }
+                            children={(field) => (
+                                <field.input disabled label="Updated At" placeholder="Updated At" />
+                            )}
                         />
                         <form.AppField
                             name="emailVerified"
-                            children={(field) =>
+                            children={(field) => (
                                 <field.input
                                     disabled
                                     label="Email Verified"
                                     placeholder="Email Verified"
                                 />
-                            }
+                            )}
                         />
                     </div>
                 </FieldGroup>

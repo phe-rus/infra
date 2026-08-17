@@ -6,17 +6,23 @@ type OptionsProps = Partial<BetterAuthOptions>
 const secondaryStorage = {
     get: (key) => env.CACHE.get(key),
     set: (key, value, ttl) => {
-        return env.CACHE.put(key, value, ttl ? {
-            expirationTtl: Math.max(ttl, 60)
-        } : undefined)
+        return env.CACHE.put(
+            key,
+            value,
+            ttl
+                ? {
+                      expirationTtl: Math.max(ttl, 60),
+                  }
+                : undefined
+        )
     },
     delete: (key) => env.CACHE.delete(key),
     getAndDelete: async (key) => {
         const value = await env.CACHE.get(key)
         if (value !== null) await env.CACHE.delete(key)
         return value
-    }
-} satisfies OptionsProps['secondaryStorage']
+    },
+} satisfies OptionsProps["secondaryStorage"]
 
 const databaseHooks = {
     user: {
@@ -28,27 +34,21 @@ const databaseHooks = {
                 return {
                     data: {
                         ...user,
-                        role: count > 0 ? 'user' : 'owner'
-                    }
+                        role: count > 0 ? "user" : "owner",
+                    },
                 }
-            }
-        }
-    }
-} satisfies OptionsProps['databaseHooks']
+            },
+        },
+    },
+} satisfies OptionsProps["databaseHooks"]
 
-const trustedOrigins = async (
-    request: Request | undefined
-): Promise<string[]> => {
-    const origin = request?.headers.get("origin") ?? ''
-    const fallbackOrigin = env.BETTER_AUTH_URL ?? 'https://infra.pherus.org'
+const trustedOrigins = async (request: Request | undefined): Promise<string[]> => {
+    const origin = request?.headers.get("origin") ?? ""
+    const fallbackOrigin = env.BETTER_AUTH_URL ?? "https://infra.pherus.org"
     if (!origin) {
         return [fallbackOrigin]
     }
     return isTrustedOrigin(origin, env.TRUSTED_ORIGINS) ? [origin] : [fallbackOrigin]
 }
 
-export {
-    secondaryStorage,
-    databaseHooks,
-    trustedOrigins
-}
+export { secondaryStorage, databaseHooks, trustedOrigins }
