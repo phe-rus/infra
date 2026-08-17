@@ -14,7 +14,12 @@ export const passkeysOptions = () => queryOptions({
 export const useEnableTwoFactor = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
-            const { data, error } = await authClient.twoFactor.enable({ password })
+            const {
+                data,
+                error
+            } = await authClient.twoFactor.enable({
+                password
+            })
             if (error) throw new Error(error.message ?? "Could not start two-factor setup")
             return data
         },
@@ -46,7 +51,9 @@ export const useDisableTwoFactor = () =>
 export const useAddPasskey = () =>
     useAppMutation({
         mutationFn: async (name: string) => {
-            const { error } = await authClient.passkey.addPasskey({ name })
+            const { error } = await authClient.passkey.addPasskey({
+                name
+            })
             if (error) throw new Error(error.message ?? "Could not add passkey")
         },
         invalidates: [passkeysOptions().queryKey],
@@ -57,7 +64,11 @@ export const useAddPasskey = () =>
 export const useDeletePasskey = () =>
     useAppMutation({
         mutationFn: async (id: string) => {
-            const { error } = await authClient.passkey.deletePasskey({ id })
+            const {
+                error
+            } = await authClient.passkey.deletePasskey({
+                id
+            })
             if (error) throw new Error(error.message ?? "Could not remove passkey")
         },
         invalidates: [passkeysOptions().queryKey],

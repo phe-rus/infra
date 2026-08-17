@@ -211,6 +211,10 @@ export const auth = betterAuth({
             // defaults to [baseURL] when omitted; add this instance's other
             // deployed services here as they exist, not guessed in advance
             validAudiences: [env.BETTER_AUTH_URL],
+            silenceWarnings: {
+                oauthAuthServerConfig: true,
+                openidConfig: true
+            },
             customUserInfoClaims: async ({ user, scopes }) => ({
                 scopes: scopes,
                 ...user

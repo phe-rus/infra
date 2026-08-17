@@ -48,7 +48,7 @@ export default {
                 headers: newHeaders
             }))
         }
-        if (url.pathname.includes('/api/auth/.well-known/oauth-authorization-server')) {
+        if (url.pathname.includes('/.well-known/oauth-authorization-server/api/auth')) {
             const authServerHandler = oauthProviderAuthServerMetadata(auth)
             const res = await authServerHandler(request)
 

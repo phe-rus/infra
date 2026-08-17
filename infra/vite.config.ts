@@ -14,7 +14,7 @@ const config = defineConfig({
   resolve: {
     tsconfigPaths: true,
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(import.meta.dirname, './src')
     }
   },
   plugins: [
