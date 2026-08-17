@@ -6,10 +6,7 @@ export const Route = createFileRoute('/_workspace')({
     if (!session) {
       throw redirect({
         to: '/sign-in',
-        replace: true,
-        search: {
-          redirect: '/'
-        }
+        replace: true
       })
     }
     return { session: session }

@@ -6,11 +6,16 @@ import { r2Client } from "@infra/r2/client"
 import { paymentClient } from "@infra/payment/client"
 
 
-function hosturl(): string {
+export function hosturl(): string {
     if (import.meta.env.VITE_INFRA_URL) {
         return import.meta.env.VITE_INFRA_URL
     }
-    return process.env.VITE_INFRA_URL || 'http://100.115.92.26:3000'
+    return process.env.VITE_INFRA_URL || 'http://localhost:3000'
+}
+
+export function resolveCdnUrl(path?: string | null): string | undefined {
+    if (!path) return undefined
+    return path.startsWith("http") ? path : `${hosturl()}${path}`
 }
 
 export const authClient = createAuthClient({

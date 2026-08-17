@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import { useState } from "react"
 import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
@@ -6,14 +6,22 @@ import { useAppForm } from "@infra/ui/widgets/blocks"
 import { cn } from "@infra/ui/lib/utils"
 import { authClient } from "@/lib/auth-client"
 
+export const Route = createFileRoute("/_auth/create-account")({
+    loader: async ({ context: { session } }) => {
+        if (session) {
+            throw redirect({
+                to: '/',
+                replace: true
+            })
+        }
+    },
+    component: RouteComponent,
+})
+
 const createAccountSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.email("Enter a valid email"),
     password: z.string().min(8, "At least 8 characters").max(48, "At most 48 characters"),
-})
-
-export const Route = createFileRoute("/_auth/create-account")({
-    component: RouteComponent,
 })
 
 function RouteComponent() {

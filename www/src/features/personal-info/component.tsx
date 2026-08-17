@@ -2,7 +2,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { t } from "@infra/ui/components/sonner"
-import { authClient } from "@/lib/auth-client"
+import { authClient, resolveCdnUrl } from "@/lib/auth-client"
 import { currentOptions } from "@/functions/get-auth"
 import { getContext } from "@/lib/queryClient"
 import { format } from "date-fns"
@@ -41,14 +41,15 @@ export function PersonalInfo() {
         mutateAsync: handleUpdate
     } = useMutation({
         mutationFn: async (value: z.input<typeof profileSchema>) => {
-            if (value.avatar) {
-                const { error } = await authClient.r2.uploadAvatar(value.avatar)
-                if (error) throw new Error(error.message ?? "Could not upload avatar")
-            }
-
-            const changes: { name?: string; bio?: string } = {}
+            const changes: { name?: string; bio?: string; image?: string } = {}
             if (value.name !== defaultValue.name) changes.name = value.name
             if (value.bio !== defaultValue.bio) changes.bio = value.bio
+
+            if (value.avatar) {
+                const { data, error } = await authClient.r2.uploadAvatar(value.avatar)
+                if (error) throw new Error(error.message ?? "Could not upload avatar")
+                if (data?.url) changes.image = data.url
+            }
 
             if (Object.keys(changes).length > 0) {
                 return await authClient.updateUser(changes)
@@ -90,7 +91,7 @@ export function PersonalInfo() {
             <form.AppForm>
                 <form.AppField
                     name="avatar"
-                    children={(field) => <field.avatar label={user?.name ?? ""} existingImage={user?.image} />}
+                    children={(field) => <field.avatar label={user?.name ?? ""} existingImage={resolveCdnUrl(user?.image)} />}
                 />
 
                 <FieldGroup>

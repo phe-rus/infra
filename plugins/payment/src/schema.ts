@@ -80,4 +80,46 @@ export const schema = {
             },
         },
     },
+    // a user's saved mobile-money numbers — separate from `payment.phoneNumber`,
+    // which is per-transaction. Self-service only, no admin surface reads this
+    walletNumber: {
+        fields: {
+            userId: {
+                type: "string",
+                required: true,
+                references: { model: "user", field: "id" },
+                index: true,
+            },
+            phoneNumber: {
+                type: "string",
+                required: true,
+            },
+            // mobile money correspondent code, same vocabulary as
+            // `payment.provider` (e.g. MTN_MOMO_ZMB)
+            provider: {
+                type: "string",
+                required: true,
+            },
+            label: {
+                type: "string",
+                required: false,
+            },
+            isPrimary: {
+                type: "boolean",
+                required: true,
+                defaultValue: false,
+            },
+            createdAt: {
+                type: "date",
+                required: true,
+                defaultValue: () => new Date(),
+            },
+            updatedAt: {
+                type: "date",
+                required: true,
+                defaultValue: () => new Date(),
+                onUpdate: () => new Date(),
+            },
+        },
+    },
 } as const

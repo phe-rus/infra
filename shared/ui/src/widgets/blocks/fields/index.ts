@@ -5,6 +5,7 @@ import { FieldSwitch } from "./switch"
 import { FieldRadioCard } from "./radio-card"
 import { FieldMultiselect } from "./multiselect"
 import { FieldAvatar } from "./avatar"
+import { FieldOtp } from "./otp"
 
 export const fields = {
     input: FieldInput,
@@ -13,7 +14,8 @@ export const fields = {
     switch: FieldSwitch,
     radioCard: FieldRadioCard,
     multiselect: FieldMultiselect,
-    avatar: FieldAvatar
+    avatar: FieldAvatar,
+    otp: FieldOtp
 }
 
 export * from "./input"
@@ -23,3 +25,4 @@ export * from "./switch"
 export * from "./radio-card"
 export * from "./multiselect"
 export * from "./avatar"
+export * from "./otp"

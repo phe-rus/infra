@@ -113,6 +113,249 @@ export function infraPayment(options: InfraPaymentOptions) {
                     })
                 }
             ),
+            // self-service: the signed-in user's own payment history. infra's
+            // own dashboard reads this straight off ctx.adapter (it runs
+            // in-process with the auth server) — this is the same query
+            // exposed over HTTP so www, which only ever talks to infra via
+            // authClient, can read it too
+            myPayments: createAuthEndpoint(
+                "/pay/payments/mine",
+                { method: "GET", use: [sessionMiddleware] },
+                async (ctx) => {
+                    const payments = await ctx.context.adapter.findMany<{
+                        id: string
+                        userId: string
+                        clientId: string | null
+                        type: string
+                        provider: string | null
+                        phoneNumber: string | null
+                        amount: string
+                        currency: string
+                        pawapayReferenceId: string
+                        status: string
+                        failureReason: string | null
+                        metadata: string | null
+                        createdAt: Date
+                        updatedAt: Date
+                    }>({
+                        model: "payment",
+                        where: [{ field: "userId", value: ctx.context.session.user.id }],
+                        sortBy: { field: "createdAt", direction: "desc" },
+                    })
+                    return ctx.json({ payments })
+                }
+            ),
+            // self-service: re-sends the receipt email for one of the
+            // caller's own completed payments, reusing the same
+            // onPaymentCompleted callback the webhook fires on first
+            // completion — just triggered on demand instead of by a status
+            // transition
+            resendReceipt: createAuthEndpoint(
+                "/pay/receipt/resend",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    body: z.object({ paymentId: z.string().min(1) }),
+                },
+                async (ctx) => {
+                    if (!onPaymentCompleted) {
+                        throw new APIError("BAD_REQUEST", { message: "Receipt emails are not configured on this instance" })
+                    }
+
+                    const payment = await ctx.context.adapter.findOne<{
+                        id: string
+                        userId: string
+                        type: string
+                        provider: string | null
+                        phoneNumber: string | null
+                        amount: string
+                        currency: string
+                        pawapayReferenceId: string
+                        status: string
+                        createdAt: Date
+                    }>({
+                        model: "payment",
+                        where: [{ field: "id", value: ctx.body.paymentId }],
+                    })
+                    if (!payment || payment.userId !== ctx.context.session.user.id) {
+                        throw new APIError("NOT_FOUND", { message: "Payment not found" })
+                    }
+                    if (payment.status !== "completed") {
+                        throw new APIError("BAD_REQUEST", { message: "Only completed payments have a receipt" })
+                    }
+
+                    await onPaymentCompleted(ctx.context.session.user.email, {
+                        userName: ctx.context.session.user.name,
+                        type: payment.type as "deposit" | "payout" | "refund",
+                        amount: payment.amount,
+                        currency: payment.currency,
+                        provider: payment.provider,
+                        phoneNumber: payment.phoneNumber,
+                        referenceId: payment.pawapayReferenceId,
+                        date: new Date(payment.createdAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                        }),
+                    })
+
+                    return ctx.json({ sent: true })
+                }
+            ),
+            // self-service: the signed-in user's own saved mobile-money
+            // numbers — separate from a payment's own phoneNumber, this is
+            // what backs the "Primary" wallet card and lets the deposit form
+            // skip retyping a number every time
+            listWalletNumbers: createAuthEndpoint(
+                "/pay/wallets",
+                { method: "GET", use: [sessionMiddleware] },
+                async (ctx) => {
+                    const wallets = await ctx.context.adapter.findMany<{
+                        id: string
+                        userId: string
+                        phoneNumber: string
+                        provider: string
+                        label: string | null
+                        isPrimary: boolean
+                        createdAt: Date
+                        updatedAt: Date
+                    }>({
+                        model: "walletNumber",
+                        where: [{ field: "userId", value: ctx.context.session.user.id }],
+                        sortBy: { field: "createdAt", direction: "desc" },
+                    })
+                    // primary pinned to the top, most recently added first otherwise
+                    wallets.sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary))
+                    return ctx.json({ wallets })
+                }
+            ),
+            addWalletNumber: createAuthEndpoint(
+                "/pay/wallets/add",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    body: z.object({
+                        phoneNumber: z.string().min(1),
+                        provider: z.string().min(1),
+                        label: z.string().min(1).max(40).optional(),
+                        makePrimary: z.boolean().optional(),
+                    }),
+                },
+                async (ctx) => {
+                    const userId = ctx.context.session.user.id
+                    const existing = await ctx.context.adapter.findMany({
+                        model: "walletNumber",
+                        where: [{ field: "userId", value: userId }],
+                    })
+                    // the first saved number is always primary, regardless of the flag
+                    const isPrimary = existing.length === 0 || Boolean(ctx.body.makePrimary)
+
+                    if (isPrimary && existing.length > 0) {
+                        await ctx.context.adapter.updateMany({
+                            model: "walletNumber",
+                            where: [
+                                { field: "userId", value: userId },
+                                { field: "isPrimary", value: true },
+                            ],
+                            update: { isPrimary: false },
+                        })
+                    }
+
+                    const wallet = await ctx.context.adapter.create({
+                        model: "walletNumber",
+                        data: {
+                            userId,
+                            phoneNumber: ctx.body.phoneNumber,
+                            provider: ctx.body.provider,
+                            label: ctx.body.label,
+                            isPrimary,
+                        },
+                    })
+
+                    return ctx.json({ wallet })
+                }
+            ),
+            removeWalletNumber: createAuthEndpoint(
+                "/pay/wallets/remove",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    body: z.object({ walletId: z.string().min(1) }),
+                },
+                async (ctx) => {
+                    const userId = ctx.context.session.user.id
+                    const wallet = await ctx.context.adapter.findOne<{
+                        id: string
+                        userId: string
+                        isPrimary: boolean
+                    }>({
+                        model: "walletNumber",
+                        where: [{ field: "id", value: ctx.body.walletId }],
+                    })
+                    if (!wallet || wallet.userId !== userId) {
+                        throw new APIError("NOT_FOUND", { message: "Saved number not found" })
+                    }
+
+                    await ctx.context.adapter.delete({
+                        model: "walletNumber",
+                        where: [{ field: "id", value: wallet.id }],
+                    })
+
+                    // removing the primary number promotes the most recently
+                    // added remaining one, so the user is never left without one
+                    if (wallet.isPrimary) {
+                        const remaining = await ctx.context.adapter.findMany<{ id: string }>({
+                            model: "walletNumber",
+                            where: [{ field: "userId", value: userId }],
+                            sortBy: { field: "createdAt", direction: "desc" },
+                            limit: 1,
+                        })
+                        if (remaining[0]) {
+                            await ctx.context.adapter.update({
+                                model: "walletNumber",
+                                where: [{ field: "id", value: remaining[0].id }],
+                                update: { isPrimary: true },
+                            })
+                        }
+                    }
+
+                    return ctx.json({ removed: true })
+                }
+            ),
+            setPrimaryWalletNumber: createAuthEndpoint(
+                "/pay/wallets/primary",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    body: z.object({ walletId: z.string().min(1) }),
+                },
+                async (ctx) => {
+                    const userId = ctx.context.session.user.id
+                    const wallet = await ctx.context.adapter.findOne<{ id: string; userId: string }>({
+                        model: "walletNumber",
+                        where: [{ field: "id", value: ctx.body.walletId }],
+                    })
+                    if (!wallet || wallet.userId !== userId) {
+                        throw new APIError("NOT_FOUND", { message: "Saved number not found" })
+                    }
+
+                    await ctx.context.adapter.updateMany({
+                        model: "walletNumber",
+                        where: [
+                            { field: "userId", value: userId },
+                            { field: "isPrimary", value: true },
+                        ],
+                        update: { isPrimary: false },
+                    })
+                    await ctx.context.adapter.update({
+                        model: "walletNumber",
+                        where: [{ field: "id", value: wallet.id }],
+                        update: { isPrimary: true },
+                    })
+
+                    return ctx.json({ primary: wallet.id })
+                }
+            ),
             // self-service: the signed-in user is the payer. clientId is
             // which connected OAuth app requested this payment, if any —
             // a dashboard-initiated deposit has none

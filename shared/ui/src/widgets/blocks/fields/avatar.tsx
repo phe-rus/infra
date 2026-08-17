@@ -35,16 +35,23 @@ export function FieldAvatar({
             "relative group flex flex-col items-center gap-4 w-fit",
             'rounded-full justify-center'
         )}>
-            <Avatar size="lg" className='size-43!'>
-                <AvatarImage
-                    src={preview ?? existingImage ?? undefined}
-                    alt={label}
-                    className='group-hover:opacity-50 transition-opacity'
-                />
-                <AvatarFallback>
-                    {label.charAt(0)?.toUpperCase() ?? "?"}
-                </AvatarFallback>
-            </Avatar>
+            <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-full"
+                aria-label="Change avatar"
+            >
+                <Avatar size="lg" className='size-43!'>
+                    <AvatarImage
+                        src={preview ?? existingImage ?? undefined}
+                        alt={label}
+                        className='group-hover:opacity-50 transition-opacity'
+                    />
+                    <AvatarFallback>
+                        {label.charAt(0)?.toUpperCase() ?? "?"}
+                    </AvatarFallback>
+                </Avatar>
+            </button>
             <input
                 ref={fileInputRef}
                 type="file"
@@ -60,7 +67,7 @@ export function FieldAvatar({
                 variant='secondary'
                 size='icon'
                 className={cn(
-                    'absolute m-auto hidden group-hover:flex',
+                    'absolute m-auto flex opacity-70 group-hover:opacity-100',
                     'rounded-full! shadow-md shadow-accent'
                 )}
                 onClick={() => fileInputRef.current?.click()}

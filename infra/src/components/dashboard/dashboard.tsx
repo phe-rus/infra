@@ -1,5 +1,5 @@
 import { createContext, useContext, type PropsWithChildren, type FC, useState, useRef, useEffect, useCallback } from "react"
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
+import { IconChevronLeft, IconChevronRight, IconLogs, IconMoneybag, IconPackage, IconTerminal, IconUser } from "@tabler/icons-react"
 import { useIsMobile } from "@infra/ui/lib/use-media-query"
 import { Button } from "@infra/ui/components/button"
 import { Link } from "@tanstack/react-router"
@@ -17,23 +17,28 @@ const SidebarContext = createContext<SidebarProps | null>(null)
 const navLists = [
     {
         label: "Users",
-        path: "/users"
+        path: "/users",
+        Icon: IconUser
     },
     {
         label: "Console",
-        path: "/console"
+        path: "/console",
+        Icon: IconTerminal
     },
     {
         label: "Storage",
-        path: "/storage"
+        path: "/storage",
+        Icon: IconPackage
     },
     {
         label: "Logs",
-        path: "/logs"
+        path: "/logs",
+        Icon: IconLogs
     },
     {
         label: "Billing",
-        path: "/billing"
+        path: "/billing",
+        Icon: IconMoneybag
     }
 ]
 export const Dashboard: FC<DashboardProps> = ({
@@ -114,11 +119,15 @@ export const Dashboard: FC<DashboardProps> = ({
                                         <Link
                                             key={index}
                                             to={nav.path}
-                                            className='text-lg'
+                                            className={cn(
+                                                'text-lg group',
+                                                'flex items-center gap-2'
+                                            )}
                                             activeProps={{
                                                 className: 'text-primary!'
                                             }}
                                         >
+                                            <nav.Icon className='size-4.5' />
                                             {nav.label}
                                         </Link>
                                     ))}

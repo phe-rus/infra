@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import { useState } from "react"
 import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
@@ -15,12 +15,23 @@ const signInSchema = z.object({
 })
 
 export const Route = createFileRoute("/_auth/sign-in")({
+    loader: async ({ context: { session } }) => {
+        if (session) {
+            throw redirect({
+                to: '/',
+                replace: true
+            })
+        }
+    },
     component: RouteComponent,
 })
 
 function continueOrGoHome(data: unknown) {
-    const redirectUri = (data as { redirect_uri?: string } | undefined)?.redirect_uri
-    window.location.href = redirectUri ?? "/"
+    const result = data as { redirect_uri?: string; twoFactorRedirect?: boolean } | undefined
+    // twoFactorClient's own onSuccess hook already redirected to the
+    // two-factor page for this response — don't race it to "/"
+    if (result?.twoFactorRedirect) return
+    window.location.href = result?.redirect_uri ?? "/"
 }
 
 function RouteComponent() {

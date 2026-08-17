@@ -136,10 +136,9 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
                                 <codeForm.AppField
                                     name="code"
                                     children={(field) => (
-                                        <field.input
+                                        <field.otp
                                             label="Code"
-                                            autoComplete="one-time-code"
-                                            placeholder="123456"
+                                            onComplete={() => void codeForm.handleSubmit()}
                                         />
                                     )}
                                 />

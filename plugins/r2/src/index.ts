@@ -4,9 +4,9 @@ import { ALLOWED_TYPES, MAX_FILE_BYTES, MAX_USER_QUOTA_BYTES } from "./constants
 import { sniffExtension, isImageExtension } from "./sniff-file-type"
 import { sanitizeSvg } from "./sanitize-svg"
 import { avatarKey, avatarPrefix, fileKey, getUserUsageBytes, listAllObjects, stripExtension } from "./r2-paths"
-import { cdnUrl } from "./cdn-url"
+import { cdnPath, cdnUrl } from "./cdn-url"
 
-export { cdnUrl }
+export { cdnPath, cdnUrl }
 
 function readUploadedFile(body: unknown): File {
     const file = (body as Record<string, unknown> | undefined)?.file
@@ -92,10 +92,10 @@ export function r2Provider(options: R2ProviderOptions) {
                     await binding.put(key, bytes, { httpMetadata: { contentType } })
 
                     const version = Date.now()
-                    const url = cdnUrl(ctx.context.baseURL, key, version)
-                    await ctx.context.internalAdapter.updateUser(userId, { image: url })
+                    const path = cdnPath(key, version)
+                    await ctx.context.internalAdapter.updateUser(userId, { image: path })
 
-                    return ctx.json({ url })
+                    return ctx.json({ url: path })
                 }
             ),
             uploadFile: createAuthEndpoint(
