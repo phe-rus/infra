@@ -1,6 +1,6 @@
 import { useRevokeUserSession, useRevokeUserSessions, type UserDetail } from "@/kit/users"
 import { formatDistanceToNow } from "date-fns"
-import { Button } from "@infra/ui/components/ui/button"
+import { Button } from "@infra/ui/components/button"
 import { UAParser } from "ua-parser-js"
 import type { FC } from "react"
 import { cn } from "@infra/ui/lib/utils"

@@ -18,7 +18,7 @@ import {
 import { patchUserInCache, useAppMutation } from "@/kit/shared"
 import type { UsersListData } from "./fnc"
 import { getContext } from "@/lib/queryClient"
-import { t } from "@infra/ui/components/ui/sonner"
+import { t } from "@infra/ui/components/sonner"
 import { meQueryOptions } from "@/kit/auth"
 import { usersQueryOptions } from "./get-user"
 

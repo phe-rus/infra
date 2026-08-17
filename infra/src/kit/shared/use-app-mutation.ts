@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, type QueryKey, type UseMutationOptions } from "@tanstack/react-query"
-import { t } from "@infra/ui/components/ui/sonner"
+import { t } from "@infra/ui/components/sonner"
 
 // runs several independent calls for one logical save, reports every
 // failure instead of just the first (unlike plain Promise.all)

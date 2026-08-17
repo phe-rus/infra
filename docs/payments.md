@@ -84,7 +84,7 @@ Refund eligibility is checked against PawaPay's own API in real time, not Infra'
 
 ## Configuration
 
-Set these in `.dev.vars` locally, or your production secret store:
+Set these in `infra/.env.local` locally, or your production secret store:
 
 ```
 PAWAPAY_API_TOKEN=...

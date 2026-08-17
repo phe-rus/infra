@@ -2,7 +2,7 @@ import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { usePayments } from "@/kit/payments"
 import type { ListedPayment } from "@/kit/payments"
-import { Button } from "@infra/ui/components/ui/button"
+import { Button } from "@infra/ui/components/button"
 import { ListPayments, PayoutDialog, RefundDialog } from "@/features/payments"
 
 export const Route = createFileRoute("/_workspace/billing/")({

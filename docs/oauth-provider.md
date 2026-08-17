@@ -27,7 +27,7 @@ Creating a client shows you its **client secret exactly once** — copy it immed
 Standard OAuth 2.1 authorization-code flow with PKCE:
 
 1. Your application redirects the user to Infra's `/oauth2/authorize` endpoint with your `client_id`, `redirect_uri`, requested `scope`, and a PKCE `code_challenge`.
-2. If the user isn't signed in to Infra yet, they see Infra's own hosted login page (and sign-up page, if your application allows self-service accounts) first.
+2. If the user isn't signed in to Infra yet, they see the hosted login page (and sign-up page, if your application allows self-service accounts) first — served by **Infraccount**, infra's companion end-user app, not the admin dashboard itself.
 3. The user sees a consent screen naming your application and the scopes it's requesting, and approves or denies.
 4. Infra redirects back to your `redirect_uri` with an authorization `code`.
 5. Your backend exchanges that code (plus the PKCE `code_verifier`) at Infra's token endpoint for an access token, refresh token (if `offline_access` was granted), and ID token.
@@ -37,4 +37,4 @@ Discovery documents are published at the standard well-known paths, so most OAut
 
 ## Self-service sign-up
 
-If your application needs to let brand-new users create an account (rather than only signing in with an existing one), Infra hosts a sign-up page as part of the same flow. Accounts created this way get the plain `user` role — they can complete your application's OAuth flow, but they never gain access to the Infra admin dashboard itself, regardless of how they signed up.
+If your application needs to let brand-new users create an account (rather than only signing in with an existing one), Infraccount hosts a sign-up page as part of the same flow. Accounts created this way get the plain `user` role — they can complete your application's OAuth flow, but they never gain access to the Infra admin dashboard itself, regardless of how they signed up.

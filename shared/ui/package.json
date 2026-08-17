@@ -41,13 +41,13 @@
     "exports": {
         "./globals.css": "./src/globals.css",
         "./lib/*": "./src/lib/*.ts",
-        "./components/ui/*": "./src/components/ui/*.tsx",
-        "./components/widgets": "./src/components/widgets/index.ts",
-        "./components/widgets/blocks": "./src/components/widgets/blocks/index.ts",
-        "./components/widgets/tables": "./src/components/widgets/tables/index.ts",
-        "./components/widgets/dialog-widget": "./src/components/widgets/dialog-widget/index.ts",
-        "./components/defaults": "./src/components/defaults/index.ts",
+        "./components/*": "./src/components/*.tsx",
+        "./widgets": "./src/widgets/index.ts",
+        "./widgets/blocks": "./src/widgets/blocks/index.ts",
+        "./widgets/tables": "./src/widgets/tables/index.ts",
+        "./widgets/dialog-widget": "./src/widgets/dialog-widget/index.ts",
         "./hooks/*": "./src/hooks/*.ts",
-        "./theme": "./src/hooks/theme.tsx"
+        "./theme": "./src/hooks/theme.tsx",
+        "./defaults": "./src/hooks/defaults/index.ts"
     }
 }

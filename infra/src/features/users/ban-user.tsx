@@ -1,14 +1,14 @@
 import { type FC, useState } from "react"
-import { Field, FieldLabel } from "@infra/ui/components/ui/field"
-import { Input } from "@infra/ui/components/ui/input"
-import { Button } from "@infra/ui/components/ui/button"
+import { Field, FieldLabel } from "@infra/ui/components/field"
+import { Input } from "@infra/ui/components/input"
+import { Button } from "@infra/ui/components/button"
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@infra/ui/components/ui/select"
+} from "@infra/ui/components/select"
 import { useBanUser, useUnbanUser, type UserDetail } from "@/kit/users"
 import { format } from "date-fns/format"
 

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { IconInfoCircle } from '@tabler/icons-react'
 import { cn } from "@infra/ui/lib/utils"
-import { buttonVariants } from "@infra/ui/components/ui/button"
+import { buttonVariants } from "@infra/ui/components/button"
 import { statsQueryOptions } from "@/kit/stats"
 import { consoleOptions, CREATE_CLIENT_ID } from "@/kit/console"
 import { BusinessStats, ApplicationGrid } from "@/features/dashboard"

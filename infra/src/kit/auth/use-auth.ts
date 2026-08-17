@@ -10,7 +10,7 @@ import {
 } from "./fnc"
 import { useAppMutation } from "@/kit/shared"
 import { getContext } from "@/lib/queryClient"
-import { t } from "@infra/ui/components/ui/sonner"
+import { t } from "@infra/ui/components/sonner"
 import { meQueryOptions, setupStatusQueryOptions } from "./get-auth"
 
 export const useSignIn = () => {

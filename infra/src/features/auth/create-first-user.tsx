@@ -1,5 +1,5 @@
-import { FieldGroup } from "@infra/ui/components/ui/field"
-import { useAppForm } from "@infra/ui/components/widgets/blocks"
+import { FieldGroup } from "@infra/ui/components/field"
+import { useAppForm } from "@infra/ui/widgets/blocks"
 import { completeSetupSchema, useCompleteSetup } from "@/kit/auth"
 import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"

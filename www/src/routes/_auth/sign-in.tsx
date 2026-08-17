@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { z } from "zod"
-import { FieldGroup } from "@infra/ui/components/ui/field"
-import { Button } from "@infra/ui/components/ui/button"
-import { useAppForm } from "@infra/ui/components/widgets/blocks"
+import { FieldGroup } from "@infra/ui/components/field"
+import { Button } from "@infra/ui/components/button"
+import { useAppForm } from "@infra/ui/widgets/blocks"
 import { cn } from "@infra/ui/lib/utils"
 import { authClient } from "@/lib/auth-client"
-import { t } from '@infra/ui/components/ui/sonner'
+import { t } from '@infra/ui/components/sonner'
 
 const signInSchema = z.object({
     email: z.email("Enter a valid email"),

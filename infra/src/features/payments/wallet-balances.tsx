@@ -1,5 +1,5 @@
 import { type FC, useState } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@infra/ui/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@infra/ui/components/select"
 import { useWalletBalances } from "@/kit/payments"
 import { cn } from "@infra/ui/lib/utils"
 

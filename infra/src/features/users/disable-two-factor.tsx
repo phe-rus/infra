@@ -1,5 +1,5 @@
 import type { FC } from "react"
-import { Button } from "@infra/ui/components/ui/button"
+import { Button } from "@infra/ui/components/button"
 import { useDisableUserTwoFactor, type UserDetail } from "@/kit/users"
 
 export type DisableTwoFactorProps = {

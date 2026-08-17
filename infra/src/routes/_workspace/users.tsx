@@ -2,7 +2,7 @@ import { useState } from "react"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { usersQueryOptions, useUsers, useSetUserRole, useRemoveUser } from "@/kit/users"
 import { isAdminTier, isOwner as isOwnerRole } from "@/auth/utils/permissions"
-import { Button } from "@infra/ui/components/ui/button"
+import { Button } from "@infra/ui/components/button"
 import { ListUsers, CreateUser, GetUserDetail } from "@/features/users"
 
 export const Route = createFileRoute("/_workspace/users")({

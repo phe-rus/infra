@@ -1,5 +1,5 @@
 import { useConsole } from "@/kit/console"
-import { Avatar, AvatarFallback } from "@infra/ui/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@infra/ui/components/avatar"
 import { FrameworkIcon } from "@/components/widgets/framework-icon"
 import { Link } from "@tanstack/react-router"
 import { cn } from "@infra/ui/lib/utils"

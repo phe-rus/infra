@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, useSearch } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 import { z } from "zod"
-import { Button } from "@infra/ui/components/ui/button"
+import { Button } from "@infra/ui/components/button"
 import { authClient } from "@/lib/auth-client"
 
 const consentSearchSchema = z.object({

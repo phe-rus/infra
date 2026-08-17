@@ -1,7 +1,7 @@
 import { createContext, useContext, type PropsWithChildren, type FC, useState, useRef, useEffect, useCallback } from "react"
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 import { useIsMobile } from "@infra/ui/lib/use-media-query"
-import { Button } from "@infra/ui/components/ui/button"
+import { Button } from "@infra/ui/components/button"
 import { Link } from "@tanstack/react-router"
 import { useLogout, meQueryOptions } from "@/kit/auth"
 import { useStopImpersonating } from "@/kit/users"

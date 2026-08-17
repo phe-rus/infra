@@ -1,5 +1,6 @@
 import { type BetterAuthOptions } from "better-auth/types"
 import { env } from "cloudflare:workers"
+import { isTrustedOrigin } from "./utils/trusted-origins"
 
 type OptionsProps = Partial<BetterAuthOptions>
 const secondaryStorage = {
@@ -43,16 +44,7 @@ const trustedOrigins = async (
     if (!origin) {
         return [fallbackOrigin]
     }
-    try {
-        const { hostname } = new URL(origin)
-        const isTrusted = env.TRUSTED_ORIGINS.split(",").some((suffix) => {
-            const trusted = suffix.trim()
-            return hostname === trusted || hostname.endsWith(`.${trusted}`)
-        })
-        return isTrusted ? [origin] : [fallbackOrigin]
-    } catch {
-        return [fallbackOrigin]
-    }
+    return isTrustedOrigin(origin, env.TRUSTED_ORIGINS) ? [origin] : [fallbackOrigin]
 }
 
 export {

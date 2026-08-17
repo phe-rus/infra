@@ -1,8 +1,8 @@
 import { type FC, useEffect, useRef, useState } from "react"
-import { Field, FieldLabel } from "@infra/ui/components/ui/field"
-import { Input } from "@infra/ui/components/ui/input"
-import { Button } from "@infra/ui/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@infra/ui/components/ui/avatar"
+import { Field, FieldLabel } from "@infra/ui/components/field"
+import { Input } from "@infra/ui/components/input"
+import { Button } from "@infra/ui/components/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@infra/ui/components/avatar"
 import { useUpdateUserDetails, useUploadUserImage, type UserDetail } from "@/kit/users"
 
 export type UpdateUserProps = {

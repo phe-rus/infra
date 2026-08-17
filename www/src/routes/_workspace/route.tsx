@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { Dashboard } from '@/features/dashboard'
 
 export const Route = createFileRoute('/_workspace')({
   loader: ({ context: { session } }) => {
@@ -17,5 +18,9 @@ export const Route = createFileRoute('/_workspace')({
 })
 
 function RouteComponent() {
-  return <Outlet />
+  return (
+    <Dashboard>
+      <Outlet />
+    </Dashboard>
+  )
 }

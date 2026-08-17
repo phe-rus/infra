@@ -1,6 +1,6 @@
 import { type FC, useState } from "react"
-import { FieldGroup } from "@infra/ui/components/ui/field"
-import { Button } from "@infra/ui/components/ui/button"
+import { FieldGroup } from "@infra/ui/components/field"
+import { Button } from "@infra/ui/components/button"
 import { useInitiateDeposit } from "@/kit/payments"
 import { PaymentFields } from "./payment-fields"
 import { usePaymentFields } from "./use-payment-fields"

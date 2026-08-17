@@ -2,7 +2,7 @@
 
 [Connect Your App](connect-your-app.md) covers **OAuth federation** — the right approach when your app is on a different domain than Infra and shouldn't share cookies with it. This page covers the other mode: **pointing an app you own directly at Infra**, using better-auth's own client SDK, sharing a real Infra session rather than an OAuth token. This is the better fit when your app lives on a subdomain of the same root domain as your Infra instance (Infra's `crossSubDomainCookies` is built for exactly this), or when you're extending Infra's own dashboard.
 
-Everything on this page is a real, working better-auth API — it's the same client SDK Infra's own OAuth-provider hosted pages are built to support, just called from your own app instead.
+Everything on this page is a real, working better-auth API — it's the same client SDK Infraccount's own hosted OAuth-provider pages are built on, just called from your own app instead.
 
 ## Setup
 
@@ -81,6 +81,6 @@ const { data, error } = await authClient.twoFactor.verifyTotp({ code: "123456" }
 
 Backup codes (generated when 2FA is enabled) work the same way as a fallback if the user loses their authenticator.
 
-## A gap worth knowing about
+## The hosted OAuth-flow sign-in page
 
-Infra's own **hosted** `/sign-in` page — the one shown mid-OAuth-flow to users of a third-party connected app — is currently email+password only. Passkey and 2FA are fully live on the backend (everything above works against a real Infra instance today), but there's no button for either one on that specific hosted page yet. If your users need passkey or 2FA sign-in *during an OAuth redirect flow*, you'd need to wait for that UI, or build your own screen calling these same APIs directly (the direct-client mode this page describes has no such limitation — it's only the OAuth-flow hosted page that's missing the buttons).
+The **hosted** `/sign-in` page a third-party connected app's users see mid-OAuth-flow — served by Infraccount, not the admin dashboard — supports email+password and passkey, and redirects to a second-factor step automatically when the account has 2FA enabled. It's built on the exact same client SDK described on this page, just as the one app every OAuth end user actually lands on.

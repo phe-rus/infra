@@ -4,6 +4,9 @@ import { ALLOWED_TYPES, MAX_FILE_BYTES, MAX_USER_QUOTA_BYTES } from "./constants
 import { sniffExtension, isImageExtension } from "./sniff-file-type"
 import { sanitizeSvg } from "./sanitize-svg"
 import { avatarKey, avatarPrefix, fileKey, getUserUsageBytes, listAllObjects, stripExtension } from "./r2-paths"
+import { cdnUrl } from "./cdn-url"
+
+export { cdnUrl }
 
 function readUploadedFile(body: unknown): File {
     const file = (body as Record<string, unknown> | undefined)?.file
@@ -42,14 +45,6 @@ async function sniffAndValidate(file: File) {
         return { ext, contentType, bytes: new TextEncoder().encode(sanitized) }
     }
     return { ext, contentType, bytes }
-}
-
-// ctx.context.baseURL already resolves to the full mounted base including
-// the basePath (e.g. http://localhost:3000/api/auth), not just the origin —
-// confirmed live (an earlier version of this appended /api/auth a second
-// time here, producing a doubled path)
-export function cdnUrl(baseURL: string, key: string, version: number): string {
-    return `${baseURL}/cdn/${key}?v=${version}`
 }
 
 export type R2ProviderOptions = {

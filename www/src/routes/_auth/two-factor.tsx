@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { z } from "zod"
-import { FieldGroup } from "@infra/ui/components/ui/field"
-import { useAppForm } from "@infra/ui/components/widgets/blocks"
+import { FieldGroup } from "@infra/ui/components/field"
+import { useAppForm } from "@infra/ui/widgets/blocks"
 import { cn } from "@infra/ui/lib/utils"
 import { authClient } from "@/lib/auth-client"
 

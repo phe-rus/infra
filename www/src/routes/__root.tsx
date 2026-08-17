@@ -4,7 +4,7 @@ import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { cn } from "@infra/ui/lib/utils"
 import { currentOptions } from "@/functions/get-auth"
-import { ToasterProvider } from "@infra/ui/components/ui/sonner"
+import { ToasterProvider } from "@infra/ui/components/sonner"
 
 export interface RouterAppContext {
   q: QueryClient

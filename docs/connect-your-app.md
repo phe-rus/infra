@@ -30,7 +30,7 @@ From **Console** in the Infra dashboard, create an OAuth client. You'll pick a r
 
 1. Generate a PKCE `code_verifier` and its `code_challenge` (see below), and a random `state` value.
 2. Redirect the user's browser to the authorization endpoint with your `client_id`, `redirect_uri`, `scope`, `state`, and `code_challenge`.
-3. The user signs in (or signs up) on Infra's own hosted page, sees a consent screen naming your app, and approves.
+3. The user signs in (or signs up) on the hosted page — served by Infraccount, infra's companion end-user app — sees a consent screen naming your app, and approves.
 4. Infra redirects back to your `redirect_uri` with `?code=...&state=...`.
 5. Your backend exchanges the code — plus the original `code_verifier` — at the token endpoint for `access_token`, `id_token`, and (if you requested `offline_access`) a `refresh_token`.
 

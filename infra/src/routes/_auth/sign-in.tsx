@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { Login } from "@/features/auth/login"
-import { t } from "@infra/ui/components/ui/sonner"
+import { t } from "@infra/ui/components/sonner"
 import { useEffect } from "react"
 import { signInSearchSchema } from "@/kit/auth"
 

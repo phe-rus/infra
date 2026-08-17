@@ -1,7 +1,7 @@
 import type { BetterAuthClientPlugin } from "better-auth/client"
 import type { r2Provider } from "./index"
 
-export { cdnUrl } from "./index"
+export { cdnUrl } from "./cdn-url"
 
 // listObjects/deleteObjects are plain JSON in/out — $InferServerPlugin alone
 // gives typed authClient.r2.list()/authClient.r2.delete() via better-auth's

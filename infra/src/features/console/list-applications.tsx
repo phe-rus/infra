@@ -1,15 +1,15 @@
 import { type FC, useMemo } from "react"
 import { Link } from "@tanstack/react-router"
-import { Badge } from "@infra/ui/components/ui/badge"
-import { Button } from "@infra/ui/components/ui/button"
-import { Checkbox } from "@infra/ui/components/ui/checkbox"
+import { Badge } from "@infra/ui/components/badge"
+import { Button } from "@infra/ui/components/button"
+import { Checkbox } from "@infra/ui/components/checkbox"
 import {
     DropdownMenu,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@infra/ui/components/ui/dropdown-menu"
-import { DataTable, type DataTableColumnDef } from "@infra/ui/components/widgets/tables"
+} from "@infra/ui/components/dropdown-menu"
+import { DataTable, type DataTableColumnDef } from "@infra/ui/widgets/tables"
 import { CLIENT_TYPE_INFO, type ClientType, type ListedApp } from "@/kit/console"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { format } from "date-fns/format"
