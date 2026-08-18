@@ -48,6 +48,47 @@ export const useLogout = () => {
     })
 }
 
+export const useRequestPasswordReset = () =>
+    useMutation({
+        mutationFn: async (email: string) => {
+            const { error } = await authClient.requestPasswordReset({
+                email,
+                redirectTo: `${window.location.origin}/reset-password`,
+            })
+            if (error) throw new Error(error.message ?? "Could not send reset email")
+        },
+        onSuccess: () => {
+            t.success("Check your email", {
+                description: "If that email exists, a reset link is on its way.",
+            })
+        },
+        onError: (error) => {
+            t.error("Could not send reset email", { description: error.message })
+        },
+    })
+
+export const useResetPassword = () => {
+    const router = useRouter()
+    return useMutation({
+        mutationFn: async (input: { newPassword: string; token: string }) => {
+            const { error } = await authClient.resetPassword({
+                newPassword: input.newPassword,
+                token: input.token,
+            })
+            if (error) throw new Error(error.message ?? "Could not reset password")
+        },
+        onSuccess: () => {
+            t.success("Password reset", { description: "Sign in with your new password." })
+            setTimeout(() => {
+                router.navigate({ to: "/sign-in", replace: true })
+            }, 50)
+        },
+        onError: (error) => {
+            t.error("Could not reset password", { description: error.message })
+        },
+    })
+}
+
 // deleteUser is configured server-side (infra/src/auth/index.ts) with
 // sendDeleteAccountVerification, so this call never deletes anything
 // immediately — it always sends a confirmation email with a one-time link.

@@ -111,10 +111,18 @@ function RouteComponent() {
                         )}
                     />
 
-                    <form.AppField
-                        name="rememberMe"
-                        children={(field) => <field.checkbox label="Remember me" />}
-                    />
+                    <div className="flex items-center justify-between truncate">
+                        <form.AppField
+                            name="rememberMe"
+                            children={(field) => <field.checkbox label="Remember me" />}
+                        />
+                        <Link
+                            to="/forgot-password"
+                            className="text-xs text-muted-foreground hover:underline"
+                        >
+                            Forgot password?
+                        </Link>
+                    </div>
                 </FieldGroup>
 
                 <form.submit label="Sign in" />
