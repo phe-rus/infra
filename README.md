@@ -40,7 +40,7 @@
 
 <br />
 
-Infra is open source, published by Pherus. Pherus uses it, but Infra is not Pherus's product: it's its own project, and anyone can deploy their own instance.
+Infra is open source, published by Pherus. Pherus uses it, but Infra is not Pherus's product: it's its own project, and anyone can deploy their own instance
 
 ## What's in this repo
 
