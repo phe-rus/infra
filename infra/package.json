@@ -41,7 +41,7 @@
         "zod": "^4.4.3"
     },
     "devDependencies": {
-        "@cloudflare/vite-plugin": "^1.52.1",
+        "@cloudflare/vite-plugin": "^1.53.0",
         "@infra/minifybuild": "workspace:*",
         "@rolldown/plugin-babel": "^0.2.3",
         "@tanstack/devtools-vite": "^0.8.3",
@@ -55,6 +55,6 @@
         "web-vitals": "^6.1.1",
         "vite": "^8",
         "vitest": "^4",
-        "wrangler": "^4.121.0"
+        "wrangler": "^4.124.0"
     }
 }
