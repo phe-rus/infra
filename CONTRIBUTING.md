@@ -76,7 +76,11 @@ Open an issue with:
 
 ## Reporting a security issue
 
-Don't open a public issue for a security vulnerability. See the project's security policy for a private reporting channel, or reach out to the maintainers directly.
+Don't open a public issue for a security vulnerability. See [SECURITY.md](SECURITY.md) for the private reporting channel.
+
+## Code of conduct
+
+This project follows a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you're expected to uphold it.
 
 ## License
 

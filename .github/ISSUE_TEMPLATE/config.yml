@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/phe-rus/infra/security/advisories/new
+    about: Please report security vulnerabilities privately, not as a public issue. See SECURITY.md.
+  - name: Documentation
+    url: https://phe-rus.github.io/infra/
+    about: Check the docs site before filing a question, it may already be answered there.

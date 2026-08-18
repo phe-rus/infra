@@ -91,7 +91,7 @@ bun run --cwd www deploy
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, code conventions, and how to open a pull request.
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, code conventions, and how to open a pull request. This project follows a [Code of Conduct](CODE_OF_CONDUCT.md). Found a security issue? See [SECURITY.md](SECURITY.md), please don't open a public issue for it.
 
 ## License
 
