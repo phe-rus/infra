@@ -6,12 +6,7 @@
         "useIgnoreFile": true
     },
     "files": {
-        "includes": [
-            "**/*.ts",
-            "**/*.tsx",
-            "**/*.js",
-            "**/*.jsx"
-        ]
+        "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json", "**/*.jsonc"]
     },
     "formatter": {
         "enabled": true,
@@ -25,6 +20,12 @@
             "quoteStyle": "double",
             "semicolons": "asNeeded",
             "trailingCommas": "es5"
+        }
+    },
+    "json": {
+        "formatter": {
+            "enabled": true,
+            "trailingCommas": "none"
         }
     },
     "assist": {
@@ -57,9 +58,7 @@
     },
     "overrides": [
         {
-            "includes": [
-                "shared/ui/src/components/**"
-            ],
+            "includes": ["shared/ui/src/components/**"],
             "linter": {
                 "enabled": false
             }

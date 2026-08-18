@@ -11,20 +11,30 @@
     "files.associations": {
         "*.css": "tailwindcss"
     },
-    "tailwindCSS.classFunctions": [
-        "tw",
-        "clsx",
-        "cva",
-        "cn",
-        "tw\\.[a-z-]+"
-    ],
+    "tailwindCSS.classFunctions": ["tw", "clsx", "cva", "cn", "tw\\.[a-z-]+"],
     "tailwindCSS.experimental.classRegex": [
-        [
-            "class:\\s*?[\"'`]([^\"'`]*).*?,",
-            "(?:'|\"|`)([^'\"`]*)(?:'|\"|`)"
-        ]
+        ["class:\\s*?[\"'`]([^\"'`]*).*?,", "(?:'|\"|`)([^'\"`]*)(?:'|\"|`)"]
     ],
     "npm.packageManager": "bun",
     "typescript.tsdk": "node_modules/typescript/lib",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    }
 }
