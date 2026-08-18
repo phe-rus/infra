@@ -11,7 +11,7 @@
     "scripts": {
         "dev": "turbo run dev",
         "build": "turbo run build",
-        "deploy": "turbo run build",
+        "deploy": "turbo run deploy",
         "type-gen": "turbo run type-gen",
         "lint": "biome lint .",
         "test": "turbo run test",

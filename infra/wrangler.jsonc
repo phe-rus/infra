@@ -39,7 +39,7 @@
     "r2_buckets": [
         {
             "bucket_name": "infra-storage",
-            "binding": "STORAGE"
+            "binding": "R2"
         }
     ]
 }

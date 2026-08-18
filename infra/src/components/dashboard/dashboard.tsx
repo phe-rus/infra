@@ -119,32 +119,37 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                 !open ? "hidden" : "flex"
                             )}
                         >
-                            <section className="flex flex-col gap-2 p-5">
-                                <nav>
+                            <section className="flex flex-col gap-3 p-5">
+                                <nav className="flex items-center gap-1">
                                     <Link
                                         to="/"
                                         className={cn(
-                                            "text-2xl text-primary",
+                                            "flex items-center text-2xl text-primary",
                                             "hover:text-primary/65"
                                         )}
                                     >
+                                        <img
+                                            src="/favicon.ico"
+                                            alt="Infra"
+                                            className="size-7 grayscale mix-blend-normal"
+                                        />
                                         Infra
                                     </Link>
                                 </nav>
-                                <nav className="flex flex-col">
+                                <nav className="flex flex-col gap-0.5">
                                     {navLists.map((nav, index) => (
                                         <Link
                                             key={index}
                                             to={nav.path}
                                             className={cn(
-                                                "group text-lg",
+                                                "group text-xl",
                                                 "flex items-center gap-2"
                                             )}
                                             activeProps={{
                                                 className: "text-primary!",
                                             }}
                                         >
-                                            <nav.Icon className="size-4.5" />
+                                            <nav.Icon className="size-5.5" />
                                             {nav.label}
                                         </Link>
                                     ))}

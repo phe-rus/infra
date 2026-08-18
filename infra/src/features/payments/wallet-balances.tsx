@@ -9,6 +9,7 @@ import {
 } from "@infra/ui/components/select"
 import { useWalletBalances } from "@/kit/payments"
 import { cn } from "@infra/ui/lib/utils"
+import { IconCardsFilled } from "@tabler/icons-react"
 
 const PREFERRED_CURRENCIES = [
     "UGX",
@@ -33,37 +34,50 @@ export const WalletBalances: FC = () => {
 
     return (
         <section
-            className={cn("flex flex-col rounded-2xl p-10", "bg-card shadow hover:shadow-2xl")}
+            className={cn(
+                "relative flex flex-col rounded-2xl px-10",
+                "bg-card shadow hover:shadow-2xl",
+                "py-5"
+            )}
         >
+            <IconCardsFilled className="size-18" />
             <div className="flex justify-between gap-3">
-                <h1 className="text-5xl font-bold tracking-tight">Wallet balance</h1>
-                <Select
-                    aria-label="Preferred currency"
-                    value={currency}
-                    onChange={(key) => setCurrency(String(key))}
-                >
-                    <SelectTrigger className={cn("w-38 rounded-full! bg-input!", "border-0")}>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent
-                        className={cn("max-h-40! rounded-md! px-1! *:no-scrollbar!", "pt-1 pb-20!")}
-                    >
-                        {PREFERRED_CURRENCIES.map((code) => (
-                            <SelectItem key={code} id={code} className="rounded-full!">
-                                {code}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <h1 className="tracking-tight">Wallet balance</h1>
             </div>
             {data.total && (
-                <p className="text-2xl leading-tight font-medium">
-                    {data.total.amount.toLocaleString(undefined, {
-                        maximumFractionDigits: 2,
-                    })}{" "}
-                    <sub className="text-xs text-primary">{data.total.currency}</sub>
+                <p className="leading-tight font-medium">
+                    <span className="text-base tracking-tighter font-light">
+                        {data.total.amount.toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                        })}{" "}
+                    </span>
+                    <sub className="text-sm text-primary">{data.total.currency}</sub>
                 </p>
             )}
+            <Select
+                aria-label="Preferred currency"
+                value={currency}
+                onChange={(key) => setCurrency(String(key))}
+            >
+                <SelectTrigger
+                    size="sm"
+                    className={cn(
+                        "w-38 rounded-full! bg-input!",
+                        "border-0 absolute top-5 right-5"
+                    )}
+                >
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent
+                    className={cn("max-h-40! rounded-md! px-1! *:no-scrollbar!", "pt-1 pb-20!")}
+                >
+                    {PREFERRED_CURRENCIES.map((code) => (
+                        <SelectItem key={code} id={code} className="rounded-full!">
+                            {code}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </section>
     )
 }

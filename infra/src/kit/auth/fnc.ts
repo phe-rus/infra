@@ -14,10 +14,16 @@ import {
 
 // Non-throwing on purpose: runs on every route including /sign-in and
 // /setup, which handle the no-session case themselves. A throwing
-// middleware here redirect-loops a fresh instance between the two.
+// middleware here redirect-loops a fresh instance between the two. The
+// try/catch also covers a fresh instance with no migrations run yet, where
+// the session table doesn't exist at all rather than just being empty.
 export const getSession = createServerFn({ method: "GET" }).handler(async () => {
-    const headers = getRequestHeaders()
-    return await auth.api.getSession({ headers })
+    try {
+        const headers = getRequestHeaders()
+        return await auth.api.getSession({ headers })
+    } catch {
+        return null
+    }
 })
 
 export const getSetupStatus = createServerFn({ method: "GET" }).handler(async () => {

@@ -170,7 +170,7 @@ export const auth = betterAuth({
             path: "docs",
         }),
         r2Provider({
-            binding: env.STORAGE,
+            binding: env.R2,
             isAdmin: isAdminTier,
         }),
         infraPayment({

@@ -2,12 +2,14 @@
     "$schema": "https://v2-10-11.turborepo.dev/schema.json",
     "ui": "tui",
     "tasks": {
+        "build": {
+            "dependsOn": ["^build"],
+            "inputs": ["$TURBO_DEFAULT$", ".env*"],
+            "outputs": [".output/**", "dist/**", ".tanstack/**"]
+        },
         "dev": {
             "cache": false,
             "persistent": true
-        },
-        "build": {
-            "outputs": [".output/**", "dist/**"]
         },
         "deploy": {
             "dependsOn": ["^deploy"]
