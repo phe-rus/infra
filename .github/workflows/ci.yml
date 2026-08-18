@@ -34,6 +34,23 @@ jobs:
             - name: Format check
               run: bun run check
 
+            # infra/www's tsconfig.json both list the gitignored,
+            # wrangler-generated worker-configuration.d.ts as a types entry,
+            # and it isn't committed, so a fresh checkout has no Env type at
+            # all without this. wrangler types itself only needs
+            # wrangler.jsonc (no live Cloudflare auth), but it also reads
+            # .env.local to type each plain env var (VITE_APPNAME,
+            # BETTER_AUTH_URL, ...), which doesn't exist in CI either, so
+            # .env.example's placeholder values stand in for it here, real
+            # secrets are never needed just to typecheck
+            - name: Set up placeholder env files
+              run: |
+                  cp infra/.env.example infra/.env.local
+                  cp www/.env.example www/.env.local
+
+            - name: Generate Cloudflare types
+              run: bun run type-gen
+
             - name: Typecheck
               run: bun run typecheck
 
