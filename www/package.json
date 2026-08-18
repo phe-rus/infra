@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.52.1",
+    "@infra/minifybuild": "workspace:*",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tailwindcss/vite": "^4",
     "@tanstack/router-plugin": "^1.168.32",

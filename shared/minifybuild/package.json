@@ -1,0 +1,22 @@
+{
+    "name": "@infra/minifybuild",
+    "version": "0.0.0",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "lint": "eslint",
+        "format": "prettier --write \"**/*.ts\"",
+        "typecheck": "tsc --noEmit"
+    },
+    "peerDependencies": {
+        "vite": "^8"
+    },
+    "devDependencies": {
+        "@types/node": "^26",
+        "typescript": "6",
+        "vite": "^8"
+    },
+    "exports": {
+        ".": "./src/index.ts"
+    }
+}
