@@ -15,7 +15,7 @@ import { secondaryStorage, trustedOrigins, databaseHooks } from "./configs"
 import { advanced } from "./advanced"
 import { r2Provider } from "@infra/r2"
 import { infraPayment } from "@infra/payment"
-import { admin, jwt, openAPI, twoFactor } from "better-auth/plugins"
+import { admin, jwt, openAPI, twoFactor, haveIBeenPwned } from "better-auth/plugins"
 
 const roles = buildRoles()
 
@@ -221,6 +221,7 @@ export const auth = betterAuth({
                 ...user,
             }),
         }),
+        ...(env.NODE_ENV === "production" ? [haveIBeenPwned()] : []),
         tanstackStartCookies(),
     ],
 })

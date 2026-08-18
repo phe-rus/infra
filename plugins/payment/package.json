@@ -5,7 +5,8 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run"
     },
     "peerDependencies": {
         "better-auth": "^1.6.27"
@@ -16,7 +17,8 @@
     "devDependencies": {
         "@cloudflare/workers-types": "^4",
         "@types/node": "^26",
-        "typescript": "7"
+        "typescript": "7",
+        "vitest": "^4"
     },
     "exports": {
         ".": "./src/index.ts",
