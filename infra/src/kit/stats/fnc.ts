@@ -24,3 +24,5 @@ export const getStats = createServerFn({ method: "GET" })
         ])
         return { totalUsers, monthlyActiveUsers }
     })
+
+export type StatsData = Awaited<ReturnType<typeof getStats>>

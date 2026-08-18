@@ -12,6 +12,8 @@ const fetchSessions = createServerFn({ method: "GET" }).handler(async () => {
     return data
 })
 
+export type SessionsData = Awaited<ReturnType<typeof fetchSessions>>
+
 export const sessionsOptions = () =>
     queryOptions({
         queryKey: ["sessions"],

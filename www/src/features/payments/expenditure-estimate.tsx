@@ -1,11 +1,14 @@
 import { useMemo } from "react"
+import type { FC } from "react"
 import { cn } from "@infra/ui/lib/utils"
 import { IconTrendingUp } from "@tabler/icons-react"
-import { useMyPayments } from "@/functions/get-payments"
+import type { MyPaymentsData } from "@/functions/get-payments"
 
-export function ExpenditureEstimateCard() {
-    const { data } = useMyPayments()
+type ExpenditureEstimateCardProps = {
+    data: MyPaymentsData
+}
 
+export const ExpenditureEstimateCard: FC<ExpenditureEstimateCardProps> = ({ data }) => {
     const estimate = useMemo(() => {
         const now = new Date()
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)

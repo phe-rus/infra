@@ -7,8 +7,15 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@infra/ui/componen
 import { IconSearch, IconWallet } from "@tabler/icons-react"
 import { useMemo } from "react"
 import { resolveCdnUrl } from "@/lib/auth-client"
-import { myPaymentsOptions, paymentConfigOptions, walletsOptions } from "@/functions/get-payments"
-import { ExpenditureEstimateCard, WalletCards, TransactionHistory } from "@/features/payments"
+import {
+    myPaymentsOptions,
+    paymentConfigOptions,
+    walletsOptions,
+    useMyPayments,
+    usePaymentConfig,
+    useWallets,
+} from "@/functions/get-payments"
+import { ExpenditureEstimateCard, Wallet, TransactionHistory } from "@/features/payments"
 
 export const Route = createFileRoute("/_workspace/")({
     loader: async ({ context }) => {
@@ -21,6 +28,9 @@ export const Route = createFileRoute("/_workspace/")({
 
 function RouteComponent() {
     const { data: session } = useSuspenseQuery(currentOptions())
+    const { data: payments } = useMyPayments()
+    const { data: wallets } = useWallets()
+    const { data: config } = usePaymentConfig()
 
     const user = useMemo(() => {
         if (!session?.user) return null
@@ -70,10 +80,20 @@ function RouteComponent() {
                     </p>
                 </div>
 
-                <WalletCards />
-                <ExpenditureEstimateCard />
+                <Wallet.Cards>
+                    {wallets.wallets.map((wallet) => (
+                        <Wallet.Content
+                            key={wallet.id}
+                            data={wallet}
+                            wallets={wallets.wallets}
+                            config={config}
+                        />
+                    ))}
+                    <Wallet.AddTile wallets={wallets.wallets} config={config} />
+                </Wallet.Cards>
+                <ExpenditureEstimateCard data={payments} />
 
-                <TransactionHistory />
+                <TransactionHistory data={payments} config={config} />
             </section>
         </article>
     )

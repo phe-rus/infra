@@ -1,3 +1,3 @@
-export * from "./manage-wallets-dialog"
+export * from "./wallet"
 export * from "./expenditure-estimate"
 export * from "./transaction-history"

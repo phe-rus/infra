@@ -1,11 +1,15 @@
-import { useConsole } from "@/kit/console"
+import type { FC } from "react"
 import { Avatar, AvatarFallback } from "@infra/ui/components/avatar"
-import { FrameworkIcon } from "@/components/widgets/framework-icon"
 import { Link } from "@tanstack/react-router"
 import { cn } from "@infra/ui/lib/utils"
+import { FrameworkIcon } from "@/components/widgets/framework-icon"
+import type { AppListData } from "@/kit/console"
 
-export function ApplicationGrid() {
-    const { data } = useConsole()
+type ApplicationGridProps = {
+    data: AppListData
+}
+
+export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
     if (data.applications.length === 0) {
         return <p className="text-sm text-muted-foreground">No applications yet.</p>
     }

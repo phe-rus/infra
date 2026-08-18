@@ -13,6 +13,8 @@ export const currentUser = createServerFn()
         return context.session
     })
 
+export type CurrentUserData = Awaited<ReturnType<typeof currentUser>>
+
 export const currentOptions = () =>
     queryOptions({
         queryKey: ["me"],

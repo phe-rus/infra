@@ -1,3 +1,4 @@
+import type { FC } from "react"
 import { DrawerClose } from "@infra/ui/components/drawer"
 import { FieldGroup } from "@infra/ui/components/field"
 import { Button } from "@infra/ui/components/button"
@@ -12,6 +13,11 @@ import {
     useGenerateBackupCodes,
 } from "@/functions/get-security"
 
+type ControlledDialogProps = {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+}
+
 const passwordSchema = z.object({
     password: z.string().min(1, "Password is required"),
 })
@@ -20,16 +26,11 @@ const totpCodeSchema = z.object({
     code: z.string().min(1, "Enter the code"),
 })
 
-type ControlledDialogProps = {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-}
-
-export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogProps) {
+const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
     const enableMutation = useEnableTwoFactor()
     const enrollment = enableMutation.data ?? null
 
-    function close() {
+    const close = () => {
         onOpenChange(false)
         enableMutation.reset()
         passwordForm.reset()
@@ -162,7 +163,7 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
     )
 }
 
-export function DisableTwoFactorDialog({ open, onOpenChange }: ControlledDialogProps) {
+const Disable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
     const disableMutation = useDisableTwoFactor()
 
     const form = useAppForm({
@@ -222,11 +223,11 @@ export function DisableTwoFactorDialog({ open, onOpenChange }: ControlledDialogP
     )
 }
 
-export function RegenerateBackupCodesDialog({ open, onOpenChange }: ControlledDialogProps) {
+const RegenerateBackupCodes: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
     const generateMutation = useGenerateBackupCodes()
     const backupCodes = generateMutation.data?.backupCodes ?? null
 
-    function close() {
+    const close = () => {
         onOpenChange(false)
         generateMutation.reset()
         form.reset()
@@ -301,3 +302,5 @@ export function RegenerateBackupCodesDialog({ open, onOpenChange }: ControlledDi
         </DialogWidget>
     )
 }
+
+export const TwoFactor = { Enable, Disable, RegenerateBackupCodes }

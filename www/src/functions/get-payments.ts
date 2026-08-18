@@ -17,6 +17,8 @@ const fetchMyPayments = createServerFn({ method: "GET" }).handler(async () => {
     return data
 })
 
+export type MyPaymentsData = Awaited<ReturnType<typeof fetchMyPayments>>
+
 const fetchWallets = createServerFn({ method: "GET" }).handler(async () => {
     const headers = getRequestHeaders()
     const { data, error } = await authClient.pay.wallets({
@@ -28,6 +30,8 @@ const fetchWallets = createServerFn({ method: "GET" }).handler(async () => {
     return data
 })
 
+export type WalletsData = Awaited<ReturnType<typeof fetchWallets>>
+
 const fetchPaymentConfig = createServerFn({ method: "GET" }).handler(async () => {
     const headers = getRequestHeaders()
     const { data, error } = await authClient.pay.config({
@@ -38,6 +42,8 @@ const fetchPaymentConfig = createServerFn({ method: "GET" }).handler(async () =>
     if (error) throw new Error(error.message ?? "Could not load payment providers")
     return data
 })
+
+export type PaymentConfigData = Awaited<ReturnType<typeof fetchPaymentConfig>>
 
 export const myPaymentsOptions = () =>
     queryOptions({

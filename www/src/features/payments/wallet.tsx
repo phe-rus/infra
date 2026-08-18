@@ -1,18 +1,12 @@
 import { useState } from "react"
-import type { ComponentProps, PropsWithChildren } from "react"
+import type { ComponentProps, FC, PropsWithChildren } from "react"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { DrawerClose } from "@infra/ui/components/drawer"
 import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@infra/ui/components/select"
+import { CountryProviderFields } from "@infra/ui/widgets/country-provider-fields"
 import { cn } from "@infra/ui/lib/utils"
 import {
     IconCards,
@@ -23,32 +17,53 @@ import {
     IconStar,
     IconTrash,
 } from "@tabler/icons-react"
-import { useWallets, usePaymentConfig } from "@/functions/get-payments"
+import type { WalletsData, PaymentConfigData } from "@/functions/get-payments"
 import { useAddWallet, useRemoveWallet, useSetPrimaryWallet } from "@/functions/use-payments"
 import { useWalletFields } from "./use-wallet-fields"
 import { providerLabel } from "./provider-label"
 
-type Wallet = ReturnType<typeof useWallets>["data"]["wallets"][number]
+type WalletEntry = WalletsData["wallets"][number]
 
 type TriggerProps = Omit<ComponentProps<"button">, "children" | "onClick" | "type">
 
+type ManageWalletsDialogProps = PropsWithChildren<TriggerProps> & {
+    wallets: WalletEntry[]
+    config: PaymentConfigData
+}
+
+type WalletRowProps = {
+    wallet: WalletEntry
+    config: PaymentConfigData
+}
+
+type CardsProps = PropsWithChildren
+
+type ContentProps = {
+    data: WalletEntry
+    wallets: WalletEntry[]
+    config: PaymentConfigData
+}
+
+type AddTileProps = {
+    wallets: WalletEntry[]
+    config: PaymentConfigData
+}
+
 const WALLET_PENDING_HOURS = 24
 
-function formatPhoneNumber(raw: string) {
-    return raw
+const formatPhoneNumber = (raw: string) =>
+    raw
         .replace(/\D/g, "")
         .replace(/(\d{3})(?=\d)/g, "$1 ")
         .trim()
-}
 
-function hoursLeft(createdAt: Date | string) {
+const hoursLeft = (createdAt: Date | string) => {
     const elapsedMs = Date.now() - new Date(createdAt).getTime()
     const remaining = WALLET_PENDING_HOURS - elapsedMs / (60 * 60 * 1000)
     return Math.max(0, Math.ceil(remaining))
 }
 
-function WalletRow({ wallet }: { wallet: Wallet }) {
-    const { data: config } = usePaymentConfig()
+const WalletRow: FC<WalletRowProps> = ({ wallet, config }) => {
     const setPrimaryMutation = useSetPrimaryWallet()
     const removeMutation = useRemoveWallet()
     const isVerified = wallet.status === "verified"
@@ -124,12 +139,12 @@ function WalletRow({ wallet }: { wallet: Wallet }) {
     )
 }
 
-function AddWalletForm() {
+const AddWalletForm: FC = () => {
     const fields = useWalletFields()
     const [label, setLabel] = useState("")
     const addMutation = useAddWallet()
 
-    async function handleAdd() {
+    const handleAdd = async () => {
         if (!fields.provider || !fields.phoneNumber.trim()) return
         await addMutation.mutateAsync({
             phoneNumber: fields.phoneNumber,
@@ -148,68 +163,7 @@ function AddWalletForm() {
             }}
             className="flex flex-col gap-3"
         >
-            <Field>
-                <FieldLabel htmlFor="wallet-country">Country</FieldLabel>
-                <Select
-                    id="wallet-country"
-                    aria-label="Country"
-                    selectedKey={fields.countryCode}
-                    onSelectionChange={(key) => fields.selectCountry(String(key))}
-                >
-                    <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {fields.countries.map((c) => (
-                            <SelectItem key={c.country} id={c.country} textValue={c.name}>
-                                <span className="flex items-center gap-2">
-                                    <img
-                                        src={c.flag}
-                                        alt=""
-                                        className="h-3.5 w-5 rounded-none! object-cover"
-                                    />
-                                    {c.name}
-                                </span>
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
-
-            <Field>
-                <FieldLabel htmlFor="wallet-provider">Provider</FieldLabel>
-                <Select
-                    id="wallet-provider"
-                    aria-label="Provider"
-                    selectedKey={fields.providerCode}
-                    onSelectionChange={(key) => fields.setProviderCode(String(key))}
-                    isDisabled={!fields.country?.providers.length}
-                >
-                    <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {fields.country?.providers.map((p) => (
-                            <SelectItem key={p.provider} id={p.provider} textValue={p.displayName}>
-                                <span className="flex items-center gap-2">
-                                    <img src={p.logo} alt="" className="size-4 object-contain" />
-                                    {p.displayName}
-                                </span>
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
-
-            <Field>
-                <FieldLabel htmlFor="wallet-phone">Phone number</FieldLabel>
-                <Input
-                    id="wallet-phone"
-                    value={fields.phoneNumber}
-                    onChange={(e) => fields.setPhoneNumber(e.target.value)}
-                    placeholder={fields.country ? `${fields.country.prefix}…` : undefined}
-                />
-            </Field>
+            <CountryProviderFields idPrefix="wallet" {...fields} />
 
             <Field>
                 <FieldLabel htmlFor="wallet-label">Label (optional)</FieldLabel>
@@ -236,9 +190,13 @@ function AddWalletForm() {
     )
 }
 
-export function ManageWalletsDialog({ children, ...props }: PropsWithChildren<TriggerProps>) {
+const ManageWalletsDialog: FC<ManageWalletsDialogProps> = ({
+    children,
+    wallets,
+    config,
+    ...props
+}) => {
     const [open, setOpen] = useState(false)
-    const { data } = useWallets()
 
     return (
         <>
@@ -263,10 +221,10 @@ export function ManageWalletsDialog({ children, ...props }: PropsWithChildren<Tr
                 }
             >
                 <div className="flex flex-col gap-3">
-                    {data.wallets.length > 0 && (
+                    {wallets.length > 0 && (
                         <div className="flex flex-col gap-2">
-                            {data.wallets.map((wallet) => (
-                                <WalletRow key={wallet.id} wallet={wallet} />
+                            {wallets.map((wallet) => (
+                                <WalletRow key={wallet.id} wallet={wallet} config={config} />
                             ))}
                         </div>
                     )}
@@ -277,12 +235,17 @@ export function ManageWalletsDialog({ children, ...props }: PropsWithChildren<Tr
     )
 }
 
-function WalletCard({ wallet }: { wallet: Wallet }) {
-    const { data: config } = usePaymentConfig()
-    const isVerified = wallet.status === "verified"
+const Cards: FC<CardsProps> = ({ children }) => (
+    <div className={cn("grid grid-cols-2 gap-2")}>{children}</div>
+)
+
+const Content: FC<ContentProps> = ({ data, wallets, config }) => {
+    const isVerified = data.status === "verified"
 
     return (
         <ManageWalletsDialog
+            wallets={wallets}
+            config={config}
             className={cn(
                 "flex-col justify-between overflow-hidden rounded-md p-4",
                 "relative col-span-1 flex h-28 shrink-0 snap-start",
@@ -293,23 +256,24 @@ function WalletCard({ wallet }: { wallet: Wallet }) {
                 aria-hidden
                 className={cn(
                     "absolute -top-10 -right-10 size-32",
-                    "rounded-full bg-radial from-pink-400",
-                    "from-40% to-fuchsia-700 blur-2xl"
+                    "rounded-full bg-radial from-secondary",
+                    "from-40% to-secondary blur-2xl",
+                    "shadow-sm border border-primary"
                 )}
             />
             <div className="flex items-start justify-between">
                 <Button size="icon-xs" variant="secondary" className="rounded-full">
                     <IconCards />
                 </Button>
-                {wallet.isPrimary && <span className="text-xs font-light">Default</span>}
+                {data.isPrimary && <span className="text-xs font-light">Default</span>}
             </div>
             <div className="relative flex flex-col gap-1">
                 <p className="font-mono text-base tracking-wider">
-                    {formatPhoneNumber(wallet.phoneNumber)}
+                    {formatPhoneNumber(data.phoneNumber)}
                 </p>
                 <div className="flex items-center justify-between gap-2">
                     <span className="truncate text-xs text-primary-foreground/70">
-                        {wallet.label || providerLabel(config.countries, wallet.provider)}
+                        {data.label || providerLabel(config.countries, data.provider)}
                     </span>
                     <span
                         className={cn(
@@ -322,7 +286,7 @@ function WalletCard({ wallet }: { wallet: Wallet }) {
                         ) : (
                             <IconClock className="size-3" />
                         )}
-                        {isVerified ? "Verified" : `${hoursLeft(wallet.createdAt)}h`}
+                        {isVerified ? "Verified" : `${hoursLeft(data.createdAt)}h`}
                     </span>
                 </div>
             </div>
@@ -330,9 +294,11 @@ function WalletCard({ wallet }: { wallet: Wallet }) {
     )
 }
 
-function AddWalletCardTile() {
+const AddTile: FC<AddTileProps> = ({ wallets, config }) => {
     return (
         <ManageWalletsDialog
+            wallets={wallets}
+            config={config}
             className={cn(
                 "col-span-1 flex h-28 shrink-0 snap-start",
                 "flex-col items-center justify-center gap-2",
@@ -346,15 +312,4 @@ function AddWalletCardTile() {
     )
 }
 
-export function WalletCards() {
-    const { data } = useWallets()
-
-    return (
-        <div className={cn("grid grid-cols-2 gap-2")}>
-            {data.wallets.map((wallet) => (
-                <WalletCard key={wallet.id} wallet={wallet} />
-            ))}
-            <AddWalletCardTile />
-        </div>
-    )
-}
+export const Wallet = { Cards, Content, AddTile }

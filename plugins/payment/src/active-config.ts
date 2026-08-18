@@ -1,4 +1,4 @@
-import type { ActiveConfigResponse } from "./client"
+import type { ActiveConfigResponse } from "./pawapay-client"
 
 export type PaymentProviderOption = {
     provider: string

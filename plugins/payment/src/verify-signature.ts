@@ -1,4 +1,4 @@
-import type { PublicKey } from "./client"
+import type { PublicKey } from "./pawapay-client"
 
 // RFC-9421 (HTTP Message Signatures) verification for PawaPay callbacks —
 // confirmed against their actual docs (docs.pawapay.io/v2/docs/signatures),

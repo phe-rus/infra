@@ -1,5 +1,4 @@
 export * from "./two-factor"
-export * from "./passkeys"
-export * from "./passkey-list"
+export * from "./passkey"
 export * from "./session-list"
 export * from "./delete-account-dialog"

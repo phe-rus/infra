@@ -45,6 +45,7 @@
         "./widgets/blocks": "./src/widgets/blocks/index.ts",
         "./widgets/tables": "./src/widgets/tables/index.ts",
         "./widgets/dialog-widget": "./src/widgets/dialog-widget/index.ts",
+        "./widgets/country-provider-fields": "./src/widgets/country-provider-fields/index.ts",
         "./hooks/use-app-mutation": "./src/hooks/use-app-mutation.ts",
         "./theme": "./src/hooks/theme.tsx",
         "./defaults": "./src/hooks/defaults/index.ts"

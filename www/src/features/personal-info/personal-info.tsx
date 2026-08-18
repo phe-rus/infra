@@ -1,32 +1,22 @@
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
+import type { FC } from "react"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { t } from "@infra/ui/components/sonner"
 import { useSelector } from "@tanstack/react-store"
-import { authClient, resolveCdnUrl } from "@/lib/auth-client"
-import { currentOptions } from "@/functions/get-auth"
-import { getContext } from "@/lib/queryClient"
 import { formatUtc } from "@infra/ui/lib/date"
-import { z } from "zod"
+import { resolveCdnUrl } from "@/lib/auth-client"
+import { profileSchema, type useUpdateProfile } from "@/functions/use-auth"
+import type { ProfileFormValues } from "@/functions/use-auth"
+import type { CurrentUserData } from "@/functions/get-auth"
 
-export const profileSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    bio: z.string().max(280, "At most 280 characters").optional(),
-    avatar: z.file().nullable(),
-    email: z.email(),
-    id: z.string(),
-    role: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    emailVerified: z.string(),
-})
+type PersonalInfoProps = {
+    data: CurrentUserData
+    onUpdate: ReturnType<typeof useUpdateProfile>["mutateAsync"]
+}
 
-export function PersonalInfo() {
-    const queryClient = getContext()
-    const { data } = useSuspenseQuery(currentOptions())
+export const PersonalInfo: FC<PersonalInfoProps> = ({ data, onUpdate }) => {
     const user = data?.user
 
-    const defaultValue: z.input<typeof profileSchema> = {
+    const defaultValue: ProfileFormValues = {
         name: user?.name ?? "",
         bio: user?.bio ?? "",
         avatar: null,
@@ -38,34 +28,6 @@ export function PersonalInfo() {
         emailVerified: String(user?.emailVerified),
     }
 
-    const { mutateAsync: handleUpdate } = useMutation({
-        mutationFn: async (value: z.input<typeof profileSchema>) => {
-            const changes: { name?: string; bio?: string; image?: string } = {}
-            if (value.name !== defaultValue.name) changes.name = value.name
-            if (value.bio !== defaultValue.bio) changes.bio = value.bio
-
-            if (value.avatar) {
-                const { data: uploadData, error } = await authClient.r2.uploadAvatar(value.avatar)
-                if (error) throw new Error(error.message ?? "Could not upload avatar")
-                if (uploadData.url) changes.image = uploadData.url
-            }
-
-            if (Object.keys(changes).length > 0) {
-                return await authClient.updateUser(changes)
-            }
-        },
-        onSuccess: () => {
-            t.success("Profile updated")
-            form.reset()
-            void queryClient.invalidateQueries(currentOptions())
-        },
-        onError: (error) => {
-            t.error(error.name, {
-                description: error.message,
-            })
-        },
-    })
-
     const form = useAppForm({
         defaultValues: defaultValue,
         validators: {
@@ -75,7 +37,8 @@ export function PersonalInfo() {
             onBlur: profileSchema,
         },
         onSubmit: async ({ value }) => {
-            await handleUpdate(value)
+            await onUpdate({ value, original: defaultValue })
+            form.reset()
         },
     })
 

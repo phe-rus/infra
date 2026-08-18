@@ -1,13 +1,19 @@
 import { useState } from "react"
+import type { FC } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
 import { Checkbox } from "@infra/ui/components/checkbox"
 import { cn } from "@infra/ui/lib/utils"
 import { IconLoader2, IconMail, IconPdf } from "@tabler/icons-react"
-import { useMyPayments, usePaymentConfig } from "@/functions/get-payments"
+import type { MyPaymentsData, PaymentConfigData } from "@/functions/get-payments"
 import { useResendReceipt, useResendReceipts } from "@/functions/use-payments"
 import { providerLabel } from "./provider-label"
+
+type TransactionHistoryProps = {
+    data: MyPaymentsData
+    config: PaymentConfigData
+}
 
 const STATUS_VARIANT: Record<string, "secondary" | "destructive"> = {
     pending: "secondary",
@@ -15,15 +21,13 @@ const STATUS_VARIANT: Record<string, "secondary" | "destructive"> = {
     cancelled: "destructive",
 }
 
-export function TransactionHistory() {
-    const { data } = useMyPayments()
-    const { data: config } = usePaymentConfig()
+export const TransactionHistory: FC<TransactionHistoryProps> = ({ data, config }) => {
     const [selected, setSelected] = useState<Set<string>>(new Set())
 
     const resendMutation = useResendReceipt()
     const resendManyMutation = useResendReceipts()
 
-    function toggle(id: string) {
+    const toggle = (id: string) => {
         setSelected((prev) => {
             const next = new Set(prev)
             if (next.has(id)) next.delete(id)

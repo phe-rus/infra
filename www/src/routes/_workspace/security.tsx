@@ -8,15 +8,7 @@ import { currentOptions } from "@/functions/get-auth"
 import { passkeysOptions } from "@/functions/get-security"
 import { sessionsOptions } from "@/functions/get-sessions"
 import { Badge } from "@infra/ui/components/badge"
-import {
-    EnableTwoFactorDialog,
-    DisableTwoFactorDialog,
-    RegenerateBackupCodesDialog,
-    AddPasskeyDialog,
-    PasskeyList,
-    SessionList,
-    DeleteAccountDialog,
-} from "@/features/security"
+import { TwoFactor, Passkey, SessionList, DeleteAccountDialog } from "@/features/security"
 import { IconKeyFilled } from "@tabler/icons-react"
 
 export const Route = createFileRoute("/_workspace/security")({
@@ -29,6 +21,8 @@ export const Route = createFileRoute("/_workspace/security")({
 
 function RouteComponent() {
     const { data } = useSuspenseQuery(currentOptions())
+    const { data: passkeys } = useSuspenseQuery(passkeysOptions())
+    const { data: sessions } = useSuspenseQuery(sessionsOptions())
     const isTwoFactorEnabled = Boolean(data?.user.twoFactorEnabled)
 
     const [twoFactorDialogOpen, setTwoFactorDialogOpen] = useState(false)
@@ -82,17 +76,17 @@ function RouteComponent() {
             </section>
 
             {isTwoFactorEnabled ? (
-                <DisableTwoFactorDialog
+                <TwoFactor.Disable
                     open={twoFactorDialogOpen}
                     onOpenChange={setTwoFactorDialogOpen}
                 />
             ) : (
-                <EnableTwoFactorDialog
+                <TwoFactor.Enable
                     open={twoFactorDialogOpen}
                     onOpenChange={setTwoFactorDialogOpen}
                 />
             )}
-            <RegenerateBackupCodesDialog
+            <TwoFactor.RegenerateBackupCodes
                 open={backupCodesDialogOpen}
                 onOpenChange={setBackupCodesDialogOpen}
             />
@@ -101,13 +95,13 @@ function RouteComponent() {
                 <div>
                     <div className="flex items-center gap-3">
                         <h2>Passkeys</h2>
-                        <AddPasskeyDialog size="xs">Add</AddPasskeyDialog>
+                        <Passkey.Add size="xs">Add</Passkey.Add>
                     </div>
                     <p className="text-sm text-muted-foreground">
                         Sign in without a password, using your device's biometrics or a security key
                     </p>
                 </div>
-                <PasskeyList />
+                <Passkey.List data={passkeys} />
             </section>
 
             <section className="flex flex-col gap-3 md:max-w-md">
@@ -118,7 +112,7 @@ function RouteComponent() {
                         yours.
                     </p>
                 </div>
-                <SessionList />
+                <SessionList data={sessions} currentSessionToken={data?.session.token} />
             </section>
 
             <section className="flex flex-col gap-3 md:max-w-md">

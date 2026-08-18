@@ -1,8 +1,11 @@
-import { useStats } from "@/kit/stats"
+import type { FC } from "react"
+import type { StatsData } from "@/kit/stats"
 
-export function BusinessStats() {
-    const { data } = useStats()
+type BusinessStatsProps = {
+    data: StatsData
+}
 
+export const BusinessStats: FC<BusinessStatsProps> = ({ data }) => {
     return (
         <article className="flex items-center gap-5 rounded-2xl bg-card p-5">
             <div className="mx-auto flex w-full items-center justify-evenly gap-5">

@@ -14,6 +14,8 @@ const fetchPasskeys = createServerFn({ method: "GET" }).handler(async () => {
     return data
 })
 
+export type PasskeysData = Awaited<ReturnType<typeof fetchPasskeys>>
+
 export const passkeysOptions = () =>
     queryOptions({
         queryKey: ["passkeys"],

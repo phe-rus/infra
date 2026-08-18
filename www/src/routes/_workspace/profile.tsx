@@ -1,12 +1,18 @@
-import { PersonalInfo } from "@/features/personal-info"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { cn } from "@infra/ui/lib/utils"
+import { currentOptions } from "@/functions/get-auth"
+import { useUpdateProfile } from "@/functions/use-auth"
+import { PersonalInfo } from "@/features/personal-info"
 
-export const Route = createFileRoute("/_workspace/infro")({
+export const Route = createFileRoute("/_workspace/profile")({
     component: RouteComponent,
 })
 
 function RouteComponent() {
+    const { data } = useSuspenseQuery(currentOptions())
+    const { mutateAsync: handleUpdate } = useUpdateProfile()
+
     return (
         <article
             className={cn("container mx-auto flex w-full flex-col", "gap-5 py-20 md:max-w-3xl")}
@@ -17,7 +23,7 @@ function RouteComponent() {
             </section>
 
             <section>
-                <PersonalInfo />
+                <PersonalInfo data={data} onUpdate={handleUpdate} />
             </section>
         </article>
     )

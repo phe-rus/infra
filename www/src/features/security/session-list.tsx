@@ -1,31 +1,31 @@
 import { useState } from "react"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import type { FC } from "react"
 import { formatUtc } from "@infra/ui/lib/date"
 import { UAParser } from "ua-parser-js"
 import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
 import { cn } from "@infra/ui/lib/utils"
 import { IconLoader2, IconTrash } from "@tabler/icons-react"
-import { currentOptions } from "@/functions/get-auth"
-import { useSessions } from "@/functions/get-sessions"
+import type { SessionsData } from "@/functions/get-sessions"
 import { useRevokeSession } from "@/functions/use-sessions"
 
-function describeDevice(userAgent: string | null | undefined) {
+type SessionListProps = {
+    data: SessionsData
+    currentSessionToken: string | undefined
+}
+
+const describeDevice = (userAgent: string | null | undefined) => {
     const { browser, os } = new UAParser(userAgent ?? "").getResult()
     return `${browser.name ?? "A browser"} on ${os.name ?? "an unknown OS"}`
 }
 
-export function SessionList() {
-    const { data } = useSuspenseQuery(currentOptions())
-    const currentSessionToken = data?.session.token
-
-    const { data: sessions } = useSessions()
+export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken }) => {
     const revokeMutation = useRevokeSession()
     const [revokingToken, setRevokingToken] = useState<string | null>(null)
 
     return (
         <div className="flex flex-col gap-3">
-            {sessions.map((session) => {
+            {data.map((session) => {
                 const isCurrent = session.token === currentSessionToken
                 return (
                     <div

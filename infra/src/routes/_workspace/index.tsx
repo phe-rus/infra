@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { cn } from "@infra/ui/lib/utils"
 import { buttonVariants } from "@infra/ui/components/button"
-import { statsQueryOptions } from "@/kit/stats"
-import { consoleOptions, CREATE_CLIENT_ID } from "@/kit/console"
+import { statsQueryOptions, useStats } from "@/kit/stats"
+import { consoleOptions, useConsole, CREATE_CLIENT_ID } from "@/kit/console"
 import { BusinessStats, ApplicationGrid } from "@/features/dashboard"
 import { WalletBalances } from "@/features/payments"
 
@@ -18,6 +18,9 @@ export const Route = createFileRoute("/_workspace/")({
 })
 
 function RouteComponent() {
+    const { data: stats } = useStats()
+    const { data: apps } = useConsole()
+
     return (
         <article
             className={cn("container mx-auto flex w-full flex-col md:max-w-3xl", "gap-5 py-20")}
@@ -39,7 +42,7 @@ function RouteComponent() {
 
             <section className="flex flex-col gap-3">
                 <h2>Your business</h2>
-                <BusinessStats />
+                <BusinessStats data={stats} />
             </section>
 
             <section className="flex flex-col gap-3">
@@ -53,7 +56,7 @@ function RouteComponent() {
                         Add application
                     </Link>
                 </div>
-                <ApplicationGrid />
+                <ApplicationGrid data={apps} />
             </section>
 
             <WalletBalances />

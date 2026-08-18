@@ -18,7 +18,7 @@ export const Headers = () => {
             },
             {
                 label: "Basics",
-                to: "/infro",
+                to: "/profile",
             },
             {
                 label: "Security & Sign-in",
