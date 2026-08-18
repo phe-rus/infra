@@ -3,7 +3,7 @@
 Infra ships as two TanStack Start (React 19, server-rendered) applications, each its own Cloudflare Worker:
 
 - **`infra`**: the real `betterAuth()` instance (all plugins, D1/KV/R2 bindings live here) and the admin dashboard. The same Worker serves both the dashboard UI and the better-auth HTTP API, there's no separate backend service to run or deploy. It hosts only the admin/owner-facing pages: first-run `/setup`, admin `/sign-in`, `/forgot-password`.
-- **`www`** ("Infraccount"): the end-user "my account" app. It runs no auth server of its own; it's a pure client of `infra` via better-auth's own client SDK. This is where the OAuth provider's hosted pages actually live (`/sign-in`, `/create-account`, `/two-factor`, `/consent`, the pages a connected app's users see mid-flow), plus end-user account management. `infra`'s OAuth provider config points `loginPage`/`consentPage`/`signUp.page` at `www`'s URLs rather than hosting them itself.
+- **`www`** ("Infraccount"): the end-user "my account" app. It runs no auth server of its own; it's a pure client of `infra` via better-auth's own client SDK. This is where the OAuth provider's hosted pages actually live (`/sign-in`, `/create-account`, `/two-factor`, `/consent`, `/forgot-password`, `/reset-password`, the pages a connected app's users see mid-flow), plus end-user account management. `infra`'s OAuth provider config points `loginPage`/`consentPage`/`signUp.page` at `www`'s URLs rather than hosting them itself.
 
 Both apps talk to the same `infra` Worker over HTTP (CORS-enabled for `www`'s origin); only `infra` ever touches D1/KV/R2 directly.
 

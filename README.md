@@ -49,7 +49,7 @@ This is a Turborepo monorepo (bun workspaces):
 | Package | What it is |
 |---|---|
 | [`infra/`](infra) | The auth engine. The real `betterAuth()` instance (all plugins, D1/KV/R2), the admin dashboard, and only the admin/owner-facing pages: `/setup`, admin `/sign-in`, `/forgot-password`. See [`infra/README.md`](infra/README.md). |
-| `www/` ("Infraccount") | The end-user "my account" app, the same idea as myaccount.google.com. It runs no auth server of its own; it's a pure client of `infra` via `better-auth/react`'s `createAuthClient`. Hosts the OAuth provider's pages (`/sign-in`, `/create-account`, `/two-factor`, `/consent`) plus profile, security (2FA, passkeys, active sessions), and wallets (saved mobile-money numbers, transaction history, receipts). |
+| `www/` ("Infraccount") | The end-user "my account" app, the same idea as myaccount.google.com. It runs no auth server of its own; it's a pure client of `infra` via `better-auth/react`'s `createAuthClient`. Hosts the OAuth provider's pages (`/sign-in`, `/create-account`, `/two-factor`, `/consent`, `/forgot-password`, `/reset-password`) plus profile, security (2FA, passkeys, active sessions), and wallets (saved mobile-money numbers, transaction history, receipts). |
 | `shared/ui` (`@infra/ui`) | The one UI kit, consumed by both apps. Neither app owns its own copy of components. |
 | `plugins/r2` (`@infra/r2`) | Object storage, extracted into a standalone package with server and client exports so `www` (or any third-party consumer) can call it too, not just `infra`'s own in-process `auth.api.*`. |
 | `plugins/payment` (`@infra/payment`) | PawaPay mobile-money payments, extracted the same way. |
