@@ -12,8 +12,8 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@better-auth/oauth-provider": "^1.6.29",
-        "@better-auth/passkey": "^1.6.29",
+        "@better-auth/oauth-provider": "1.6.29",
+        "@better-auth/passkey": "1.6.29",
         "@infra/payment": "workspace:*",
         "@infra/r2": "workspace:*",
         "@infra/ui": "workspace:*",
@@ -23,7 +23,7 @@
         "@tanstack/react-router-ssr-query": "^1.167.1",
         "@tanstack/react-start": "^1.168.46",
         "@tanstack/react-store": "^0.11.1",
-        "better-auth": "^1.6.29",
+        "better-auth": "1.6.29",
         "date-fns": "^4.4.0",
         "qrcode.react": "^4.2.0",
         "react": "^19.2.8",
