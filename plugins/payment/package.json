@@ -1,6 +1,7 @@
 {
     "name": "@infra/payment",
     "version": "0.0.0",
+    "license": "MIT",
     "type": "module",
     "private": true,
     "scripts": {

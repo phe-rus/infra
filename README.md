@@ -88,3 +88,11 @@ bun run --cwd www deploy
 ```
 
 `docs/` stays at the repo root, not nested under `infra/`, since GitHub Pages serves it as a root-level `/docs` folder.
+
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, code conventions, and how to open a pull request.
+
+## License
+
+[MIT](LICENSE)
