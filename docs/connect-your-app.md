@@ -1,6 +1,6 @@
 # Connect Your App
 
-This is the practical, code-first version of [OAuth Provider](oauth-provider.md): how to actually wire a real application up to sign users in through your Infra instance. Every endpoint and value below is read straight from a running instance's own discovery document — point any OIDC-aware library at your issuer URL and it can find all of this itself:
+This is the practical, code-first version of [OAuth Provider](oauth-provider.md): how to actually wire a real application up to sign users in through your Infra instance. Every endpoint and value below is read straight from a running instance's own discovery document. Point any OIDC-aware library at your issuer URL and it can find all of this itself:
 
 ```bash
 curl https://your-infra-instance.example.com/.well-known/openid-configuration
@@ -20,26 +20,26 @@ curl https://your-infra-instance.example.com/.well-known/openid-configuration
 }
 ```
 
-Every example below assumes `ISSUER = https://your-infra-instance.example.com/api/auth` — swap in your own instance's URL.
+Every example below assumes `ISSUER = https://your-infra-instance.example.com/api/auth`, swap in your own instance's URL.
 
 ## 1. Register a client
 
-From **Console** in the Infra dashboard, create an OAuth client. You'll pick a redirect URI and a client type — a normal server-rendered web app or Next.js app is a **confidential client** (it has a secret, keep it server-side only); a single-page app or mobile app is a **public client** (no secret, PKCE is mandatory). Copy the client secret shown at creation — it's shown exactly once.
+From **Console** in the Infra dashboard, create an OAuth client. You'll pick a redirect URI and a client type: a normal server-rendered web app or Next.js app is a **confidential client** (it has a secret, keep it server-side only); a single-page app or mobile app is a **public client** (no secret, PKCE is mandatory). Copy the client secret shown at creation, it's shown exactly once.
 
 ## 2. The flow, step by step
 
 1. Generate a PKCE `code_verifier` and its `code_challenge` (see below), and a random `state` value.
 2. Redirect the user's browser to the authorization endpoint with your `client_id`, `redirect_uri`, `scope`, `state`, and `code_challenge`.
-3. The user signs in (or signs up) on the hosted page — served by Infraccount, infra's companion end-user app — sees a consent screen naming your app, and approves.
+3. The user signs in (or signs up) on the hosted page, served by Infraccount, infra's companion end-user app, sees a consent screen naming your app, and approves.
 4. Infra redirects back to your `redirect_uri` with `?code=...&state=...`.
-5. Your backend exchanges the code — plus the original `code_verifier` — at the token endpoint for `access_token`, `id_token`, and (if you requested `offline_access`) a `refresh_token`.
+5. Your backend exchanges the code, plus the original `code_verifier`, at the token endpoint for `access_token`, `id_token`, and (if you requested `offline_access`) a `refresh_token`.
 
 ## 3. Example: TanStack Start (better-auth `genericOAuth`)
 
-Infra itself is a TanStack Start + better-auth app, and if your consuming app is too, this is the idiomatic path — no manual PKCE code, no manual redirect handling. better-auth's `genericOAuth` plugin reads Infra's discovery document once and does the rest.
+Infra itself is a TanStack Start + better-auth app, and if your consuming app is too, this is the idiomatic path: no manual PKCE code, no manual redirect handling. better-auth's `genericOAuth` plugin reads Infra's discovery document once and does the rest.
 
 ```ts
-// src/lib/auth.ts — your app's own better-auth server instance
+// src/lib/auth.ts, your app's own better-auth server instance
 import { betterAuth } from "better-auth"
 import { genericOAuth } from "better-auth/plugins"
 
@@ -83,11 +83,11 @@ function SignIn() {
 }
 ```
 
-That button click is the whole flow — `genericOAuth` builds the authorize URL (with PKCE, since `pkce: true`), sends the browser to Infra, and once Infra redirects back, the plugin's own callback route (auto-registered at `/api/auth/oauth2/callback/infra`) exchanges the code and creates a session in *your app's* database. This is a separate session from Infra's own — your app never needs Infra's cookie, only the OAuth tokens.
+That button click is the whole flow: `genericOAuth` builds the authorize URL (with PKCE, since `pkce: true`), sends the browser to Infra, and once Infra redirects back, the plugin's own callback route (auto-registered at `/api/auth/oauth2/callback/infra`) exchanges the code and creates a session in *your app's* database. This is a separate session from Infra's own; your app never needs Infra's cookie, only the OAuth tokens.
 
 ## 4. Example: plain fetch / curl (any language)
 
-Generating PKCE values (Node, but the algorithm is identical everywhere — SHA-256 the verifier, base64url-encode it):
+Generating PKCE values (Node, but the algorithm is identical everywhere: SHA-256 the verifier, base64url-encode it):
 
 ```js
 import crypto from "node:crypto"
@@ -142,7 +142,7 @@ curl $ISSUER/oauth2/userinfo -H "Authorization: Bearer $access_token"
 
 ## 5. Example: single-page app or mobile (public client)
 
-Public clients never hold a secret — the redirect URI and PKCE are the whole security model, so `code_challenge_method: S256` is required and there's no `client_secret` in the token exchange. In a browser, generate the PKCE pair with Web Crypto instead of Node's `crypto` module:
+Public clients never hold a secret: the redirect URI and PKCE are the whole security model, so `code_challenge_method: S256` is required and there's no `client_secret` in the token exchange. In a browser, generate the PKCE pair with Web Crypto instead of Node's `crypto` module:
 
 ```js
 function base64url(buffer) {
@@ -155,11 +155,11 @@ const codeVerifier = base64url(verifierBytes)
 const codeChallenge = base64url(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(codeVerifier)))
 ```
 
-Everything else — the authorize redirect and the token exchange — is the same shape as the fetch example above, just without `client_secret`.
+Everything else, the authorize redirect and the token exchange, is the same shape as the fetch example above, just without `client_secret`.
 
 ### Other frameworks
 
-Any OIDC-aware library works the same way — point it at Infra's issuer URL (`$ISSUER`) and it discovers the rest itself. For example, [Auth.js](https://authjs.dev) in a Next.js app:
+Any OIDC-aware library works the same way: point it at Infra's issuer URL (`$ISSUER`) and it discovers the rest itself. For example, [Auth.js](https://authjs.dev) in a Next.js app:
 
 ```ts
 // auth.ts
@@ -178,11 +178,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 })
 ```
 
-Django (`mozilla-django-oidc`), Rails (`omniauth-openid-connect`), Go (`coreos/go-oidc`), and most other ecosystems have an equivalent "generic OIDC provider" package that works the same way — supply the issuer URL, client id, and secret.
+Django (`mozilla-django-oidc`), Rails (`omniauth-openid-connect`), Go (`coreos/go-oidc`), and most other ecosystems have an equivalent "generic OIDC provider" package that works the same way: supply the issuer URL, client id, and secret.
 
 ## 6. Machine-to-machine (no user involved)
 
-For a service-to-service call with no human in the loop, use the `client_credentials` grant directly against the token endpoint — no browser redirect at all:
+For a service-to-service call with no human in the loop, use the `client_credentials` grant directly against the token endpoint, no browser redirect at all:
 
 ```bash
 curl -X POST $ISSUER/oauth2/token \
@@ -203,4 +203,4 @@ curl -X POST $ISSUER/oauth2/introspect \
 
 ## What connected apps can't do yet
 
-The `payments` scope exists and is selectable when registering a client, but Infra's payments endpoints (`/pay/*`) don't yet accept OAuth Bearer tokens — only an Infra dashboard session can call them today. Treat `payments` as reserved for a future release rather than something to build against right now.
+The `payments` scope exists and is selectable when registering a client, but Infra's payments endpoints (`/pay/*`) don't yet accept OAuth Bearer tokens, only an Infra dashboard session can call them today. Treat `payments` as reserved for a future release rather than something to build against right now.
