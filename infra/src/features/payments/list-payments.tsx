@@ -16,21 +16,16 @@ import { IconDotsVertical } from "@tabler/icons-react"
 import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"
 import { Checkbox } from "@infra/ui/components/checkbox"
+import { statusVariant } from "./status-variant"
 
 export type ListPaymentsProps = {
     payments: ListedPayment[]
     onRefund: (payment: ListedPayment) => void
 }
 
-function statusVariant(status: string): "outline" | "destructive" | "secondary" {
-    if (status === "completed") return "outline"
-    if (status === "failed" || status === "cancelled") return "destructive"
-    return "secondary"
-}
-
 // net total per currency, completed transactions only — deposits add,
 // payouts/refunds subtract, since they're money leaving the platform
-function computeTotals(payments: ListedPayment[]): { currency: string; amount: number }[] {
+const computeTotals = (payments: ListedPayment[]): { currency: string; amount: number }[] => {
     const totals = new Map<string, number>()
     for (const payment of payments) {
         if (payment.status !== "completed") continue

@@ -9,15 +9,13 @@ export type BrowseObjectsProps = {
     onNavigate: (prefix: string) => void
 }
 
-function formatBytes(bytes: number): string {
+const formatBytes = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
-function cdnUrl(key: string): string {
-    return `/api/auth/cdn/${key}`
-}
+const cdnUrl = (key: string): string => `/api/auth/cdn/${key}`
 
 export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) => {
     const { data, isLoading } = useListObjects(prefix)

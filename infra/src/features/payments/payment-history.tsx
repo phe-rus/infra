@@ -5,15 +5,10 @@ import { DataTable } from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import type { ListedPayment } from "@/kit/payments"
 import { formatUtc } from "@infra/ui/lib/date"
+import { statusVariant } from "./status-variant"
 
 export type PaymentHistoryProps = {
     payments: ListedPayment[]
-}
-
-function statusVariant(status: string): "outline" | "destructive" | "secondary" {
-    if (status === "completed") return "outline"
-    if (status === "failed" || status === "cancelled") return "destructive"
-    return "secondary"
 }
 
 export const PaymentHistory: FC<PaymentHistoryProps> = ({ payments }) => {

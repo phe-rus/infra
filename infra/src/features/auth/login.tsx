@@ -1,3 +1,4 @@
+import type { FC } from "react"
 import { Link } from "@tanstack/react-router"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
@@ -5,7 +6,7 @@ import { signInSchema, useSignIn } from "@/kit/auth"
 import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
 
-export function Login() {
+export const Login: FC = () => {
     const { mutateAsync: signIn } = useSignIn()
 
     const form = useAppForm({

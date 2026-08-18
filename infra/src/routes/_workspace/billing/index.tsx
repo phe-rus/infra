@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { usePayments } from "@/kit/payments"
 import type { ListedPayment } from "@/kit/payments"
 import { Button } from "@infra/ui/components/button"
-import { ListPayments, PayoutDialog, RefundDialog } from "@/features/payments"
+import { ListPayments, Payment } from "@/features/payments"
 
 export const Route = createFileRoute("/_workspace/billing/")({
     component: RouteComponent,
@@ -30,8 +30,8 @@ function RouteComponent() {
 
             <ListPayments payments={data.payments} onRefund={setRefundTarget} />
 
-            <PayoutDialog open={payoutOpen} onOpenChange={setPayoutOpen} />
-            <RefundDialog
+            <Payment.Payout open={payoutOpen} onOpenChange={setPayoutOpen} />
+            <Payment.Refund
                 payment={refundTarget}
                 onOpenChange={(open) => !open && setRefundTarget(null)}
             />
