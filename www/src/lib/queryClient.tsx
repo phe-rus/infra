@@ -10,7 +10,7 @@ export const queryContext = () => {
             queries: {
                 staleTime: 60_000,
                 retry: (count, error) => {
-                    const status = (error as any)?.status
+                    const status = (error as { status?: number })?.status
                     return status !== 401 && status !== 403 && count < 2
                 },
             },

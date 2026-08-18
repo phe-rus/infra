@@ -6,7 +6,13 @@ type seoProps = {
     keywords?: string[]
 } & {
     type?:
-        "website" | "article" | "video.other" | "book" | "game" | "article:section" | "article:tag"
+        | "website"
+        | "article"
+        | "video.other"
+        | "book"
+        | "game"
+        | "article:section"
+        | "article:tag"
 }
 export const seo = ({
     siteName = "Infra",

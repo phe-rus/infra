@@ -20,7 +20,7 @@ export const queryContext = () => {
         defaultOptions: {
             queries: {
                 retry: (count, error) => {
-                    const status = (error as any)?.status
+                    const status = (error as { status?: number })?.status
                     return status !== 401 && status !== 403 && count < 2
                 },
             },
@@ -49,10 +49,8 @@ export const QueryProvider = ({ children, query }: TRProviderProps) => {
     const [client] = useState(() => query)
     return (
         <QueryClientProvider client={client}>
-            <>
-                {children}
-                <ToasterProvider richColors />
-            </>
+            {children}
+            <ToasterProvider richColors />
         </QueryClientProvider>
     )
 }

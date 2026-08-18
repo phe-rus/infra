@@ -38,19 +38,21 @@ export function toPaymentCountryOptions(raw: ActiveConfigResponse): PaymentCount
                             c.operationTypes.DEPOSIT?.status === "OPERATIONAL" ||
                             c.operationTypes.PAYOUT?.status === "OPERATIONAL"
                     )
-                    .map((c): PaymentProviderOption => ({
-                        provider: provider.provider,
-                        displayName: provider.displayName,
-                        logo: provider.logo,
-                        currency: c.currency,
-                        depositMinAmount: c.operationTypes.DEPOSIT?.minAmount ?? null,
-                        depositMaxAmount: c.operationTypes.DEPOSIT?.maxAmount ?? null,
-                        payoutMinAmount: c.operationTypes.PAYOUT?.minAmount ?? null,
-                        payoutMaxAmount: c.operationTypes.PAYOUT?.maxAmount ?? null,
-                        decimalsInAmount:
-                            (c.operationTypes.DEPOSIT ?? c.operationTypes.PAYOUT)
-                                ?.decimalsInAmount ?? "TWO_PLACES",
-                    }))
+                    .map(
+                        (c): PaymentProviderOption => ({
+                            provider: provider.provider,
+                            displayName: provider.displayName,
+                            logo: provider.logo,
+                            currency: c.currency,
+                            depositMinAmount: c.operationTypes.DEPOSIT?.minAmount ?? null,
+                            depositMaxAmount: c.operationTypes.DEPOSIT?.maxAmount ?? null,
+                            payoutMinAmount: c.operationTypes.PAYOUT?.minAmount ?? null,
+                            payoutMaxAmount: c.operationTypes.PAYOUT?.maxAmount ?? null,
+                            decimalsInAmount:
+                                (c.operationTypes.DEPOSIT ?? c.operationTypes.PAYOUT)
+                                    ?.decimalsInAmount ?? "TWO_PLACES",
+                        })
+                    )
             ),
         }))
         .filter((country) => country.providers.length > 0)

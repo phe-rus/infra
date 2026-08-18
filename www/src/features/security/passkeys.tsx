@@ -89,9 +89,7 @@ export function AddPasskeyDialog({ children, ...props }: PropsWithChildren<Trigg
     const addMutation = useAddPasskey()
 
     const form = useAppForm({
-        // widens the literal "platform" to the schema's union type — eslint's
-        // type info disagrees, but tsc requires this
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        // widens the literal "platform" to the schema's union type
         defaultValues: { name: "", authenticatorAttachment: "platform" } as z.input<
             typeof addPasskeySchema
         >,

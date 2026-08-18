@@ -1,0 +1,68 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "includes": [
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.js",
+            "**/*.jsx"
+        ]
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 100,
+        "lineEnding": "lf"
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "double",
+            "semicolons": "asNeeded",
+            "trailingCommas": "es5"
+        }
+    },
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "off"
+            }
+        }
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "preset": "recommended",
+            "correctness": {
+                "useExhaustiveDependencies": "warn",
+                "noChildrenProp": "off"
+            },
+            "a11y": {
+                "useKeyWithClickEvents": "off",
+                "noStaticElementInteractions": "off",
+                "noSvgWithoutTitle": "off"
+            },
+            "suspicious": {
+                "noArrayIndexKey": "off"
+            },
+            "style": {
+                "noNonNullAssertion": "off"
+            }
+        }
+    },
+    "overrides": [
+        {
+            "includes": [
+                "shared/ui/src/components/**"
+            ],
+            "linter": {
+                "enabled": false
+            }
+        }
+    ]
+}

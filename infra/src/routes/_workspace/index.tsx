@@ -32,7 +32,7 @@ function RouteComponent() {
                     <IconInfoCircle />
                     <h2 className="flex items-center gap-1 text-sm">
                         Your code and connections all look good
-                        <a className="cursor-pointer hover:underline">View status page</a>
+                        <span className="cursor-pointer hover:underline">View status page</span>
                     </h2>
                 </div>
             </section>

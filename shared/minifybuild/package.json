@@ -4,8 +4,6 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "lint": "eslint",
-        "format": "prettier --write \"**/*.ts\"",
         "typecheck": "tsc --noEmit"
     },
     "peerDependencies": {
@@ -13,7 +11,7 @@
     },
     "devDependencies": {
         "@types/node": "^26",
-        "typescript": "6",
+        "typescript": "7",
         "vite": "^8"
     },
     "exports": {

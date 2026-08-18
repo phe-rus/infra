@@ -17,7 +17,7 @@ import { useStopImpersonating } from "@/kit/users"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { cn } from "@infra/ui/lib/utils"
 
-type DashboardProps = PropsWithChildren<{}>
+type DashboardProps = PropsWithChildren
 type SidebarProps = {
     open: boolean
     setOpen: (open: boolean) => void

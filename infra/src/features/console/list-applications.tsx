@@ -88,7 +88,8 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     // (older rows, migrations) even though the type asserts it
                     // does — CLIENT_TYPE_INFO[...] can genuinely be undefined
                     const info = CLIENT_TYPE_INFO[row.original.type as ClientType] as
-                        { label: string; description: string } | undefined
+                        | { label: string; description: string }
+                        | undefined
                     return <Badge variant="outline">{info?.label ?? row.original.type}</Badge>
                 },
             },
@@ -171,7 +172,9 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     variant="destructive"
                     size="xs"
                     onClick={() => {
-                        selectedRows.forEach((row) => onRemove(row.clientId))
+                        selectedRows.forEach((row) => {
+                            onRemove(row.clientId)
+                        })
                         clearSelection()
                     }}
                 >

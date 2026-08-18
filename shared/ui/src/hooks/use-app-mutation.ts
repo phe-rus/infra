@@ -9,7 +9,8 @@ type OptimisticUpdate<TOptimisticData, TVariables> = {
 }
 
 type MutationContext<TOptimisticData> =
-    { previous: TOptimisticData | undefined; next: TOptimisticData } | undefined
+    | { previous: TOptimisticData | undefined; next: TOptimisticData }
+    | undefined
 
 type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
     UseMutationOptions<TData, Error, TVariables, MutationContext<TOptimisticData>>,

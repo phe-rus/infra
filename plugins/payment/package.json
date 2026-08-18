@@ -4,8 +4,6 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "lint": "eslint",
-        "format": "prettier --write \"**/*.ts\"",
         "typecheck": "tsc --noEmit"
     },
     "peerDependencies": {
@@ -17,7 +15,7 @@
     "devDependencies": {
         "@cloudflare/workers-types": "^4",
         "@types/node": "^26",
-        "typescript": "6"
+        "typescript": "7"
     },
     "exports": {
         ".": "./src/index.ts",

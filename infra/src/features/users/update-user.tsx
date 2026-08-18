@@ -21,7 +21,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
     useEffect(() => {
         setEditName(viewUser.user.name)
         setEditEmail(viewUser.user.email)
-    }, [viewUser.user.id])
+    }, [viewUser.user.name, viewUser.user.email])
 
     async function handleImageSelected(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]

@@ -16,7 +16,7 @@ export default {
     async fetch(request: Request, env: Env, ctx: ExecutionContext) {
         return handler.fetch(request, {
             context: {
-                // @ts-ignore - Cloudflare's Env type doesn't match TanStack Start's context shape
+                // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
                 env: env,
                 waitUntil: ctx.waitUntil.bind(ctx),
                 passThroughOnException: ctx.passThroughOnException.bind(ctx),

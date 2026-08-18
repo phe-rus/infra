@@ -222,7 +222,9 @@ export const ListUsers: FC<ListUsersProps> = ({
                                     row.id !== currentUserId &&
                                     (isOwner || !isOwnerRole(row.role ?? "user"))
                             )
-                            .forEach((row) => onRemove(row.id))
+                            .forEach((row) => {
+                                onRemove(row.id)
+                            })
                         clearSelection()
                     }}
                 >

@@ -19,7 +19,6 @@ export function ExpenditureEstimateCard() {
                 new Date(p.createdAt) >= monthStart
         )
         // both are array-index reads; TS can't prove either array is non-empty at runtime
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         const currency = thisMonth[0]?.currency ?? data.payments[0]?.currency ?? ""
         const spent = thisMonth.reduce((sum, p) => sum + Number(p.amount), 0)
         const projected = dayOfMonth > 0 ? (spent / dayOfMonth) * daysInMonth : spent

@@ -74,7 +74,6 @@ export const getUserDetail = createServerFn({ method: "GET" })
         })
         // same static-type gap as ListedUser above — auth.api.getUser's
         // declared return doesn't know about the twoFactor plugin either
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         return { user: user as ListedUser, sessions, accounts }
     })
 

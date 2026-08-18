@@ -15,13 +15,9 @@ export function usePaymentFields() {
     const defaultCountry: (typeof countries)[number] | undefined =
         countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
 
-    /* eslint-disable @typescript-eslint/no-unnecessary-condition -- countries[0] is only a
-       real fallback if the list isn't empty; TS narrows defaultCountry as always-defined
-       here since it can't see that, but the `?.`/`??` are genuine runtime safety */
     const [countryCode, setCountryCode] = useState(defaultCountry?.country ?? "")
     const [providerCode, setProviderCode] = useState(defaultCountry?.providers[0]?.provider ?? "")
     const [phoneNumber, setPhoneNumber] = useState(defaultCountry?.prefix ?? "")
-    /* eslint-enable @typescript-eslint/no-unnecessary-condition */
 
     const country = countries.find((c) => c.country === countryCode)
     const provider = country?.providers.find((p) => p.provider === providerCode)

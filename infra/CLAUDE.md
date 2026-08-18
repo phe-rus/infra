@@ -121,9 +121,8 @@ Feature-specific things that use a widget but aren't reusable themselves live in
 
 ## Lint/format notes
 
-- `eslint.config.js` extends `@tanstack/eslint-config` but turns off `import/no-cycle`, `import/order`, `sort-imports`, `@typescript-eslint/array-type`, `@typescript-eslint/require-await`, and `pnpm/json-enforce-catalog`. Don't reintroduce those as expectations when reviewing code.
-- `bun run lint` currently fails outright (`typescript-eslint does not support TS 7.0`), a version mismatch between the installed TypeScript and `typescript-eslint`, unrelated to any specific change. Don't treat a lint failure as caused by your edit without checking it's not just this.
-- Prettier: no semicolons, double quotes, 4-space indent, `printWidth: 100`, `prettier-plugin-tailwindcss` for class sorting. Config now lives at the monorepo root (`.prettierrc`/`.prettierignore`), not under `infra/`, so it applies the same way across every workspace package. See the root `CLAUDE.md` for why it moved and what was broken before.
+- Linting and formatting both went from per-package ESLint/Prettier to one root-level Biome config (`biome.json`), run from the monorepo root, not from inside `infra/`. See the root `CLAUDE.md` for what it covers and which rules are deliberately off. `typescript-eslint`'s TS-version compatibility window (the reason `bun run lint` used to fail outright here) no longer applies since ESLint is gone; TypeScript is on the `^7` line.
+- No semicolons, double quotes, 4-space indent, `printWidth: 100` still hold, now enforced by Biome's formatter instead of Prettier. Biome has no Tailwind class-sorting equivalent to `prettier-plugin-tailwindcss` wired in yet, so class order inside `className` strings is no longer auto-sorted.
 
 ## Known issues / cleanup backlog
 

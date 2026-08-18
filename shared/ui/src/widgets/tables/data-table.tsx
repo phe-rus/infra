@@ -100,6 +100,7 @@ export type DataTableColumnDef<TData extends RowData, TValue = unknown> = Column
 
 type DataTableProps<TData extends RowData> = {
     data: TData[]
+    // biome-ignore lint/suspicious/noExplicitAny: a column array mixes columns with different value types per accessor, same escape hatch tanstack-table's own ColumnDef[] typings use
     columns: DataTableColumnDef<TData, any>[]
     /**
      * A stable id per row, used as the React key and by react-table's row

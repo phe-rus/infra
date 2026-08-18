@@ -75,7 +75,6 @@ function parseSignatureInput(headerValue: string): SignatureInputInfo {
         // m[3] (the quoted-inner-value group) is genuinely optional — only
         // set when the quoted alternative matched — but TS's default
         // RegExpMatchArray typing doesn't model that, so it looks always-defined
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         params[m[1]] = m[3] ?? m[2]
     }
 
@@ -118,7 +117,6 @@ function buildSignatureBase(
                 // Record<string, string> indexing doesn't prove `component` is
                 // an actual key — this genuinely catches a covered signature
                 // component missing from the real request headers
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (headerValue === undefined)
                     throw new Error(`Missing covered header: ${component}`)
                 value = headerValue.trim()

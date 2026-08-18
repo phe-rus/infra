@@ -39,8 +39,6 @@ function RouteComponent() {
 
     const form = useAppForm({
         // widens rememberMe to match the schema's optional-boolean input type
-        // — eslint's type info disagrees, but tsc requires this
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         defaultValues: {
             email: "",
             password: "",

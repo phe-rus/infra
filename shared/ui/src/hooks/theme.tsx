@@ -355,7 +355,6 @@ const getSystemTheme = (e?: MediaQueryList | MediaQueryListEvent) => {
   next-themes can be found at https://github.com/pacocoursey/next-themes under the MIT license.
 */
 
-// biome-ignore lint/nursery/useMaxParams: Function is serialized and injected as inline script, cannot use options object
 export const script = (
     attribute: Attribute | Array<Attribute>,
     storageKey: string,

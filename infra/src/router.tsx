@@ -13,15 +13,12 @@ export function getRouter() {
         },
         scrollRestoration: true,
         defaultPreload: "intent",
+        defaultPreloadStaleTime: 0,
         defaultPendingComponent: DefaultLoader,
         defaultErrorComponent: DefaultBoundary,
         defaultNotFoundComponent: () => <NotFound />,
         Wrap: ({ children }) => {
-            return (
-                <QueryProvider query={q}>
-                    <>{children}</>
-                </QueryProvider>
-            )
+            return <QueryProvider query={q}>{children}</QueryProvider>
         },
     })
 
