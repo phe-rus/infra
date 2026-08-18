@@ -1,5 +1,6 @@
 import type { FC } from "react"
 import type { StatsData } from "@/kit/stats"
+import { cn } from "@infra/ui/lib/utils"
 
 type BusinessStatsProps = {
     data: StatsData
@@ -7,7 +8,13 @@ type BusinessStatsProps = {
 
 export const BusinessStats: FC<BusinessStatsProps> = ({ data }) => {
     return (
-        <article className="flex items-center gap-5 rounded-2xl bg-card p-5">
+        <article
+            className={cn(
+                "flex items-center gap-5 rounded-2xl bg-card p-5",
+                "shadow border border-border/35 hover:shadow-md",
+                "cursor-pointer"
+            )}
+        >
             <div className="mx-auto flex w-full items-center justify-evenly gap-5">
                 <div>
                     <h3>Monthly active users</h3>

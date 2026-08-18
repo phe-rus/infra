@@ -36,8 +36,8 @@ export const WalletBalances: FC = () => {
         <section
             className={cn(
                 "relative flex flex-col rounded-2xl px-10",
-                "bg-card shadow hover:shadow-2xl",
-                "py-5"
+                "bg-card shadow hover:shadow-md group",
+                "py-5 border border-border/35"
             )}
         >
             <IconCardsFilled className="size-18" />

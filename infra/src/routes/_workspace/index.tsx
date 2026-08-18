@@ -30,12 +30,19 @@ function RouteComponent() {
                 <p>Here&apos;s what&apos;s happening with pherus</p>
             </section>
 
-            <section className="rounded-2xl bg-card">
+            <section
+                className={cn(
+                    "rounded-2xl bg-card border border-border/35",
+                    "shadow hover:shadow-md cursor-pointer group"
+                )}
+            >
                 <div className="flex items-center gap-3 p-3">
                     <IconInfoCircle />
                     <h2 className="flex items-center gap-1 text-sm">
                         Your code and connections all look good
-                        <span className="cursor-pointer hover:underline">View status page</span>
+                        <Link to="/logs" className="cursor-pointer hover:underline">
+                            View status page
+                        </Link>
                     </h2>
                 </div>
             </section>
