@@ -10,9 +10,8 @@ const consentSearchSchema = z.object({
 
 export const Route = createFileRoute("/consent")({
     validateSearch: consentSearchSchema,
-    beforeLoad: async ({ location }) => {
-        const { data: session } = await authClient.getSession()
-        if (!session) {
+    beforeLoad: ({ location, context }) => {
+        if (!context.session) {
             throw redirect({
                 href: `/sign-in${location.searchStr}`,
                 replace: true,

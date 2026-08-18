@@ -1,8 +1,10 @@
-import { type FC, useMemo } from "react"
+import { useMemo } from "react"
+import type { FC } from "react"
 import { Badge } from "@infra/ui/components/badge"
-import { DataTable, type DataTableColumnDef } from "@infra/ui/widgets/tables"
+import { DataTable } from "@infra/ui/widgets/tables"
+import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import type { ListedPayment } from "@/kit/payments"
-import { format } from "date-fns/format"
+import { formatUtc } from "@infra/ui/lib/date"
 
 export type PaymentHistoryProps = {
     payments: ListedPayment[]
@@ -43,7 +45,7 @@ export const PaymentHistory: FC<PaymentHistoryProps> = ({ payments }) => {
             {
                 accessorKey: "createdAt",
                 header: "Date",
-                cell: ({ row }) => format(row.original.createdAt, "PPp"),
+                cell: ({ row }) => formatUtc(row.original.createdAt, "PPp"),
             },
         ],
         []

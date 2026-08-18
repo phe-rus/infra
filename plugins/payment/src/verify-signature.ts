@@ -17,7 +17,7 @@ function base64ToBytes(base64: string): Uint8Array<ArrayBuffer> {
     const binary = atob(base64)
     const bytes = new Uint8Array(binary.length)
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
-    return bytes as Uint8Array<ArrayBuffer>
+    return bytes
 }
 
 function bytesToBase64(bytes: ArrayBuffer): string {
@@ -72,6 +72,10 @@ function parseSignatureInput(headerValue: string): SignatureInputInfo {
     for (const m of rawParamsValue
         .slice(listMatch[0].length)
         .matchAll(/;(\w+)=("([^"]*)"|[^;]+)/g)) {
+        // m[3] (the quoted-inner-value group) is genuinely optional — only
+        // set when the quoted alternative matched — but TS's default
+        // RegExpMatchArray typing doesn't model that, so it looks always-defined
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         params[m[1]] = m[3] ?? m[2]
     }
 
@@ -111,6 +115,10 @@ function buildSignatureBase(
                 break
             default: {
                 const headerValue = headers[component]
+                // Record<string, string> indexing doesn't prove `component` is
+                // an actual key — this genuinely catches a covered signature
+                // component missing from the real request headers
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (headerValue === undefined)
                     throw new Error(`Missing covered header: ${component}`)
                 value = headerValue.trim()

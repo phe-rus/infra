@@ -33,7 +33,7 @@ function RouteComponent() {
             name: "",
             email: "",
             password: "",
-        } as z.input<typeof createAccountSchema>,
+        },
         validators: {
             onChange: createAccountSchema,
         },

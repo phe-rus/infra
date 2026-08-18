@@ -1,13 +1,5 @@
-import {
-    createContext,
-    useContext,
-    type PropsWithChildren,
-    type FC,
-    useState,
-    useRef,
-    useEffect,
-    useCallback,
-} from "react"
+import { createContext, useContext, useState, useRef, useEffect, useCallback } from "react"
+import type { PropsWithChildren, FC } from "react"
 import {
     IconChevronLeft,
     IconChevronRight,
@@ -174,8 +166,8 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                         {impersonatedBy && (
                             <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-destructive/10 px-5 py-2 text-xs text-destructive">
                                 <span>
-                                    Impersonating <strong>{session?.user.name}</strong> (
-                                    {session?.user.email})
+                                    Impersonating <strong>{session.user.name}</strong> (
+                                    {session.user.email})
                                 </span>
                                 <Button
                                     size="xs"

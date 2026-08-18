@@ -1,20 +1,19 @@
 //  @ts-check
 
 import { tanstackConfig } from "@tanstack/eslint-config"
+import { sharedRules } from "../eslint.config.base.js"
 
 export default [
     ...tanstackConfig,
     {
-        rules: {
-            "import/no-cycle": "off",
-            "import/order": "off",
-            "sort-imports": "off",
-            "@typescript-eslint/array-type": "off",
-            "@typescript-eslint/require-await": "off",
-            "pnpm/json-enforce-catalog": "off",
-        },
+        rules: sharedRules,
     },
     {
-        ignores: ["eslint.config.js", ".prettierrc"],
+        ignores: [
+            "eslint.config.js",
+            ".prettierrc",
+            "worker-configuration.d.ts",
+            "src/routeTree.gen.ts",
+        ],
     },
 ]

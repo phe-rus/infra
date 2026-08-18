@@ -37,7 +37,7 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
     }
 
     const passwordForm = useAppForm({
-        defaultValues: { password: "" } as z.input<typeof passwordSchema>,
+        defaultValues: { password: "" },
         validators: { onChange: passwordSchema },
         onSubmit: async ({ value }) => {
             await enableMutation.mutateAsync(value.password)
@@ -47,7 +47,7 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: ControlledDialogPr
     const verifyMutation = useVerifyTwoFactor()
 
     const codeForm = useAppForm({
-        defaultValues: { code: "" } as z.input<typeof totpCodeSchema>,
+        defaultValues: { code: "" },
         validators: { onChange: totpCodeSchema },
         onSubmit: async ({ value }) => {
             await verifyMutation.mutateAsync(value.code, {
@@ -166,7 +166,7 @@ export function DisableTwoFactorDialog({ open, onOpenChange }: ControlledDialogP
     const disableMutation = useDisableTwoFactor()
 
     const form = useAppForm({
-        defaultValues: { password: "" } as z.input<typeof passwordSchema>,
+        defaultValues: { password: "" },
         validators: { onChange: passwordSchema },
         onSubmit: async ({ value }) => {
             await disableMutation.mutateAsync(value.password, {
@@ -233,7 +233,7 @@ export function RegenerateBackupCodesDialog({ open, onOpenChange }: ControlledDi
     }
 
     const form = useAppForm({
-        defaultValues: { password: "" } as z.input<typeof passwordSchema>,
+        defaultValues: { password: "" },
         validators: { onChange: passwordSchema },
         onSubmit: async ({ value }) => {
             await generateMutation.mutateAsync(value.password)

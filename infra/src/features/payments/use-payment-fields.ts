@@ -4,14 +4,24 @@ import { usePaymentConfig } from "@/kit/payments"
 // Uganda — matches where this instance's operator actually is
 const DEFAULT_COUNTRY = "UGA"
 
+// same cascade as www's features/payments/useWalletFields — see that file's
+// comment for why this stays a separate small copy instead of shared
 export function usePaymentFields() {
     const { data } = usePaymentConfig()
     const countries = data.countries
-    const defaultCountry = countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
+    // explicitly typed to include `undefined`: countries[0] is only a real
+    // fallback if the list isn't empty, which the array type alone can't
+    // guarantee
+    const defaultCountry: (typeof countries)[number] | undefined =
+        countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
 
+    /* eslint-disable @typescript-eslint/no-unnecessary-condition -- countries[0] is only a
+       real fallback if the list isn't empty; TS narrows defaultCountry as always-defined
+       here since it can't see that, but the `?.`/`??` are genuine runtime safety */
     const [countryCode, setCountryCode] = useState(defaultCountry?.country ?? "")
     const [providerCode, setProviderCode] = useState(defaultCountry?.providers[0]?.provider ?? "")
     const [phoneNumber, setPhoneNumber] = useState(defaultCountry?.prefix ?? "")
+    /* eslint-enable @typescript-eslint/no-unnecessary-condition */
 
     const country = countries.find((c) => c.country === countryCode)
     const provider = country?.providers.find((p) => p.provider === providerCode)

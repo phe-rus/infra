@@ -15,6 +15,8 @@ function RouteComponent() {
     const { mutateAsync: requestPasswordReset, isSuccess } = useRequestPasswordReset()
 
     const form = useAppForm({
+        // eslint's type info disagrees this is needed, but tsc requires it
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         defaultValues: { email: "" } as z.input<typeof forgotPasswordSchema>,
         validators: { onChange: forgotPasswordSchema },
         onSubmit: async ({ value }) => {

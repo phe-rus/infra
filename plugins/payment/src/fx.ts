@@ -14,6 +14,10 @@ export async function fetchUsdRates(): Promise<FxRates> {
     let res = await fetch(FX_PRIMARY_URL).catch(() => null)
     if (!res || !res.ok) res = await fetch(FX_FALLBACK_URL)
     if (!res.ok) throw new Error(`FX rate fetch failed: ${res.status}`)
+    // Cloudflare's Response.json() types as Promise<unknown>, not the DOM
+    // lib's Promise<any> — eslint's type info doesn't pick that up and
+    // reports this as redundant, but tsc requires it
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const data = (await res.json()) as { usd: FxRates }
     return data.usd
 }

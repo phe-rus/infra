@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth-client"
-import { useAppMutation } from "./use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
 import { sessionsOptions } from "./get-sessions"
 
 export const useRevokeSession = () =>

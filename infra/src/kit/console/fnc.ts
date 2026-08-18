@@ -25,6 +25,24 @@ import {
 // so there's no privilege check left to replicate, just the actual work
 const generateSecret = createRandomStringGenerator("a-z", "A-Z")
 
+// oauth-provider's own client-metadata validation (e.g. "Type must be 'web'
+// for confidential applications") throws APIError with an empty .message
+// and the real reason in .body.error_description — re-surface it as the
+// message so it actually reaches the console UI's error toast instead of a
+// generic "Could not create/save application"
+function withClientMetadataError(error: unknown): never {
+    if (
+        error instanceof APIError &&
+        !error.message &&
+        error.body &&
+        typeof error.body === "object" &&
+        "error_description" in error.body
+    ) {
+        throw new APIError(error.status, { message: String(error.body.error_description) })
+    }
+    throw error
+}
+
 // matches oauth-provider's own defaultHasher exactly (confirmed by reading
 // its bundled source): SHA-256, base64url, no padding — required so a
 // rotated secret still verifies at /oauth2/token against storeClientSecret:
@@ -143,33 +161,37 @@ export const createApp = createServerFn({ method: "POST" })
     .validator(createAppSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const client = await auth.api.adminCreateOAuthClient({
-            headers: headers,
-            body: {
-                client_name: data.client_name,
-                client_uri: data.client_uri,
-                logo_uri: data.logo_uri,
-                type: data.type,
-                token_endpoint_auth_method: data.token_endpoint_auth_method,
-                redirect_uris: data.redirect_uris?.length
-                    ? data.redirect_uris
-                    : [PENDING_REDIRECT_URI],
-                post_logout_redirect_uris: data.post_logout_redirect_uris,
-                scope: data.scope.join(" "),
-                grant_types: data.grant_types,
-                require_pkce: data.require_pkce,
-                skip_consent: data.skip_consent,
-                enable_end_session: data.enable_end_session,
-                ...(data.framework && {
-                    metadata: {
-                        framework: data.framework,
-                    },
-                }),
-            },
-        })
-        return {
-            clientId: client.client_id,
-            clientSecret: client.client_secret ?? null,
+        try {
+            const client = await auth.api.adminCreateOAuthClient({
+                headers: headers,
+                body: {
+                    client_name: data.client_name,
+                    client_uri: data.client_uri,
+                    logo_uri: data.logo_uri,
+                    type: data.type,
+                    token_endpoint_auth_method: data.token_endpoint_auth_method,
+                    redirect_uris: data.redirect_uris?.length
+                        ? data.redirect_uris
+                        : [PENDING_REDIRECT_URI],
+                    post_logout_redirect_uris: data.post_logout_redirect_uris,
+                    scope: data.scope.join(" "),
+                    grant_types: data.grant_types,
+                    require_pkce: data.require_pkce,
+                    skip_consent: data.skip_consent,
+                    enable_end_session: data.enable_end_session,
+                    ...(data.framework && {
+                        metadata: {
+                            framework: data.framework,
+                        },
+                    }),
+                },
+            })
+            return {
+                clientId: client.client_id,
+                clientSecret: client.client_secret ?? null,
+            }
+        } catch (error) {
+            withClientMetadataError(error)
         }
     })
 
@@ -181,18 +203,22 @@ export const updateApp = createServerFn({ method: "POST" })
     .handler(async ({ data }): Promise<{ success: true }> => {
         const headers = getRequestHeaders()
         const { clientId, scope, framework, ...rest } = data
-        await auth.api.adminUpdateOAuthClient({
-            headers,
-            body: {
-                client_id: clientId,
-                update: {
-                    ...rest,
-                    ...(scope && { scope: scope.join(" ") }),
-                    ...(framework && { metadata: { framework } }),
+        try {
+            await auth.api.adminUpdateOAuthClient({
+                headers,
+                body: {
+                    client_id: clientId,
+                    update: {
+                        ...rest,
+                        ...(scope && { scope: scope.join(" ") }),
+                        ...(framework && { metadata: { framework } }),
+                    },
                 },
-            },
-        })
-        return { success: true }
+            })
+            return { success: true }
+        } catch (error) {
+            withClientMetadataError(error)
+        }
     })
 
 export const setAppActive = createServerFn({ method: "POST" })

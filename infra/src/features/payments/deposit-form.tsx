@@ -1,4 +1,5 @@
-import { type FC, useState } from "react"
+import { useState } from "react"
+import type { FC } from "react"
 import { FieldGroup } from "@infra/ui/components/field"
 import { Button } from "@infra/ui/components/button"
 import { useInitiateDeposit } from "@/kit/payments"

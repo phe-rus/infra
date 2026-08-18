@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { createFileRoute, Link, notFound } from "@tanstack/react-router"
-import { format } from "date-fns/format"
+import { formatUtc } from "@infra/ui/lib/date"
 import { paymentOptions, usePayment } from "@/kit/payments"
 import type { ListedPayment } from "@/kit/payments"
 import { Badge } from "@infra/ui/components/badge"
@@ -54,7 +54,7 @@ function RelatedPaymentLink({ payment }: { payment: ListedPayment }) {
                     {payment.amount} {payment.currency}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                    {format(payment.createdAt, "PPp")}
+                    {formatUtc(payment.createdAt, "PPp")}
                 </span>
             </span>
             <Badge variant={statusVariant(payment.status)}>{payment.status}</Badge>
@@ -121,8 +121,8 @@ function RouteComponent() {
                 {payment.phoneNumber && <Row label="Phone number" value={payment.phoneNumber} />}
                 <Row label="Currency" value={payment.currency} />
                 <Separator className="my-1" />
-                <Row label="Created" value={format(payment.createdAt, "PPPp")} />
-                <Row label="Updated" value={format(payment.updatedAt, "PPPp")} />
+                <Row label="Created" value={formatUtc(payment.createdAt, "PPPp")} />
+                <Row label="Updated" value={formatUtc(payment.updatedAt, "PPPp")} />
             </section>
 
             {relatedDeposit && (

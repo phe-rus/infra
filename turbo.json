@@ -15,6 +15,11 @@
     "format": {
       "cache": false
     },
+    "lint": {},
+    "test": {},
+    "check": {
+      "cache": false
+    },
     "typecheck": {
       "dependsOn": [
         "^typecheck"

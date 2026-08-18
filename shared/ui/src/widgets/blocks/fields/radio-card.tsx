@@ -8,6 +8,7 @@ export type RadioCardOption = {
     value: string
     description?: string
     icon?: ReactNode
+    disabled?: boolean
 }
 
 export function FieldRadioCard({
@@ -31,11 +32,12 @@ export function FieldRadioCard({
             <div className={cn("grid grid-cols-1 gap-2", columns === 2 && "md:grid-cols-2")}>
                 {options.map((option) => {
                     const selected = field.state.value === option.value
+                    const optionDisabled = disabled || option.disabled
                     return (
                         <button
                             key={option.value}
                             type="button"
-                            disabled={disabled}
+                            disabled={optionDisabled}
                             onClick={() => field.handleChange(option.value)}
                             aria-pressed={selected}
                             className={cn(
@@ -43,7 +45,7 @@ export function FieldRadioCard({
                                 selected
                                     ? "border-primary bg-primary/5"
                                     : "border-border hover:bg-muted",
-                                disabled && "cursor-not-allowed opacity-50"
+                                optionDisabled && "cursor-not-allowed opacity-50"
                             )}
                         >
                             <span className="flex items-center gap-1.5 text-sm font-medium">

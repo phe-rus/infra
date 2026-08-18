@@ -17,6 +17,13 @@ export function cdnPath(key: string, version: number): string {
     return `/api/auth/cdn/${key}?v=${version}`
 }
 
+// path is assumed relative (as cdnPath always returns) unless it's already
+// absolute — guards a cross-origin consumer (www) against double-prefixing
+// a path that was for some reason already stored absolute
+export function withOrigin(origin: string, path: string): string {
+    return path.startsWith("http") ? path : `${origin}${path}`
+}
+
 export function cdnUrl(origin: string, key: string, version: number): string {
-    return `${origin}${cdnPath(key, version)}`
+    return withOrigin(origin, cdnPath(key, version))
 }

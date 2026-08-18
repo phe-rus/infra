@@ -1,6 +1,7 @@
 {
   "name": "infra-monorepo",
   "private": true,
+  "type": "module",
   "workspaces": [
     "infra",
     "www",
@@ -12,13 +13,17 @@
     "build": "turbo run build",
     "type-gen": "turbo run type-gen",
     "lint": "turbo run lint",
+    "test": "turbo run test",
+    "check": "turbo run check",
     "typecheck": "turbo run typecheck",
     "format": "turbo run format"
   },
   "devDependencies": {
     "turbo": "^2",
-    "typescript": "^7",
+    "typescript": "^6",
     "@types/bun": "^1",
+    "@tanstack/eslint-config": "latest",
+    "eslint": "^10",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1"
   },

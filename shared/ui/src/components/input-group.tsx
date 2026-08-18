@@ -1,8 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Group, type GroupProps } from "react-aria-components"
+import { cva } from "class-variance-authority"
+import type { VariantProps } from "class-variance-authority"
+import { Group } from "react-aria-components"
+import type { GroupProps } from "react-aria-components"
 
 import { cn } from "../lib/utils"
 import { Button } from "./button"

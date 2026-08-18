@@ -49,7 +49,7 @@ export function FieldAvatar({
                         alt={label}
                         className="transition-opacity group-hover:opacity-50"
                     />
-                    <AvatarFallback>{label.charAt(0)?.toUpperCase() ?? "?"}</AvatarFallback>
+                    <AvatarFallback>{(label.charAt(0) || "?").toUpperCase()}</AvatarFallback>
                 </Avatar>
             </button>
             <input

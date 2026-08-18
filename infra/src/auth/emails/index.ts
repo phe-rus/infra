@@ -5,8 +5,8 @@ import {
     paymentReceiptEmailHtml,
     resetPasswordEmailHtml,
     verificationEmailHtml,
-    type PaymentReceiptData,
 } from "./templates"
+import type { PaymentReceiptData } from "./templates"
 
 // env.VITE_APPNAME is a lowercase slug ("infra") — capitalized here purely
 // for display in email subjects/copy, not touching the env var itself
@@ -57,9 +57,8 @@ export async function sendDeleteAccountEmail({
     })
 }
 
-// called from the infra-payment plugin's webhook handler when a payment
-// transitions to "completed" — not a better-auth callback, this app's own
-// shape
+// called from @infra/payment's webhook handler when a payment transitions
+// to "completed" — not a better-auth callback, this app's own shape
 export async function sendPaymentReceiptEmail(to: string, receipt: PaymentReceiptData) {
     await sendEmail({
         to,

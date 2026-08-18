@@ -17,7 +17,7 @@ const codeSchema = z.object({
 
 function RouteComponent() {
     const form = useAppForm({
-        defaultValues: { code: "", trustDevice: false } as z.input<typeof codeSchema>,
+        defaultValues: { code: "", trustDevice: false },
         validators: {
             onChange: codeSchema,
         },

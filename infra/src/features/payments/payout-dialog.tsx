@@ -1,4 +1,5 @@
-import { type FC, useState } from "react"
+import { useState } from "react"
+import type { FC } from "react"
 import { DrawerClose } from "@infra/ui/components/drawer"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { FieldGroup } from "@infra/ui/components/field"

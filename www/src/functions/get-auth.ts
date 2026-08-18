@@ -5,6 +5,7 @@ import { getContext } from "@/lib/queryClient"
 import { authClient } from "@/lib/auth-client"
 import { t } from "@infra/ui/components/sonner"
 import { useRouter } from "@tanstack/react-router"
+import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
 
 export const currentUser = createServerFn()
     .middleware([authMiddleware])
@@ -44,3 +45,23 @@ export const useLogout = () => {
         },
     })
 }
+
+// deleteUser is configured server-side (infra/src/auth/index.ts) with
+// sendDeleteAccountVerification, so this call never deletes anything
+// immediately — it always sends a confirmation email with a one-time link.
+// Deletion only happens once that link is clicked; the session here stays
+// valid until then.
+export const useDeleteAccount = () =>
+    useAppMutation({
+        mutationFn: async (password: string) => {
+            const { error } = await authClient.deleteUser({
+                password,
+                callbackURL: `${window.location.origin}/sign-in`,
+            })
+            if (error) throw new Error(error.message ?? "Could not start account deletion")
+        },
+        successMessage: "Check your email",
+        successDescription:
+            "We sent a link to confirm permanently deleting your account. It stays active until you click it.",
+        errorMessage: "Could not start account deletion",
+    })

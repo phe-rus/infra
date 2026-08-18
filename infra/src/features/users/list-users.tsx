@@ -1,4 +1,5 @@
-import { type FC, useMemo } from "react"
+import { useMemo } from "react"
+import type { FC } from "react"
 import { Checkbox } from "@infra/ui/components/checkbox"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
@@ -8,11 +9,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@infra/ui/components/dropdown-menu"
-import { DataTable, type DataTableColumnDef } from "@infra/ui/widgets/tables"
+import { DataTable } from "@infra/ui/widgets/tables"
+import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import { isAdminTier, isOwner as isOwnerRole } from "@/auth/utils/permissions"
 import type { ListedUser } from "@/kit/users"
 import { IconDotsVertical } from "@tabler/icons-react"
-import { format } from "date-fns/format"
+import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"
 
 export type ListUsersProps = {
@@ -112,12 +114,12 @@ export const ListUsers: FC<ListUsersProps> = ({
             {
                 accessorKey: "updatedAt",
                 header: "Updated",
-                cell: ({ row }) => format(row.original.updatedAt, "PPP"),
+                cell: ({ row }) => formatUtc(row.original.updatedAt, "PPP"),
             },
             {
                 accessorKey: "createdAt",
                 header: "Created",
-                cell: ({ row }) => format(row.original.createdAt, "PPP"),
+                cell: ({ row }) => formatUtc(row.original.createdAt, "PPP"),
             },
             {
                 id: "actions",

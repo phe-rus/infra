@@ -1,4 +1,5 @@
-import { useState, type ComponentProps, type PropsWithChildren } from "react"
+import { useState } from "react"
+import type { ComponentProps, PropsWithChildren } from "react"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { DrawerClose } from "@infra/ui/components/drawer"
 import { Field, FieldLabel } from "@infra/ui/components/field"
@@ -14,10 +15,10 @@ import {
 } from "@infra/ui/components/select"
 import { cn } from "@infra/ui/lib/utils"
 import {
+    IconCards,
     IconCircleCheckFilled,
     IconClock,
     IconLoader2,
-    IconNfc,
     IconPlus,
     IconStar,
     IconTrash,
@@ -25,23 +26,13 @@ import {
 import { useWallets, usePaymentConfig } from "@/functions/get-payments"
 import { useAddWallet, useRemoveWallet, useSetPrimaryWallet } from "@/functions/use-payments"
 import { useWalletFields } from "./use-wallet-fields"
+import { providerLabel } from "./provider-label"
 
 type Wallet = ReturnType<typeof useWallets>["data"]["wallets"][number]
 
 type TriggerProps = Omit<ComponentProps<"button">, "children" | "onClick" | "type">
 
 const WALLET_PENDING_HOURS = 24
-
-function providerDisplayName(
-    countries: ReturnType<typeof usePaymentConfig>["data"]["countries"],
-    code: string
-) {
-    for (const country of countries) {
-        const match = country.providers.find((p) => p.provider === code)
-        if (match) return match.displayName
-    }
-    return code
-}
 
 function formatPhoneNumber(raw: string) {
     return raw
@@ -67,7 +58,7 @@ function WalletRow({ wallet }: { wallet: Wallet }) {
             <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                     <p className="text-sm font-bold">
-                        {wallet.label || providerDisplayName(config.countries, wallet.provider)}
+                        {wallet.label || providerLabel(config.countries, wallet.provider)}
                     </p>
                     {wallet.isPrimary && (
                         <Badge variant="secondary" className="rounded-full">
@@ -293,31 +284,32 @@ function WalletCard({ wallet }: { wallet: Wallet }) {
     return (
         <ManageWalletsDialog
             className={cn(
-                "relative flex h-36 w-56 shrink-0 snap-start flex-col justify-between overflow-hidden rounded-2xl p-4",
-                "bg-primary text-primary-foreground"
+                "flex-col justify-between overflow-hidden rounded-md p-4",
+                "relative col-span-1 flex h-28 shrink-0 snap-start",
+                "bg-input/35"
             )}
         >
             <div
                 aria-hidden
-                className="absolute -top-10 -right-10 size-32 rounded-full bg-primary-foreground/10"
+                className={cn(
+                    "absolute -top-10 -right-10 size-32",
+                    "rounded-full bg-radial from-pink-400",
+                    "from-40% to-fuchsia-700 blur-2xl"
+                )}
             />
             <div className="flex items-start justify-between">
-                <div className="flex size-8 items-center justify-center rounded-md bg-primary-foreground/15">
-                    <IconNfc className="size-4" />
-                </div>
-                {wallet.isPrimary && (
-                    <span className="text-[10px] font-semibold tracking-widest text-primary-foreground/70 uppercase">
-                        Default
-                    </span>
-                )}
+                <Button size="icon-xs" variant="secondary" className="rounded-full">
+                    <IconCards />
+                </Button>
+                {wallet.isPrimary && <span className="text-xs font-light">Default</span>}
             </div>
             <div className="relative flex flex-col gap-1">
-                <p className="font-mono text-lg tracking-wider">
+                <p className="font-mono text-base tracking-wider">
                     {formatPhoneNumber(wallet.phoneNumber)}
                 </p>
                 <div className="flex items-center justify-between gap-2">
                     <span className="truncate text-xs text-primary-foreground/70">
-                        {wallet.label || providerDisplayName(config.countries, wallet.provider)}
+                        {wallet.label || providerLabel(config.countries, wallet.provider)}
                     </span>
                     <span
                         className={cn(
@@ -342,8 +334,10 @@ function AddWalletCardTile() {
     return (
         <ManageWalletsDialog
             className={cn(
-                "flex h-36 w-40 shrink-0 snap-start flex-col items-center justify-center gap-2",
-                "rounded-2xl border-2 border-dashed border-border text-muted-foreground"
+                "col-span-1 flex h-28 shrink-0 snap-start",
+                "flex-col items-center justify-center gap-2",
+                "rounded-md border border-dashed",
+                "border-border text-muted-foreground"
             )}
         >
             <IconPlus />
@@ -356,7 +350,7 @@ export function WalletCards() {
     const { data } = useWallets()
 
     return (
-        <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
+        <div className={cn("grid grid-cols-2 gap-2")}>
             {data.wallets.map((wallet) => (
                 <WalletCard key={wallet.id} wallet={wallet} />
             ))}

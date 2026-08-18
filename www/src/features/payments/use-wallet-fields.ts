@@ -5,17 +5,27 @@ import { usePaymentConfig } from "@/functions/get-payments"
 const DEFAULT_COUNTRY = "UGA"
 
 // the country -> provider -> phone-prefix cascade a wallet number picker
-// needs, same shape as infra's own kit/payments-adjacent usePaymentFields —
-// kept as a www-local copy rather than shared since it's payment-domain glue,
-// not a generic UI concern (see @infra/ui vs kit/ split in infra/CLAUDE.md)
+// needs, same shape as infra's own features/payments/usePaymentFields.
+// Deliberately a separate small copy rather than shared: it's app-level
+// state (useState), and neither @infra/ui (UI-only, no business logic) nor
+// @infra/payment (framework-agnostic on purpose, no React) is a clean home
+// for it. Keep the two in sync if the cascade logic itself ever changes.
 export function useWalletFields() {
     const { data } = usePaymentConfig()
     const countries = data.countries
-    const defaultCountry = countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
+    // explicitly typed to include `undefined`: countries[0] is only a real
+    // fallback if the list isn't empty, which the array type alone can't
+    // guarantee
+    const defaultCountry: (typeof countries)[number] | undefined =
+        countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
 
+    /* eslint-disable @typescript-eslint/no-unnecessary-condition -- countries[0] is only a
+       real fallback if the list isn't empty; TS narrows defaultCountry as always-defined
+       here since it can't see that, but the `?.`/`??` are genuine runtime safety */
     const [countryCode, setCountryCode] = useState(defaultCountry?.country ?? "")
     const [providerCode, setProviderCode] = useState(defaultCountry?.providers[0]?.provider ?? "")
     const [phoneNumber, setPhoneNumber] = useState(defaultCountry?.prefix ?? "")
+    /* eslint-enable @typescript-eslint/no-unnecessary-condition */
 
     const country = countries.find((c) => c.country === countryCode)
     const provider = country?.providers.find((p) => p.provider === providerCode)

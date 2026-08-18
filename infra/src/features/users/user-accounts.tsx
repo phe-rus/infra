@@ -1,6 +1,6 @@
 import type { FC } from "react"
 import type { UserDetail } from "@/kit/users"
-import { format } from "date-fns/format"
+import { formatUtc } from "@infra/ui/lib/date"
 
 export type UserAccountsProps = {
     viewUser: UserDetail
@@ -19,7 +19,7 @@ export const UserAccounts: FC<UserAccountsProps> = ({ viewUser }) => (
             >
                 <span className="capitalize">{account.providerId}</span>
                 <span className="text-muted-foreground">
-                    linked {format(account.createdAt, "PPP")}
+                    linked {formatUtc(account.createdAt, "PPP")}
                 </span>
             </div>
         ))}

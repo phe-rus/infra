@@ -26,7 +26,7 @@ function RouteComponent() {
     const { mutateAsync: resetPassword } = useResetPassword()
 
     const form = useAppForm({
-        defaultValues: { newPassword: "" } as z.input<typeof newPasswordFormSchema>,
+        defaultValues: { newPassword: "" },
         validators: { onChange: newPasswordFormSchema },
         onSubmit: async ({ value }) => {
             if (!token) return

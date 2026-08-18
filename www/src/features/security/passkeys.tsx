@@ -1,4 +1,5 @@
-import { useState, type ComponentProps, type PropsWithChildren } from "react"
+import { useState } from "react"
+import type { ComponentProps, PropsWithChildren } from "react"
 import { useAddPasskey, useUpdatePasskey } from "@/functions/get-security"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { DrawerClose } from "@infra/ui/components/drawer"
@@ -28,7 +29,7 @@ export function RenamePasskeyDialog({
     const updateMutation = useUpdatePasskey()
 
     const form = useAppForm({
-        defaultValues: { name } as z.input<typeof passkeyNameSchema>,
+        defaultValues: { name },
         validators: { onChange: passkeyNameSchema },
         onSubmit: async ({ value }) => {
             await updateMutation.mutateAsync(
@@ -88,6 +89,9 @@ export function AddPasskeyDialog({ children, ...props }: PropsWithChildren<Trigg
     const addMutation = useAddPasskey()
 
     const form = useAppForm({
+        // widens the literal "platform" to the schema's union type — eslint's
+        // type info disagrees, but tsc requires this
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         defaultValues: { name: "", authenticatorAttachment: "platform" } as z.input<
             typeof addPasskeySchema
         >,

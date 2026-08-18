@@ -1,8 +1,5 @@
-import {
-    GooeyToaster as GooeyToasterPrimitive,
-    gooeyToast,
-    type GooeyToasterProps,
-} from "goey-toast"
+import { GooeyToaster as GooeyToasterPrimitive, gooeyToast } from "goey-toast"
+import type { GooeyToasterProps } from "goey-toast"
 
 export function ToasterProvider(props: GooeyToasterProps) {
     return <GooeyToasterPrimitive position="bottom-right" {...props} richColors />

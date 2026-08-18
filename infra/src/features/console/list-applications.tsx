@@ -1,4 +1,5 @@
-import { type FC, useMemo } from "react"
+import { useMemo } from "react"
+import type { FC } from "react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
@@ -9,10 +10,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@infra/ui/components/dropdown-menu"
-import { DataTable, type DataTableColumnDef } from "@infra/ui/widgets/tables"
-import { CLIENT_TYPE_INFO, type ClientType, type ListedApp } from "@/kit/console"
+import { DataTable } from "@infra/ui/widgets/tables"
+import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
+import { CLIENT_TYPE_INFO } from "@/kit/console"
+import type { ClientType, ListedApp } from "@/kit/console"
 import { IconDotsVertical } from "@tabler/icons-react"
-import { format } from "date-fns/format"
+import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"
 
 export type ListApplicationsProps = {
@@ -81,10 +84,12 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                 accessorKey: "type",
                 header: "Type",
                 cell: ({ row }) => {
-                    const info = CLIENT_TYPE_INFO[row.original.type as ClientType]
-                    return (
-                        <Badge variant="outline">{info?.label ?? row.original.type ?? "—"}</Badge>
-                    )
+                    // real data isn't guaranteed to match the ClientType union
+                    // (older rows, migrations) even though the type asserts it
+                    // does — CLIENT_TYPE_INFO[...] can genuinely be undefined
+                    const info = CLIENT_TYPE_INFO[row.original.type as ClientType] as
+                        { label: string; description: string } | undefined
+                    return <Badge variant="outline">{info?.label ?? row.original.type}</Badge>
                 },
             },
             {
@@ -100,12 +105,12 @@ export const ListApplications: FC<ListApplicationsProps> = ({
             {
                 accessorKey: "createdAt",
                 header: "Created",
-                cell: ({ row }) => format(row.original.createdAt, "PPP"),
+                cell: ({ row }) => formatUtc(row.original.createdAt, "PPP"),
             },
             {
                 accessorKey: "updatedAt",
                 header: "Updated",
-                cell: ({ row }) => format(row.original.updatedAt, "PPP"),
+                cell: ({ row }) => formatUtc(row.original.updatedAt, "PPP"),
             },
             {
                 id: "actions",

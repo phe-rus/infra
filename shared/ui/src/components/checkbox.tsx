@@ -1,8 +1,5 @@
-import {
-    Checkbox as CheckboxPrimitive,
-    composeRenderProps,
-    type CheckboxProps,
-} from "react-aria-components"
+import { Checkbox as CheckboxPrimitive, composeRenderProps } from "react-aria-components"
+import type { CheckboxProps } from "react-aria-components"
 
 import { cn } from "../lib/utils"
 import { IconCheck } from "@tabler/icons-react"

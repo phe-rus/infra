@@ -120,21 +120,30 @@ export const appDetailSearchSchema = z.object({
 // comma-separated text here (one textarea each), split into arrays only
 // when building the server payload — kept separate from the server-facing
 // schemas below since the shapes genuinely differ, not just cosmetically
-export const appFormSchema = z.object({
-    client_name: z.string().min(1, "Name is required"),
-    client_uri: z.string().optional(),
-    logo_uri: z.string().optional(),
-    framework: z.enum(FRAMEWORKS).optional(),
-    type: z.enum(CLIENT_TYPES),
-    token_endpoint_auth_method: z.enum(TOKEN_ENDPOINT_AUTH_METHODS),
-    redirect_uris: z.string().optional(),
-    post_logout_redirect_uris: z.string().optional(),
-    scope: z.array(z.enum(SCOPES)),
-    grant_types: z.array(z.enum(GRANT_TYPES)),
-    require_pkce: z.boolean(),
-    skip_consent: z.boolean(),
-    enable_end_session: z.boolean(),
-})
+export const appFormSchema = z
+    .object({
+        client_name: z.string().min(1, "Name is required"),
+        client_uri: z.string().optional(),
+        logo_uri: z.string().optional(),
+        framework: z.enum(FRAMEWORKS).optional(),
+        type: z.enum(CLIENT_TYPES),
+        token_endpoint_auth_method: z.enum(TOKEN_ENDPOINT_AUTH_METHODS),
+        redirect_uris: z.string().optional(),
+        post_logout_redirect_uris: z.string().optional(),
+        scope: z.array(z.enum(SCOPES)),
+        grant_types: z.array(z.enum(GRANT_TYPES)),
+        require_pkce: z.boolean(),
+        skip_consent: z.boolean(),
+        enable_end_session: z.boolean(),
+    })
+    // matches the OAuth-provider plugin's own constraint (confirmed live:
+    // it rejects this combination with "Type must be 'web' for confidential
+    // applications") — a browser-based client can't securely hold a secret,
+    // so anything other than "web" must stay a public (no-secret) client
+    .refine((data) => data.type === "web" || data.token_endpoint_auth_method === "none", {
+        message: "Only a Web application can use a client secret — set confidentiality to Public",
+        path: ["token_endpoint_auth_method"],
+    })
 
 export const createAppSchema = z.object({
     client_name: z.string().min(1),

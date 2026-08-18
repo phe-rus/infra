@@ -92,7 +92,7 @@ export const auth = betterAuth({
                 return data
             },
             set: async (key, value, ttl) => {
-                if (value && typeof value === "object") {
+                if (typeof value === "object") {
                     value.key = key
                 }
 

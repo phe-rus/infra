@@ -2,10 +2,11 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { t } from "@infra/ui/components/sonner"
+import { useSelector } from "@tanstack/react-store"
 import { authClient, resolveCdnUrl } from "@/lib/auth-client"
 import { currentOptions } from "@/functions/get-auth"
 import { getContext } from "@/lib/queryClient"
-import { format } from "date-fns"
+import { formatUtc } from "@infra/ui/lib/date"
 import { z } from "zod"
 
 export const profileSchema = z.object({
@@ -32,9 +33,9 @@ export function PersonalInfo() {
         email: user?.email ?? "",
         id: user?.id ?? "",
         role: user?.role ?? "",
-        createdAt: format(String(user?.createdAt), "PPP") ?? "",
-        updatedAt: format(String(user?.updatedAt), "PPP") ?? "",
-        emailVerified: String(user?.emailVerified) ?? "false",
+        createdAt: formatUtc(String(user?.createdAt), "PPP"),
+        updatedAt: formatUtc(String(user?.updatedAt), "PPP"),
+        emailVerified: String(user?.emailVerified),
     }
 
     const { mutateAsync: handleUpdate } = useMutation({
@@ -44,9 +45,9 @@ export function PersonalInfo() {
             if (value.bio !== defaultValue.bio) changes.bio = value.bio
 
             if (value.avatar) {
-                const { data, error } = await authClient.r2.uploadAvatar(value.avatar)
+                const { data: uploadData, error } = await authClient.r2.uploadAvatar(value.avatar)
                 if (error) throw new Error(error.message ?? "Could not upload avatar")
-                if (data?.url) changes.image = data.url
+                if (uploadData.url) changes.image = uploadData.url
             }
 
             if (Object.keys(changes).length > 0) {
@@ -59,8 +60,8 @@ export function PersonalInfo() {
             void queryClient.invalidateQueries(currentOptions())
         },
         onError: (error) => {
-            t.error(error.name ?? "Could not update profile", {
-                description: error.message ?? "Please try again later",
+            t.error(error.name, {
+                description: error.message,
             })
         },
     })
@@ -77,6 +78,8 @@ export function PersonalInfo() {
             await handleUpdate(value)
         },
     })
+
+    const vals = useSelector(form.store, (s) => s.values)
 
     return (
         <form
@@ -121,54 +124,54 @@ export function PersonalInfo() {
                     <div className="flex flex-col gap-3">
                         <div className="flex flex-col">
                             <h2>Credentials</h2>
-                            <p className="text-sm">
+                            <p className="text-sm md:max-w-md">
                                 This are protected from being changed and only happen automatically
                             </p>
                         </div>
-                        <form.AppField
-                            name="email"
-                            children={(field) => (
-                                <field.input
-                                    disabled
-                                    label="Email"
-                                    placeholder="example@email.com"
-                                />
-                            )}
-                        />
 
-                        <form.AppField
-                            name="role"
-                            children={(field) => (
-                                <field.input
-                                    disabled
-                                    label="Role"
-                                    placeholder="example@email.com"
-                                />
+                        <div className="grid grid-cols-2 gap-2 truncate">
+                            {vals.email && (
+                                <div>
+                                    <h3 className="text-sm">Email</h3>
+                                    <p className="text-sm">{vals.email}</p>
+                                </div>
                             )}
-                        />
 
-                        <form.AppField
-                            name="createdAt"
-                            children={(field) => (
-                                <field.input disabled label="Created At" placeholder="Created At" />
+                            {vals.role && (
+                                <div>
+                                    <h3 className="text-sm">Role</h3>
+                                    <p className="text-sm">{vals.role}</p>
+                                </div>
                             )}
-                        />
-                        <form.AppField
-                            name="updatedAt"
-                            children={(field) => (
-                                <field.input disabled label="Updated At" placeholder="Updated At" />
+
+                            {vals.createdAt && (
+                                <div>
+                                    <h3 className="text-sm">Created At</h3>
+                                    <p className="text-sm">{vals.createdAt}</p>
+                                </div>
                             )}
-                        />
-                        <form.AppField
-                            name="emailVerified"
-                            children={(field) => (
-                                <field.input
-                                    disabled
-                                    label="Email Verified"
-                                    placeholder="Email Verified"
-                                />
+
+                            {vals.updatedAt && (
+                                <div>
+                                    <h3 className="text-sm">Updated At</h3>
+                                    <p className="text-sm">{vals.updatedAt}</p>
+                                </div>
                             )}
-                        />
+
+                            {vals.emailVerified && (
+                                <div>
+                                    <h3 className="text-sm">Email Verified</h3>
+                                    <p className="text-sm">{vals.emailVerified}</p>
+                                </div>
+                            )}
+
+                            {vals.id && (
+                                <div>
+                                    <h3 className="text-sm">ID</h3>
+                                    <p className="text-sm">{vals.id}</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </FieldGroup>
 

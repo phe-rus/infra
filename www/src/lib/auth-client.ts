@@ -2,7 +2,7 @@ import { createAuthClient } from "better-auth/react"
 import { twoFactorClient, inferAdditionalFields } from "better-auth/client/plugins"
 import { passkeyClient } from "@better-auth/passkey/client"
 import { oauthProviderClient } from "@better-auth/oauth-provider/client"
-import { r2Client } from "@infra/r2/client"
+import { r2Client, withOrigin } from "@infra/r2/client"
 import { paymentClient } from "@infra/payment/client"
 
 export function hosturl(): string {
@@ -14,7 +14,7 @@ export function hosturl(): string {
 
 export function resolveCdnUrl(path?: string | null): string | undefined {
     if (!path) return undefined
-    return path.startsWith("http") ? path : `${hosturl()}${path}`
+    return withOrigin(hosturl(), path)
 }
 
 export const authClient = createAuthClient({

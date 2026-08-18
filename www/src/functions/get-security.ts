@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { queryOptions } from "@tanstack/react-query"
 import { authClient } from "@/lib/auth-client"
-import { useAppMutation } from "./use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
 import { currentOptions } from "./get-auth"
 
 const fetchPasskeys = createServerFn({ method: "GET" }).handler(async () => {

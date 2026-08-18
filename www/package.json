@@ -8,9 +8,10 @@
     "preview": "vite preview --port=3001",
     "deploy": "wrangler deploy",
     "type-gen": "wrangler types",
+    "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "check": "prettier --check \"**/*.{ts,tsx}\""
+    "format": "prettier --write \"**/*.{ts,tsx}\" --ignore-path ../.prettierignore",
+    "check": "prettier --check \"**/*.{ts,tsx}\" --ignore-path ../.prettierignore"
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.6.29",
@@ -23,6 +24,7 @@
     "@tanstack/react-router": "^1.170.29",
     "@tanstack/react-router-ssr-query": "^1.167.1",
     "@tanstack/react-start": "^1.168.46",
+    "@tanstack/react-store": "^0.11.1",
     "better-auth": "^1.6.29",
     "date-fns": "^4.4.0",
     "qrcode.react": "^4.2.0",
@@ -41,7 +43,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6",
     "babel-plugin-react-compiler": "^1.0.0",
-    "typescript": "^7",
+    "typescript": "^6",
     "vite": "^8",
     "wrangler": "^4.123.0"
   }

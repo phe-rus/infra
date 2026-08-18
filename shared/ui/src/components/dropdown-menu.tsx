@@ -10,8 +10,10 @@ import {
     Popover as PopoverPrimitive,
     Separator as SeparatorPrimitive,
     SubmenuTrigger as SubmenuTriggerPrimitive,
-    type MenuItemProps as MenuItemPrimitiveProps,
-    type MenuSectionProps as MenuSectionPrimitiveProps,
+} from "react-aria-components"
+import type {
+    MenuItemProps as MenuItemPrimitiveProps,
+    MenuSectionProps as MenuSectionPrimitiveProps,
 } from "react-aria-components"
 
 import { cn } from "../lib/utils"

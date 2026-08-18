@@ -1,4 +1,4 @@
-import { type BetterAuthOptions } from "better-auth/types"
+import type { BetterAuthOptions } from "better-auth/types"
 import { env } from "cloudflare:workers"
 import { isTrustedOrigin } from "./utils/trusted-origins"
 
@@ -44,7 +44,7 @@ const databaseHooks = {
 
 const trustedOrigins = async (request: Request | undefined): Promise<string[]> => {
     const origin = request?.headers.get("origin") ?? ""
-    const fallbackOrigin = env.BETTER_AUTH_URL ?? "https://infra.pherus.org"
+    const fallbackOrigin = env.BETTER_AUTH_URL
     if (!origin) {
         return [fallbackOrigin]
     }

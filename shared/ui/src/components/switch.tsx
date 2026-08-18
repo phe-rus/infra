@@ -1,8 +1,5 @@
-import {
-    composeRenderProps,
-    Switch as SwitchPrimitive,
-    type SwitchProps as SwitchPrimitiveProps,
-} from "react-aria-components"
+import { composeRenderProps, Switch as SwitchPrimitive } from "react-aria-components"
+import type { SwitchProps as SwitchPrimitiveProps } from "react-aria-components"
 
 import { cn } from "../lib/utils"
 

@@ -5,7 +5,7 @@ import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
 import { Separator } from "@infra/ui/components/separator"
 import { useUserDetail } from "@/kit/users"
-import { format } from "date-fns/format"
+import { formatUtc } from "@infra/ui/lib/date"
 import { UpdateUser } from "./update-user"
 import { BanUser } from "./ban-user"
 import { RevokeUserSessions } from "./revoke-user-sessions"
@@ -63,8 +63,8 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                         <div>
                             ID: <code className="text-foreground">{viewUser.user.id}</code>
                         </div>
-                        <div>Created {format(viewUser.user.createdAt, "PPPp")}</div>
-                        <div>Updated {format(viewUser.user.updatedAt, "PPPp")}</div>
+                        <div>Created {formatUtc(viewUser.user.createdAt, "PPPp")}</div>
+                        <div>Updated {formatUtc(viewUser.user.updatedAt, "PPPp")}</div>
                     </section>
 
                     <Separator />

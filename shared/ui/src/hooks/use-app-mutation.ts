@@ -1,24 +1,6 @@
-import {
-    useMutation,
-    useQueryClient,
-    type QueryKey,
-    type UseMutationOptions,
-} from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import type { QueryKey, UseMutationOptions } from "@tanstack/react-query"
 import { t } from "@infra/ui/components/sonner"
-
-// runs several independent calls for one logical save, reports every
-// failure instead of just the first (unlike plain Promise.all)
-export async function settleAll(calls: Array<() => Promise<unknown>>): Promise<void> {
-    const results = await Promise.allSettled(calls.map((call) => call()))
-    const failures = results.filter((r): r is PromiseRejectedResult => r.status === "rejected")
-    if (failures.length > 0) {
-        throw new Error(
-            failures
-                .map((f) => (f.reason instanceof Error ? f.reason.message : String(f.reason)))
-                .join("; ")
-        )
-    }
-}
 
 type OptimisticUpdate<TOptimisticData, TVariables> = {
     queryKey: QueryKey
@@ -43,9 +25,10 @@ type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
     onError?: (error: Error, variables: TVariables) => void
 }
 
-// every domain mutation hook builds on this instead of calling useMutation
-// directly; optimisticUpdate's rollback only restores the snapshot if
-// nothing else wrote to the same queryKey in the meantime
+// every domain mutation hook in both infra and www builds on this instead
+// of calling useMutation directly; optimisticUpdate's rollback only
+// restores the snapshot if nothing else wrote to the same queryKey in the
+// meantime
 export function useAppMutation<TData, TVariables = void, TOptimisticData = unknown>({
     invalidates = [],
     optimisticUpdate,

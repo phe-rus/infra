@@ -7,18 +7,7 @@ import { cn } from "@infra/ui/lib/utils"
 import { IconLoader2, IconMail, IconPdf } from "@tabler/icons-react"
 import { useMyPayments, usePaymentConfig } from "@/functions/get-payments"
 import { useResendReceipt, useResendReceipts } from "@/functions/use-payments"
-
-function providerLabel(
-    countries: ReturnType<typeof usePaymentConfig>["data"]["countries"],
-    code: string | null
-) {
-    if (!code) return "Payment"
-    for (const country of countries) {
-        const match = country.providers.find((p) => p.provider === code)
-        if (match) return match.displayName
-    }
-    return code
-}
+import { providerLabel } from "./provider-label"
 
 const STATUS_VARIANT: Record<string, "secondary" | "destructive"> = {
     pending: "secondary",

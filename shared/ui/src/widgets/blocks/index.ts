@@ -1,4 +1,4 @@
-import { createFormHook } from "@tanstack/react-form"
+import { createFormHook, useSelector, useStore } from "@tanstack/react-form"
 import { fieldContext, formContext } from "./contexts"
 import { Submit } from "./elements/submit"
 import { fields } from "./fields"
@@ -13,3 +13,8 @@ export const { useAppForm, withForm } = createFormHook({
     fieldContext,
     formContext,
 })
+
+// for reading another field's live value from within a form — e.g. a
+// radioCard whose options depend on what's currently selected elsewhere in
+// the same form — without subscribing the whole component to every field
+export { useSelector, useStore }

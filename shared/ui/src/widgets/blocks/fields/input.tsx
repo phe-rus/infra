@@ -6,7 +6,8 @@ import {
     InputGroupInput,
     InputGroupText,
 } from "../../../components/input-group"
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useFieldContext } from "../contexts"
 import { FieldWrapper } from "./wrapper"
 

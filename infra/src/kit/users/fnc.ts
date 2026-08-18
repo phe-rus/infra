@@ -74,6 +74,7 @@ export const getUserDetail = createServerFn({ method: "GET" })
         })
         // same static-type gap as ListedUser above — auth.api.getUser's
         // declared return doesn't know about the twoFactor plugin either
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         return { user: user as ListedUser, sessions, accounts }
     })
 
@@ -114,7 +115,7 @@ export const removeUser = createServerFn({ method: "POST" })
         // admins can remove anyone except an owner; only an owner can remove an owner
         if (!isOwner(sessions.user.role ?? "")) {
             const target = await auth.api.getUser({ headers, query: { id: data.userId } })
-            if (isOwner(target?.role ?? "")) {
+            if (isOwner(target.role ?? "")) {
                 throw new Error("Only an owner can remove an owner account")
             }
         }

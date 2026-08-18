@@ -19,7 +19,7 @@
         "@cloudflare/workers-types": "^4",
         "@types/node": "^26",
         "@types/sanitize-html": "^2.16.1",
-        "typescript": "7"
+        "typescript": "6"
     },
     "exports": {
         ".": "./src/index.ts",

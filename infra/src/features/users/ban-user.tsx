@@ -1,4 +1,5 @@
-import { type FC, useState } from "react"
+import { useState } from "react"
+import type { FC } from "react"
 import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
@@ -9,8 +10,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@infra/ui/components/select"
-import { useBanUser, useUnbanUser, type UserDetail } from "@/kit/users"
-import { format } from "date-fns/format"
+import { useBanUser, useUnbanUser } from "@/kit/users"
+import type { UserDetail } from "@/kit/users"
+import { formatUtc } from "@infra/ui/lib/date"
 
 const BAN_DURATIONS = [
     { id: "permanent", label: "Permanent", seconds: undefined },
@@ -54,7 +56,7 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                     )}
                     <p className="text-xs text-muted-foreground">
                         {viewUser.user.banExpires
-                            ? `Expires ${format(viewUser.user.banExpires, "PPPp")}`
+                            ? `Expires ${formatUtc(viewUser.user.banExpires, "PPPp")}`
                             : "Never expires"}
                     </p>
                     <Button

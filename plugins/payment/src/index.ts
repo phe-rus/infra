@@ -1,16 +1,20 @@
 import { createAuthEndpoint, sessionMiddleware, APIError } from "better-auth/api"
 import * as z from "zod"
 import { schema } from "./schema"
-import { PawaPayClient, type PawaPayEnvironment } from "./client"
+import { PawaPayClient } from "./client"
+import type { PawaPayEnvironment } from "./client"
 import { verifyPawaPayCallback } from "./verify-signature"
-import { toPaymentCountryOptions, type PaymentCountryOption } from "./active-config"
-import { convertViaUsd, fetchUsdRates, type FxRates } from "./fx"
-import { WALLET_NUMBER_PENDING_TTL_MS, type PaymentStatus } from "./constants"
+import { toPaymentCountryOptions } from "./active-config"
+import type { PaymentCountryOption } from "./active-config"
+import { convertViaUsd, fetchUsdRates } from "./fx"
+import type { FxRates } from "./fx"
+import { WALLET_NUMBER_PENDING_TTL_MS } from "./constants"
+import type { PaymentStatus } from "./constants"
 
-const ACTIVE_CONFIG_CACHE_KEY = "infra-payment:active-conf:v1"
+const ACTIVE_CONFIG_CACHE_KEY = "payment:active-conf:v1"
 const ACTIVE_CONFIG_CACHE_TTL = 60 * 60 // 1 hour — PawaPay's own provider list changes rarely
 
-const FX_CACHE_KEY = "infra-payment:fx-rates:v1"
+const FX_CACHE_KEY = "payment:fx-rates:v1"
 const FX_CACHE_TTL = 60 * 60 * 12 // 12 hours — the upstream rate table itself only updates once a day
 
 export type PaymentReceiptInfo = {

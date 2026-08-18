@@ -1,5 +1,6 @@
 import { focusManager, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { useState, type PropsWithChildren } from "react"
+import { useState } from "react"
+import type { PropsWithChildren } from "react"
 import { t, ToasterProvider } from "@infra/ui/components/sonner"
 
 if (typeof window !== "undefined") {
@@ -9,7 +10,7 @@ if (typeof window !== "undefined") {
     })
 }
 
-let query: QueryClient | undefined
+let cachedClient: QueryClient | undefined
 type TRProviderProps = PropsWithChildren<{
     query: QueryClient
 }>
@@ -27,7 +28,7 @@ export const queryContext = () => {
         queryCache: new QueryCache({
             onError: (error) => {
                 if (error.name === "AbortError") return
-                t.error(error.name ?? "Error", {
+                t.error(error.name, {
                     description: error.message,
                     duration: 5000,
                 })
@@ -38,8 +39,8 @@ export const queryContext = () => {
 
 export function getContext(): QueryClient {
     if (typeof window !== "undefined") {
-        if (!query) query = queryContext()
-        return query
+        if (!cachedClient) cachedClient = queryContext()
+        return cachedClient
     }
     return queryContext()
 }
