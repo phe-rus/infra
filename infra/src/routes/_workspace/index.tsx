@@ -18,6 +18,7 @@ export const Route = createFileRoute("/_workspace/")({
 })
 
 function RouteComponent() {
+    const { session } = Route.useRouteContext()
     const { data: stats } = useStats()
     const { data: apps } = useConsole()
 
@@ -26,8 +27,10 @@ function RouteComponent() {
             className={cn("container mx-auto flex w-full flex-col md:max-w-3xl", "gap-5 py-20")}
         >
             <section>
-                <h1 className="text-3xl md:text-4xl">Good morning, Pherus</h1>
-                <p>Here&apos;s what&apos;s happening with pherus</p>
+                <h1 className="text-3xl md:text-4xl">
+                    Good morning, {session?.user?.name ?? "there!"}
+                </h1>
+                <p>Here&apos;s what&apos;s happening with your business</p>
             </section>
 
             <section
