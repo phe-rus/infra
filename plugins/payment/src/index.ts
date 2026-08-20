@@ -1,4 +1,4 @@
-import { createAuthEndpoint, sessionMiddleware, APIError } from "better-auth/api"
+import { createAuthEndpoint, sessionMiddleware, getSessionFromCtx, APIError } from "better-auth/api"
 import * as z from "zod"
 import { schema } from "./schema"
 import { PawaPayClient } from "./pawapay-client"
@@ -28,6 +28,12 @@ export type PaymentReceiptInfo = {
     date: string
 }
 
+export type OAuthAccess = {
+    userId: string
+    clientId: string | null
+    scopes: string[]
+}
+
 export type InfraPaymentOptions = {
     /** PawaPay API token — sandbox or production, from their dashboard. */
     apiToken: string
@@ -38,6 +44,19 @@ export type InfraPaymentOptions = {
     isAdmin: (role: string) => boolean
     /** Called once, the first time a payment transitions to "completed" — e.g. to email a receipt. Optional: not every self-hoster wants this. */
     onPaymentCompleted?: (email: string, receipt: PaymentReceiptInfo) => Promise<void>
+    /**
+     * Validates an incoming `Authorization: Bearer <access token>` against
+     * whatever OAuth provider is registered on this better-auth instance,
+     * returning the token's granted scopes plus who it belongs to (or null
+     * for a missing/invalid token). Only consulted by /pay/deposit when the
+     * request has no first-party session — a connected OAuth app needs the
+     * "payments" scope to deposit on a user's behalf, a dashboard/www
+     * session never needs one. Injected rather than assumed, same
+     * reasoning as isAdmin/onPaymentCompleted: this plugin doesn't assume
+     * any specific OAuth provider is registered. Omit to leave
+     * /pay/deposit first-party-session-only, as before.
+     */
+    resolveOAuthAccess?: (headers: Headers) => Promise<OAuthAccess | null>
 }
 
 export function infraPayment(options: InfraPaymentOptions) {
@@ -392,14 +411,22 @@ export function infraPayment(options: InfraPaymentOptions) {
                     return ctx.json({ primary: wallet.id })
                 }
             ),
-            // self-service: the signed-in user is the payer. clientId is
-            // which connected OAuth app requested this payment, if any —
-            // a dashboard-initiated deposit has none
+            // self-service: the signed-in user is the payer. A first-party
+            // session (dashboard, www's shared-cookie self-service page)
+            // is always allowed, no scope concept applies there, and
+            // clientId comes straight from the body (a dashboard-initiated
+            // deposit has none). A connected OAuth app instead sends an
+            // Authorization: Bearer <access token> with no cookie — it
+            // must have been granted the "payments" scope, checked via the
+            // injected resolveOAuthAccess rather than assumed, same
+            // reasoning as isAdmin/onPaymentCompleted elsewhere in this
+            // file. clientId in that case comes from the verified token
+            // itself, not the caller-supplied body field, so one connected
+            // app can't attribute a deposit to another app's clientId.
             depositPayment: createAuthEndpoint(
                 "/pay/deposit",
                 {
                     method: "POST",
-                    use: [sessionMiddleware],
                     body: z.object({
                         amount: z.string().min(1),
                         currency: z.string().length(3),
@@ -418,6 +445,35 @@ export function infraPayment(options: InfraPaymentOptions) {
                     }),
                 },
                 async (ctx) => {
+                    const session = await getSessionFromCtx(ctx)
+                    let userId: string
+                    let clientId: string | null
+                    if (session) {
+                        userId = session.user.id
+                        clientId = ctx.body.clientId ?? null
+                    } else {
+                        const headers = ctx.headers
+                        const authorization = headers?.get("authorization")
+                        const access =
+                            options.resolveOAuthAccess &&
+                            headers &&
+                            authorization?.startsWith("Bearer ")
+                                ? await options.resolveOAuthAccess(headers).catch(() => null)
+                                : null
+                        if (!access) {
+                            throw new APIError("UNAUTHORIZED", {
+                                message: "Authentication required",
+                            })
+                        }
+                        if (!access.scopes.includes("payments")) {
+                            throw new APIError("FORBIDDEN", {
+                                message: "This application was not granted the payments scope",
+                            })
+                        }
+                        userId = access.userId
+                        clientId = access.clientId
+                    }
+
                     const depositId = crypto.randomUUID()
 
                     const result = await client.initiateDeposit({
@@ -444,8 +500,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                     await ctx.context.adapter.create({
                         model: "payment",
                         data: {
-                            userId: ctx.context.session.user.id,
-                            clientId: ctx.body.clientId,
+                            userId,
+                            clientId,
                             type: "deposit",
                             provider: ctx.body.provider,
                             phoneNumber: ctx.body.phoneNumber,

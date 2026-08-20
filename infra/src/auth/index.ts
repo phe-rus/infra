@@ -179,6 +179,26 @@ export const auth = betterAuth({
             cache: env.PAYMENTS,
             isAdmin: isAdminTier,
             onPaymentCompleted: sendPaymentReceiptEmail,
+            // resolves a connected OAuth app's Bearer access token via the
+            // real userinfo endpoint rather than re-deriving JWT/opaque
+            // token validation here — auth is only assigned once this
+            // whole betterAuth(...) call returns, but this closure only
+            // runs later, per-request, well after that
+            resolveOAuthAccess: async (
+                headers: Headers
+            ): Promise<{ userId: string; clientId: string | null; scopes: string[] } | null> => {
+                const info: Record<string, unknown> | null = await auth.api
+                    .oauth2UserInfo({ headers })
+                    .catch(() => null)
+                if (!info || !Array.isArray(info.scopes)) return null
+                const userId = typeof info.id === "string" ? info.id : undefined
+                if (!userId) return null
+                return {
+                    userId,
+                    clientId: typeof info.clientId === "string" ? info.clientId : null,
+                    scopes: info.scopes as string[],
+                }
+            },
         }),
         jwt({
             disableSettingJwtHeader: true,
@@ -216,8 +236,13 @@ export const auth = betterAuth({
                 oauthAuthServerConfig: true,
                 openidConfig: true,
             },
-            customUserInfoClaims: async ({ user, scopes }) => ({
+            customUserInfoClaims: async ({ user, scopes, jwt }) => ({
                 scopes: scopes,
+                // which connected app this token belongs to — resolveOAuthAccess
+                // (in the infraPayment() registration above) reads this back
+                // to attribute a deposit to the real requesting client rather
+                // than trusting a caller-supplied clientId
+                clientId: typeof jwt.client_id === "string" ? jwt.client_id : null,
                 ...user,
             }),
         }),
