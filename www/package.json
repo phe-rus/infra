@@ -17,6 +17,7 @@
         "@better-auth/passkey": "1.6.29",
         "@infra/payment": "workspace:*",
         "@infra/r2": "workspace:*",
+        "@infra/tanstack-image": "workspace:*",
         "@infra/ui": "workspace:*",
         "@tabler/icons-react": "^3.46.0",
         "@tanstack/react-query": "^5.101.4",

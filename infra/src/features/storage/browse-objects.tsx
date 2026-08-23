@@ -2,6 +2,7 @@ import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react
 import { useListObjects, useDeleteObjects } from "@/kit/storage"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
+import { TanstackImage } from "@infra/tanstack-image"
 import type { FC } from "react"
 
 export type BrowseObjectsProps = {
@@ -78,9 +79,15 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                                 )}
                             >
                                 {file.contentType?.startsWith("image/") ? (
-                                    <img
+                                    <TanstackImage
                                         src={cdnUrl(file.key)}
-                                        alt=""
+                                        alt={file.name}
+                                        // same-origin already — the CDN
+                                        // endpoint's own withEdgeCache
+                                        // handles caching, proxying it
+                                        // through /_image would just be an
+                                        // extra hop for nothing
+                                        unoptimized
                                         className={cn(
                                             "aspect-video rounded-none! object-cover",
                                             "flex shrink-0"

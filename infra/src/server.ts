@@ -3,6 +3,7 @@ import {
     oauthProviderOpenIdConfigMetadata,
 } from "@better-auth/oauth-provider"
 import handler from "@tanstack/react-start/server-entry"
+import { withEdgeCache } from "@infra/tanstack-image/server"
 import { auth } from "./auth"
 import { isTrustedOrigin } from "./auth/utils/trusted-origins"
 
@@ -81,26 +82,23 @@ export default {
         // getCdnFile in plugins/r2) but still went through the full
         // TanStack Start -> better-auth pipeline on every request, paying
         // for a rate-limit KV get+put (and an R2 read) even on a repeat
-        // fetch of the same file a second later. Cloudflare's Cache API
-        // short-circuits that for the common case; a cache miss still
-        // falls through to the normal rate-limited path below
+        // fetch of the same file a second later. withEdgeCache short-
+        // circuits that for the common case; a cache miss still falls
+        // through to the normal rate-limited path below
         if (request.method === "GET" && url.pathname.startsWith("/api/auth/cdn/")) {
-            // @ts-expect-error - lib DOM's CacheStorage type shadows the Workers one that declares `default`
-            const cache = caches.default as Cache
-            const cached = await cache.match(request)
-            if (cached) return withNoIndex(cached)
-
-            const res = await handler.fetch(request, {
-                context: {
-                    // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
-                    env: env,
-                    waitUntil: ctx.waitUntil.bind(ctx),
-                    passThroughOnException: ctx.passThroughOnException.bind(ctx),
-                },
-            })
-            if (res.status === 200) {
-                ctx.waitUntil(cache.put(request, res.clone()))
-            }
+            const res = await withEdgeCache(
+                request,
+                { waitUntil: ctx.waitUntil.bind(ctx) },
+                async () =>
+                    handler.fetch(request, {
+                        context: {
+                            // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
+                            env: env,
+                            waitUntil: ctx.waitUntil.bind(ctx),
+                            passThroughOnException: ctx.passThroughOnException.bind(ctx),
+                        },
+                    })
+            )
             return withNoIndex(res)
         }
 

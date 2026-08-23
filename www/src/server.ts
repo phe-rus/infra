@@ -1,4 +1,5 @@
 import handler from "@tanstack/react-start/server-entry"
+import { createImageProxy } from "@infra/tanstack-image/server"
 
 export type RequestContext = {
     env: Env
@@ -14,6 +15,17 @@ declare module "@tanstack/react-start" {
 
 export default {
     async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+        // avatars (and any other CDN file) live on infra's origin, not this
+        // app's own — proxying+caching them here means only the first
+        // request per file, per Cloudflare PoP, ever leaves this app's edge
+        // to fetch infra, instead of every visitor hitting infra directly
+        const imageProxy = createImageProxy({
+            path: "/_image",
+            allowedOrigins: [env.VITE_INFRA_URL],
+        })
+        const proxied = await imageProxy(request, { waitUntil: ctx.waitUntil.bind(ctx) })
+        if (proxied) return proxied
+
         return handler.fetch(request, {
             context: {
                 // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape

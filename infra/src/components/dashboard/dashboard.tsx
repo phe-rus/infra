@@ -91,10 +91,11 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                     <aside
                         ref={ref}
                         className={cn(
-                            "fixed h-full shrink-0 border-r bg-background/85 shadow-sm backdrop-blur md:relative",
-                            "z-55 border-primary/5 transition-transform duration-300 ease-in-out ease-initial",
-                            "inset-y-0",
-                            open ? "w-78 translate-x-0" : "w-fit -translate-x-full"
+                            "fixed h-full shrink-0 border-r bg-secondary/5 shadow-md",
+                            "border-primary/5 inset-y-0 backdrop-blur-3xl md:relative",
+                            "transition-all duration-300 ease-in-out ease-initial",
+                            "will-change-transform will-change-backdrop-filter",
+                            open ? "w-72 translate-x-0 z-55" : "w-fit -translate-x-full z-10"
                         )}
                     >
                         <Button
@@ -119,42 +120,46 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                 !open ? "hidden" : "flex"
                             )}
                         >
-                            <section className="flex flex-col gap-3 p-5">
+                            <section className="flex flex-col gap-3">
                                 <nav className="flex items-center gap-1">
                                     <Link
                                         to="/"
                                         className={cn(
-                                            "flex items-center text-2xl text-primary",
-                                            "hover:text-primary/65"
+                                            "flex items-center text-xl text-primary",
+                                            "hover:text-primary/65 tracking-wider"
                                         )}
                                     >
                                         <img
-                                            src="/favicon.ico"
+                                            src="/favicon.svg"
                                             alt="Infra"
-                                            className="size-7 grayscale mix-blend-normal"
+                                            className="size-6 grayscale mix-blend-normal"
                                         />
                                         Infra
                                     </Link>
                                 </nav>
-                                <nav className="flex flex-col gap-0.5">
+                                <nav className="flex flex-col">
                                     {navLists.map((nav, index) => (
                                         <Link
                                             key={index}
                                             to={nav.path}
                                             className={cn(
-                                                "group text-[1.1rem]",
-                                                "flex items-center gap-2"
+                                                "group text-[1.1rem] tracking-tight",
+                                                "flex items-center gap-2",
+                                                "transition-colors duration-150 ease-out"
                                             )}
                                             activeProps={{ className: "text-current" }}
                                         >
-                                            <nav.Icon className="size-3.5" />
+                                            <nav.Icon className="size-4.5" />
                                             {nav.label}
                                         </Link>
                                     ))}
                                 </nav>
                             </section>
                             <span className="flex-1" />
-                            <nav className={cn("sticky bottom-0 mb-auto p-5", "flex flex-col")}>
+                            <nav className={cn("sticky bottom-0 mb-auto", "flex flex-col")}>
+                                <Button className="w-fit!" variant="destructive">
+                                    API
+                                </Button>
                                 <Button
                                     className="w-fit!"
                                     onClick={() => signOut({})}
@@ -183,6 +188,21 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             </div>
                         )}
                         {children}
+
+                        <Button
+                            size="icon"
+                            variant="secondary"
+                            aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+                            className={cn(
+                                "absolute right-3 bottom-0 z-56 -translate-y-1/2",
+                                "transition-all duration-300 select-none cursor-pointer",
+                                "flex md:hidden bg-primary! text-primary-foreground!",
+                                open && "hidden"
+                            )}
+                            onClick={() => toggleSidebar()}
+                        >
+                            {!open ? <IconChevronRight /> : <IconChevronLeft />}
+                        </Button>
                     </div>
                 </main>
             </div>

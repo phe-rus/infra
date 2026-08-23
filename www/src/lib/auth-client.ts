@@ -4,6 +4,7 @@ import { passkeyClient } from "@better-auth/passkey/client"
 import { oauthProviderClient } from "@better-auth/oauth-provider/client"
 import { r2Client, withOrigin } from "@infra/r2/client"
 import { paymentClient } from "@infra/payment/client"
+import { proxiedImageSrc } from "@infra/tanstack-image"
 
 export function hosturl(): string {
     if (import.meta.env.VITE_INFRA_URL) {
@@ -14,7 +15,7 @@ export function hosturl(): string {
 
 export function resolveCdnUrl(path?: string | null): string | undefined {
     if (!path) return undefined
-    return withOrigin(hosturl(), path)
+    return proxiedImageSrc(withOrigin(hosturl(), path))
 }
 
 export const authClient = createAuthClient({
