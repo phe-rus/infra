@@ -132,4 +132,56 @@ export const schema = {
             },
         },
     },
+    // a connected app's redirect-based checkout — the app creates one via
+    // OAuth Bearer token (POST /pay/intent/create), the payer's browser gets
+    // sent here to confirm-and-pay, then back to the app's own returnUrl
+    // with a signed outcome. Deliberately its own table rather than reusing
+    // `payment` directly: an intent exists before any real deposit does
+    // (status "created"), and it's the thing returnUrl-validated against the
+    // requesting client, not the deposit itself.
+    paymentIntent: {
+        fields: {
+            clientId: {
+                type: "string",
+                required: true,
+                references: { model: "oauthClient", field: "clientId" },
+                index: true,
+            },
+            userId: {
+                type: "string",
+                required: true,
+                references: { model: "user", field: "id" },
+                index: true,
+            },
+            amount: { type: "string", required: true },
+            currency: { type: "string", required: true },
+            purpose: { type: "string", required: false },
+            // validated at creation time against the requesting client's own
+            // registered redirect_uris — never a caller-supplied arbitrary URL
+            returnUrl: { type: "string", required: true },
+            status: {
+                type: "string", // PaymentIntentStatus
+                required: true,
+                defaultValue: "created",
+            },
+            // set once a real deposit is actually initiated against this intent
+            paymentId: {
+                type: "string",
+                required: false,
+                references: { model: "payment", field: "id" },
+            },
+            failureReason: { type: "string", required: false },
+            createdAt: {
+                type: "date",
+                required: true,
+                defaultValue: () => new Date(),
+            },
+            updatedAt: {
+                type: "date",
+                required: true,
+                defaultValue: () => new Date(),
+                onUpdate: () => new Date(),
+            },
+        },
+    },
 } as const

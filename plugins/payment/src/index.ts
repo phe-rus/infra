@@ -1,4 +1,5 @@
 import { createAuthEndpoint, sessionMiddleware, getSessionFromCtx, APIError } from "better-auth/api"
+import { signJWT } from "better-auth/plugins"
 import * as z from "zod"
 import { schema } from "./schema"
 import { PawaPayClient } from "./pawapay-client"
@@ -9,7 +10,7 @@ import type { PaymentCountryOption } from "./active-config"
 import { convertViaUsd, fetchUsdRates } from "./fx"
 import type { FxRates } from "./fx"
 import { WALLET_NUMBER_PENDING_TTL_MS } from "./constants"
-import type { PaymentStatus } from "./constants"
+import type { PaymentIntentStatus, PaymentStatus } from "./constants"
 
 const ACTIVE_CONFIG_CACHE_KEY = "payment:active-conf:v1"
 const ACTIVE_CONFIG_CACHE_TTL = 60 * 60 // 1 hour — PawaPay's own provider list changes rarely
@@ -77,6 +78,82 @@ export function infraPayment(options: InfraPaymentOptions) {
             expirationTtl: ACTIVE_CONFIG_CACHE_TTL,
         })
         return countries
+    }
+
+    // shared by depositPayment (a direct, first-party-or-Bearer deposit) and
+    // confirmPaymentIntent (a deposit tied to a redirect-flow intent): both
+    // end up doing the exact same PawaPay call + payment row bookkeeping,
+    // only who's paying and why differs
+    async function performDeposit(
+        ctx: Parameters<typeof signJWT>[0],
+        params: {
+            userId: string
+            clientId: string | null
+            amount: string
+            currency: string
+            phoneNumber: string
+            provider: string
+            purpose?: string
+        }
+    ) {
+        const depositId = crypto.randomUUID()
+        const result = await client.initiateDeposit({
+            depositId,
+            payer: {
+                type: "MMO",
+                accountDetails: { phoneNumber: params.phoneNumber, provider: params.provider },
+            },
+            amount: params.amount,
+            currency: params.currency,
+            clientReferenceId: depositId,
+            ...(params.purpose && { customerMessage: params.purpose }),
+        })
+
+        const status: PaymentStatus = result.status === "ACCEPTED" ? "pending" : "failed"
+
+        const payment = await ctx.context.adapter.create<{ id: string }>({
+            model: "payment",
+            data: {
+                userId: params.userId,
+                clientId: params.clientId,
+                type: "deposit",
+                provider: params.provider,
+                phoneNumber: params.phoneNumber,
+                amount: params.amount,
+                currency: params.currency,
+                pawapayReferenceId: depositId,
+                status,
+                failureReason: result.failureReason ? JSON.stringify(result.failureReason) : undefined,
+            },
+        })
+
+        return { paymentId: payment.id, depositId, status, failureReason: result.failureReason }
+    }
+
+    // only a connected OAuth app can create a payment intent. This is
+    // exclusively the redirect-checkout path, never a first-party dashboard
+    // action, so unlike depositPayment there's no session fallback here
+    async function resolveClientAccess(
+        ctx: Parameters<typeof signJWT>[0]
+    ): Promise<{ userId: string; clientId: string }> {
+        const headers = ctx.headers
+        const authorization = headers?.get("authorization")
+        const access =
+            options.resolveOAuthAccess && headers && authorization?.startsWith("Bearer ")
+                ? await options.resolveOAuthAccess(headers).catch(() => null)
+                : null
+        if (!access) {
+            throw new APIError("UNAUTHORIZED", { message: "Authentication required" })
+        }
+        if (!access.scopes.includes("payments")) {
+            throw new APIError("FORBIDDEN", {
+                message: "This application was not granted the payments scope",
+            })
+        }
+        if (!access.clientId) {
+            throw new APIError("BAD_REQUEST", { message: "No client context on this token" })
+        }
+        return { userId: access.userId, clientId: access.clientId }
     }
 
     return {
@@ -474,44 +551,192 @@ export function infraPayment(options: InfraPaymentOptions) {
                         clientId = access.clientId
                     }
 
-                    const depositId = crypto.randomUUID()
-
-                    const result = await client.initiateDeposit({
-                        depositId,
-                        payer: {
-                            type: "MMO",
-                            accountDetails: {
-                                phoneNumber: ctx.body.phoneNumber,
-                                provider: ctx.body.provider,
-                            },
-                        },
-                        amount: ctx.body.amount,
-                        currency: ctx.body.currency,
-                        clientReferenceId: depositId,
-                        ...(ctx.body.purpose && { customerMessage: ctx.body.purpose }),
-                    })
-
                     // ACCEPTED just means PawaPay took the request for
                     // processing — the real outcome (completed/failed)
                     // only ever arrives later via the signed webhook
-                    const status: PaymentStatus =
-                        result.status === "ACCEPTED" ? "pending" : "failed"
+                    const { depositId, status } = await performDeposit(ctx, {
+                        userId,
+                        clientId,
+                        amount: ctx.body.amount,
+                        currency: ctx.body.currency,
+                        phoneNumber: ctx.body.phoneNumber,
+                        provider: ctx.body.provider,
+                        purpose: ctx.body.purpose,
+                    })
 
-                    await ctx.context.adapter.create({
-                        model: "payment",
+                    return ctx.json({ depositId, status })
+                }
+            ),
+            // connected-app-only (see resolveClientAccess): creates a
+            // redirect-checkout intent instead of depositing immediately,
+            // the requesting app sends its user's browser to Infraccount's
+            // /pay/confirm?intent=<id> next, which is where the actual
+            // deposit gets initiated once the payer picks a number
+            createPaymentIntent: createAuthEndpoint(
+                "/pay/intent/create",
+                {
+                    method: "POST",
+                    body: z.object({
+                        amount: z.string().min(1),
+                        currency: z.string().length(3),
+                        purpose: z
+                            .string()
+                            .min(4)
+                            .max(22)
+                            .regex(/^[a-zA-Z0-9 ]*$/)
+                            .optional(),
+                        // must exactly match one of the requesting client's own
+                        // registered redirect_uris — never trusted as-is
+                        returnUrl: z.string().url(),
+                    }),
+                },
+                async (ctx) => {
+                    const { userId, clientId } = await resolveClientAccess(ctx)
+
+                    const oauthClient = await ctx.context.adapter.findOne<{
+                        clientId: string
+                        redirectUris: string[]
+                    }>({
+                        model: "oauthClient",
+                        where: [{ field: "clientId", value: clientId }],
+                    })
+                    if (!oauthClient || !oauthClient.redirectUris.includes(ctx.body.returnUrl)) {
+                        throw new APIError("BAD_REQUEST", {
+                            message: "returnUrl is not a registered redirect URI for this client",
+                        })
+                    }
+
+                    const intent = await ctx.context.adapter.create<{ id: string }>({
+                        model: "paymentIntent",
                         data: {
-                            userId,
                             clientId,
-                            type: "deposit",
-                            provider: ctx.body.provider,
-                            phoneNumber: ctx.body.phoneNumber,
+                            userId,
                             amount: ctx.body.amount,
                             currency: ctx.body.currency,
-                            pawapayReferenceId: depositId,
-                            status,
-                            failureReason: result.failureReason
-                                ? JSON.stringify(result.failureReason)
-                                : undefined,
+                            purpose: ctx.body.purpose,
+                            returnUrl: ctx.body.returnUrl,
+                            status: "created",
+                        },
+                    })
+
+                    return ctx.json({ intentId: intent.id })
+                }
+            ),
+            // session-gated: Infraccount reads this to render the confirm
+            // screen, then polls it after confirming. Once status is
+            // terminal, the response also carries a signed JWT (infra's own
+            // JWKS) the payer's browser then carries back to the app's
+            // returnUrl as proof, so the app never has to trust the redirect
+            // itself, only the token in it
+            getPaymentIntent: createAuthEndpoint(
+                "/pay/intent/get",
+                { method: "GET", use: [sessionMiddleware], query: z.object({ id: z.string() }) },
+                async (ctx) => {
+                    const intent = await ctx.context.adapter.findOne<{
+                        id: string
+                        userId: string
+                        status: PaymentIntentStatus
+                        amount: string
+                        currency: string
+                        purpose: string | null
+                        returnUrl: string
+                        failureReason: string | null
+                    }>({
+                        model: "paymentIntent",
+                        where: [{ field: "id", value: ctx.query.id }],
+                    })
+                    if (!intent || intent.userId !== ctx.context.session.user.id) {
+                        throw new APIError("NOT_FOUND", { message: "Payment intent not found" })
+                    }
+
+                    let token: string | undefined
+                    if (intent.status === "completed" || intent.status === "failed") {
+                        token = await signJWT(ctx, {
+                            payload: {
+                                intentId: intent.id,
+                                status: intent.status,
+                                amount: intent.amount,
+                                currency: intent.currency,
+                                ...(intent.failureReason
+                                    ? { failureReason: intent.failureReason }
+                                    : {}),
+                            },
+                        })
+                    }
+
+                    return ctx.json({
+                        intent: {
+                            id: intent.id,
+                            status: intent.status,
+                            amount: intent.amount,
+                            currency: intent.currency,
+                            purpose: intent.purpose,
+                            returnUrl: intent.returnUrl,
+                        },
+                        token,
+                    })
+                }
+            ),
+            // session-gated: called from Infraccount's confirm screen once
+            // the payer picked/entered a mobile-money number
+            confirmPaymentIntent: createAuthEndpoint(
+                "/pay/intent/confirm",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    body: z.object({
+                        id: z.string(),
+                        phoneNumber: z.string().min(1),
+                        provider: z.string().min(1),
+                    }),
+                },
+                async (ctx) => {
+                    const intent = await ctx.context.adapter.findOne<{
+                        id: string
+                        userId: string
+                        clientId: string
+                        status: PaymentIntentStatus
+                        amount: string
+                        currency: string
+                        purpose: string | null
+                    }>({
+                        model: "paymentIntent",
+                        where: [{ field: "id", value: ctx.body.id }],
+                    })
+                    if (!intent || intent.userId !== ctx.context.session.user.id) {
+                        throw new APIError("NOT_FOUND", { message: "Payment intent not found" })
+                    }
+                    if (intent.status !== "created") {
+                        throw new APIError("BAD_REQUEST", {
+                            message: "This payment has already been actioned",
+                        })
+                    }
+
+                    const { paymentId, depositId, status, failureReason } = await performDeposit(
+                        ctx,
+                        {
+                            userId: intent.userId,
+                            clientId: intent.clientId,
+                            amount: intent.amount,
+                            currency: intent.currency,
+                            phoneNumber: ctx.body.phoneNumber,
+                            provider: ctx.body.provider,
+                            purpose: intent.purpose ?? undefined,
+                        }
+                    )
+
+                    await ctx.context.adapter.update({
+                        model: "paymentIntent",
+                        where: [{ field: "id", value: intent.id }],
+                        update: {
+                            paymentId,
+                            // "pending" here mirrors payment.status: the
+                            // webhook is what later flips this to completed/
+                            // failed, same as it does for `payment` itself
+                            status: status === "pending" ? "pending" : "failed",
+                            ...(failureReason
+                                ? { failureReason: JSON.stringify(failureReason) }
+                                : {}),
                         },
                     })
 
@@ -755,6 +980,23 @@ export function infraPayment(options: InfraPaymentOptions) {
                                 : {}),
                         },
                     })
+
+                    // this deposit may have been made against a redirect-
+                    // checkout intent (confirmPaymentIntent set payment.id on
+                    // it), carry the same real outcome over so Infraccount's
+                    // poll of /pay/intent/get sees it and can finish the flow
+                    if (status === "completed" || status === "failed") {
+                        await ctx.context.adapter.updateMany({
+                            model: "paymentIntent",
+                            where: [{ field: "paymentId", value: existing.id }],
+                            update: {
+                                status,
+                                ...(payload.failureReason
+                                    ? { failureReason: JSON.stringify(payload.failureReason) }
+                                    : {}),
+                            },
+                        })
+                    }
 
                     // a saved number graduates from "pending" to "verified"
                     // the first time a deposit through it actually clears —
