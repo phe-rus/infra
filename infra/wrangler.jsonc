@@ -5,7 +5,10 @@
     "compatibility_flags": ["nodejs_compat"],
     "main": "src/server.ts",
     "observability": {
-        "enabled": false
+        "enabled": true
+    },
+    "placement": {
+        "mode": "smart"
     },
     "workers_dev": false,
     "preview_urls": false,

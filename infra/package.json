@@ -10,7 +10,8 @@
         "deploy": "wrangler deploy",
         "type-gen": "wrangler types",
         "test": "vitest run",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "postinstall": "bun run type-gen"
     },
     "dependencies": {
         "@better-auth/core": "1.6.29",
