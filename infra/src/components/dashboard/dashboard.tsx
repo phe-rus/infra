@@ -194,7 +194,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             variant="secondary"
                             aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
                             className={cn(
-                                "absolute right-3 bottom-0 z-56 -translate-y-1/2",
+                                "sticky ml-auto right-3 bottom-0 z-56 -translate-y-1/2",
                                 "transition-all duration-300 select-none cursor-pointer",
                                 "flex md:hidden bg-primary! text-primary-foreground!",
                                 open && "hidden"
