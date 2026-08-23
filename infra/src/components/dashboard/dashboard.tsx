@@ -142,14 +142,12 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                             key={index}
                                             to={nav.path}
                                             className={cn(
-                                                "group text-xl",
+                                                "group text-[1.1rem]",
                                                 "flex items-center gap-2"
                                             )}
-                                            activeProps={{
-                                                className: "text-primary!",
-                                            }}
+                                            activeProps={{ className: "text-current" }}
                                         >
-                                            <nav.Icon className="size-5.5" />
+                                            <nav.Icon className="size-3.5" />
                                             {nav.label}
                                         </Link>
                                     ))}

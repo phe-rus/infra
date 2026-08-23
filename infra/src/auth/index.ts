@@ -179,11 +179,6 @@ export const auth = betterAuth({
             cache: env.PAYMENTS,
             isAdmin: isAdminTier,
             onPaymentCompleted: sendPaymentReceiptEmail,
-            // resolves a connected OAuth app's Bearer access token via the
-            // real userinfo endpoint rather than re-deriving JWT/opaque
-            // token validation here — auth is only assigned once this
-            // whole betterAuth(...) call returns, but this closure only
-            // runs later, per-request, well after that
             resolveOAuthAccess: async (
                 headers: Headers
             ): Promise<{ userId: string; clientId: string | null; scopes: string[] } | null> => {
@@ -204,8 +199,6 @@ export const auth = betterAuth({
             disableSettingJwtHeader: true,
         }),
         oauthProvider({
-            // hosted on www, not infra itself — infra only keeps /setup,
-            // admin /sign-in, and /forgot-password
             loginPage: `${env.WWW_URL}/sign-in`,
             consentPage: `${env.WWW_URL}/consent`,
             signUp: {
@@ -213,10 +206,6 @@ export const auth = betterAuth({
             },
             storeClientSecret: "hashed",
             allowDynamicClientRegistration: false,
-            // admin-created clients (via adminCreateOAuthClient, no session)
-            // have no matching userId, so the default "caller owns this
-            // client" privilege check would reject every admin action on
-            // them — admin/owner manage every client instance-wide instead
             clientPrivileges: async ({ user }) =>
                 isAdminTier((user?.role as string | undefined) ?? ""),
             scopes: ["openid", "profile", "email", "offline_access", "payments"],
@@ -229,8 +218,6 @@ export const auth = betterAuth({
             refreshTokenExpiresIn: 60 * 60 * 24 * 365, // 1 year, rotates forward on every use
             codeExpiresIn: 60 * 10, // 10 minutes
             refreshTokenGracePeriod: 30,
-            // defaults to [baseURL] when omitted; add this instance's other
-            // deployed services here as they exist, not guessed in advance
             validAudiences: [env.BETTER_AUTH_URL],
             silenceWarnings: {
                 oauthAuthServerConfig: true,
@@ -238,10 +225,6 @@ export const auth = betterAuth({
             },
             customUserInfoClaims: async ({ user, scopes, jwt }) => ({
                 scopes: scopes,
-                // which connected app this token belongs to — resolveOAuthAccess
-                // (in the infraPayment() registration above) reads this back
-                // to attribute a deposit to the real requesting client rather
-                // than trusting a caller-supplied clientId
                 clientId: typeof jwt.client_id === "string" ? jwt.client_id : null,
                 ...user,
             }),
