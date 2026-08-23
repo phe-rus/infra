@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { TanstackImage } from "@infra/tanstack-image"
 
 import { cn } from "../lib/utils"
 
@@ -26,11 +27,18 @@ function Avatar({
 
 type ImageState = "loading" | "loaded" | "error"
 
-function AvatarImage({ className, ...props }: React.ComponentProps<"img">) {
-    const [state, setState] = React.useState<ImageState>(props.src ? "loading" : "error")
+// src is pulled out of the spread (not just destructured for the initial
+// state check) so the later {...props} spread can't re-introduce an
+// undefined src and violate TanstackImage's required-string prop — every
+// caller here already resolved/proxied its own URL upstream (or has none,
+// same-origin), so this stays unoptimized: no further rewriting here
+function AvatarImage({ className, src, ...props }: React.ComponentProps<"img">) {
+    const [state, setState] = React.useState<ImageState>(src ? "loading" : "error")
     return (
-        <img
+        <TanstackImage
             data-slot="avatar-image"
+            unoptimized
+            src={src ?? ""}
             alt={props.alt || ""}
             data-state={state}
             onLoad={() => setState("loaded")}
