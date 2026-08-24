@@ -21,6 +21,7 @@ export const advanced = {
     },
     database: {
         generateId: "uuid",
+        joins: true,
     },
     backgroundTasks: {
         handler: (p) => waitUntil(p),

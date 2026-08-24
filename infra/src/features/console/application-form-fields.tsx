@@ -22,7 +22,7 @@ const defaultValues: z.input<typeof appFormSchema> = {
     client_uri: "",
     logo_uri: "",
     framework: undefined,
-    type: "user-agent-based",
+    application_type: "native",
     token_endpoint_auth_method: "none",
     redirect_uris: "",
     post_logout_redirect_uris: "",
@@ -45,8 +45,8 @@ export const ApplicationFormFields = withForm({
         // OAuth-provider plugin rejects anything but "none" (Public) for a
         // non-"web" type, so mirror that constraint in the UI instead of
         // letting the user pick an invalid combination and find out on submit
-        const type = useSelector(form.store, (state) => state.values.type)
-        const confidentialityLocked = type !== "web"
+        const applicationType = useSelector(form.store, (state) => state.values.application_type)
+        const confidentialityLocked = applicationType !== "web"
 
         useEffect(() => {
             if (
@@ -101,7 +101,7 @@ export const ApplicationFormFields = withForm({
                 />
 
                 <form.AppField
-                    name="type"
+                    name="application_type"
                     children={(field) => (
                         <field.radioCard
                             label="Type"

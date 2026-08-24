@@ -82,11 +82,6 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                                     <TanstackImage
                                         src={cdnUrl(file.key)}
                                         alt={file.name}
-                                        // same-origin already — the CDN
-                                        // endpoint's own withEdgeCache
-                                        // handles caching, proxying it
-                                        // through /_image would just be an
-                                        // extra hop for nothing
                                         unoptimized
                                         className={cn(
                                             "aspect-video rounded-none! object-cover",

@@ -18,27 +18,10 @@ function needsSharedCounter(key: string): boolean {
 }
 
 export const rateLimitStorage: RateLimitStorage = {
-    get: async (key) => {
-        if (!needsSharedCounter(key)) return memoryStore.get(key) ?? null
-        const value = await env.RL.get(key)
-        if (!value) return null
-        const data = JSON.parse(value) as RateLimitData
-        data.key = key
-        return data
-    },
-    set: async (key, value, ttl) => {
-        const data = value as RateLimitData
-        data.key = key
-        if (!needsSharedCounter(key)) {
-            memoryStore.set(key, data)
-            return
-        }
-        const expirationTtl = typeof ttl === "number" ? Math.max(ttl, 60) : 60
-        await env.RL.put(key, JSON.stringify(data), { expirationTtl })
-    },
-    // consume is the only path better-auth's rate limiter actually calls
-    // when it's defined (get/set above only run as a legacy fallback), so
-    // this is where the KV-vs-memory split really happens
+    // the only operation better-auth 1.7's rate limiter accepts — it dropped
+    // the legacy get/set shape entirely since it can't enforce a distributed
+    // limit under concurrent requests, so this is where the KV-vs-memory
+    // split happens
     consume: async (key, rule) => {
         const now = Math.floor(Date.now() / 1000)
         const useKv = needsSharedCounter(key)

@@ -67,7 +67,7 @@ type OAuthClientRow = {
     name: string | null
     uri: string | null
     icon: string | null
-    type: string | null
+    applicationType: string | null
     disabled: boolean | null
     redirectUris: string[] | null
     postLogoutRedirectUris: string[] | null
@@ -88,7 +88,7 @@ const APP_SELECT = [
     "name",
     "uri",
     "icon",
-    "type",
+    "applicationType",
     "disabled",
     "redirectUris",
     "postLogoutRedirectUris",
@@ -110,7 +110,7 @@ function toAppDetail(row: OAuthClientRow) {
         name: row.name,
         uri: row.uri,
         icon: row.icon,
-        type: row.type,
+        applicationType: row.applicationType,
         disabled: row.disabled,
         redirectUris: row.redirectUris ?? [],
         postLogoutRedirectUris: row.postLogoutRedirectUris ?? [],
@@ -168,7 +168,7 @@ export const createApp = createServerFn({ method: "POST" })
                     client_name: data.client_name,
                     client_uri: data.client_uri,
                     logo_uri: data.logo_uri,
-                    type: data.type,
+                    application_type: data.application_type,
                     token_endpoint_auth_method: data.token_endpoint_auth_method,
                     redirect_uris: data.redirect_uris?.length
                         ? data.redirect_uris

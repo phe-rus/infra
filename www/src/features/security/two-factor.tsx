@@ -28,7 +28,10 @@ const totpCodeSchema = z.object({
 
 const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
     const enableMutation = useEnableTwoFactor()
-    const enrollment = enableMutation.data ?? null
+    // this flow never passes `method: "otp"`, so a resolved enrollment is
+    // always the "totp" variant carrying totpURI/backupCodes — narrow here
+    // rather than at every read site
+    const enrollment = enableMutation.data?.method === "totp" ? enableMutation.data : null
 
     const close = () => {
         onOpenChange(false)

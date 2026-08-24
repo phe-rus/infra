@@ -6,18 +6,19 @@ import { z } from "zod"
 // save" once it reaches auth.api.adminUpdateOAuthClient's stricter schema
 import { SafeUrlSchema } from "@better-auth/core/utils/redirect-uri"
 
-export const CLIENT_TYPES = ["web", "native", "user-agent-based"] as const
+// matches better-auth 1.7's applicationType exactly — it collapsed what used
+// to be three OAuth client profiles (web / native / user-agent-based) down to
+// two, since a browser-based SPA can't hold a secret any more securely than a
+// native app can, so both are "native" (public-only) now
+export const CLIENT_TYPES = ["web", "native"] as const
 export type ClientType = (typeof CLIENT_TYPES)[number]
 
 export const CLIENT_TYPE_INFO: Record<ClientType, { label: string; description: string }> = {
     web: { label: "Web", description: "Server-rendered applications — Next.js, Nuxt, Rails, etc." },
     native: {
         label: "Native",
-        description: "Native mobile, desktop, or IoT applications — iOS, Android, etc.",
-    },
-    "user-agent-based": {
-        label: "User-agent-based",
-        description: "Single-page applications — React, Vue, Angular, etc.",
+        description:
+            "Native mobile/desktop/IoT apps and browser-based SPAs (React, Vue, Angular) — anything that can't securely hold a client secret.",
     },
 }
 
@@ -126,7 +127,7 @@ export const appFormSchema = z
         client_uri: z.string().optional(),
         logo_uri: z.string().optional(),
         framework: z.enum(FRAMEWORKS).optional(),
-        type: z.enum(CLIENT_TYPES),
+        application_type: z.enum(CLIENT_TYPES),
         token_endpoint_auth_method: z.enum(TOKEN_ENDPOINT_AUTH_METHODS),
         redirect_uris: z.string().optional(),
         post_logout_redirect_uris: z.string().optional(),
@@ -140,17 +141,21 @@ export const appFormSchema = z
     // it rejects this combination with "Type must be 'web' for confidential
     // applications") — a browser-based client can't securely hold a secret,
     // so anything other than "web" must stay a public (no-secret) client
-    .refine((data) => data.type === "web" || data.token_endpoint_auth_method === "none", {
-        message: "Only a Web application can use a client secret — set confidentiality to Public",
-        path: ["token_endpoint_auth_method"],
-    })
+    .refine(
+        (data) => data.application_type === "web" || data.token_endpoint_auth_method === "none",
+        {
+            message:
+                "Only a Web application can use a client secret — set confidentiality to Public",
+            path: ["token_endpoint_auth_method"],
+        }
+    )
 
 export const createAppSchema = z.object({
     client_name: z.string().min(1),
     client_uri: z.url().optional(),
     logo_uri: z.url().optional(),
     framework: z.enum(FRAMEWORKS).optional(),
-    type: z.enum(CLIENT_TYPES),
+    application_type: z.enum(CLIENT_TYPES),
     token_endpoint_auth_method: z.enum(TOKEN_ENDPOINT_AUTH_METHODS),
     // no .min(1) here, unlike updateAppSchema below: the create form lets
     // redirect_uris come through empty on purpose (createApp's own handler

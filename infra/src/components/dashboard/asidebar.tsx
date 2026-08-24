@@ -125,14 +125,14 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     <Link
                                         to="/"
                                         className={cn(
-                                            "flex items-center text-xl text-primary",
+                                            "flex gap-1 items-center text-xl text-primary font-bold",
                                             "hover:text-primary/65 tracking-wider"
                                         )}
                                     >
                                         <img
                                             src="/favicon.svg"
                                             alt="Infra"
-                                            className="size-6 grayscale mix-blend-normal"
+                                            className="size-5 mix-blend-normal rounded-full!"
                                         />
                                         Infra
                                     </Link>
@@ -143,13 +143,12 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                             key={index}
                                             to={nav.path}
                                             className={cn(
-                                                "group text-[1.1rem] tracking-tight",
-                                                "flex items-center gap-2",
+                                                "group tracking-tight flex items-center gap-2",
                                                 "transition-colors duration-150 ease-out"
                                             )}
                                             activeProps={{ className: "text-current" }}
                                         >
-                                            <nav.Icon className="size-4.5" />
+                                            <nav.Icon className="size-5" />
                                             {nav.label}
                                         </Link>
                                     ))}

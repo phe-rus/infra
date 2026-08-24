@@ -48,7 +48,7 @@ const CREATE_DEFAULT_VALUES: z.input<typeof appFormSchema> = {
     client_uri: "",
     logo_uri: "",
     framework: undefined,
-    type: "user-agent-based",
+    application_type: "native",
     token_endpoint_auth_method: "none",
     redirect_uris: "",
     post_logout_redirect_uris: "",
@@ -65,7 +65,7 @@ function editDefaultValues(application: AppDetail | undefined): z.input<typeof a
         client_uri: application?.uri ?? "",
         logo_uri: application?.icon ?? "",
         framework: (application?.framework as Framework | undefined) ?? undefined,
-        type: (application?.type as ClientType | undefined) ?? "user-agent-based",
+        application_type: (application?.applicationType as ClientType | undefined) ?? "native",
         token_endpoint_auth_method:
             (application?.tokenEndpointAuthMethod as TokenEndpointAuthMethod | undefined) ?? "none",
         redirect_uris: (application?.redirectUris ?? []).join(","),
@@ -185,7 +185,7 @@ function RouteComponent() {
                         client_uri: value.client_uri || undefined,
                         logo_uri: value.logo_uri || undefined,
                         framework: value.framework,
-                        type: value.type,
+                        application_type: value.application_type,
                         token_endpoint_auth_method: value.token_endpoint_auth_method,
                         redirect_uris: redirectUris,
                         post_logout_redirect_uris: postLogoutRedirectUris?.length

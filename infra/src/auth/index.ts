@@ -24,7 +24,6 @@ export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
     appName: env.VITE_APPNAME,
     database: env.AUTH_DB,
-    experimental: { joins: true },
     trustedOrigins: trustedOrigins,
     disabledPaths: ["/token"],
     emailAndPassword: {
@@ -114,9 +113,6 @@ export const auth = betterAuth({
             rpName: env.VITE_APPNAME,
             rpID: env.NODE_ENV === "production" ? env.COOKIE_DOMAIN : undefined,
         }),
-        openAPI({
-            path: "docs",
-        }),
         r2Provider({
             binding: env.R2,
             isAdmin: isAdminTier,
@@ -163,21 +159,23 @@ export const auth = betterAuth({
                 register: { window: 60, max: 5 },
             },
             accessTokenExpiresIn: 60 * 60, // 1 hour
-            refreshTokenExpiresIn: 60 * 60 * 24 * 365, // 1 year, rotates forward on every use
-            codeExpiresIn: 60 * 10, // 10 minutes
+            refreshTokenExpiresIn: 60 * 60 * 24 * 30, // 30 days, rotates forward on every use
+            codeExpiresIn: 60 * 2, // 2 minutes — exchanged immediately after the redirect
             refreshTokenGracePeriod: 30,
-            validAudiences: [env.BETTER_AUTH_URL],
-            silenceWarnings: {
-                oauthAuthServerConfig: true,
-                openidConfig: true,
-            },
+            resources: [env.BETTER_AUTH_URL],
             customUserInfoClaims: async ({ user, scopes, jwt }) => ({
                 scopes: scopes,
                 clientId: typeof jwt.client_id === "string" ? jwt.client_id : null,
                 ...user,
             }),
         }),
-        ...(env.NODE_ENV === "production" ? [haveIBeenPwned()] : []),
+        ...(env.NODE_ENV === "production"
+            ? [haveIBeenPwned()]
+            : [
+                  openAPI({
+                      path: "docs",
+                  }),
+              ]),
         tanstackStartCookies(),
     ],
 })

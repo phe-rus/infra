@@ -13,8 +13,8 @@
         "postinstall": "bun run type-gen"
     },
     "dependencies": {
-        "@better-auth/oauth-provider": "1.6.29",
-        "@better-auth/passkey": "1.6.29",
+        "@better-auth/oauth-provider": "1.7.1",
+        "@better-auth/passkey": "1.7.1",
         "@infra/payment": "workspace:*",
         "@infra/r2": "workspace:*",
         "@infra/tanstack-image": "workspace:*",
@@ -25,7 +25,7 @@
         "@tanstack/react-router-ssr-query": "^1.167.1",
         "@tanstack/react-start": "^1.168.46",
         "@tanstack/react-store": "^0.11.1",
-        "better-auth": "1.6.29",
+        "better-auth": "1.7.1",
         "date-fns": "^4.4.0",
         "qrcode.react": "^4.2.0",
         "react": "^19.2.8",

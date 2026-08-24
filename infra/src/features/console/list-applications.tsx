@@ -81,16 +81,20 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                 cell: ({ row }) => <span>{row.original.name ?? "Untitled"}</span>,
             },
             {
-                accessorKey: "type",
+                accessorKey: "applicationType",
                 header: "Type",
                 cell: ({ row }) => {
                     // real data isn't guaranteed to match the ClientType union
                     // (older rows, migrations) even though the type asserts it
                     // does — CLIENT_TYPE_INFO[...] can genuinely be undefined
-                    const info = CLIENT_TYPE_INFO[row.original.type as ClientType] as
+                    const info = CLIENT_TYPE_INFO[row.original.applicationType as ClientType] as
                         | { label: string; description: string }
                         | undefined
-                    return <Badge variant="outline">{info?.label ?? row.original.type}</Badge>
+                    return (
+                        <Badge variant="outline">
+                            {info?.label ?? row.original.applicationType}
+                        </Badge>
+                    )
                 },
             },
             {

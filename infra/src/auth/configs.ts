@@ -4,6 +4,12 @@ import { isTrustedOrigin } from "./utils/trusted-origins"
 
 type OptionsProps = Partial<BetterAuthOptions>
 const secondaryStorage = {
+    increment: async (key, ttl) => {
+        const existing = await env.CACHE.get(key)
+        const next = (existing ? Number(existing) : 0) + 1
+        await env.CACHE.put(key, String(next), { expirationTtl: Math.max(ttl, 60) })
+        return next
+    },
     get: (key) => env.CACHE.get(key),
     set: (key, value, ttl) => {
         return env.CACHE.put(

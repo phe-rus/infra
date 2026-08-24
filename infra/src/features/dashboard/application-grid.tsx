@@ -22,8 +22,10 @@ export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
                     to="/console/$client_id"
                     params={{ client_id: app.clientId }}
                     className={cn(
-                        "flex gap-3 rounded-lg bg-card p-4",
-                        "transition-colors hover:bg-accent"
+                        "flex gap-3 rounded-lg p-5",
+                        "transition-colors hover:bg-muted/55",
+                        "border border-border/35 shadow",
+                        "hover:shadow-md"
                     )}
                 >
                     <Avatar size="sm" className="shrink-0">
@@ -41,7 +43,9 @@ export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
                     <div className="flex min-w-0 flex-1 flex-col">
                         <h4 className="truncate font-medium">{app.name ?? "Untitled"}</h4>
                         <div className="flex items-center gap-1">
-                            <span className="text-xs text-muted-foreground">{app.type}</span>
+                            <span className="text-xs text-muted-foreground">
+                                {app.applicationType}
+                            </span>
                             <span className="text-xs text-muted-foreground"> • </span>
                             <span className="text-xs text-muted-foreground">
                                 {app.disabled ? "inactive" : "active"}
