@@ -6,8 +6,6 @@ import { cn } from "@infra/ui/lib/utils"
 import { useResetPassword } from "@/functions/get-auth"
 
 const resetPasswordSearchSchema = z.object({
-    // better-auth's own /reset-password/:token callback redirects here with
-    // ?token= appended (or ?error=INVALID_TOKEN if the link is bad/expired)
     token: z.string().optional(),
     error: z.string().optional(),
 })
