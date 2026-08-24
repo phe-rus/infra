@@ -9,6 +9,15 @@ import { useWalletFields } from "@/features/payments/use-wallet-fields"
 
 const searchSchema = z.object({ intent: z.string() })
 
+// polling is customer-facing and runs on every single checkout, so it needs
+// a real ceiling: fast at first (a normal mobile-money approval resolves in
+// seconds), backing off after a bit, and giving up well before "forever" if
+// the customer walks away without approving on their phone
+const FAST_POLL_MS = 2000
+const SLOW_POLL_MS = 5000
+const FAST_POLL_WINDOW_MS = 20_000
+const POLL_TIMEOUT_MS = 3 * 60 * 1000
+
 export const Route = createFileRoute("/pay/confirm")({
     validateSearch: searchSchema,
     beforeLoad: ({ location, context }) => {
@@ -23,8 +32,10 @@ function RouteComponent() {
     const { intent: intentId } = useSearch({ from: "/pay/confirm" })
     const fields = useWalletFields()
     const [error, setError] = useState<string | null>(null)
+    const [pollStartedAt, setPollStartedAt] = useState<number | null>(null)
+    const [timedOut, setTimedOut] = useState(false)
 
-    const { data } = useQuery({
+    const { data, refetch } = useQuery({
         queryKey: ["pay-intent", intentId],
         queryFn: async () => {
             const { data, error: fetchError } = await authClient.pay.intent.get({
@@ -35,12 +46,38 @@ function RouteComponent() {
         },
         refetchInterval: (query) => {
             const status = query.state.data?.intent.status
-            return status === "completed" || status === "failed" ? false : 2000
+            if (!status || status === "created" || status === "completed" || status === "failed") {
+                return false
+            }
+            if (timedOut) return false
+            const elapsed = Date.now() - (pollStartedAt ?? Date.now())
+            return elapsed < FAST_POLL_WINDOW_MS ? FAST_POLL_MS : SLOW_POLL_MS
         },
     })
 
+    // marks when active waiting actually began (right after confirming),
+    // not when the page loaded, so the timeout window reflects real wait time
+    useEffect(() => {
+        if (data?.intent.status === "pending" && pollStartedAt === null) {
+            setPollStartedAt(Date.now())
+        }
+    }, [data, pollStartedAt])
+
+    useEffect(() => {
+        if (pollStartedAt === null || timedOut) return
+        const remaining = POLL_TIMEOUT_MS - (Date.now() - pollStartedAt)
+        const timer = setTimeout(() => setTimedOut(true), Math.max(0, remaining))
+        return () => clearTimeout(timer)
+    }, [pollStartedAt, timedOut])
+
+    const handleCheckAgain = () => {
+        setTimedOut(false)
+        setPollStartedAt(Date.now())
+        void refetch()
+    }
+
     // once PawaPay resolves it, infra hands back a signed token alongside
-    // the terminal status — that's the whole point of this page: the
+    // the terminal status: that's the whole point of this page. The
     // requesting app never has to trust this redirect itself, only the
     // token in it (verified against infra's own JWKS on the other end)
     useEffect(() => {
@@ -101,6 +138,16 @@ function RouteComponent() {
                             : `Pay ${intent.amount} ${intent.currency}`}
                     </Button>
                 </>
+            ) : timedOut ? (
+                <div className="flex flex-col gap-3">
+                    <p className="text-muted-foreground">
+                        This is taking longer than expected. You can check again, or come back to
+                        this page later, your order will update once the payment goes through.
+                    </p>
+                    <Button type="button" variant="outline" onClick={handleCheckAgain}>
+                        Check again
+                    </Button>
+                </div>
             ) : (
                 <p className="text-muted-foreground">
                     Waiting for you to approve the mobile money prompt on your phone…
