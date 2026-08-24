@@ -600,7 +600,7 @@ export function infraPayment(options: InfraPaymentOptions) {
                         model: "oauthClient",
                         where: [{ field: "clientId", value: clientId }],
                     })
-                    if (!oauthClient || !oauthClient.redirectUris.includes(ctx.body.returnUrl)) {
+                    if (!oauthClient?.redirectUris.includes(ctx.body.returnUrl)) {
                         throw new APIError("BAD_REQUEST", {
                             message: "returnUrl is not a registered redirect URI for this client",
                         })
