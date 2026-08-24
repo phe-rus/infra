@@ -13,6 +13,7 @@ import { env } from "cloudflare:workers"
 import { betterAuth } from "better-auth"
 import { secondaryStorage, trustedOrigins, databaseHooks } from "./configs"
 import { advanced } from "./advanced"
+import { rateLimitStorage } from "./rate-limit-storage"
 import { r2Provider } from "@infra/r2"
 import { infraPayment } from "@infra/payment"
 import { admin, jwt, openAPI, twoFactor, haveIBeenPwned } from "better-auth/plugins"
@@ -67,7 +68,7 @@ export const auth = betterAuth({
         storeSessionInDatabase: true,
         cookieCache: {
             enabled: true,
-            maxAge: 60 * 30, // 30-min browser-side cache
+            maxAge: 60 * 60 * 4, // 4-hour browser-side cache
         },
     },
     rateLimit: {
@@ -80,60 +81,7 @@ export const auth = betterAuth({
             "/r2/*": { window: 60, max: 100 },
             "/cdn/**": { window: 60, max: 100 },
         },
-        customStorage: {
-            get: async (key) => {
-                const value = await env.RL.get(key)
-                if (!value) return null
-
-                const data = JSON.parse(value)
-                if (data && typeof data === "object") {
-                    data.key = key
-                }
-                return data
-            },
-            set: async (key, value, ttl) => {
-                if (typeof value === "object") {
-                    value.key = key
-                }
-
-                const stringValue = JSON.stringify(value)
-                const expirationTtl = typeof ttl === "number" ? Math.max(ttl, 60) : 60
-                await env.RL.put(key, stringValue, { expirationTtl })
-            },
-            consume: async (key, rule) => {
-                const now = Math.floor(Date.now() / 1000)
-                const value = await env.RL.get(key)
-
-                let data = value
-                    ? (JSON.parse(value) as { key?: string; count: number; lastRequest: number })
-                    : null
-
-                if (!data || now - data.lastRequest > rule.window) {
-                    data = { key, count: 0, lastRequest: now }
-                }
-
-                if (data.count >= rule.max) {
-                    const retryAfter = Math.max(0, data.lastRequest + rule.window - now)
-                    return {
-                        allowed: false,
-                        retryAfter: retryAfter || 1,
-                    }
-                }
-
-                data.count += 1
-                data.key = key
-
-                const kvTtl = Math.max(rule.window, 60)
-                await env.RL.put(key, JSON.stringify(data), {
-                    expirationTtl: kvTtl,
-                })
-
-                return {
-                    allowed: true,
-                    retryAfter: null,
-                }
-            },
-        },
+        customStorage: rateLimitStorage,
     },
     secondaryStorage: secondaryStorage,
     databaseHooks: databaseHooks,

@@ -1,4 +1,10 @@
-import { createAuthEndpoint, sessionMiddleware, getSessionFromCtx, APIError } from "better-auth/api"
+import {
+    createAuthEndpoint,
+    sessionMiddleware,
+    sensitiveSessionMiddleware,
+    getAuthoritativeSessionFromCtx,
+    APIError,
+} from "better-auth/api"
 import { signJWT } from "better-auth/plugins"
 import * as z from "zod"
 import { schema } from "./schema"
@@ -522,7 +528,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                     }),
                 },
                 async (ctx) => {
-                    const session = await getSessionFromCtx(ctx)
+                    // initiates a real deposit, so a browser session here
+                    // needs a fresh DB check, not a cached cookie
+                    const session = await getAuthoritativeSessionFromCtx(ctx)
                     let userId: string
                     let clientId: string | null
                     if (session) {
@@ -683,7 +691,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                 "/pay/intent/confirm",
                 {
                     method: "POST",
-                    use: [sessionMiddleware],
+                    // starts a real deposit, needs a fresh DB check
+                    use: [sensitiveSessionMiddleware],
                     body: z.object({
                         id: z.string(),
                         phoneNumber: z.string().min(1),
@@ -749,7 +758,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                 "/pay/payout",
                 {
                     method: "POST",
-                    use: [sessionMiddleware],
+                    // moves real money out, needs a fresh DB check
+                    use: [sensitiveSessionMiddleware],
                     body: z.object({
                         amount: z.string().min(1),
                         currency: z.string().length(3),
@@ -821,7 +831,8 @@ export function infraPayment(options: InfraPaymentOptions) {
                 "/pay/refund",
                 {
                     method: "POST",
-                    use: [sessionMiddleware],
+                    // reverses a real deposit, needs a fresh DB check
+                    use: [sensitiveSessionMiddleware],
                     body: z.object({
                         paymentId: z.string().min(1),
                         amount: z.string().min(1).optional(),
