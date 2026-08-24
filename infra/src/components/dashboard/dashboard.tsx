@@ -188,7 +188,6 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             </div>
                         )}
                         {children}
-
                         <Button
                             size="icon"
                             variant="secondary"
