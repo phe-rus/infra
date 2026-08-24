@@ -129,7 +129,9 @@ export function infraPayment(options: InfraPaymentOptions) {
                 currency: params.currency,
                 pawapayReferenceId: depositId,
                 status,
-                failureReason: result.failureReason ? JSON.stringify(result.failureReason) : undefined,
+                failureReason: result.failureReason
+                    ? JSON.stringify(result.failureReason)
+                    : undefined,
             },
         })
 
