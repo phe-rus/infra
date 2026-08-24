@@ -102,6 +102,7 @@ function RouteComponent() {
                 throw new Error(confirmError.message ?? "Could not start this payment")
             }
         },
+        onSuccess: () => refetch(),
         onError: (mutationError) => setError(mutationError.message),
     })
 
