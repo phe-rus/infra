@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { payoutSchema, refundSchema, walletBalancesSchema } from "@/domains/payments/schema"
+import { payoutSchema, refundSchema, walletBalancesSchema } from "@/domains/payments/types"
 
 const validPayout = {
     amount: "5000",

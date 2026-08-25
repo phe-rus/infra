@@ -1,17 +1,10 @@
 import { useState } from "react"
 import { usePaymentConfig } from "@/domains/payments"
 
-// Uganda — matches where this instance's operator actually is
 const DEFAULT_COUNTRY = "UGA"
-
-// same cascade as www's features/payments/useWalletFields — see that file's
-// comment for why this stays a separate small copy instead of shared
 export function usePaymentFields() {
     const { data } = usePaymentConfig()
     const countries = data.countries
-    // explicitly typed to include `undefined`: countries[0] is only a real
-    // fallback if the list isn't empty, which the array type alone can't
-    // guarantee
     const defaultCountry: (typeof countries)[number] | undefined =
         countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
 

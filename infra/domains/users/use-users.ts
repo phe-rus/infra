@@ -1,3 +1,4 @@
+import { useQuery, useSuspenseQuery, queryOptions } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import {
     banUser,
@@ -14,12 +15,33 @@ import {
     updateUser,
     uploadUserImage,
 } from "./func"
-import { patchUserInCache } from "./patch-user-cache"
 import { useAppMutation } from "@infra/ui/hooks"
-import type { UsersListData } from "./func"
+import type { ListedUser, UsersListData } from "./func"
 import { getContext } from "@/lib/queryClient"
 import { meOptions } from "@/domains/auth"
-import { usersOptions } from "./get-user"
+import { userDetailOptions, usersOptions } from "./get-users"
+
+function patchUserInCache(
+    old: UsersListData | undefined,
+    userId: string,
+    patch: Partial<ListedUser>
+): UsersListData {
+    if (!old) return { users: [], total: 0 }
+    return {
+        ...old,
+        users: old.users.map((u) => (u.id === userId ? { ...u, ...patch } : u)),
+    }
+}
+
+export const useUsers = () => useSuspenseQuery(usersOptions())
+
+export const useUserDetail = (userId: string | null) =>
+    useQuery(
+        queryOptions({
+            ...userDetailOptions(userId ?? ""),
+            enabled: Boolean(userId),
+        })
+    )
 
 export const useCreateUser = () =>
     useAppMutation({

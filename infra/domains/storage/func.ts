@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { auth } from "@/auth"
 import { AdminMiddleware } from "@/middleware"
-import { deleteObjectsSchema, listPrefixSchema } from "./schema"
+import { deleteObjectsSchema, listPrefixSchema } from "./types"
 
 export const listObjects = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])

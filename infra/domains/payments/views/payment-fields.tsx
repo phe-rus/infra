@@ -2,7 +2,7 @@ import type { FC } from "react"
 import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { CountryProviderFields } from "@infra/ui/widgets/country-provider-fields"
-import type { usePaymentFields } from "./use-payment-fields"
+import type { usePaymentFields } from "../use-payment-fields"
 
 export type PaymentFieldsProps = {
     idPrefix: string

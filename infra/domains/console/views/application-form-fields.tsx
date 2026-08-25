@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useSelector, withForm } from "@infra/ui/widgets/blocks"
-import { FrameworkIcon } from "@/domains/console/framework-icon"
+import { FrameworkIcon } from "@/domains/console/views/framework-icon"
 import {
     CLIENT_TYPE_INFO,
     CLIENT_TYPES,

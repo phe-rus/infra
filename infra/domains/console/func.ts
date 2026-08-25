@@ -6,14 +6,14 @@ import { APIError } from "better-auth/api"
 import { createHash } from "@better-auth/utils/hash"
 import { base64Url } from "@better-auth/utils/base64"
 import { createRandomStringGenerator } from "@better-auth/utils/random"
+import { assertOwnsApp } from "./assert-owns-app"
 import {
     appIdSchema,
     createAppSchema,
     PENDING_REDIRECT_URI,
     setAppActiveSchema,
     updateAppSchema,
-} from "./schema"
-import { assertOwnsApp } from "./assert-owns-app"
+} from "./types"
 
 const generateSecret = createRandomStringGenerator("a-z", "A-Z")
 function withClientMetadataError(error: unknown): never {

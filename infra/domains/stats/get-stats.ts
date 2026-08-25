@@ -1,10 +1,8 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query"
-import { getStats } from "./fnc"
+import { queryOptions } from "@tanstack/react-query"
+import { getStats } from "./func"
 
 export const statsOptions = () =>
     queryOptions({
         queryKey: ["stats"],
         queryFn: () => getStats(),
     })
-
-export const useStats = () => useSuspenseQuery(statsOptions())

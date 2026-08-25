@@ -15,7 +15,7 @@ import {
     setUserRoleSchema,
     updateUserDetailsSchema,
     userIdSchema,
-} from "./schema"
+} from "./types"
 
 export type UserSession = SessionWithImpersonatedBy
 

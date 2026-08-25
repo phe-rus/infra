@@ -13,7 +13,7 @@ import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import type { ListedPayment } from "@/domains/payments"
 import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"
-import { statusVariant } from "./status-variant"
+import { statusVariant } from "../status-variant"
 
 export type ListPaymentsProps = {
     payments: ListedPayment[]

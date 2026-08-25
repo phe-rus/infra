@@ -1,13 +1,11 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query"
-import { findApp, listApps } from "./fnc"
+import { queryOptions } from "@tanstack/react-query"
+import { findApp, listApps } from "./func"
 
 export const consoleOptions = () =>
     queryOptions({
         queryKey: ["applications"],
         queryFn: () => listApps(),
     })
-
-export const useConsole = () => useSuspenseQuery(consoleOptions())
 
 export const appOptions = (clientId: string) =>
     queryOptions({

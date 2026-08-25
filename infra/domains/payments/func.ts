@@ -9,7 +9,7 @@ import {
     payoutSchema,
     refundSchema,
     walletBalancesSchema,
-} from "./schema"
+} from "./types"
 
 type PaymentRow = {
     id: string
@@ -71,8 +71,6 @@ function toPayment(row: PaymentRow, user?: Pick<UserStub, "name" | "email">) {
     }
 }
 
-// admin: every payment across every user, for the Billing page — attaches
-// each payer's name/email with one follow-up query rather than one-per-row
 export const listPayments = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(listPaymentsSchema)
@@ -123,10 +121,6 @@ function parseOriginalPaymentId(metadata: string | null): string | null {
     }
 }
 
-// admin: one payment's full detail, for the receipt page — a refund also
-// carries the deposit it reversed, a deposit also carries any refunds
-// against it (metadata isn't indexed, so the reverse lookup filters in
-// memory rather than in the query — fine at this table's size)
 export const findPayment = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(z.object({ paymentId: z.string().min(1) }))
@@ -159,11 +153,6 @@ export const findPayment = createServerFn({ method: "GET" })
 
         let refunds: ListedPayment[] = []
         if (row.type === "deposit") {
-            // metadata isn't indexed/queryable directly (D1/SQLite, no JSONB
-            // operators to push this filter into the query), so the match is
-            // still found in memory — but only `id`+`metadata` are fetched
-            // for every refund row to find it, not the full row, then only
-            // the actual matches (typically 0-1) are fetched in full
             const refundStubs = await ctx.adapter.findMany<
                 Pick<PaymentRow, "id" | "metadata">
             >({
@@ -191,9 +180,6 @@ export const findPayment = createServerFn({ method: "GET" })
     })
 
 export type PaymentDetail = Awaited<ReturnType<typeof findPayment>>
-
-// any signed-in user — backs the country/provider picker on the admin
-// payout dialog
 export const getPaymentConfig = createServerFn({ method: "GET" })
     .middleware([SessionMiddleware])
     .handler(async () => {
@@ -205,9 +191,6 @@ export const getPaymentConfig = createServerFn({ method: "GET" })
 export type PaymentConfig = Awaited<ReturnType<typeof getPaymentConfig>>
 export type PaymentCountryOption = PaymentConfig["countries"][number]
 export type PaymentProviderOption = PaymentCountryOption["providers"][number]
-
-// admin/owner only — the platform's real PawaPay wallet balances, combined
-// into one total in `currency` when given (converted via a cached FX table)
 export const getWalletBalances = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(walletBalancesSchema)
@@ -217,7 +200,6 @@ export const getWalletBalances = createServerFn({ method: "GET" })
         return response
     })
 
-// admin/owner only — the platform cashing out, not a user-facing action
 export const initiatePayout = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(payoutSchema)
@@ -233,7 +215,6 @@ export const initiatePayout = createServerFn({ method: "POST" })
         return response
     })
 
-// admin/owner only — reverses a completed deposit
 export const initiateRefund = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(refundSchema)

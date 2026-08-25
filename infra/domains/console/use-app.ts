@@ -1,7 +1,10 @@
-import { createApp, removeApp, rotateApp, setAppActive, updateApp } from "./fnc"
+import { createApp, removeApp, rotateApp, setAppActive, updateApp } from "./func"
 import { useAppMutation } from "@infra/ui/hooks"
-import type { AppListData } from "./fnc"
-import { consoleOptions } from "./get-app"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import type { AppListData } from "./func"
+import { consoleOptions } from "./get-console"
+
+export const useConsole = () => useSuspenseQuery(consoleOptions())
 
 export const useCreateApp = () =>
     useAppMutation({

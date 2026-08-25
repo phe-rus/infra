@@ -1,6 +1,26 @@
+import { useSuspenseQuery } from "@tanstack/react-query"
+import type * as z from "zod"
 import { useAppMutation } from "@infra/ui/hooks"
-import { initiatePayout, initiateRefund } from "./fnc"
-import { paymentsOptions } from "./get-payment"
+import { initiatePayout, initiateRefund } from "./func"
+import {
+    paymentConfigOptions,
+    paymentOptions,
+    paymentsOptions,
+    walletBalancesOptions,
+} from "./get-payments"
+import type { listPaymentsSchema, walletBalancesSchema } from "./types"
+
+export const usePayments = (filters?: z.infer<typeof listPaymentsSchema>) =>
+    useSuspenseQuery(paymentsOptions(filters))
+
+export const usePaymentConfig = () => useSuspenseQuery(paymentConfigOptions())
+
+export const useWalletBalances = (
+    filters?: z.infer<typeof walletBalancesSchema>
+) => useSuspenseQuery(walletBalancesOptions(filters))
+
+export const usePayment = (paymentId: string) =>
+    useSuspenseQuery(paymentOptions(paymentId))
 
 export const useInitiatePayout = () =>
     useAppMutation({

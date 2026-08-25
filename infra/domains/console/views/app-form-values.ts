@@ -1,5 +1,5 @@
 import type { z } from "zod"
-import type { AppDetail } from "./fnc"
+import type { AppDetail } from "../func"
 import type {
     appFormSchema,
     ClientType,
@@ -7,7 +7,7 @@ import type {
     GrantType,
     Scope,
     TokenEndpointAuthMethod,
-} from "./schema"
+} from "../types"
 
 type ChangedFields = Partial<{
     client_name: string

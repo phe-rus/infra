@@ -8,7 +8,7 @@ import { Button } from "@infra/ui/components/button"
 import { useInitiatePayout, useInitiateRefund } from "@/domains/payments"
 import type { ListedPayment } from "@/domains/payments"
 import { PaymentFields } from "./payment-fields"
-import { usePaymentFields } from "./use-payment-fields"
+import { usePaymentFields } from "../use-payment-fields"
 
 type PayoutProps = {
     open: boolean

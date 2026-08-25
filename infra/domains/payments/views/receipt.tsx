@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { Badge } from "@infra/ui/components/badge"
 import { formatUtc } from "@infra/ui/lib/date"
 import type { ListedPayment } from "@/domains/payments"
-import { statusVariant } from "./status-variant"
+import { statusVariant } from "../status-variant"
 
 type RowProps = {
     label: string
