@@ -69,7 +69,7 @@ export type R2ProviderOptions = {
     isAdmin: (role: string) => boolean
 }
 
-export function r2Provider(options: R2ProviderOptions) {
+export function resources(options: R2ProviderOptions) {
     const { binding, isAdmin } = options
     return {
         id: "r2",

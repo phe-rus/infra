@@ -1,5 +1,5 @@
 import type { BetterAuthClientPlugin } from "better-auth/client"
-import type { r2Provider } from "./index"
+import type { resources } from "./index"
 
 export { cdnPath, cdnUrl, withOrigin } from "./cdn-url"
 
@@ -15,7 +15,7 @@ export { cdnPath, cdnUrl, withOrigin } from "./cdn-url"
 export const r2Client = () => {
     return {
         id: "r2",
-        $InferServerPlugin: {} as ReturnType<typeof r2Provider>,
+        $InferServerPlugin: {} as ReturnType<typeof resources>,
         getActions: ($fetch) => {
             return {
                 r2: {

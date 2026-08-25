@@ -27,12 +27,14 @@ export type CreateAuthOptions<
     /** Origin allowlist as a comma-separated string, e.g. "pherus.org,localhost". */
     trustedOrigins: string
     cache: KVNamespace
-    /** KV binding backing the rate limiter's shared (cross-isolate) counters. */
-    rateLimitKV: KVNamespace
-    /** Path prefixes given an explicit rate-limit rule (window: 60s, max: 100), e.g. ["/pay/*", "/r2/*", "/cdn/**"]. */
-    rateLimitPaths: string[]
-    /** Subset of rateLimitPaths' prefixes that need a real, cross-isolate KV counter rather than per-isolate memory, usually just the money-moving ones. */
-    sharedCounterPrefixes: string[]
+    rateLimit: {
+        /** KV binding backing the rate limiter's shared (cross-isolate) counters. */
+        binding: KVNamespace
+        /** Path prefixes given an explicit rate-limit rule (window: 60s, max: 100), e.g. ["/pay/*", "/r2/*", "/cdn/**"]. */
+        paths: string[]
+        /** Subset of paths' prefixes that need a real, cross-isolate KV counter rather than per-isolate memory, usually just the money-moving ones. */
+        sharedCounterPrefixes: string[]
+    }
     emails: SessionEmailCallbacks
     /** Every resource this instance issues OAuth tokens for. */
     oauth: Omit<CreateOAuthProviderOptions, "isAdmin">
@@ -67,14 +69,14 @@ export function createAuth<
             max: 100,
             storage: "secondary-storage",
             customRules: Object.fromEntries(
-                options.rateLimitPaths.map((path) => [
+                options.rateLimit.paths.map((path) => [
                     path,
                     { window: 60, max: 100 },
                 ])
             ),
             customStorage: createRateLimitStorage(
-                options.rateLimitKV,
-                options.sharedCounterPrefixes
+                options.rateLimit.binding,
+                options.rateLimit.sharedCounterPrefixes
             ),
         },
         secondaryStorage: createSecondaryStorage(options.cache),

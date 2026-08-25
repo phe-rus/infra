@@ -6,6 +6,7 @@ import {
     APIError,
 } from "better-auth/api"
 import { signJWT } from "better-auth/plugins"
+import { getOAuthProviderApi } from "@better-auth/oauth-provider"
 import * as z from "zod"
 import { schema } from "./schema"
 import { PawaPayClient } from "./pawapay-client"
@@ -49,25 +50,54 @@ export type InfraPaymentOptions = {
     cache: KVNamespace
     /** Whether a given role has admin-tier access — the caller's own role model, not assumed here. */
     isAdmin: (role: string) => boolean
-    /** Called once, the first time a payment transitions to "completed" — e.g. to email a receipt. Optional: not every self-hoster wants this. */
-    onPaymentCompleted?: (email: string, receipt: PaymentReceiptInfo) => Promise<void>
-    /**
-     * Validates an incoming `Authorization: Bearer <access token>` against
-     * whatever OAuth provider is registered on this better-auth instance,
-     * returning the token's granted scopes plus who it belongs to (or null
-     * for a missing/invalid token). Only consulted by /pay/deposit when the
-     * request has no first-party session — a connected OAuth app needs the
-     * "payments" scope to deposit on a user's behalf, a dashboard/www
-     * session never needs one. Injected rather than assumed, same
-     * reasoning as isAdmin/onPaymentCompleted: this plugin doesn't assume
-     * any specific OAuth provider is registered. Omit to leave
-     * /pay/deposit first-party-session-only, as before.
-     */
-    resolveOAuthAccess?: (headers: Headers) => Promise<OAuthAccess | null>
+    emails?: {
+        /** Called once, the first time a payment transitions to "completed". Optional: not every self-hoster wants this. */
+        sendPaymentReceipt?: (email: string, receipt: PaymentReceiptInfo) => Promise<void>
+    }
+}
+
+// Resolves a bearer token against whichever oauth-provider plugin is
+// registered on this better-auth instance. Deliberately does not go through
+// /oauth2/userinfo — that endpoint requires the "openid" scope, and a
+// connected app that only requested "payments" would be rejected even
+// though it holds the scope this plugin actually checks.
+async function resolveOAuthAccess(
+    ctx: Parameters<typeof signJWT>[0],
+    headers: Headers | null | undefined
+): Promise<OAuthAccess | null> {
+    const authorization = headers?.get("authorization")
+    if (!authorization?.startsWith("Bearer ")) return null
+    // getPlugin's return type depends on the concrete app's Options, which
+    // this portable plugin can't know statically — cast only .options to
+    // the shape getOAuthProviderApi actually requires.
+    const provider = ctx.context.getPlugin("oauth-provider") as {
+        options: Parameters<typeof getOAuthProviderApi>[1]
+    } | null
+    if (!provider) return null
+    const token = authorization.slice("Bearer ".length)
+    // requireActiveAccessToken returns Awaitable<T> (Promise<T> | T), and T
+    // carries an index signature (jose's JWTPayload) — chaining .catch()
+    // directly on that union resolves through the index signature to
+    // `unknown` instead of a real Promise method, so use try/catch instead.
+    let payload: Awaited<
+        ReturnType<ReturnType<typeof getOAuthProviderApi>["requireActiveAccessToken"]>
+    >
+    try {
+        payload = await getOAuthProviderApi(ctx, provider.options).requireActiveAccessToken(token)
+    } catch {
+        return null
+    }
+    if (typeof payload.sub !== "string") return null
+    return {
+        userId: payload.sub,
+        clientId: typeof payload.client_id === "string" ? payload.client_id : null,
+        scopes: typeof payload.scope === "string" ? payload.scope.split(" ") : [],
+    }
 }
 
 export function infraPayment(options: InfraPaymentOptions) {
-    const { isAdmin, onPaymentCompleted } = options
+    const { isAdmin, emails } = options
+    const sendPaymentReceipt = emails?.sendPaymentReceipt
     const client = new PawaPayClient(options.apiToken, options.environment)
 
     // shared by both the session-gated /pay/config (used by the deposit/
@@ -144,12 +174,7 @@ export function infraPayment(options: InfraPaymentOptions) {
     async function resolveClientAccess(
         ctx: Parameters<typeof signJWT>[0]
     ): Promise<{ userId: string; clientId: string }> {
-        const headers = ctx.headers
-        const authorization = headers?.get("authorization")
-        const access =
-            options.resolveOAuthAccess && headers && authorization?.startsWith("Bearer ")
-                ? await options.resolveOAuthAccess(headers).catch(() => null)
-                : null
+        const access = await resolveOAuthAccess(ctx, ctx.headers)
         if (!access) {
             throw new APIError("UNAUTHORIZED", { message: "Authentication required" })
         }
@@ -266,7 +291,7 @@ export function infraPayment(options: InfraPaymentOptions) {
             ),
             // self-service: re-sends the receipt email for one of the
             // caller's own completed payments, reusing the same
-            // onPaymentCompleted callback the webhook fires on first
+            // sendPaymentReceipt callback the webhook fires on first
             // completion — just triggered on demand instead of by a status
             // transition
             resendReceipt: createAuthEndpoint(
@@ -277,7 +302,7 @@ export function infraPayment(options: InfraPaymentOptions) {
                     body: z.object({ paymentId: z.string().min(1) }),
                 },
                 async (ctx) => {
-                    if (!onPaymentCompleted) {
+                    if (!sendPaymentReceipt) {
                         throw new APIError("BAD_REQUEST", {
                             message: "Receipt emails are not configured on this instance",
                         })
@@ -307,7 +332,7 @@ export function infraPayment(options: InfraPaymentOptions) {
                         })
                     }
 
-                    await onPaymentCompleted(ctx.context.session.user.email, {
+                    await sendPaymentReceipt(ctx.context.session.user.email, {
                         userName: ctx.context.session.user.name,
                         type: payment.type as "deposit" | "payout" | "refund",
                         amount: payment.amount,
@@ -502,10 +527,11 @@ export function infraPayment(options: InfraPaymentOptions) {
             // clientId comes straight from the body (a dashboard-initiated
             // deposit has none). A connected OAuth app instead sends an
             // Authorization: Bearer <access token> with no cookie — it
-            // must have been granted the "payments" scope, checked via the
-            // injected resolveOAuthAccess rather than assumed, same
-            // reasoning as isAdmin/onPaymentCompleted elsewhere in this
-            // file. clientId in that case comes from the verified token
+            // must have been granted the "payments" scope, checked via
+            // resolveOAuthAccess (validated against whatever oauth-provider
+            // plugin is registered on this instance, not assumed — same
+            // reasoning as the injected isAdmin/emails.sendPaymentReceipt
+            // elsewhere in this file). clientId in that case comes from the verified token
             // itself, not the caller-supplied body field, so one connected
             // app can't attribute a deposit to another app's clientId.
             depositPayment: createAuthEndpoint(
@@ -539,14 +565,7 @@ export function infraPayment(options: InfraPaymentOptions) {
                         userId = session.user.id
                         clientId = ctx.body.clientId ?? null
                     } else {
-                        const headers = ctx.headers
-                        const authorization = headers?.get("authorization")
-                        const access =
-                            options.resolveOAuthAccess &&
-                            headers &&
-                            authorization?.startsWith("Bearer ")
-                                ? await options.resolveOAuthAccess(headers).catch(() => null)
-                                : null
+                        const access = await resolveOAuthAccess(ctx, ctx.headers)
                         if (!access) {
                             throw new APIError("UNAUTHORIZED", {
                                 message: "Authentication required",
@@ -1061,11 +1080,11 @@ export function infraPayment(options: InfraPaymentOptions) {
                     if (
                         status === "completed" &&
                         existing.status !== "completed" &&
-                        onPaymentCompleted
+                        sendPaymentReceipt
                     ) {
                         const user = await ctx.context.internalAdapter.findUserById(existing.userId)
                         if (user) {
-                            await onPaymentCompleted(user.email, {
+                            await sendPaymentReceipt(user.email, {
                                 userName: user.name,
                                 type: existing.type as "deposit" | "payout" | "refund",
                                 amount: existing.amount,

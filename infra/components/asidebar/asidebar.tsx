@@ -108,12 +108,11 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                         }}
                         onMouseLeave={() => setIsPeeking(false)}
                         className={cn(
-                            "fixed h-full shrink-0 border-r bg-secondary/5 shadow-md",
-                            "border-primary/5 inset-y-0 backdrop-blur-3xl",
+                            "fixed h-full shrink-0 border-r bg-muted/15 shadow-md",
+                            "border-border/15 inset-y-0 backdrop-blur-3xl z-55",
                             "transition-all duration-300 ease-in-out ease-initial",
                             "will-change-transform will-change-backdrop-filter",
-                            // Prevent layout shifts by keeping width constant (w-72)
-                            // and using md:absolute for peeking/closed states so it overlays.
+                            "shadow shadow-muted",
                             open
                                 ? "w-72 translate-x-0 z-55 md:relative"
                                 : isPeeking
@@ -122,7 +121,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                         )}
                     >
                         <Button
-                            size="icon-xs"
+                            size={open ? "icon-xs" : "icon-sm"}
                             variant="secondary"
                             aria-label={
                                 isExpanded
@@ -132,7 +131,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             className={cn(
                                 "absolute top-5 z-56 -translate-y-1/2 cursor-pointer",
                                 "rounded-full transition-all duration-300 select-none",
-                                !isExpanded && "hidden md:flex",
+                                !isExpanded && "flex",
                                 isExpanded
                                     ? "left-full -translate-x-1/2"
                                     : "left-[calc(100%+8px)] translate-x-0.5"
@@ -163,7 +162,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                         <img
                                             src="/favicon.svg"
                                             alt="Infra"
-                                            className="size-4.5 mix-blend-normal rounded-full!"
+                                            className={cn(
+                                                "size-4.5 mix-blend-normal rounded-full!"
+                                            )}
                                         />
                                         Infra
                                     </Link>
@@ -178,7 +179,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                 "transition-colors duration-150 ease-out"
                                             )}
                                             activeProps={{
-                                                className: "text-current",
+                                                className: cn("text-current"),
                                             }}
                                         >
                                             <nav.Icon className="size-5" />

@@ -1,20 +1,13 @@
 import { env } from "cloudflare:workers"
 import { createAuth, isAdminTier } from "@infra/auth"
-import { r2Provider } from "@infra/r2"
-import { infraPayment, type OAuthAccess } from "@infra/payment"
-import * as z from "zod"
+import { resources } from "@infra/r2"
+import { infraPayment } from "@infra/payment"
 import {
-    sendDeleteAccountEmail,
-    sendPaymentReceiptEmail,
-    sendResetPasswordEmail,
+    sendDeleteAccountEmail as sendDeleteAccountVerification,
+    sendPaymentReceiptEmail as sendPaymentReceipt,
+    sendResetPasswordEmail as sendResetPassword,
     sendVerificationEmail,
 } from "./emails"
-
-const oauthUserInfoSchema = z.object({
-    id: z.string(),
-    scopes: z.array(z.string()),
-    clientId: z.string().nullable(),
-})
 
 export const auth = createAuth({
     baseURL: env.BETTER_AUTH_URL,
@@ -24,13 +17,15 @@ export const auth = createAuth({
     cookieDomain: env.COOKIE_DOMAIN,
     trustedOrigins: env.TRUSTED_ORIGINS,
     cache: env.CACHE,
-    rateLimitKV: env.RL,
-    rateLimitPaths: ["/pay/*", "/r2/*", "/cdn/**"],
-    sharedCounterPrefixes: ["/pay/"],
+    rateLimit: {
+        binding: env.RL,
+        paths: ["/pay/*", "/r2/*", "/cdn/**"],
+        sharedCounterPrefixes: ["/pay/"],
+    },
     emails: {
-        sendResetPassword: sendResetPasswordEmail,
-        sendVerificationEmail: sendVerificationEmail,
-        sendDeleteAccountVerification: sendDeleteAccountEmail,
+        sendResetPassword,
+        sendVerificationEmail,
+        sendDeleteAccountVerification,
     },
     oauth: {
         loginPage: `${env.WWW_URL}/sign-in`,
@@ -40,7 +35,7 @@ export const auth = createAuth({
         resources: [env.BETTER_AUTH_URL],
     },
     plugins: [
-        r2Provider({
+        resources({
             binding: env.R2,
             isAdmin: isAdminTier,
         }),
@@ -50,21 +45,7 @@ export const auth = createAuth({
                 env.PAWAPAY_ENV === "production" ? "production" : "sandbox",
             cache: env.PAYMENTS,
             isAdmin: isAdminTier,
-            onPaymentCompleted: sendPaymentReceiptEmail,
-            resolveOAuthAccess: async (
-                headers: Headers
-            ): Promise<OAuthAccess | null> => {
-                const info = await auth.api
-                    .oauth2UserInfo({ headers })
-                    .catch(() => null)
-                const parsed = oauthUserInfoSchema.safeParse(info)
-                if (!parsed.success) return null
-                return {
-                    userId: parsed.data.id,
-                    clientId: parsed.data.clientId,
-                    scopes: parsed.data.scopes,
-                }
-            },
+            emails: { sendPaymentReceipt },
         }),
     ],
 })
