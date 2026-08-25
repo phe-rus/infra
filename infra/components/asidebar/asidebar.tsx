@@ -5,15 +5,21 @@ import {
     useRef,
     useEffect,
     useCallback,
+    Fragment,
 } from "react"
 import type { PropsWithChildren, FC } from "react"
 import {
+    IconBone,
     IconChevronLeft,
     IconChevronRight,
+    IconDownload,
     IconLogs,
+    IconMeteorFilled,
     IconMoneybag,
     IconPackage,
+    IconSettings,
     IconTerminal,
+    IconUpload,
     IconUser,
 } from "@tabler/icons-react"
 import { useIsMobile } from "@infra/ui/lib/use-media-query"
@@ -56,7 +62,53 @@ const navLists = [
         path: "/billing",
         Icon: IconMoneybag,
     },
+    {
+        label: "System",
+        items: [
+            {
+                label: "Application",
+                path: "/settings",
+                Icon: IconSettings,
+            },
+            {
+                label: "Metrics",
+                path: "/settings/metrics",
+                Icon: IconMeteorFilled,
+            },
+            {
+                label: "Crons",
+                path: "/settings/crons",
+                Icon: IconBone,
+            },
+        ],
+    },
+    {
+        label: "Sync",
+        items: [
+            {
+                label: "Export store",
+                path: "/settings/sync#export",
+                Icon: IconDownload,
+            },
+            {
+                label: "Import store",
+                path: "/settings/sync#import",
+                Icon: IconUpload,
+            },
+        ],
+    },
+    {
+        label: "Debug",
+        items: [
+            {
+                label: "SQL console",
+                path: "/settings/sql",
+                Icon: IconDownload,
+            },
+        ],
+    },
 ]
+
 export const Dashboard: FC<DashboardProps> = ({ children }) => {
     const { isPending, mutateAsync: signOut } = useLogout()
     const { data: session } = useSuspenseQuery(meOptions())
@@ -150,13 +202,14 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                 !isExpanded ? "hidden" : "flex"
                             )}
                         >
-                            <section className="flex flex-col gap-3">
+                            <section className="flex flex-col gap-2">
                                 <nav className="flex items-center gap-1">
                                     <Link
                                         to="/"
                                         className={cn(
-                                            "flex gap-1 items-center text-xl text-primary font-bold",
-                                            "hover:text-primary/65 tracking-wider"
+                                            "flex gap-1 items-center text-lg text-primary",
+                                            "hover:text-primary/65 tracking-wider font-bold",
+                                            "px-1"
                                         )}
                                     >
                                         <img
@@ -170,38 +223,82 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     </Link>
                                 </nav>
                                 <nav className="flex flex-col">
-                                    {navLists.map((nav, index) => (
-                                        <Link
-                                            key={index}
-                                            to={nav.path}
-                                            className={cn(
-                                                "group tracking-tight flex items-center gap-2",
-                                                "transition-colors duration-150 ease-out"
-                                            )}
-                                            activeProps={{
-                                                className: cn("text-current"),
-                                            }}
-                                        >
-                                            <nav.Icon className="size-5" />
-                                            {nav.label}
-                                        </Link>
-                                    ))}
+                                    {navLists.map(
+                                        ({ label, items, ...props }, index) => {
+                                            if (!items) {
+                                                return (
+                                                    <Link
+                                                        key={index}
+                                                        to={props.path}
+                                                        className={cn(
+                                                            "group tracking-tight flex items-center gap-2",
+                                                            "transition-colors duration-150 ease-out"
+                                                        )}
+                                                        activeProps={{
+                                                            className:
+                                                                cn(
+                                                                    "text-current"
+                                                                ),
+                                                        }}
+                                                    >
+                                                        {props.Icon && (
+                                                            <props.Icon className="size-5" />
+                                                        )}
+                                                        {label}
+                                                    </Link>
+                                                )
+                                            }
+                                            return (
+                                                <Fragment key={index}>
+                                                    <h4 className="pt-3 pb-1 text-sm text-muted-foreground tracking-tight">
+                                                        {label}
+                                                    </h4>
+                                                    <nav className="flex flex-col">
+                                                        {items?.map(
+                                                            (i, inx) => {
+                                                                return (
+                                                                    <Link
+                                                                        key={
+                                                                            inx
+                                                                        }
+                                                                        to={
+                                                                            i.path
+                                                                        }
+                                                                        className={cn(
+                                                                            "group tracking-tight flex items-center gap-2",
+                                                                            "transition-colors duration-150 ease-out"
+                                                                        )}
+                                                                        activeProps={{
+                                                                            className:
+                                                                                cn(
+                                                                                    "text-current"
+                                                                                ),
+                                                                        }}
+                                                                    >
+                                                                        <i.Icon className="size-5" />
+                                                                        {
+                                                                            i.label
+                                                                        }
+                                                                    </Link>
+                                                                )
+                                                            }
+                                                        )}
+                                                    </nav>
+                                                </Fragment>
+                                            )
+                                        }
+                                    )}
                                 </nav>
                             </section>
                             <span className="flex-1" />
                             <nav
                                 className={cn(
                                     "sticky bottom-0 mb-auto",
-                                    "flex flex-col"
+                                    "flex flex-col gap-3"
                                 )}
                             >
                                 <Button
-                                    className="w-fit!"
-                                    variant="destructive"
-                                >
-                                    API
-                                </Button>
-                                <Button
+                                    size="sm"
                                     className="w-fit!"
                                     onClick={() => signOut({})}
                                     isDisabled={isPending}
