@@ -5,7 +5,10 @@ import { protectedOptions } from "@/domains/auth/get-auth"
 export const Route = createFileRoute("/_workspace")({
     beforeLoad: async ({ context: { q } }) => {
         const session = await q.ensureQueryData(protectedOptions())
-        return { session, user: session.user }
+        return {
+            session,
+            user: session.user,
+        }
     },
     component: RouteComponent,
 })
