@@ -1,4 +1,4 @@
-export * from "./fnc"
+export * from "./func"
 export * from "./schema"
 export * from "./get-user"
 export * from "./use-users"

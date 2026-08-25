@@ -7,7 +7,7 @@ import {
     runSetupMigrations,
     signIn,
     signOut,
-} from "./fnc"
+} from "./func"
 import { useAppMutation } from "@infra/ui/hooks"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@infra/ui/components/sonner"

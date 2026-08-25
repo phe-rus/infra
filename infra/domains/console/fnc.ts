@@ -82,11 +82,6 @@ const APP_SELECT = [
     "updatedAt",
 ] as const
 
-// isOwnClient, not the raw userId: a null owner (a row that predates or
-// bypassed the authenticated-admin-session path adminCreateOAuthClient
-// normally guarantees) is treated as manageable by any admin, same as
-// today's no-ownership-check behavior, since there's no way to know who
-// "should" own it
 function toAppDetail(row: OAuthClientRow, callerId: string) {
     return {
         id: row.id,
@@ -232,9 +227,6 @@ export const rotateApp = createServerFn({ method: "POST" })
             context: { sessions },
         }): Promise<{ clientSecret: string | null }> => {
             const ctx = await auth.$context
-            // not Pick<OAuthClientRow, ...>: that type is deliberately the
-            // client-safe row shape toAppDetail maps from, clientSecret is never
-            // in it on purpose
             const client = await ctx.adapter.findOne<{
                 clientSecret: string | null
                 tokenEndpointAuthMethod: string | null

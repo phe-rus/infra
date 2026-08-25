@@ -1,5 +1,5 @@
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import { getUserDetail, listUsers } from "./fnc"
+import { getUserDetail, listUsers } from "./func"
 
 export const usersOptions = () =>
     queryOptions({

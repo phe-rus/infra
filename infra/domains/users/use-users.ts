@@ -13,10 +13,10 @@ import {
     unbanUser,
     updateUser,
     uploadUserImage,
-} from "./fnc"
+} from "./func"
 import { patchUserInCache } from "./patch-user-cache"
 import { useAppMutation } from "@infra/ui/hooks"
-import type { UsersListData } from "./fnc"
+import type { UsersListData } from "./func"
 import { getContext } from "@/lib/queryClient"
 import { meOptions } from "@/domains/auth"
 import { usersOptions } from "./get-user"
