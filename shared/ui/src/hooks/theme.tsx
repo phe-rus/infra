@@ -1,6 +1,19 @@
 import * as React from "react"
-import { createContext, memo, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import type { Dispatch, PropsWithChildren, ReactNode, SetStateAction } from "react"
+import {
+    createContext,
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react"
+import type {
+    Dispatch,
+    PropsWithChildren,
+    ReactNode,
+    SetStateAction,
+} from "react"
 
 type ValueObject = {
     [themeName: string]: string
@@ -65,7 +78,8 @@ const defaultContext: UseThemeProps = {
  * @example
  * const { theme, setTheme } = useTheme()
  */
-export const useTheme = (): UseThemeProps => useContext(ThemeContext) ?? defaultContext
+export const useTheme = (): UseThemeProps =>
+    useContext(ThemeContext) ?? defaultContext
 
 /**
  * Theme provider component is used to wrap your app &
@@ -107,7 +121,9 @@ const Theme = ({
     children,
     nonce,
 }: ThemeProviderProps) => {
-    const [theme, setThemeState] = useState(() => getTheme(storageKey, defaultTheme))
+    const [theme, setThemeState] = useState(() =>
+        getTheme(storageKey, defaultTheme)
+    )
 
     const applyClassAttribute = useCallback(
         (name: string | undefined, attrValues: Array<string>) => {
@@ -120,18 +136,23 @@ const Theme = ({
         []
     )
 
-    const applyDataAttribute = useCallback((attr: string, name: string | undefined) => {
-        const d = document.documentElement
-        if (name) {
-            d.setAttribute(attr, name)
-        } else {
-            d.removeAttribute(attr)
-        }
-    }, [])
+    const applyDataAttribute = useCallback(
+        (attr: string, name: string | undefined) => {
+            const d = document.documentElement
+            if (name) {
+                d.setAttribute(attr, name)
+            } else {
+                d.removeAttribute(attr)
+            }
+        },
+        []
+    )
 
     const applyAttributesToDOM = useCallback(
         (resolved: string) => {
-            const attributeList = Array.isArray(attribute) ? attribute : [attribute]
+            const attributeList = Array.isArray(attribute)
+                ? attribute
+                : [attribute]
             const attrValues = value ? Object.values(value) : themes
             const name = value ? value[resolved] : resolved
 
@@ -151,8 +172,12 @@ const Theme = ({
             if (!enableColorScheme) {
                 return
             }
-            const fallback = colorSchemes.includes(defaultTheme) ? defaultTheme : null
-            const colorScheme = colorSchemes.includes(resolved) ? resolved : fallback
+            const fallback = colorSchemes.includes(defaultTheme)
+                ? defaultTheme
+                : null
+            const colorScheme = colorSchemes.includes(resolved)
+                ? resolved
+                : fallback
             document.documentElement.style.colorScheme = colorScheme || ""
         },
         [enableColorScheme, defaultTheme]
@@ -164,19 +189,30 @@ const Theme = ({
             if (!nextTheme) {
                 return
             }
-            const resolved = nextTheme === "system" && enableSystem ? getSystemTheme() : nextTheme
+            const resolved =
+                nextTheme === "system" && enableSystem
+                    ? getSystemTheme()
+                    : nextTheme
             const enable = disableTransitionOnChange ? disableAnimation() : null
             applyAttributesToDOM(resolved)
             applyColorScheme(resolved)
             enable?.()
         },
-        [enableSystem, disableTransitionOnChange, applyAttributesToDOM, applyColorScheme]
+        [
+            enableSystem,
+            disableTransitionOnChange,
+            applyAttributesToDOM,
+            applyColorScheme,
+        ]
     )
 
     // Set theme state and save to local storage
     const setTheme = useCallback(
         (newValue: SetStateAction<string>) => {
-            const newTheme = typeof newValue === "function" ? newValue(theme ?? "") : newValue
+            const newTheme =
+                typeof newValue === "function"
+                    ? newValue(theme ?? "")
+                    : newValue
             setThemeState(newTheme)
 
             // Save to storage
@@ -404,18 +440,24 @@ export const script = (
             return
         }
 
-        const fallback = systemThemes.includes(defaultTheme) ? defaultTheme : null
+        const fallback = systemThemes.includes(defaultTheme)
+            ? defaultTheme
+            : null
         const colorScheme = systemThemes.includes(theme) ? theme : fallback
         el.style.colorScheme = colorScheme || ""
     }
 
     function resolveSystemTheme() {
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light"
     }
 
     if (forcedTheme) {
         const resolvedForcedTheme =
-            forcedTheme === "system" && enableSystem ? resolveSystemTheme() : forcedTheme
+            forcedTheme === "system" && enableSystem
+                ? resolveSystemTheme()
+                : forcedTheme
         updateDOM(resolvedForcedTheme)
     } else {
         try {

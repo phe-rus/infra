@@ -1,11 +1,12 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
-import type { SessionWithImpersonatedBy, UserWithRole } from "better-auth/plugins/admin"
+import type {
+    SessionWithImpersonatedBy,
+    UserWithRole,
+} from "better-auth/plugins/admin"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
-import { isOwner } from "@infra/auth/permissions"
-import { AdminMiddleware, OwnerMiddleware } from "@/middleware"
-import { assertCanAssignRole } from "./assert-can-assign-role"
+import { AdminMiddleware } from "@/middleware"
 import {
     banUserSchema,
     createUserSchema,
@@ -24,7 +25,11 @@ function readImageUpload(data: unknown): { file: File; userId: string } {
     }
     const file = data.get("file")
     const userId = data.get("userId")
-    if (!(file instanceof File) || typeof userId !== "string" || userId.length === 0) {
+    if (
+        !(file instanceof File) ||
+        typeof userId !== "string" ||
+        userId.length === 0
+    ) {
         throw new Error("Missing file or userId")
     }
     return { file, userId }
@@ -56,7 +61,10 @@ export const getUserDetail = createServerFn({ method: "GET" })
         const headers = getRequestHeaders()
         const [user, { sessions }, ctx] = await Promise.all([
             auth.api.getUser({ headers, query: { id: data.userId } }),
-            auth.api.listUserSessions({ headers, body: { userId: data.userId } }),
+            auth.api.listUserSessions({
+                headers,
+                body: { userId: data.userId },
+            }),
             auth.$context,
         ])
         // only the identifying fields, never tokens or password hashes
@@ -83,8 +91,7 @@ export type UsersListData = Awaited<ReturnType<typeof listUsers>>
 export const createUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(createUserSchema)
-    .handler(async ({ data, context: { sessions } }) => {
-        assertCanAssignRole(sessions.user.role ?? "", data.role)
+    .handler(async ({ data }) => {
         const headers = getRequestHeaders()
         const {
             response: { user },
@@ -102,7 +109,7 @@ export const createUser = createServerFn({ method: "POST" })
         forwardAuthHeaders(responseHeaders)
 
         // admin-created accounts aren't auto-verified like the setup-flow
-        // owner account is — send the real verification email now so the
+        // admin account is — send the real verification email now so the
         // "verification email sent" toast on the client is actually true,
         // not just copy. A delivery failure shouldn't fail account creation.
         if (!user.emailVerified) {
@@ -122,25 +129,16 @@ export const removeUser = createServerFn({ method: "POST" })
             throw new Error("You can't remove your own account")
         }
         const headers = getRequestHeaders()
-        // admins can remove anyone except an owner; only an owner can remove an owner
-        if (!isOwner(sessions.user.role ?? "")) {
-            const target = await auth.api.getUser({ headers, query: { id: data.userId } })
-            if (isOwner(target.role ?? "")) {
-                throw new Error("Only an owner can remove an owner account")
-            }
-        }
-        const { headers: responseHeaders, ...result } = await auth.api.removeUser({
-            headers,
-            returnHeaders: true,
-            body: { userId: data.userId },
-        })
+        const { headers: responseHeaders, ...result } =
+            await auth.api.removeUser({
+                headers,
+                returnHeaders: true,
+                body: { userId: data.userId },
+            })
         forwardAuthHeaders(responseHeaders)
         return result
     })
 
-// admin, no owner-target restriction: both roles carry identical adminAc
-// statements (permissions.ts), so auth.api.adminUpdateUser's own
-// field-level permission check never blocks either one here
 export const updateUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(updateUserDetailsSchema)
@@ -148,17 +146,18 @@ export const updateUser = createServerFn({ method: "POST" })
         const headers = getRequestHeaders()
         // adminUpdateUser returns the user directly, not wrapped in { user }
         // like its sibling admin.* endpoints
-        const { response: user, headers: responseHeaders } = await auth.api.adminUpdateUser({
-            headers: headers,
-            returnHeaders: true,
-            body: {
-                userId: data.userId,
-                data: {
-                    ...(data.name !== undefined && { name: data.name }),
-                    ...(data.email !== undefined && { email: data.email }),
+        const { response: user, headers: responseHeaders } =
+            await auth.api.adminUpdateUser({
+                headers: headers,
+                returnHeaders: true,
+                body: {
+                    userId: data.userId,
+                    data: {
+                        ...(data.name !== undefined && { name: data.name }),
+                        ...(data.email !== undefined && { email: data.email }),
+                    },
                 },
-            },
-        })
+            })
         forwardAuthHeaders(responseHeaders)
         return user
     })
@@ -168,17 +167,18 @@ export const uploadUserImage = createServerFn({ method: "POST" })
     .validator(readImageUpload)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } = await auth.api.uploadAvatar({
-            headers,
-            returnHeaders: true,
-            body: { file: data.file, userId: data.userId },
-        })
+        const { response, headers: responseHeaders } =
+            await auth.api.uploadAvatar({
+                headers,
+                returnHeaders: true,
+                body: { file: data.file, userId: data.userId },
+            })
         forwardAuthHeaders(responseHeaders)
         return response
     })
 
 export const setUserRole = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(setUserRoleSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
@@ -198,15 +198,16 @@ export const setUserRole = createServerFn({ method: "POST" })
     })
 
 export const setUserPassword = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(setUserPasswordSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const { headers: responseHeaders, ...result } = await auth.api.setUserPassword({
-            headers,
-            returnHeaders: true,
-            body: { userId: data.userId, newPassword: data.newPassword },
-        })
+        const { headers: responseHeaders, ...result } =
+            await auth.api.setUserPassword({
+                headers,
+                returnHeaders: true,
+                body: { userId: data.userId, newPassword: data.newPassword },
+            })
         forwardAuthHeaders(responseHeaders)
         return result
     })
@@ -215,9 +216,9 @@ export const setUserPassword = createServerFn({ method: "POST" })
 // requires the CALLER's password to confirm), so an admin can't call it on
 // someone else's behalf — this clears the flag and the stored secret/backup
 // codes directly, for when a user has lost their authenticator and needs
-// an owner to reset it for them
+// an admin to reset it for them
 export const disableUserTwoFactor = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }): Promise<{ success: true }> => {
         const ctx = await auth.$context
@@ -234,7 +235,7 @@ export const disableUserTwoFactor = createServerFn({ method: "POST" })
     })
 
 export const banUser = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(banUserSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
@@ -258,7 +259,7 @@ export const banUser = createServerFn({ method: "POST" })
     })
 
 export const unbanUser = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
@@ -275,35 +276,37 @@ export const unbanUser = createServerFn({ method: "POST" })
     })
 
 export const revokeUserSession = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(revokeUserSessionSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const { headers: responseHeaders, ...result } = await auth.api.revokeUserSession({
-            headers,
-            returnHeaders: true,
-            body: { sessionToken: data.sessionToken },
-        })
+        const { headers: responseHeaders, ...result } =
+            await auth.api.revokeUserSession({
+                headers,
+                returnHeaders: true,
+                body: { sessionToken: data.sessionToken },
+            })
         forwardAuthHeaders(responseHeaders)
         return result
     })
 
 export const revokeUserSessions = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const { headers: responseHeaders, ...result } = await auth.api.revokeUserSessions({
-            headers,
-            returnHeaders: true,
-            body: { userId: data.userId },
-        })
+        const { headers: responseHeaders, ...result } =
+            await auth.api.revokeUserSessions({
+                headers,
+                returnHeaders: true,
+                body: { userId: data.userId },
+            })
         forwardAuthHeaders(responseHeaders)
         return result
     })
 
 export const impersonateUser = createServerFn({ method: "POST" })
-    .middleware([OwnerMiddleware])
+    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
@@ -319,12 +322,14 @@ export const impersonateUser = createServerFn({ method: "POST" })
     })
 
 // no middleware: while impersonating, the session's role is the target's
-// role, so an owner/admin gate here would lock the admin out of this
-export const stopImpersonating = createServerFn({ method: "POST" }).handler(async () => {
-    const headers = getRequestHeaders()
-    const { headers: responseHeaders } = await auth.api.stopImpersonating({
-        headers,
-        returnHeaders: true,
-    })
-    forwardAuthHeaders(responseHeaders)
-})
+// role, so an admin gate here would lock the admin out of this
+export const stopImpersonating = createServerFn({ method: "POST" }).handler(
+    async () => {
+        const headers = getRequestHeaders()
+        const { headers: responseHeaders } = await auth.api.stopImpersonating({
+            headers,
+            returnHeaders: true,
+        })
+        forwardAuthHeaders(responseHeaders)
+    }
+)

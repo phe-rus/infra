@@ -21,12 +21,22 @@ export const PaymentFields: FC<PaymentFieldsProps> = ({
 }) => {
     const { provider } = fields
 
-    const minAmount = kind === "deposit" ? provider?.depositMinAmount : provider?.payoutMinAmount
-    const maxAmount = kind === "deposit" ? provider?.depositMaxAmount : provider?.payoutMaxAmount
+    const minAmount =
+        kind === "deposit"
+            ? provider?.depositMinAmount
+            : provider?.payoutMinAmount
+    const maxAmount =
+        kind === "deposit"
+            ? provider?.depositMaxAmount
+            : provider?.payoutMaxAmount
 
     return (
         <>
-            <CountryProviderFields idPrefix={idPrefix} phoneClassName="col-span-2" {...fields} />
+            <CountryProviderFields
+                idPrefix={idPrefix}
+                phoneClassName="col-span-2"
+                {...fields}
+            />
 
             <Field className="col-span-2">
                 <FieldLabel htmlFor={`${idPrefix}-amount`}>

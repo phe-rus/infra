@@ -1,11 +1,17 @@
-import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
-import { meQueryOptions, setupStatusQueryOptions } from "@/domains/auth"
+import {
+    HeadContent,
+    Outlet,
+    Scripts,
+    createRootRouteWithContext,
+} from "@tanstack/react-router"
+import { meOptions, setupOptions } from "@/domains/auth"
 import { ToasterProvider } from "@infra/ui/components/sonner"
 import type { QueryClient } from "@tanstack/react-query"
 import { ComposeViewport } from "@/components/views"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { seo } from "@/lib/seo"
+import { DefaultLoader } from "@infra/ui/defaults"
 
 export interface RouterAppContext {
     q: QueryClient
@@ -35,13 +41,14 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         ],
     }),
     beforeLoad: async ({ context }) => {
-        const session = await context.q.ensureQueryData(meQueryOptions())
-        const { hasOwner } = await context.q.ensureQueryData(setupStatusQueryOptions())
+        const session = await context.q.ensureQueryData(meOptions())
+        const { hasAdmin } = await context.q.ensureQueryData(setupOptions())
         return {
             session: session,
-            hasOwner: hasOwner,
+            hasAdmin: hasAdmin,
         }
     },
+    pendingComponent: DefaultLoader,
     shellComponent: RootDocument,
 })
 

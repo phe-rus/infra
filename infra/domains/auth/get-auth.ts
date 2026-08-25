@@ -1,14 +1,20 @@
 import { queryOptions } from "@tanstack/react-query"
-import { getSession, getSetupStatus } from "./fnc"
+import { getSession, protectedSession, getSetupStatus } from "./fnc"
 
-export const meQueryOptions = () =>
+export const meOptions = () =>
     queryOptions({
         queryKey: ["me"],
-        queryFn: () => getSession(),
+        queryFn: getSession,
     })
 
-export const setupStatusQueryOptions = () =>
+export const protectedOptions = () =>
+    queryOptions({
+        queryKey: ["protected"],
+        queryFn: protectedSession,
+    })
+
+export const setupOptions = () =>
     queryOptions({
         queryKey: ["setup"],
-        queryFn: () => getSetupStatus(),
+        queryFn: getSetupStatus,
     })

@@ -62,7 +62,11 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => void unbanUser({ data: { userId: viewUser.user.id } })}
+                        onClick={() =>
+                            void unbanUser({
+                                data: { userId: viewUser.user.id },
+                            })
+                        }
                     >
                         Unban
                     </Button>
@@ -84,7 +88,9 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                             id="ban-duration"
                             aria-label="Duration"
                             selectedKey={banDuration}
-                            onSelectionChange={(key) => setBanDuration(String(key))}
+                            onSelectionChange={(key) =>
+                                setBanDuration(String(key))
+                            }
                         >
                             <SelectTrigger>
                                 <SelectValue />
@@ -98,7 +104,11 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                             </SelectContent>
                         </Select>
                     </Field>
-                    <Button type="button" variant="destructive" onClick={() => void handleBan()}>
+                    <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => void handleBan()}
+                    >
                         Ban user
                     </Button>
                 </>

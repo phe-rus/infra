@@ -1,6 +1,6 @@
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
-import { DefaultBoundary, DefaultLoader, NotFound } from "@infra/ui/defaults"
 import { createRouter as createTanStackRouter } from "@tanstack/react-router"
+import { DefaultBoundary, NotFound } from "@infra/ui/defaults"
 import { QueryProvider, getContext } from "@/lib/queryClient"
 import { routeTree } from "./routeTree.gen"
 
@@ -14,7 +14,6 @@ export function getRouter() {
         scrollRestoration: true,
         defaultPreload: "intent",
         defaultPreloadStaleTime: 0,
-        defaultPendingComponent: DefaultLoader,
         defaultErrorComponent: DefaultBoundary,
         defaultNotFoundComponent: () => <NotFound />,
         Wrap: ({ children }) => {

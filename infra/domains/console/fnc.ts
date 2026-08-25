@@ -13,6 +13,7 @@ import {
     setAppActiveSchema,
     updateAppSchema,
 } from "./schema"
+import { assertOwnsApp } from "./assert-owns-app"
 
 const generateSecret = createRandomStringGenerator("a-z", "A-Z")
 function withClientMetadataError(error: unknown): never {
@@ -31,7 +32,9 @@ function withClientMetadataError(error: unknown): never {
 }
 
 async function hashClientSecret(secret: string): Promise<string> {
-    const digest = await createHash("SHA-256").digest(new TextEncoder().encode(secret))
+    const digest = await createHash("SHA-256").digest(
+        new TextEncoder().encode(secret)
+    )
     return base64Url.encode(new Uint8Array(digest), { padding: false })
 }
 
@@ -52,6 +55,7 @@ type OAuthClientRow = {
     skipConsent: boolean | null
     enableEndSession: boolean | null
     metadata: { framework?: string } | null
+    userId: string | null
     createdAt: Date
     updatedAt: Date
 }
@@ -73,11 +77,17 @@ const APP_SELECT = [
     "skipConsent",
     "enableEndSession",
     "metadata",
+    "userId",
     "createdAt",
     "updatedAt",
 ] as const
 
-function toAppDetail(row: OAuthClientRow) {
+// isOwnClient, not the raw userId: a null owner (a row that predates or
+// bypassed the authenticated-admin-session path adminCreateOAuthClient
+// normally guarantees) is treated as manageable by any admin, same as
+// today's no-ownership-check behavior, since there's no way to know who
+// "should" own it
+function toAppDetail(row: OAuthClientRow, callerId: string) {
     return {
         id: row.id,
         clientId: row.clientId,
@@ -95,6 +105,7 @@ function toAppDetail(row: OAuthClientRow) {
         skipConsent: row.skipConsent,
         enableEndSession: row.enableEndSession,
         framework: row.metadata?.framework ?? null,
+        isOwnClient: row.userId === null || row.userId === callerId,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
     }
@@ -102,14 +113,18 @@ function toAppDetail(row: OAuthClientRow) {
 
 export const listApps = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
-    .handler(async () => {
+    .handler(async ({ context: { sessions } }) => {
         const ctx = await auth.$context
         const clients = await ctx.adapter.findMany<OAuthClientRow>({
             model: "oauthClient",
             sortBy: { field: "createdAt", direction: "desc" },
             select: [...APP_SELECT],
         })
-        return { applications: clients.map(toAppDetail) }
+        return {
+            applications: clients.map((row) =>
+                toAppDetail(row, sessions.user.id)
+            ),
+        }
     })
 
 export type AppListData = Awaited<ReturnType<typeof listApps>>
@@ -118,14 +133,14 @@ export type ListedApp = AppListData["applications"][number]
 export const findApp = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(appIdSchema)
-    .handler(async ({ data }) => {
+    .handler(async ({ data, context: { sessions } }) => {
         const ctx = await auth.$context
         const row = await ctx.adapter.findOne<OAuthClientRow>({
             model: "oauthClient",
             where: [{ field: "clientId", value: data.clientId }],
             select: [...APP_SELECT],
         })
-        return row ? toAppDetail(row) : null
+        return row ? toAppDetail(row, sessions.user.id) : null
     })
 
 export type AppDetail = Awaited<ReturnType<typeof findApp>>
@@ -211,45 +226,74 @@ export const setAppActive = createServerFn({ method: "POST" })
 export const rotateApp = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(appIdSchema)
-    .handler(async ({ data }): Promise<{ clientSecret: string | null }> => {
-        const ctx = await auth.$context
-        // not Pick<OAuthClientRow, ...>: that type is deliberately the
-        // client-safe row shape toAppDetail maps from, clientSecret is never
-        // in it on purpose
-        const client = await ctx.adapter.findOne<{
-            clientSecret: string | null
-            tokenEndpointAuthMethod: string | null
-        }>({
-            model: "oauthClient",
-            where: [{ field: "clientId", value: data.clientId }],
-            select: ["clientSecret", "tokenEndpointAuthMethod"],
-        })
-        if (!client) {
-            throw new APIError("NOT_FOUND", { message: "Application not found" })
+    .handler(
+        async ({
+            data,
+            context: { sessions },
+        }): Promise<{ clientSecret: string | null }> => {
+            const ctx = await auth.$context
+            // not Pick<OAuthClientRow, ...>: that type is deliberately the
+            // client-safe row shape toAppDetail maps from, clientSecret is never
+            // in it on purpose
+            const client = await ctx.adapter.findOne<{
+                clientSecret: string | null
+                tokenEndpointAuthMethod: string | null
+                userId: string | null
+            }>({
+                model: "oauthClient",
+                where: [{ field: "clientId", value: data.clientId }],
+                select: ["clientSecret", "tokenEndpointAuthMethod", "userId"],
+            })
+            if (!client) {
+                throw new APIError("NOT_FOUND", {
+                    message: "Application not found",
+                })
+            }
+            assertOwnsApp(client.userId, sessions.user.id, "rotate its secret")
+            if (
+                !client.clientSecret ||
+                client.tokenEndpointAuthMethod === "none"
+            ) {
+                throw new APIError("BAD_REQUEST", {
+                    message: "Public clients cannot be rotated",
+                })
+            }
+            const clientSecret = generateSecret(32)
+            await ctx.adapter.update({
+                model: "oauthClient",
+                where: [{ field: "clientId", value: data.clientId }],
+                update: {
+                    clientSecret: await hashClientSecret(clientSecret),
+                    updatedAt: new Date(),
+                },
+            })
+            return { clientSecret }
         }
-        if (!client.clientSecret || client.tokenEndpointAuthMethod === "none") {
-            throw new APIError("BAD_REQUEST", { message: "Public clients cannot be rotated" })
-        }
-        const clientSecret = generateSecret(32)
-        await ctx.adapter.update({
-            model: "oauthClient",
-            where: [{ field: "clientId", value: data.clientId }],
-            update: {
-                clientSecret: await hashClientSecret(clientSecret),
-                updatedAt: new Date(),
-            },
-        })
-        return { clientSecret }
-    })
+    )
 
 export const removeApp = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(appIdSchema)
-    .handler(async ({ data }): Promise<{ success: true }> => {
-        const ctx = await auth.$context
-        await ctx.adapter.delete({
-            model: "oauthClient",
-            where: [{ field: "clientId", value: data.clientId }],
-        })
-        return { success: true }
-    })
+    .handler(
+        async ({ data, context: { sessions } }): Promise<{ success: true }> => {
+            const ctx = await auth.$context
+            const client = await ctx.adapter.findOne<{ userId: string | null }>(
+                {
+                    model: "oauthClient",
+                    where: [{ field: "clientId", value: data.clientId }],
+                    select: ["userId"],
+                }
+            )
+            if (!client) {
+                throw new APIError("NOT_FOUND", {
+                    message: "Application not found",
+                })
+            }
+            assertOwnsApp(client.userId, sessions.user.id, "remove it")
+            await ctx.adapter.delete({
+                model: "oauthClient",
+                where: [{ field: "clientId", value: data.clientId }],
+            })
+            return { success: true }
+        }
+    )

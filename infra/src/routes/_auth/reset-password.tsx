@@ -13,7 +13,10 @@ const resetPasswordSearchSchema = z.object({
 })
 
 const newPasswordFormSchema = z.object({
-    newPassword: z.string().min(8, "At least 8 characters").max(48, "At most 48 characters"),
+    newPassword: z
+        .string()
+        .min(8, "At least 8 characters")
+        .max(48, "At most 48 characters"),
 })
 
 export const Route = createFileRoute("/_auth/reset-password")({

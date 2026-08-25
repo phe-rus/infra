@@ -13,20 +13,38 @@ const ICONS: Record<
             <circle cx="12" cy="12" r="2" fill="#61DAFB" />
             <g stroke="#61DAFB" strokeWidth="1.2">
                 <ellipse cx="12" cy="12" rx="10" ry="4.2" />
-                <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)" />
-                <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)" />
+                <ellipse
+                    cx="12"
+                    cy="12"
+                    rx="10"
+                    ry="4.2"
+                    transform="rotate(60 12 12)"
+                />
+                <ellipse
+                    cx="12"
+                    cy="12"
+                    rx="10"
+                    ry="4.2"
+                    transform="rotate(120 12 12)"
+                />
             </g>
         </svg>
     ),
     vue: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className}>
             <path d="M2 3h4.2L12 13l5.8-10H22L12 21 2 3Z" fill="#41B883" />
-            <path d="M6.2 3H9.8L12 6.8 14.2 3h3.6L12 13 6.2 3Z" fill="#35495E" />
+            <path
+                d="M6.2 3H9.8L12 6.8 14.2 3h3.6L12 13 6.2 3Z"
+                fill="#35495E"
+            />
         </svg>
     ),
     angular: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className}>
-            <path d="M12 2 21 5.5 19.6 18 12 22 4.4 18 3 5.5 12 2Z" fill="#DD0031" />
+            <path
+                d="M12 2 21 5.5 19.6 18 12 22 4.4 18 3 5.5 12 2Z"
+                fill="#DD0031"
+            />
             <path
                 d="M12 4.4 18 17h-2.3l-1.2-3H9.5l-1.2 3H6L12 4.4Zm0 3.6-1.7 4h3.4L12 8Z"
                 fill="#fff"

@@ -8,8 +8,11 @@ export type RunSetupMigrationsProps = {
     onInitialized: () => void
 }
 
-export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({ onInitialized }) => {
-    const { mutateAsync: runMigrations, isPending: migrating } = useRunSetupMigrations()
+export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({
+    onInitialized,
+}) => {
+    const { mutateAsync: runMigrations, isPending: migrating } =
+        useRunSetupMigrations()
 
     async function handleInitialize() {
         await runMigrations()
@@ -28,10 +31,14 @@ export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({ onInitialized 
             }
         >
             <p className="text-sm text-muted-foreground">
-                This instance hasn't been initialized yet. This prepares the database and only needs
-                to run once.
+                This instance hasn't been initialized yet. This prepares the
+                database and only needs to run once.
             </p>
-            <Button type="button" isDisabled={migrating} onClick={() => void handleInitialize()}>
+            <Button
+                type="button"
+                isDisabled={migrating}
+                onClick={() => void handleInitialize()}
+            >
                 {migrating && <IconLoader2 className="animate-spin" />}
                 {migrating ? "Initializing…" : "Initialize"}
             </Button>

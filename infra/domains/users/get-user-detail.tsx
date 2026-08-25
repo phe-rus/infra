@@ -18,14 +18,12 @@ export type GetUserDetailProps = {
     userId: string | null
     onClose: () => void
     currentUserId: string
-    isOwner: boolean
 }
 
 export const GetUserDetail: FC<GetUserDetailProps> = ({
     userId,
     onClose,
     currentUserId,
-    isOwner,
 }) => {
     const { data: viewUser, isLoading } = useUserDetail(userId)
     const isViewingSelf = userId === currentUserId
@@ -37,40 +35,79 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
             title={viewUser?.user.name ?? "User"}
             description={viewUser?.user.email}
             footer={
-                <DrawerClose render={<Button type="button" variant="outline" />}>Close</DrawerClose>
+                <DrawerClose
+                    render={<Button type="button" variant="outline" />}
+                >
+                    Close
+                </DrawerClose>
             }
         >
-            {isLoading && <p className="text-xs text-muted-foreground">Loading…</p>}
+            {isLoading && (
+                <p className="text-xs text-muted-foreground">Loading…</p>
+            )}
 
             {viewUser && (
                 <>
                     <section className="flex flex-wrap gap-2">
-                        <Badge variant={viewUser.user.role === "user" ? "outline" : "secondary"}>
+                        <Badge
+                            variant={
+                                viewUser.user.role === "user"
+                                    ? "outline"
+                                    : "secondary"
+                            }
+                        >
                             {viewUser.user.role ?? "user"}
                         </Badge>
-                        <Badge variant={viewUser.user.emailVerified ? "outline" : "secondary"}>
-                            {viewUser.user.emailVerified ? "Verified" : "Unverified"}
+                        <Badge
+                            variant={
+                                viewUser.user.emailVerified
+                                    ? "outline"
+                                    : "secondary"
+                            }
+                        >
+                            {viewUser.user.emailVerified
+                                ? "Verified"
+                                : "Unverified"}
                         </Badge>
-                        <Badge variant={viewUser.user.banned ? "destructive" : "outline"}>
+                        <Badge
+                            variant={
+                                viewUser.user.banned ? "destructive" : "outline"
+                            }
+                        >
                             {viewUser.user.banned ? "Banned" : "Active"}
                         </Badge>
-                        <Badge variant={viewUser.user.twoFactorEnabled ? "outline" : "secondary"}>
-                            {viewUser.user.twoFactorEnabled ? "2FA on" : "2FA off"}
+                        <Badge
+                            variant={
+                                viewUser.user.twoFactorEnabled
+                                    ? "outline"
+                                    : "secondary"
+                            }
+                        >
+                            {viewUser.user.twoFactorEnabled
+                                ? "2FA on"
+                                : "2FA off"}
                         </Badge>
                     </section>
 
                     <section className="flex flex-col gap-1 text-xs text-muted-foreground">
                         <div>
-                            ID: <code className="text-foreground">{viewUser.user.id}</code>
+                            ID:{" "}
+                            <code className="text-foreground">
+                                {viewUser.user.id}
+                            </code>
                         </div>
-                        <div>Created {formatUtc(viewUser.user.createdAt, "PPPp")}</div>
-                        <div>Updated {formatUtc(viewUser.user.updatedAt, "PPPp")}</div>
+                        <div>
+                            Created {formatUtc(viewUser.user.createdAt, "PPPp")}
+                        </div>
+                        <div>
+                            Updated {formatUtc(viewUser.user.updatedAt, "PPPp")}
+                        </div>
                     </section>
 
                     <Separator />
                     <UpdateUser viewUser={viewUser} />
 
-                    {isOwner && !isViewingSelf && (
+                    {!isViewingSelf && (
                         <>
                             <Separator />
                             <BanUser viewUser={viewUser} />
@@ -78,26 +115,22 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                     )}
 
                     <Separator />
-                    <RevokeUserSessions viewUser={viewUser} isOwner={isOwner} />
+                    <RevokeUserSessions viewUser={viewUser} />
 
                     <Separator />
                     <UserAccounts viewUser={viewUser} />
 
-                    {isOwner && (
-                        <>
-                            <Separator />
-                            <SetUserPassword userId={viewUser.user.id} />
-                        </>
-                    )}
+                    <Separator />
+                    <SetUserPassword userId={viewUser.user.id} />
 
-                    {isOwner && viewUser.user.twoFactorEnabled && (
+                    {viewUser.user.twoFactorEnabled && (
                         <>
                             <Separator />
                             <DisableTwoFactor viewUser={viewUser} />
                         </>
                     )}
 
-                    {isOwner && !isViewingSelf && (
+                    {!isViewingSelf && (
                         <>
                             <Separator />
                             <ImpersonateUser userId={viewUser.user.id} />

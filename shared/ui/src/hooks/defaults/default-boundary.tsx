@@ -1,6 +1,11 @@
 import type { ErrorComponentProps } from "@tanstack/react-router"
 import { Button, buttonVariants } from "../../components/button"
-import { ErrorComponent, Link, useLocation, useRouter } from "@tanstack/react-router"
+import {
+    ErrorComponent,
+    Link,
+    useLocation,
+    useRouter,
+} from "@tanstack/react-router"
 import { cn } from "../../lib/utils"
 
 export function DefaultBoundary({ error }: ErrorComponentProps) {
@@ -19,7 +24,11 @@ export function DefaultBoundary({ error }: ErrorComponentProps) {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-2">
-                <Button onClick={() => router.invalidate()} variant="secondary" size="sm">
+                <Button
+                    onClick={() => router.invalidate()}
+                    variant="secondary"
+                    size="sm"
+                >
                     Try Again
                 </Button>
 
@@ -36,7 +45,11 @@ export function DefaultBoundary({ error }: ErrorComponentProps) {
                         Go Home
                     </Link>
                 ) : (
-                    <Button onClick={() => router.history.back()} variant="default" size="sm">
+                    <Button
+                        onClick={() => router.history.back()}
+                        variant="default"
+                        size="sm"
+                    >
                         Go Back
                     </Button>
                 )}

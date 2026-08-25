@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { queryOptions } from "@tanstack/react-query"
 import { authClient } from "@/lib/auth-client"
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 import { currentOptions } from "./get-auth"
 
 const fetchPasskeys = createServerFn({ method: "GET" }).handler(async () => {
@@ -28,7 +28,10 @@ export const useEnableTwoFactor = () =>
             const { data, error } = await authClient.twoFactor.enable({
                 password,
             })
-            if (error) throw new Error(error.message ?? "Could not start two-factor setup")
+            if (error)
+                throw new Error(
+                    error.message ?? "Could not start two-factor setup"
+                )
             return data
         },
         errorMessage: "Could not start two-factor setup",
@@ -50,7 +53,10 @@ export const useDisableTwoFactor = () =>
         mutationFn: async (password: string) => {
             const { error } = await authClient.twoFactor.disable({ password })
             if (error)
-                throw new Error(error.message ?? "Could not disable two-factor authentication")
+                throw new Error(
+                    error.message ??
+                        "Could not disable two-factor authentication"
+                )
         },
         invalidates: [currentOptions().queryKey],
         successMessage: "Two-factor authentication disabled",
@@ -60,8 +66,12 @@ export const useDisableTwoFactor = () =>
 export const useGenerateBackupCodes = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
-            const { data, error } = await authClient.twoFactor.generateBackupCodes({ password })
-            if (error) throw new Error(error.message ?? "Could not generate backup codes")
+            const { data, error } =
+                await authClient.twoFactor.generateBackupCodes({ password })
+            if (error)
+                throw new Error(
+                    error.message ?? "Could not generate backup codes"
+                )
             return data
         },
         successMessage: "New backup codes generated",
@@ -87,7 +97,10 @@ export const useAddPasskey = () =>
                 // ID, Windows Hello, a synced password manager) refuses to create a
                 // second one for it — not a bug, WebAuthn's own duplicate guard. A
                 // genuinely additional passkey needs a different device/security key.
-                if ("code" in error && error.code === "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED") {
+                if (
+                    "code" in error &&
+                    error.code === "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED"
+                ) {
                     throw new Error(
                         'This device already has a passkey for your account. To add another, choose "a different device or security key".'
                     )
@@ -103,8 +116,12 @@ export const useAddPasskey = () =>
 export const useUpdatePasskey = () =>
     useAppMutation({
         mutationFn: async ({ id, name }: { id: string; name: string }) => {
-            const { error } = await authClient.passkey.updatePasskey({ id, name })
-            if (error) throw new Error(error.message ?? "Could not rename passkey")
+            const { error } = await authClient.passkey.updatePasskey({
+                id,
+                name,
+            })
+            if (error)
+                throw new Error(error.message ?? "Could not rename passkey")
         },
         invalidates: [passkeysOptions().queryKey],
         successMessage: "Passkey renamed",
@@ -117,7 +134,8 @@ export const useDeletePasskey = () =>
             const { error } = await authClient.passkey.deletePasskey({
                 id,
             })
-            if (error) throw new Error(error.message ?? "Could not remove passkey")
+            if (error)
+                throw new Error(error.message ?? "Could not remove passkey")
         },
         invalidates: [passkeysOptions().queryKey],
         successMessage: "Passkey removed",

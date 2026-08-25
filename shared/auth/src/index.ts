@@ -2,26 +2,22 @@ import { betterAuth } from "better-auth"
 import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { openAPI, haveIBeenPwned } from "better-auth/plugins"
 import type { BetterAuthPlugin } from "better-auth/types"
-import { createSessionOptions, type SessionEmailCallbacks } from "./core/session"
-import { createAdvanced } from "./core/advanced"
-import { createSecondaryStorage } from "./core/storage"
-import { createRateLimitStorage } from "./core/rate-limit"
-import { databaseHooks } from "./core/hooks"
-import { createTrustedOrigins } from "./core/trusted-origins"
-import { isAdminTier } from "./core/permissions"
-import { createAdminPlugin } from "./plugins/admin"
-import { createTwoFactorPlugin } from "./plugins/two-factor"
-import { createPasskeyPlugin } from "./plugins/passkey"
-import { createJwtPlugin } from "./plugins/jwt"
 import {
-    createOAuthProviderPlugin,
-    type CreateOAuthProviderOptions,
-} from "./plugins/oauth-provider"
+    createSessionOptions,
+    type SessionEmailCallbacks,
+} from "./core/session"
+import { createAdvanced } from "./core/advanced"
+import { createSecondaryStorage, createRateLimitStorage } from "./core/storage"
+import { databaseHooks, isAdminTier } from "./core/permissions"
+import { createTrustedOrigins } from "./core/trusted-origins"
+import { config, type CreateOAuthProviderOptions } from "./config"
 
-export { isAdminTier, isOwner, FIXED_ROLE_NAMES } from "./core/permissions"
+export { isAdminTier, FIXED_ROLE_NAMES } from "./core/permissions"
 export { isTrustedOrigin } from "./core/trusted-origins"
 
-export type CreateAuthOptions<TPlugins extends readonly BetterAuthPlugin[] = []> = {
+export type CreateAuthOptions<
+    TPlugins extends readonly BetterAuthPlugin[] = [],
+> = {
     baseURL: string
     appName: string
     database: D1Database
@@ -35,7 +31,7 @@ export type CreateAuthOptions<TPlugins extends readonly BetterAuthPlugin[] = []>
     rateLimitKV: KVNamespace
     /** Path prefixes given an explicit rate-limit rule (window: 60s, max: 100), e.g. ["/pay/*", "/r2/*", "/cdn/**"]. */
     rateLimitPaths: string[]
-    /** Subset of rateLimitPaths' prefixes that need a real, cross-isolate KV counter rather than per-isolate memory — usually just the money-moving ones. */
+    /** Subset of rateLimitPaths' prefixes that need a real, cross-isolate KV counter rather than per-isolate memory, usually just the money-moving ones. */
     sharedCounterPrefixes: string[]
     emails: SessionEmailCallbacks
     /** Every resource this instance issues OAuth tokens for. */
@@ -52,14 +48,17 @@ export type CreateAuthOptions<TPlugins extends readonly BetterAuthPlugin[] = []>
     plugins?: TPlugins
 }
 
-export function createAuth<const TPlugins extends readonly BetterAuthPlugin[] = []>(
-    options: CreateAuthOptions<TPlugins>
-) {
+export function createAuth<
+    const TPlugins extends readonly BetterAuthPlugin[] = [],
+>(options: CreateAuthOptions<TPlugins>) {
     return betterAuth({
         baseURL: options.baseURL,
         appName: options.appName,
         database: options.database,
-        trustedOrigins: createTrustedOrigins(options.trustedOrigins, options.baseURL),
+        trustedOrigins: createTrustedOrigins(
+            options.trustedOrigins,
+            options.baseURL
+        ),
         disabledPaths: options.disabledPaths ?? ["/token"],
         ...createSessionOptions(options.emails),
         rateLimit: {
@@ -68,7 +67,10 @@ export function createAuth<const TPlugins extends readonly BetterAuthPlugin[] = 
             max: 100,
             storage: "secondary-storage",
             customRules: Object.fromEntries(
-                options.rateLimitPaths.map((path) => [path, { window: 60, max: 100 }])
+                options.rateLimitPaths.map((path) => [
+                    path,
+                    { window: 60, max: 100 },
+                ])
             ),
             customStorage: createRateLimitStorage(
                 options.rateLimitKV,
@@ -91,17 +93,19 @@ export function createAuth<const TPlugins extends readonly BetterAuthPlugin[] = 
             },
         },
         plugins: [
-            createAdminPlugin(),
-            createTwoFactorPlugin(options.appName),
-            createPasskeyPlugin({
+            ...config({
                 appName: options.appName,
                 isProduction: options.isProduction,
                 cookieDomain: options.cookieDomain,
+                oauth: {
+                    ...options.oauth,
+                    isAdmin: isAdminTier,
+                },
             }),
-            createJwtPlugin(),
-            createOAuthProviderPlugin({ ...options.oauth, isAdmin: isAdminTier }),
             ...(options.plugins ?? []),
-            ...(options.isProduction ? [haveIBeenPwned()] : [openAPI({ path: "docs" })]),
+            ...(options.isProduction
+                ? [haveIBeenPwned()]
+                : [openAPI({ path: "docs" })]),
             tanstackStartCookies(),
         ],
     })

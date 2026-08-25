@@ -4,6 +4,7 @@ import { password } from "./password"
 type EmailAndPassword = NonNullable<BetterAuthOptions["emailAndPassword"]>
 type EmailVerification = NonNullable<BetterAuthOptions["emailVerification"]>
 type UserOptions = NonNullable<BetterAuthOptions["user"]>
+type AdditionalFields = NonNullable<UserOptions["additionalFields"]>
 
 export type SessionEmailCallbacks = {
     sendResetPassword: EmailAndPassword["sendResetPassword"]
@@ -13,7 +14,12 @@ export type SessionEmailCallbacks = {
     >["sendDeleteAccountVerification"]
 }
 
-export function createSessionOptions(emails: SessionEmailCallbacks) {
+// extra columns an app needs on top of "bio" — kept optional so most callers
+// never have to think about it, in case a future app needs its own fields
+export function createSessionOptions(
+    emails: SessionEmailCallbacks,
+    additionalFields?: AdditionalFields
+) {
     return {
         emailAndPassword: {
             enabled: true,
@@ -41,10 +47,12 @@ export function createSessionOptions(emails: SessionEmailCallbacks) {
         user: {
             additionalFields: {
                 bio: { type: "string", required: false },
+                ...additionalFields,
             },
             deleteUser: {
                 enabled: true,
-                sendDeleteAccountVerification: emails.sendDeleteAccountVerification,
+                sendDeleteAccountVerification:
+                    emails.sendDeleteAccountVerification,
             },
         },
         session: {

@@ -60,7 +60,9 @@ const Payout: FC<PayoutProps> = ({ open, onOpenChange }) => {
                     >
                         Send payout
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                    <DrawerClose
+                        render={<Button type="button" variant="outline" />}
+                    >
                         Cancel
                     </DrawerClose>
                 </>
@@ -113,7 +115,9 @@ const Refund: FC<RefundProps> = ({ payment, onOpenChange }) => {
                     >
                         Refund
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                    <DrawerClose
+                        render={<Button type="button" variant="outline" />}
+                    >
                         Cancel
                     </DrawerClose>
                 </>

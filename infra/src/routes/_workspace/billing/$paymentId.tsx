@@ -60,48 +60,79 @@ function RouteComponent() {
                     <p className="text-2xl font-medium">
                         {payment.amount} {payment.currency}
                     </p>
-                    <p className="text-xs text-muted-foreground">{payment.referenceId}</p>
+                    <p className="text-xs text-muted-foreground">
+                        {payment.referenceId}
+                    </p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                     <Badge variant="outline">{payment.type}</Badge>
-                    <Badge variant={statusVariant(payment.status)}>{payment.status}</Badge>
+                    <Badge variant={statusVariant(payment.status)}>
+                        {payment.status}
+                    </Badge>
                 </div>
             </section>
 
             {failureReason && (
                 <section className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm">
-                    <p className="font-medium text-destructive">{failureReason.failureCode}</p>
-                    <p className="text-muted-foreground">{failureReason.failureMessage}</p>
+                    <p className="font-medium text-destructive">
+                        {failureReason.failureCode}
+                    </p>
+                    <p className="text-muted-foreground">
+                        {failureReason.failureMessage}
+                    </p>
                 </section>
             )}
 
             <section className="flex flex-col rounded-lg border p-4">
-                <Receipt.Row label="User" value={payment.userName ?? payment.userId} />
-                {payment.userEmail && <Receipt.Row label="Email" value={payment.userEmail} />}
+                <Receipt.Row
+                    label="User"
+                    value={payment.userName ?? payment.userId}
+                />
+                {payment.userEmail && (
+                    <Receipt.Row label="Email" value={payment.userEmail} />
+                )}
                 <Separator className="my-1" />
-                {payment.provider && <Receipt.Row label="Provider" value={payment.provider} />}
+                {payment.provider && (
+                    <Receipt.Row label="Provider" value={payment.provider} />
+                )}
                 {payment.phoneNumber && (
-                    <Receipt.Row label="Phone number" value={payment.phoneNumber} />
+                    <Receipt.Row
+                        label="Phone number"
+                        value={payment.phoneNumber}
+                    />
                 )}
                 <Receipt.Row label="Currency" value={payment.currency} />
                 <Separator className="my-1" />
-                <Receipt.Row label="Created" value={formatUtc(payment.createdAt, "PPPp")} />
-                <Receipt.Row label="Updated" value={formatUtc(payment.updatedAt, "PPPp")} />
+                <Receipt.Row
+                    label="Created"
+                    value={formatUtc(payment.createdAt, "PPPp")}
+                />
+                <Receipt.Row
+                    label="Updated"
+                    value={formatUtc(payment.updatedAt, "PPPp")}
+                />
             </section>
 
             {relatedDeposit && (
                 <section className="flex flex-col gap-2">
-                    <h2 className="text-sm font-medium">Refunds this deposit</h2>
+                    <h2 className="text-sm font-medium">
+                        Refunds this deposit
+                    </h2>
                     <Receipt.RelatedLink payment={relatedDeposit} />
                 </section>
             )}
 
             {refunds.length > 0 && (
                 <section className="flex flex-col gap-2">
-                    <h2 className="text-sm font-medium">Refunds against this deposit</h2>
+                    <h2 className="text-sm font-medium">
+                        Refunds against this deposit
+                    </h2>
                     <div className="flex flex-col gap-2">
                         {refunds.map((refund) => (
-                            <Receipt.RelatedLink key={refund.id} payment={refund} />
+                            <Receipt.RelatedLink
+                                key={refund.id}
+                                payment={refund}
+                            />
                         ))}
                     </div>
                 </section>
@@ -109,7 +140,10 @@ function RouteComponent() {
 
             <Link
                 to="/billing"
-                className={cn(buttonVariants({ variant: "outline" }), "w-fit print:hidden")}
+                className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "w-fit print:hidden"
+                )}
             >
                 Back to Billing
             </Link>

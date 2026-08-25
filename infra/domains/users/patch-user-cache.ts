@@ -6,5 +6,8 @@ export function patchUserInCache(
     patch: Partial<ListedUser>
 ): UsersListData {
     if (!old) return { users: [], total: 0 }
-    return { ...old, users: old.users.map((u) => (u.id === userId ? { ...u, ...patch } : u)) }
+    return {
+        ...old,
+        users: old.users.map((u) => (u.id === userId ? { ...u, ...patch } : u)),
+    }
 }

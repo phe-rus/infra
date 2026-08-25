@@ -11,7 +11,11 @@ type ApplicationGridProps = {
 
 export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
     if (data.applications.length === 0) {
-        return <p className="text-sm text-muted-foreground">No applications yet.</p>
+        return (
+            <p className="text-sm text-muted-foreground">
+                No applications yet.
+            </p>
+        )
     }
 
     return (
@@ -41,12 +45,17 @@ export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
                         </AvatarFallback>
                     </Avatar>
                     <div className="flex min-w-0 flex-1 flex-col">
-                        <h4 className="truncate font-medium">{app.name ?? "Untitled"}</h4>
+                        <h4 className="truncate font-medium">
+                            {app.name ?? "Untitled"}
+                        </h4>
                         <div className="flex items-center gap-1">
                             <span className="text-xs text-muted-foreground">
                                 {app.applicationType}
                             </span>
-                            <span className="text-xs text-muted-foreground"> • </span>
+                            <span className="text-xs text-muted-foreground">
+                                {" "}
+                                •{" "}
+                            </span>
                             <span className="text-xs text-muted-foreground">
                                 {app.disabled ? "inactive" : "active"}
                             </span>

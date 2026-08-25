@@ -38,7 +38,9 @@ function RelatedLink({ payment }: RelatedLinkProps) {
                     {formatUtc(payment.createdAt, "PPp")}
                 </span>
             </span>
-            <Badge variant={statusVariant(payment.status)}>{payment.status}</Badge>
+            <Badge variant={statusVariant(payment.status)}>
+                {payment.status}
+            </Badge>
         </Link>
     )
 }

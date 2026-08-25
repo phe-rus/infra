@@ -45,12 +45,19 @@ export function editDefaultValues(
         client_name: application?.name ?? "",
         client_uri: application?.uri ?? "",
         logo_uri: application?.icon ?? "",
-        framework: (application?.framework as Framework | undefined) ?? undefined,
-        application_type: (application?.applicationType as ClientType | undefined) ?? "native",
+        framework:
+            (application?.framework as Framework | undefined) ?? undefined,
+        application_type:
+            (application?.applicationType as ClientType | undefined) ??
+            "native",
         token_endpoint_auth_method:
-            (application?.tokenEndpointAuthMethod as TokenEndpointAuthMethod | undefined) ?? "none",
+            (application?.tokenEndpointAuthMethod as
+                | TokenEndpointAuthMethod
+                | undefined) ?? "none",
         redirect_uris: (application?.redirectUris ?? []).join(","),
-        post_logout_redirect_uris: (application?.postLogoutRedirectUris ?? []).join(","),
+        post_logout_redirect_uris: (
+            application?.postLogoutRedirectUris ?? []
+        ).join(","),
         scope: (application?.scopes as Scope[] | undefined) ?? [],
         grant_types: (application?.grantTypes as GrantType[] | undefined) ?? [],
         require_pkce: Boolean(application?.requirePKCE),
@@ -68,16 +75,21 @@ export function computeChangedFields(
     postLogoutRedirectUris: string[] | undefined
 ): ChangedFields {
     return {
-        ...(value.client_name !== application.name && { client_name: value.client_name }),
-        ...((value.client_uri || undefined) !== (application.uri ?? undefined) && {
+        ...(value.client_name !== application.name && {
+            client_name: value.client_name,
+        }),
+        ...((value.client_uri || undefined) !==
+            (application.uri ?? undefined) && {
             client_uri: value.client_uri || undefined,
         }),
-        ...((value.logo_uri || undefined) !== (application.icon ?? undefined) && {
+        ...((value.logo_uri || undefined) !==
+            (application.icon ?? undefined) && {
             logo_uri: value.logo_uri || undefined,
         }),
         ...(value.framework !== (application.framework ?? undefined) &&
             value.framework && { framework: value.framework }),
-        ...(JSON.stringify(redirectUris) !== JSON.stringify(application.redirectUris) && {
+        ...(JSON.stringify(redirectUris) !==
+            JSON.stringify(application.redirectUris) && {
             redirect_uris: redirectUris,
         }),
         ...(JSON.stringify(postLogoutRedirectUris ?? []) !==
@@ -95,13 +107,17 @@ export function computeChangedFields(
         ...(value.skip_consent !== Boolean(application.skipConsent) && {
             skip_consent: value.skip_consent,
         }),
-        ...(value.enable_end_session !== Boolean(application.enableEndSession) && {
+        ...(value.enable_end_session !==
+            Boolean(application.enableEndSession) && {
             enable_end_session: value.enable_end_session,
         }),
     }
 }
 
-export function infraConfigSnippet(clientId: string, clientSecret: string | null): string {
+export function infraConfigSnippet(
+    clientId: string,
+    clientSecret: string | null
+): string {
     const origin = typeof window !== "undefined" ? window.location.origin : ""
     return `const infraConfig = {
   clientId: "${clientId}",

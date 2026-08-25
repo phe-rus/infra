@@ -10,7 +10,9 @@ export const UserAccounts: FC<UserAccountsProps> = ({ viewUser }) => (
     <section className="flex flex-col gap-2">
         <h3 className="text-sm font-medium">Connected accounts</h3>
         {viewUser.accounts.length === 0 && (
-            <p className="text-xs text-muted-foreground">No connected accounts.</p>
+            <p className="text-xs text-muted-foreground">
+                No connected accounts.
+            </p>
         )}
         {viewUser.accounts.map((account) => (
             <div

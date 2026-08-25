@@ -10,18 +10,19 @@ export const getStats = createServerFn({ method: "GET" })
     .handler(async () => {
         const headers = getRequestHeaders()
         const cutoff = new Date(Date.now() - ACTIVE_WINDOW_MS).toISOString()
-        const [{ total: totalUsers }, { total: monthlyActiveUsers }] = await Promise.all([
-            auth.api.listUsers({ headers, query: { limit: 1 } }),
-            auth.api.listUsers({
-                headers,
-                query: {
-                    limit: 1,
-                    filterField: "updatedAt",
-                    filterOperator: "gte",
-                    filterValue: cutoff,
-                },
-            }),
-        ])
+        const [{ total: totalUsers }, { total: monthlyActiveUsers }] =
+            await Promise.all([
+                auth.api.listUsers({ headers, query: { limit: 1 } }),
+                auth.api.listUsers({
+                    headers,
+                    query: {
+                        limit: 1,
+                        filterField: "updatedAt",
+                        filterOperator: "gte",
+                        filterValue: cutoff,
+                    },
+                }),
+            ])
         return { totalUsers, monthlyActiveUsers }
     })
 

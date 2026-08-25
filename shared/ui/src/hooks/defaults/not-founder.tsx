@@ -20,13 +20,18 @@ export function NotFound({ children }: NotFoundProps) {
                             Page Not Found
                         </h2>
                         <p className="max-w-70 text-sm text-muted-foreground">
-                            The page you are looking for might have been moved, renamed, or deleted.
+                            The page you are looking for might have been moved,
+                            renamed, or deleted.
                         </p>
                     </div>
                 )}
 
                 <div className="mt-2 flex items-center gap-2">
-                    <Button onClick={() => router.history.back()} variant="secondary" size="sm">
+                    <Button
+                        onClick={() => router.history.back()}
+                        variant="secondary"
+                        size="sm"
+                    >
                         Go back
                     </Button>
                     <Link to="/" className={cn(buttonVariants({ size: "sm" }))}>

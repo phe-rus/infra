@@ -4,7 +4,12 @@ import * as z from "zod"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { AdminMiddleware, SessionMiddleware } from "@/middleware"
-import { listPaymentsSchema, payoutSchema, refundSchema, walletBalancesSchema } from "./schema"
+import {
+    listPaymentsSchema,
+    payoutSchema,
+    refundSchema,
+    walletBalancesSchema,
+} from "./schema"
 
 type PaymentRow = {
     id: string
@@ -76,9 +81,13 @@ export const listPayments = createServerFn({ method: "GET" })
         const rows = await ctx.adapter.findMany<PaymentRow>({
             model: "payment",
             where: [
-                ...(data.userId ? [{ field: "userId", value: data.userId }] : []),
+                ...(data.userId
+                    ? [{ field: "userId", value: data.userId }]
+                    : []),
                 ...(data.type ? [{ field: "type", value: data.type }] : []),
-                ...(data.status ? [{ field: "status", value: data.status }] : []),
+                ...(data.status
+                    ? [{ field: "status", value: data.status }]
+                    : []),
             ],
             sortBy: { field: "createdAt", direction: "desc" },
             select: [...PAYMENT_SELECT],
@@ -94,7 +103,11 @@ export const listPayments = createServerFn({ method: "GET" })
             : []
         const userById = new Map(users.map((user) => [user.id, user]))
 
-        return { payments: rows.map((row) => toPayment(row, userById.get(row.userId))) }
+        return {
+            payments: rows.map((row) =>
+                toPayment(row, userById.get(row.userId))
+            ),
+        }
     })
 
 export type PaymentListData = Awaited<ReturnType<typeof listPayments>>
@@ -151,7 +164,9 @@ export const findPayment = createServerFn({ method: "GET" })
             // still found in memory — but only `id`+`metadata` are fetched
             // for every refund row to find it, not the full row, then only
             // the actual matches (typically 0-1) are fetched in full
-            const refundStubs = await ctx.adapter.findMany<Pick<PaymentRow, "id" | "metadata">>({
+            const refundStubs = await ctx.adapter.findMany<
+                Pick<PaymentRow, "id" | "metadata">
+            >({
                 model: "payment",
                 where: [{ field: "type", value: "refund" }],
                 select: ["id", "metadata"],
@@ -163,7 +178,9 @@ export const findPayment = createServerFn({ method: "GET" })
             const refundRows = matchingIds.length
                 ? await ctx.adapter.findMany<PaymentRow>({
                       model: "payment",
-                      where: [{ field: "id", operator: "in", value: matchingIds }],
+                      where: [
+                          { field: "id", operator: "in", value: matchingIds },
+                      ],
                       select: [...PAYMENT_SELECT],
                   })
                 : []
@@ -206,11 +223,12 @@ export const initiatePayout = createServerFn({ method: "POST" })
     .validator(payoutSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } = await auth.api.payoutPayment({
-            headers,
-            returnHeaders: true,
-            body: data,
-        })
+        const { response, headers: responseHeaders } =
+            await auth.api.payoutPayment({
+                headers,
+                returnHeaders: true,
+                body: data,
+            })
         forwardAuthHeaders(responseHeaders)
         return response
     })
@@ -221,11 +239,12 @@ export const initiateRefund = createServerFn({ method: "POST" })
     .validator(refundSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } = await auth.api.refundPayment({
-            headers,
-            returnHeaders: true,
-            body: data,
-        })
+        const { response, headers: responseHeaders } =
+            await auth.api.refundPayment({
+                headers,
+                returnHeaders: true,
+                body: data,
+            })
         forwardAuthHeaders(responseHeaders)
         return response
     })

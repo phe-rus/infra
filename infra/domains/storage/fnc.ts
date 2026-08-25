@@ -9,7 +9,10 @@ export const listObjects = createServerFn({ method: "GET" })
     .validator(listPrefixSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        return await auth.api.listObjects({ headers, query: { prefix: data.prefix } })
+        return await auth.api.listObjects({
+            headers,
+            query: { prefix: data.prefix },
+        })
     })
 
 export type ObjectsListResult = Awaited<ReturnType<typeof listObjects>>

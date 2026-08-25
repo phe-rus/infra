@@ -1,23 +1,11 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { isAdminTier } from "@infra/auth/permissions"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { Dashboard } from "@/components/asidebar/asidebar"
+import { protectedOptions } from "@/domains/auth/get-auth"
 
 export const Route = createFileRoute("/_workspace")({
-    beforeLoad: ({ context: { session } }) => {
-        if (!session)
-            throw redirect({
-                to: "/sign-in",
-                replace: true,
-                search: { reason: "session-expired" },
-            })
-
-        if (!isAdminTier(session.user.role ?? "")) {
-            throw redirect({ to: "/unauthorized", replace: true })
-        }
-
-        return {
-            user: session.user,
-        }
+    beforeLoad: async ({ context: { q } }) => {
+        const session = await q.ensureQueryData(protectedOptions())
+        return { session, user: session.user }
     },
     component: RouteComponent,
 })

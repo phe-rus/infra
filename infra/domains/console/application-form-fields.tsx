@@ -45,7 +45,10 @@ export const ApplicationFormFields = withForm({
         // OAuth-provider plugin rejects anything but "none" (Public) for a
         // non-"web" type, so mirror that constraint in the UI instead of
         // letting the user pick an invalid combination and find out on submit
-        const applicationType = useSelector(form.store, (state) => state.values.application_type)
+        const applicationType = useSelector(
+            form.store,
+            (state) => state.values.application_type
+        )
         const confidentialityLocked = applicationType !== "web"
 
         useEffect(() => {
@@ -61,7 +64,12 @@ export const ApplicationFormFields = withForm({
             <FieldGroup className="grid grid-cols-1 gap-4">
                 <form.AppField
                     name="client_name"
-                    children={(field) => <field.input label="Name" placeholder="My Application" />}
+                    children={(field) => (
+                        <field.input
+                            label="Name"
+                            placeholder="My Application"
+                        />
+                    )}
                 />
 
                 <form.AppField
@@ -91,10 +99,17 @@ export const ApplicationFormFields = withForm({
                             label="Framework (optional)"
                             description="Used to pick a display icon — has no effect on how the client behaves."
                             columns={2}
-                            options={FRAMEWORKS.filter((f) => f !== "other").map((framework) => ({
+                            options={FRAMEWORKS.filter(
+                                (f) => f !== "other"
+                            ).map((framework) => ({
                                 value: framework,
                                 label: FRAMEWORK_LABELS[framework],
-                                icon: <FrameworkIcon framework={framework} className="size-4" />,
+                                icon: (
+                                    <FrameworkIcon
+                                        framework={framework}
+                                        className="size-4"
+                                    />
+                                ),
                             }))}
                         />
                     )}
@@ -133,11 +148,15 @@ export const ApplicationFormFields = withForm({
                                       ? "Only a Web application can use a client secret."
                                       : "You can't change this later."
                             }
-                            options={TOKEN_ENDPOINT_AUTH_METHODS.map((method) => ({
-                                value: method,
-                                ...TOKEN_ENDPOINT_AUTH_METHOD_INFO[method],
-                                disabled: confidentialityLocked && method !== "none",
-                            }))}
+                            options={TOKEN_ENDPOINT_AUTH_METHODS.map(
+                                (method) => ({
+                                    value: method,
+                                    ...TOKEN_ENDPOINT_AUTH_METHOD_INFO[method],
+                                    disabled:
+                                        confidentialityLocked &&
+                                        method !== "none",
+                                })
+                            )}
                         />
                     )}
                 />
@@ -165,14 +184,20 @@ export const ApplicationFormFields = withForm({
                 <form.AppField
                     name="grant_types"
                     children={(field) => (
-                        <field.multiselect label="Grant types" options={GRANT_TYPE_OPTIONS} />
+                        <field.multiselect
+                            label="Grant types"
+                            options={GRANT_TYPE_OPTIONS}
+                        />
                     )}
                 />
 
                 <form.AppField
                     name="scope"
                     children={(field) => (
-                        <field.multiselect label="Scopes" options={SCOPE_OPTIONS} />
+                        <field.multiselect
+                            label="Scopes"
+                            options={SCOPE_OPTIONS}
+                        />
                     )}
                 />
 
@@ -183,7 +208,9 @@ export const ApplicationFormFields = withForm({
                             label="Require PKCE"
                             disabled={!isCreate}
                             description={
-                                isCreate ? undefined : "This can't be edited after creation."
+                                isCreate
+                                    ? undefined
+                                    : "This can't be edited after creation."
                             }
                         />
                     )}

@@ -6,12 +6,12 @@ export const createUserSchema = z.object({
     name: z.string().min(1),
     email: z.email(),
     password: z.string().min(8).max(48),
-    role: z.enum(["owner", "admin", "user"]),
+    role: z.enum(["admin", "user"]),
 })
 
 export const setUserRoleSchema = z.object({
     userId: z.string().min(1),
-    role: z.enum(["owner", "admin", "user"]),
+    role: z.enum(["admin", "user"]),
 })
 
 export const updateUserDetailsSchema = z
@@ -30,7 +30,9 @@ export const banUserSchema = z.object({
     banExpiresIn: z.number().positive().optional(),
 })
 
-export const revokeUserSessionSchema = z.object({ sessionToken: z.string().min(1) })
+export const revokeUserSessionSchema = z.object({
+    sessionToken: z.string().min(1),
+})
 
 export const setUserPasswordSchema = z.object({
     userId: z.string().min(1),

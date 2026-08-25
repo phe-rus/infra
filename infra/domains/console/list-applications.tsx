@@ -3,8 +3,15 @@ import type { FC } from "react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
-import { DropdownMenuItem, DropdownMenuSeparator } from "@infra/ui/components/dropdown-menu"
-import { DataTable, RowActionsMenu, selectColumn } from "@infra/ui/widgets/tables"
+import {
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from "@infra/ui/components/dropdown-menu"
+import {
+    DataTable,
+    RowActionsMenu,
+    selectColumn,
+} from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import { CLIENT_TYPE_INFO } from "@/domains/console"
 import type { ClientType, ListedApp } from "@/domains/console"
@@ -34,7 +41,10 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     <Link
                         to="/console/$client_id"
                         params={{ client_id: row.original.clientId }}
-                        className={cn("rounded bg-accent px-3 py-1 text-xs!", "cursor-pointer")}
+                        className={cn(
+                            "rounded bg-accent px-3 py-1 text-xs!",
+                            "cursor-pointer"
+                        )}
                     >
                         {row.original.id}
                     </Link>
@@ -48,7 +58,9 @@ export const ListApplications: FC<ListApplicationsProps> = ({
             {
                 accessorKey: "name",
                 header: "Application",
-                cell: ({ row }) => <span>{row.original.name ?? "Untitled"}</span>,
+                cell: ({ row }) => (
+                    <span>{row.original.name ?? "Untitled"}</span>
+                ),
             },
             {
                 accessorKey: "applicationType",
@@ -57,9 +69,9 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     // real data isn't guaranteed to match the ClientType union
                     // (older rows, migrations) even though the type asserts it
                     // does — CLIENT_TYPE_INFO[...] can genuinely be undefined
-                    const info = CLIENT_TYPE_INFO[row.original.applicationType as ClientType] as
-                        | { label: string; description: string }
-                        | undefined
+                    const info = CLIENT_TYPE_INFO[
+                        row.original.applicationType as ClientType
+                    ] as { label: string; description: string } | undefined
                     return (
                         <Badge variant="outline">
                             {info?.label ?? row.original.applicationType}
@@ -98,20 +110,33 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     return (
                         <RowActionsMenu>
                             <DropdownMenuItem
-                                onAction={() => onSetActive(app.clientId, Boolean(app.disabled))}
+                                onAction={() =>
+                                    onSetActive(
+                                        app.clientId,
+                                        Boolean(app.disabled)
+                                    )
+                                }
                             >
                                 {app.disabled ? "Enable" : "Disable"}
                             </DropdownMenuItem>
-                            <DropdownMenuItem onAction={() => onRotate(app.clientId)}>
-                                Rotate secret
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                variant="destructive"
-                                onAction={() => onRemove(app.clientId)}
-                            >
-                                Remove
-                            </DropdownMenuItem>
+                            {app.isOwnClient && (
+                                <DropdownMenuItem
+                                    onAction={() => onRotate(app.clientId)}
+                                >
+                                    Rotate secret
+                                </DropdownMenuItem>
+                            )}
+                            {app.isOwnClient && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        onAction={() => onRemove(app.clientId)}
+                                    >
+                                        Remove
+                                    </DropdownMenuItem>
+                                </>
+                            )}
                         </RowActionsMenu>
                     )
                 },
@@ -134,9 +159,11 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     variant="destructive"
                     size="xs"
                     onClick={() => {
-                        selectedRows.forEach((row) => {
-                            onRemove(row.clientId)
-                        })
+                        selectedRows
+                            .filter((row) => row.isOwnClient)
+                            .forEach((row) => {
+                                onRemove(row.clientId)
+                            })
                         clearSelection()
                     }}
                 >

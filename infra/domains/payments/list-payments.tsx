@@ -4,7 +4,11 @@ import { Link } from "@tanstack/react-router"
 import { Badge } from "@infra/ui/components/badge"
 import { DropdownMenuItem } from "@infra/ui/components/dropdown-menu"
 import { TableCell, TableRow } from "@infra/ui/components/table"
-import { DataTable, RowActionsMenu, selectColumn } from "@infra/ui/widgets/tables"
+import {
+    DataTable,
+    RowActionsMenu,
+    selectColumn,
+} from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import type { ListedPayment } from "@/domains/payments"
 import { formatUtc } from "@infra/ui/lib/date"
@@ -18,17 +22,23 @@ export type ListPaymentsProps = {
 
 // net total per currency, completed transactions only — deposits add,
 // payouts/refunds subtract, since they're money leaving the platform
-const computeTotals = (payments: ListedPayment[]): { currency: string; amount: number }[] => {
+const computeTotals = (
+    payments: ListedPayment[]
+): { currency: string; amount: number }[] => {
     const totals = new Map<string, number>()
     for (const payment of payments) {
         if (payment.status !== "completed") continue
-        const sign = payment.type === "payout" || payment.type === "refund" ? -1 : 1
+        const sign =
+            payment.type === "payout" || payment.type === "refund" ? -1 : 1
         totals.set(
             payment.currency,
             (totals.get(payment.currency) ?? 0) + sign * Number(payment.amount)
         )
     }
-    return [...totals.entries()].map(([currency, amount]) => ({ currency, amount }))
+    return [...totals.entries()].map(([currency, amount]) => ({
+        currency,
+        amount,
+    }))
 }
 
 export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
@@ -42,7 +52,10 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                     <Link
                         to="/billing/$paymentId"
                         params={{ paymentId: row.original.id }}
-                        className={cn("rounded bg-accent px-3 py-1 text-xs!", "cursor-pointer")}
+                        className={cn(
+                            "rounded bg-accent px-3 py-1 text-xs!",
+                            "cursor-pointer"
+                        )}
                     >
                         {row.original.id}
                     </Link>
@@ -53,7 +66,9 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                 header: "User",
                 cell: ({ row }) => (
                     <div className="flex flex-col">
-                        <span>{row.original.userName ?? row.original.userId}</span>
+                        <span>
+                            {row.original.userName ?? row.original.userId}
+                        </span>
                         {row.original.userEmail && (
                             <span className="text-xs text-muted-foreground">
                                 {row.original.userEmail}
@@ -65,7 +80,9 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
             {
                 accessorKey: "type",
                 header: "Type",
-                cell: ({ row }) => <Badge variant="outline">{row.original.type}</Badge>,
+                cell: ({ row }) => (
+                    <Badge variant="outline">{row.original.type}</Badge>
+                ),
             },
             {
                 accessorKey: "provider",
@@ -125,7 +142,9 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                     if (payment.type !== "deposit") return null
                     return (
                         <RowActionsMenu>
-                            <DropdownMenuItem onAction={() => onRefund(payment)}>
+                            <DropdownMenuItem
+                                onAction={() => onRefund(payment)}
+                            >
                                 Refund
                             </DropdownMenuItem>
                         </RowActionsMenu>
@@ -156,8 +175,12 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                                           Net total (completed only):
                                       </span>
                                       {totals.map(({ currency, amount }) => (
-                                          <span key={currency} className="font-medium">
-                                              {amount.toLocaleString()} {currency}
+                                          <span
+                                              key={currency}
+                                              className="font-medium"
+                                          >
+                                              {amount.toLocaleString()}{" "}
+                                              {currency}
                                           </span>
                                       ))}
                                   </div>

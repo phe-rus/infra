@@ -5,7 +5,7 @@ import { getContext } from "@/lib/queryClient"
 import { authClient } from "@/lib/auth-client"
 import { t } from "@infra/ui/components/sonner"
 import { useRouter } from "@tanstack/react-router"
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 
 export const currentUser = createServerFn()
     .middleware([authMiddleware])
@@ -55,15 +55,19 @@ export const useRequestPasswordReset = () =>
                 email,
                 redirectTo: `${window.location.origin}/reset-password`,
             })
-            if (error) throw new Error(error.message ?? "Could not send reset email")
+            if (error)
+                throw new Error(error.message ?? "Could not send reset email")
         },
         onSuccess: () => {
             t.success("Check your email", {
-                description: "If that email exists, a reset link is on its way.",
+                description:
+                    "If that email exists, a reset link is on its way.",
             })
         },
         onError: (error) => {
-            t.error("Could not send reset email", { description: error.message })
+            t.error("Could not send reset email", {
+                description: error.message,
+            })
         },
     })
 
@@ -75,10 +79,13 @@ export const useResetPassword = () => {
                 newPassword: input.newPassword,
                 token: input.token,
             })
-            if (error) throw new Error(error.message ?? "Could not reset password")
+            if (error)
+                throw new Error(error.message ?? "Could not reset password")
         },
         onSuccess: () => {
-            t.success("Password reset", { description: "Sign in with your new password." })
+            t.success("Password reset", {
+                description: "Sign in with your new password.",
+            })
             setTimeout(() => {
                 router.navigate({ to: "/sign-in", replace: true })
             }, 50)
@@ -89,11 +96,6 @@ export const useResetPassword = () => {
     })
 }
 
-// deleteUser is configured server-side (infra/src/auth/index.ts) with
-// sendDeleteAccountVerification, so this call never deletes anything
-// immediately — it always sends a confirmation email with a one-time link.
-// Deletion only happens once that link is clicked; the session here stays
-// valid until then.
 export const useDeleteAccount = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
@@ -101,7 +103,10 @@ export const useDeleteAccount = () =>
                 password,
                 callbackURL: `${window.location.origin}/sign-in`,
             })
-            if (error) throw new Error(error.message ?? "Could not start account deletion")
+            if (error)
+                throw new Error(
+                    error.message ?? "Could not start account deletion"
+                )
         },
         successMessage: "Check your email",
         successDescription:

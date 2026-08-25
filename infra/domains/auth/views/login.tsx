@@ -8,21 +8,20 @@ import type { z } from "zod"
 
 export const Login: FC = () => {
     const { mutateAsync: signIn } = useSignIn()
+    const defaultValues: z.input<typeof signInSchema> = {
+        email: "",
+        password: "",
+        rememberMe: true,
+    }
 
     const form = useAppForm({
-        // widens rememberMe to match the schema's optional-boolean input type
-        defaultValues: {
-            email: "",
-            password: "",
-            rememberMe: true,
-        } as z.input<typeof signInSchema>,
+        defaultValues: defaultValues,
         validators: {
             onChange: signInSchema,
+            onSubmit: signInSchema,
+            onBlur: signInSchema,
         },
         onSubmit: async ({ value }) => {
-            // the oauth-provider plugin redirects here with the entire
-            // signed authorize query as flat params (client_id, sig, ...),
-            // not a single wrapped oauth_query param — forward it verbatim
             const search = window.location.search
             const oauthQuery = search.length > 1 ? search.slice(1) : undefined
             await signIn(
@@ -90,7 +89,9 @@ export const Login: FC = () => {
                         <div className="flex items-center justify-between truncate">
                             <form.AppField
                                 name="rememberMe"
-                                children={(field) => <field.checkbox label="Remember me" />}
+                                children={(field) => (
+                                    <field.checkbox label="Remember me" />
+                                )}
                             />
                             <Link
                                 to="/forgot-password"

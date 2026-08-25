@@ -13,7 +13,8 @@ export const ImpersonateUser: FC<ImpersonateUserProps> = ({ userId }) => {
         <section className="flex flex-col gap-2">
             <h3 className="text-sm font-medium">Impersonate</h3>
             <p className="text-xs text-muted-foreground">
-                Sign in as this user. You can return to your own account from anywhere in the app.
+                Sign in as this user. You can return to your own account from
+                anywhere in the app.
             </p>
             <Button
                 type="button"

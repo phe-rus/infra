@@ -1,4 +1,4 @@
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 import { initiatePayout, initiateRefund } from "./fnc"
 import { paymentsOptions } from "./get-payment"
 

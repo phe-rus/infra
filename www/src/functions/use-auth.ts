@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 import { authClient } from "@/lib/auth-client"
 import { currentOptions } from "./get-auth"
 
@@ -30,8 +30,11 @@ export const useUpdateProfile = () =>
             if (value.bio !== original.bio) changes.bio = value.bio
 
             if (value.avatar) {
-                const { data, error } = await authClient.r2.uploadAvatar(value.avatar)
-                if (error) throw new Error(error.message ?? "Could not upload avatar")
+                const { data, error } = await authClient.r2.uploadAvatar(
+                    value.avatar
+                )
+                if (error)
+                    throw new Error(error.message ?? "Could not upload avatar")
                 if (data.url) changes.image = data.url
             }
 

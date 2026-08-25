@@ -1,4 +1,8 @@
-import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
+import {
+    IconFileFilled,
+    IconFolderFilled,
+    IconMinus,
+} from "@tabler/icons-react"
 import { useListObjects, useDeleteObjects } from "@/domains/storage"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
@@ -18,11 +22,15 @@ const formatBytes = (bytes: number): string => {
 
 const cdnUrl = (key: string): string => `/api/auth/cdn/${key}`
 
-export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) => {
+export const BrowseObjects: FC<BrowseObjectsProps> = ({
+    prefix,
+    onNavigate,
+}) => {
     const { data, isLoading } = useListObjects(prefix)
     const { mutate: deleteObjects } = useDeleteObjects()
 
-    if (isLoading) return <p className="text-xs text-muted-foreground">Loading…</p>
+    if (isLoading)
+        return <p className="text-xs text-muted-foreground">Loading…</p>
     if (!data) return null
     if (data.folders.length === 0 && data.files.length === 0) {
         return <p className="text-xs text-muted-foreground">Empty.</p>
@@ -43,14 +51,18 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                             )}
                         >
                             <IconFolderFilled className="size-7! shrink-0" />
-                            <span className="min-w-0 flex-1 truncate text-xs">{folder.name}</span>
+                            <span className="min-w-0 flex-1 truncate text-xs">
+                                {folder.name}
+                            </span>
                             <Button
                                 size="icon-xs"
                                 variant="destructive"
                                 className="mr-auto size-5!"
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    deleteObjects({ data: { prefix: folder.key } })
+                                    deleteObjects({
+                                        data: { prefix: folder.key },
+                                    })
                                 }}
                             >
                                 <IconMinus />
@@ -93,7 +105,9 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                                 )}
                             </div>
                             <div className="mb-auto flex flex-col p-1">
-                                <span className="text-xs break-all">{file.name}</span>
+                                <span className="text-xs break-all">
+                                    {file.name}
+                                </span>
                                 <span className="text-[8px] font-light text-muted-foreground">
                                     {formatBytes(file.size)}
                                 </span>
@@ -105,7 +119,9 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
-                                    deleteObjects({ data: { keys: [file.key] } })
+                                    deleteObjects({
+                                        data: { keys: [file.key] },
+                                    })
                                 }}
                             >
                                 <IconMinus />

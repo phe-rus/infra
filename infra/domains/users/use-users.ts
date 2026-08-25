@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import {
     banUser,
@@ -16,34 +15,37 @@ import {
     uploadUserImage,
 } from "./fnc"
 import { patchUserInCache } from "./patch-user-cache"
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 import type { UsersListData } from "./fnc"
 import { getContext } from "@/lib/queryClient"
-import { t } from "@infra/ui/components/sonner"
-import { meQueryOptions } from "@/domains/auth"
-import { usersQueryOptions } from "./get-user"
+import { meOptions } from "@/domains/auth"
+import { usersOptions } from "./get-user"
 
 export const useCreateUser = () =>
     useAppMutation({
         mutationFn: createUser,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         successMessage: "User added",
         successDescription: (user) =>
-            user.emailVerified ? undefined : `Verification email sent to ${user.email}`,
+            user.emailVerified
+                ? undefined
+                : `Verification email sent to ${user.email}`,
         errorMessage: "Could not add user",
     })
 
 export const useRemoveUser = () =>
     useAppMutation({
         mutationFn: removeUser,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
-            queryKey: usersQueryOptions().queryKey,
+            queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
                 old
                     ? {
                           ...old,
-                          users: old.users.filter((u) => u.id !== variables.data.userId),
+                          users: old.users.filter(
+                              (u) => u.id !== variables.data.userId
+                          ),
                           total: Math.max(0, old.total - 1),
                       }
                     : { users: [], total: 0 },
@@ -55,13 +57,17 @@ export const useRemoveUser = () =>
 export const useUpdateUserDetails = () =>
     useAppMutation({
         mutationFn: updateUser,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
-            queryKey: usersQueryOptions().queryKey,
+            queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
                 patchUserInCache(old, variables.data.userId, {
-                    ...(variables.data.name !== undefined && { name: variables.data.name }),
-                    ...(variables.data.email !== undefined && { email: variables.data.email }),
+                    ...(variables.data.name !== undefined && {
+                        name: variables.data.name,
+                    }),
+                    ...(variables.data.email !== undefined && {
+                        email: variables.data.email,
+                    }),
                 }),
         },
         successMessage: "Details updated",
@@ -74,7 +80,7 @@ export const useUpdateUserDetails = () =>
 export const useUploadUserImage = () =>
     useAppMutation({
         mutationFn: uploadUserImage,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         successMessage: "Image updated",
         errorMessage: "Could not update image",
     })
@@ -82,11 +88,13 @@ export const useUploadUserImage = () =>
 export const useSetUserRole = () =>
     useAppMutation({
         mutationFn: setUserRole,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
-            queryKey: usersQueryOptions().queryKey,
+            queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, { role: variables.data.role }),
+                patchUserInCache(old, variables.data.userId, {
+                    role: variables.data.role,
+                }),
         },
         successMessage: "Role updated",
         errorMessage: "Could not update role",
@@ -102,11 +110,13 @@ export const useSetUserPassword = () =>
 export const useDisableUserTwoFactor = () =>
     useAppMutation({
         mutationFn: disableUserTwoFactor,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
-            queryKey: usersQueryOptions().queryKey,
+            queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, { twoFactorEnabled: false }),
+                patchUserInCache(old, variables.data.userId, {
+                    twoFactorEnabled: false,
+                }),
         },
         successMessage: "Two-factor disabled",
         errorMessage: "Could not disable two-factor",
@@ -115,9 +125,9 @@ export const useDisableUserTwoFactor = () =>
 export const useBanUser = () =>
     useAppMutation({
         mutationFn: banUser,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
-            queryKey: usersQueryOptions().queryKey,
+            queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
                 patchUserInCache(old, variables.data.userId, { banned: true }),
         },
@@ -128,9 +138,9 @@ export const useBanUser = () =>
 export const useUnbanUser = () =>
     useAppMutation({
         mutationFn: unbanUser,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
-            queryKey: usersQueryOptions().queryKey,
+            queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
                 patchUserInCache(old, variables.data.userId, { banned: false }),
         },
@@ -141,7 +151,7 @@ export const useUnbanUser = () =>
 export const useRevokeUserSession = () =>
     useAppMutation({
         mutationFn: revokeUserSession,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         successMessage: "Session revoked",
         errorMessage: "Could not revoke session",
     })
@@ -149,7 +159,7 @@ export const useRevokeUserSession = () =>
 export const useRevokeUserSessions = () =>
     useAppMutation({
         mutationFn: revokeUserSessions,
-        invalidates: [usersQueryOptions().queryKey],
+        invalidates: [usersOptions().queryKey],
         successMessage: "All sessions revoked",
         errorMessage: "Could not revoke sessions",
     })
@@ -157,36 +167,32 @@ export const useRevokeUserSessions = () =>
 export const useImpersonateUser = () => {
     const router = useRouter()
     const q = getContext()
-    return useMutation({
+    return useAppMutation({
         mutationFn: impersonateUser,
+        successMessage: "Impersonating user",
         onSuccess: () => {
-            t.success("Impersonating user")
             q.clear()
             setTimeout(() => {
                 router.navigate({ to: "/", replace: true })
             }, 50)
         },
-        onError: (error) => {
-            t.error("Could not impersonate user", { description: error.message })
-        },
+        errorMessage: "Could not impersonate user",
     })
 }
 
 export const useStopImpersonating = () => {
     const router = useRouter()
     const q = getContext()
-    return useMutation({
+    return useAppMutation({
         mutationFn: stopImpersonating,
+        successMessage: "Back to your account",
         onSuccess: () => {
-            t.success("Back to your account")
             q.clear()
-            q.prefetchQuery(meQueryOptions())
+            q.prefetchQuery(meOptions())
             setTimeout(() => {
                 router.navigate({ to: "/", replace: true })
             }, 50)
         },
-        onError: (error) => {
-            t.error("Could not stop impersonating", { description: error.message })
-        },
+        errorMessage: "Could not stop impersonating",
     })
 }

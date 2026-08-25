@@ -45,13 +45,17 @@ function RouteComponent() {
     const { mutateAsync: removeApp } = useRemoveApp()
     const { mutateAsync: setActive } = useSetAppActive()
 
-    const [revealedSecret, setRevealedSecret] = useState<string | null>(secret ?? null)
+    const [revealedSecret, setRevealedSecret] = useState<string | null>(
+        secret ?? null
+    )
     useEffect(() => {
         if (secret) void navigate({ search: {}, replace: true })
     }, [secret, navigate])
 
     const form = useAppForm({
-        defaultValues: isCreate ? CREATE_DEFAULT_VALUES : editDefaultValues(application),
+        defaultValues: isCreate
+            ? CREATE_DEFAULT_VALUES
+            : editDefaultValues(application),
         validators: { onChange: appFormSchema },
         onSubmit: async ({ value }) => {
             const redirectUris =
@@ -72,11 +76,13 @@ function RouteComponent() {
                         logo_uri: value.logo_uri || undefined,
                         framework: value.framework,
                         application_type: value.application_type,
-                        token_endpoint_auth_method: value.token_endpoint_auth_method,
+                        token_endpoint_auth_method:
+                            value.token_endpoint_auth_method,
                         redirect_uris: redirectUris,
-                        post_logout_redirect_uris: postLogoutRedirectUris?.length
-                            ? postLogoutRedirectUris
-                            : undefined,
+                        post_logout_redirect_uris:
+                            postLogoutRedirectUris?.length
+                                ? postLogoutRedirectUris
+                                : undefined,
                         scope: value.scope,
                         grant_types: value.grant_types,
                         require_pkce: value.require_pkce,
@@ -109,7 +115,9 @@ function RouteComponent() {
                 return
             }
 
-            await updateApp({ data: { clientId, ...changed } }).catch(() => null)
+            await updateApp({ data: { clientId, ...changed } }).catch(
+                () => null
+            )
         },
     })
 
@@ -123,7 +131,9 @@ function RouteComponent() {
         void navigate({ to: "/console" })
     }
 
-    const snippet = revealedSecret ? infraConfigSnippet(clientId, revealedSecret) : null
+    const snippet = revealedSecret
+        ? infraConfigSnippet(clientId, revealedSecret)
+        : null
 
     return (
         <ViewController
@@ -141,8 +151,8 @@ function RouteComponent() {
             {snippet && (
                 <section className="flex flex-col gap-2 rounded-lg border p-4">
                     <p className="text-xs text-muted-foreground">
-                        The client secret is only shown once — copy it now, it can't be retrieved
-                        again.
+                        The client secret is only shown once — copy it now, it
+                        can't be retrieved again.
                     </p>
                     <pre className="rounded bg-muted p-3 text-xs break-all whitespace-pre-wrap">
                         {snippet}
@@ -151,7 +161,9 @@ function RouteComponent() {
                         type="button"
                         variant="outline"
                         className="w-fit"
-                        onClick={() => void navigator.clipboard.writeText(snippet)}
+                        onClick={() =>
+                            void navigator.clipboard.writeText(snippet)
+                        }
                     >
                         Copy infraConfig
                     </Button>
@@ -161,19 +173,32 @@ function RouteComponent() {
             {!isCreate && application && (
                 <section className="flex flex-col gap-2 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
-                        Client ID: <code className="text-foreground">{application.clientId}</code>
+                        Client ID:{" "}
+                        <code className="text-foreground">
+                            {application.clientId}
+                        </code>
                         <button
                             type="button"
-                            onClick={() => void navigator.clipboard.writeText(application.clientId)}
+                            onClick={() =>
+                                void navigator.clipboard.writeText(
+                                    application.clientId
+                                )
+                            }
                             aria-label="Copy client ID"
                         >
                             <IconCopy className="size-3" />
                         </button>
                     </div>
-                    <div>Created {formatUtc(application.createdAt, "PPPp")}</div>
-                    <div>Updated {formatUtc(application.updatedAt, "PPPp")}</div>
+                    <div>
+                        Created {formatUtc(application.createdAt, "PPPp")}
+                    </div>
+                    <div>
+                        Updated {formatUtc(application.updatedAt, "PPPp")}
+                    </div>
                     <Badge
-                        variant={application.disabled ? "destructive" : "outline"}
+                        variant={
+                            application.disabled ? "destructive" : "outline"
+                        }
                         className="w-fit"
                     >
                         {application.disabled ? "Disabled" : "Active"}
@@ -192,7 +217,9 @@ function RouteComponent() {
             >
                 <form.AppForm>
                     <ApplicationFormFields form={form} isCreate={isCreate} />
-                    <form.submit label={isCreate ? "Create application" : "Save changes"} />
+                    <form.submit
+                        label={isCreate ? "Create application" : "Save changes"}
+                    />
                 </form.AppForm>
             </form>
 
@@ -207,27 +234,36 @@ function RouteComponent() {
                                 variant="outline"
                                 onClick={() =>
                                     void setActive({
-                                        data: { clientId, active: Boolean(application.disabled) },
+                                        data: {
+                                            clientId,
+                                            active: Boolean(
+                                                application.disabled
+                                            ),
+                                        },
                                     })
                                 }
                             >
                                 {application.disabled ? "Enable" : "Disable"}
                             </Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                isDisabled={isRotating}
-                                onClick={() => void handleRotate()}
-                            >
-                                Rotate secret
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                onClick={() => void handleRemove()}
-                            >
-                                Remove application
-                            </Button>
+                            {application.isOwnClient && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    isDisabled={isRotating}
+                                    onClick={() => void handleRotate()}
+                                >
+                                    Rotate secret
+                                </Button>
+                            )}
+                            {application.isOwnClient && (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={() => void handleRemove()}
+                                >
+                                    Remove application
+                                </Button>
+                            )}
                         </div>
                     </section>
                 </>

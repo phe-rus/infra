@@ -2,10 +2,16 @@ import { useMemo } from "react"
 import type { FC } from "react"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
-import { DropdownMenuItem, DropdownMenuSeparator } from "@infra/ui/components/dropdown-menu"
-import { DataTable, RowActionsMenu, selectColumn } from "@infra/ui/widgets/tables"
+import {
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from "@infra/ui/components/dropdown-menu"
+import {
+    DataTable,
+    RowActionsMenu,
+    selectColumn,
+} from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
-import { isAdminTier, isOwner as isOwnerRole } from "@infra/auth/permissions"
 import type { ListedUser } from "@/domains/users"
 import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"
@@ -13,16 +19,14 @@ import { cn } from "@infra/ui/lib/utils"
 export type ListUsersProps = {
     users: ListedUser[]
     currentUserId: string
-    isOwner: boolean
     onView: (userId: string) => void
-    onSetRole: (userId: string, role: "owner" | "admin" | "user") => void
+    onSetRole: (userId: string, role: "admin" | "user") => void
     onRemove: (userId: string) => void
 }
 
 export const ListUsers: FC<ListUsersProps> = ({
     users,
     currentUserId,
-    isOwner,
     onView,
     onSetRole,
     onRemove,
@@ -37,7 +41,10 @@ export const ListUsers: FC<ListUsersProps> = ({
                     const id = row.original.id
                     return (
                         <span
-                            className={cn("rounded bg-accent px-3 py-1 text-xs!", "cursor-pointer")}
+                            className={cn(
+                                "rounded bg-accent px-3 py-1 text-xs!",
+                                "cursor-pointer"
+                            )}
                             onClick={() => onView(id)}
                         >
                             {id}
@@ -58,7 +65,13 @@ export const ListUsers: FC<ListUsersProps> = ({
                 header: "Role",
                 cell: ({ row }) => {
                     const role = row.original.role ?? "user"
-                    return <Badge variant={role === "user" ? "outline" : "secondary"}>{role}</Badge>
+                    return (
+                        <Badge
+                            variant={role === "user" ? "outline" : "secondary"}
+                        >
+                            {role}
+                        </Badge>
+                    )
                 },
             },
             {
@@ -101,46 +114,34 @@ export const ListUsers: FC<ListUsersProps> = ({
                     const rowUser = row.original
                     const role = rowUser.role ?? "user"
                     const isSelf = rowUser.id === currentUserId
-                    const canManageRole = isOwner && !isSelf
-                    const canRemove = !isSelf && (isOwner || !isOwnerRole(role))
+                    const canManageRole = !isSelf
+                    const canRemove = !isSelf
 
                     return (
                         <RowActionsMenu>
-                            <DropdownMenuItem onAction={() => onView(rowUser.id)}>
+                            <DropdownMenuItem
+                                onAction={() => onView(rowUser.id)}
+                            >
                                 View
                             </DropdownMenuItem>
 
                             {canManageRole && (
                                 <>
                                     <DropdownMenuSeparator />
-                                    {!isAdminTier(role) && (
-                                        <DropdownMenuItem
-                                            onAction={() => onSetRole(rowUser.id, "admin")}
-                                        >
-                                            Make admin
-                                        </DropdownMenuItem>
-                                    )}
-                                    {role === "admin" && (
-                                        <>
-                                            <DropdownMenuItem
-                                                onAction={() => onSetRole(rowUser.id, "owner")}
-                                            >
-                                                Make owner
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onAction={() => onSetRole(rowUser.id, "user")}
-                                            >
-                                                Demote to user
-                                            </DropdownMenuItem>
-                                        </>
-                                    )}
-                                    {isOwnerRole(role) && (
-                                        <DropdownMenuItem
-                                            onAction={() => onSetRole(rowUser.id, "admin")}
-                                        >
-                                            Demote to admin
-                                        </DropdownMenuItem>
-                                    )}
+                                    <DropdownMenuItem
+                                        onAction={() =>
+                                            onSetRole(
+                                                rowUser.id,
+                                                role === "admin"
+                                                    ? "user"
+                                                    : "admin"
+                                            )
+                                        }
+                                    >
+                                        {role === "admin"
+                                            ? "Demote to user"
+                                            : "Make admin"}
+                                    </DropdownMenuItem>
                                 </>
                             )}
                             {canRemove && (
@@ -159,7 +160,7 @@ export const ListUsers: FC<ListUsersProps> = ({
                 },
             },
         ],
-        [currentUserId, isOwner, onView, onSetRole, onRemove]
+        [currentUserId, onView, onSetRole, onRemove]
     )
 
     return (
@@ -177,11 +178,7 @@ export const ListUsers: FC<ListUsersProps> = ({
                     size="xs"
                     onClick={() => {
                         selectedRows
-                            .filter(
-                                (row) =>
-                                    row.id !== currentUserId &&
-                                    (isOwner || !isOwnerRole(row.role ?? "user"))
-                            )
+                            .filter((row) => row.id !== currentUserId)
                             .forEach((row) => {
                                 onRemove(row.id)
                             })

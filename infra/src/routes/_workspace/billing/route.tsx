@@ -1,5 +1,9 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { paymentConfigOptions, paymentsOptions, walletBalancesOptions } from "@/domains/payments"
+import {
+    paymentConfigOptions,
+    paymentsOptions,
+    walletBalancesOptions,
+} from "@/domains/payments"
 import { isAdminTier } from "@infra/auth/permissions"
 
 export const Route = createFileRoute("/_workspace/billing")({

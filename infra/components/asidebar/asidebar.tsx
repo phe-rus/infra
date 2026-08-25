@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useRef, useEffect, useCallback } from "react"
+import {
+    createContext,
+    useContext,
+    useState,
+    useRef,
+    useEffect,
+    useCallback,
+} from "react"
 import type { PropsWithChildren, FC } from "react"
 import {
     IconChevronLeft,
@@ -12,7 +19,7 @@ import {
 import { useIsMobile } from "@infra/ui/lib/use-media-query"
 import { Button } from "@infra/ui/components/button"
 import { Link } from "@tanstack/react-router"
-import { useLogout, meQueryOptions } from "@/domains/auth"
+import { useLogout, meOptions } from "@/domains/auth"
 import { useStopImpersonating } from "@/domains/users"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { cn } from "@infra/ui/lib/utils"
@@ -52,9 +59,11 @@ const navLists = [
 ]
 export const Dashboard: FC<DashboardProps> = ({ children }) => {
     const { isPending, mutateAsync: signOut } = useLogout()
-    const { data: session } = useSuspenseQuery(meQueryOptions())
-    const { mutateAsync: stopImpersonating, isPending: isStoppingImpersonation } =
-        useStopImpersonating()
+    const { data: session } = useSuspenseQuery(meOptions())
+    const {
+        mutateAsync: stopImpersonating,
+        isPending: isStoppingImpersonation,
+    } = useStopImpersonating()
     const impersonatedBy = session?.session.impersonatedBy
     const [open, setOpen] = useState<boolean>(true)
     const ref = useRef<HTMLDivElement>(null)
@@ -95,13 +104,17 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             "border-primary/5 inset-y-0 backdrop-blur-3xl md:relative",
                             "transition-all duration-300 ease-in-out ease-initial",
                             "will-change-transform will-change-backdrop-filter",
-                            open ? "w-72 translate-x-0 z-55" : "w-fit -translate-x-full z-10"
+                            open
+                                ? "w-72 translate-x-0 z-55"
+                                : "w-fit -translate-x-full z-10"
                         )}
                     >
                         <Button
                             size="icon-xs"
                             variant="secondary"
-                            aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+                            aria-label={
+                                open ? "Collapse sidebar" : "Expand sidebar"
+                            }
                             className={cn(
                                 "absolute top-10 z-56 -translate-y-1/2 cursor-pointer",
                                 "rounded-full transition-all duration-300 select-none",
@@ -146,7 +159,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                 "group tracking-tight flex items-center gap-2",
                                                 "transition-colors duration-150 ease-out"
                                             )}
-                                            activeProps={{ className: "text-current" }}
+                                            activeProps={{
+                                                className: "text-current",
+                                            }}
                                         >
                                             <nav.Icon className="size-5" />
                                             {nav.label}
@@ -155,8 +170,16 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                 </nav>
                             </section>
                             <span className="flex-1" />
-                            <nav className={cn("sticky bottom-0 mb-auto", "flex flex-col")}>
-                                <Button className="w-fit!" variant="destructive">
+                            <nav
+                                className={cn(
+                                    "sticky bottom-0 mb-auto",
+                                    "flex flex-col"
+                                )}
+                            >
+                                <Button
+                                    className="w-fit!"
+                                    variant="destructive"
+                                >
                                     API
                                 </Button>
                                 <Button
@@ -173,7 +196,8 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                         {impersonatedBy && (
                             <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-destructive/10 px-5 py-2 text-xs text-destructive">
                                 <span>
-                                    Impersonating <strong>{session.user.name}</strong> (
+                                    Impersonating{" "}
+                                    <strong>{session.user.name}</strong> (
                                     {session.user.email})
                                 </span>
                                 <Button
@@ -182,7 +206,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     onClick={() => void stopImpersonating({})}
                                     isDisabled={isStoppingImpersonation}
                                 >
-                                    {isStoppingImpersonation ? "Stopping…" : "Stop impersonating"}
+                                    {isStoppingImpersonation
+                                        ? "Stopping…"
+                                        : "Stop impersonating"}
                                 </Button>
                             </div>
                         )}
@@ -190,7 +216,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                         <Button
                             size="icon"
                             variant="secondary"
-                            aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+                            aria-label={
+                                open ? "Collapse sidebar" : "Expand sidebar"
+                            }
                             className={cn(
                                 "sticky ml-auto right-3 bottom-0 z-56 -translate-y-1/2",
                                 "transition-all duration-300 select-none cursor-pointer",

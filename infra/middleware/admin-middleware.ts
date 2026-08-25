@@ -1,13 +1,25 @@
 import { createMiddleware } from "@tanstack/react-start"
-import { isAdminTier } from "@infra/auth/permissions"
+import { redirect } from "@tanstack/react-router"
 import { auth } from "@/auth"
 
 export const AdminMiddleware = createMiddleware().server(async ({ next, request }) => {
     const sessions = await auth.api.getSession({
         headers: request.headers,
     })
-    if (!sessions || !isAdminTier(sessions.user.role ?? "")) {
-        throw new Error("Forbidden")
+    if (!sessions) {
+        throw redirect({
+            to: "/sign-in",
+            search: {
+                reason: "session-expired",
+            },
+            replace: true,
+        })
+    }
+    if (sessions.user.role !== "admin") {
+        throw redirect({
+            to: "/unauthorized",
+            replace: true,
+        })
     }
     return next({
         context: {

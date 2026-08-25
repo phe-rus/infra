@@ -9,7 +9,11 @@ export type CreateAdvancedOptions = {
     cookieDomain?: string
 }
 
-export function createAdvanced({ appName, isProduction, cookieDomain }: CreateAdvancedOptions) {
+export function createAdvanced({
+    appName,
+    isProduction,
+    cookieDomain,
+}: CreateAdvancedOptions) {
     return {
         cookiePrefix: appName,
         useSecureCookies: isProduction,

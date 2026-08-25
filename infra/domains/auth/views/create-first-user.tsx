@@ -30,7 +30,7 @@ export const CreateFirstUser: FC = () => {
                 <ViewController.Heading
                     size="compact"
                     title="Infra"
-                    description="Create the owner account"
+                    description="Create the admin account"
                 />
             }
         >
@@ -80,11 +80,13 @@ export const CreateFirstUser: FC = () => {
 
                         <form.AppField
                             name="rememberMe"
-                            children={(field) => <field.checkbox label="Remember me" />}
+                            children={(field) => (
+                                <field.checkbox label="Remember me" />
+                            )}
                         />
                     </FieldGroup>
 
-                    <form.submit label="Create owner account" />
+                    <form.submit label="Create admin account" />
                 </form.AppForm>
             </form>
         </ViewController>

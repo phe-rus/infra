@@ -5,14 +5,12 @@ type SecondaryStorage = NonNullable<OptionsProps["secondaryStorage"]>
 
 export function createSecondaryStorage(cache: KVNamespace): SecondaryStorage {
     return {
-        // required by SecondaryStorage's type since better-auth 1.7, but never
-        // actually called here: rateLimit.customStorage (rate-limit.ts) always
-        // takes precedence over a secondary-storage-backed limiter, so this
-        // only exists to satisfy the interface
         increment: async (key, ttl) => {
             const existing = await cache.get(key)
             const next = (existing ? Number(existing) : 0) + 1
-            await cache.put(key, String(next), { expirationTtl: Math.max(ttl, 60) })
+            await cache.put(key, String(next), {
+                expirationTtl: Math.max(ttl, 60),
+            })
             return next
         },
         get: (key) => cache.get(key),
@@ -32,6 +30,63 @@ export function createSecondaryStorage(cache: KVNamespace): SecondaryStorage {
             const value = await cache.get(key)
             if (value !== null) await cache.delete(key)
             return value
+        },
+    }
+}
+
+type RateLimitStorage = NonNullable<
+    NonNullable<BetterAuthOptions["rateLimit"]>["customStorage"]
+>
+type RateLimitData = { key: string; count: number; lastRequest: number }
+
+export function createRateLimitStorage(
+    kv: KVNamespace,
+    sharedCounterPrefixes: string[]
+): RateLimitStorage {
+    const memoryStore = new Map<string, RateLimitData>()
+
+    function needsSharedCounter(key: string): boolean {
+        const path = key.slice(key.indexOf("|") + 1)
+        return sharedCounterPrefixes.some((prefix) => path.startsWith(prefix))
+    }
+
+    return {
+        consume: async (key, rule) => {
+            const now = Math.floor(Date.now() / 1000)
+            const useKv = needsSharedCounter(key)
+
+            const stored = useKv ? await kv.get(key) : null
+            let data: RateLimitData | null = useKv
+                ? stored
+                    ? (JSON.parse(stored) as RateLimitData)
+                    : null
+                : (memoryStore.get(key) ?? null)
+
+            if (!data || now - data.lastRequest > rule.window) {
+                data = { key, count: 0, lastRequest: now }
+            }
+
+            if (data.count >= rule.max) {
+                const retryAfter = Math.max(
+                    0,
+                    data.lastRequest + rule.window - now
+                )
+                return { allowed: false, retryAfter: retryAfter || 1 }
+            }
+
+            data.count += 1
+            data.key = key
+
+            if (useKv) {
+                const kvTtl = Math.max(rule.window, 60)
+                await kv.put(key, JSON.stringify(data), {
+                    expirationTtl: kvTtl,
+                })
+            } else {
+                memoryStore.set(key, data)
+            }
+
+            return { allowed: true, retryAfter: null }
         },
     }
 }

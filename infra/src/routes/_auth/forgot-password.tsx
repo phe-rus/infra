@@ -13,7 +13,8 @@ export const Route = createFileRoute("/_auth/forgot-password")({
 })
 
 function RouteComponent() {
-    const { mutateAsync: requestPasswordReset, isSuccess } = useRequestPasswordReset()
+    const { mutateAsync: requestPasswordReset, isSuccess } =
+        useRequestPasswordReset()
 
     const form = useAppForm({
         defaultValues: { email: "" } as z.input<typeof forgotPasswordSchema>,

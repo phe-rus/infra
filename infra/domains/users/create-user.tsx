@@ -18,15 +18,14 @@ import { useCreateUser } from "@/domains/users"
 export type CreateUserProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    isOwner: boolean
 }
 
-export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange, isOwner }) => {
+export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
     const { mutateAsync: createUser } = useCreateUser()
     const [draftName, setDraftName] = useState("")
     const [draftEmail, setDraftEmail] = useState("")
     const [draftPassword, setDraftPassword] = useState("")
-    const [draftRole, setDraftRole] = useState<"owner" | "admin" | "user">("user")
+    const [draftRole, setDraftRole] = useState<"admin" | "user">("user")
 
     async function handleAddUser() {
         await createUser({
@@ -34,7 +33,7 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange, isOwner })
                 name: draftName.trim(),
                 email: draftEmail.trim(),
                 password: draftPassword,
-                role: isOwner ? draftRole : "user",
+                role: draftRole,
             },
         })
         setDraftName("")
@@ -49,23 +48,23 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange, isOwner })
             open={open}
             onOpenChange={onOpenChange}
             title="Add a user"
-            description={
-                isOwner
-                    ? "Create an account directly with any role."
-                    : "New users are added with the user role."
-            }
+            description="Create an account directly with any role."
             footer={
                 <>
                     <Button
                         type="button"
                         isDisabled={
-                            !draftName.trim() || !draftEmail.trim() || draftPassword.length < 8
+                            !draftName.trim() ||
+                            !draftEmail.trim() ||
+                            draftPassword.length < 8
                         }
                         onClick={() => void handleAddUser()}
                     >
                         Add user
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                    <DrawerClose
+                        render={<Button type="button" variant="outline" />}
+                    >
                         Cancel
                     </DrawerClose>
                 </>
@@ -90,7 +89,9 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange, isOwner })
                     />
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor="new-user-password">Password</FieldLabel>
+                    <FieldLabel htmlFor="new-user-password">
+                        Password
+                    </FieldLabel>
                     <Input
                         id="new-user-password"
                         type="password"
@@ -99,30 +100,28 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange, isOwner })
                         onChange={(e) => setDraftPassword(e.target.value)}
                     />
                 </Field>
-                {isOwner && (
-                    <Field>
-                        <FieldLabel htmlFor="new-user-role">Role</FieldLabel>
-                        <Select
-                            id="new-user-role"
-                            aria-label="Role"
-                            selectedKey={draftRole}
-                            onSelectionChange={(key) =>
-                                setDraftRole(key as "owner" | "admin" | "user")
-                            }
-                        >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {FIXED_ROLE_NAMES.map((role) => (
-                                    <SelectItem key={role} id={role}>
-                                        {role}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </Field>
-                )}
+                <Field>
+                    <FieldLabel htmlFor="new-user-role">Role</FieldLabel>
+                    <Select
+                        id="new-user-role"
+                        aria-label="Role"
+                        selectedKey={draftRole}
+                        onSelectionChange={(key) =>
+                            setDraftRole(key as "admin" | "user")
+                        }
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {FIXED_ROLE_NAMES.map((role) => (
+                                <SelectItem key={role} id={role}>
+                                    {role}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
             </FieldGroup>
         </DialogWidget>
     )

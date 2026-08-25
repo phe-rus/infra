@@ -16,10 +16,15 @@ export function isTrustedOrigin(
 
 // returns a trustedOrigins function matching better-auth's own signature:
 // the request's Origin header if it's in the allowlist, otherwise fallbackOrigin
-export function createTrustedOrigins(trustedOrigins: string, fallbackOrigin: string) {
+export function createTrustedOrigins(
+    trustedOrigins: string,
+    fallbackOrigin: string
+) {
     return async (request: Request | undefined): Promise<string[]> => {
         const origin = request?.headers.get("origin") ?? ""
         if (!origin) return [fallbackOrigin]
-        return isTrustedOrigin(origin, trustedOrigins) ? [origin] : [fallbackOrigin]
+        return isTrustedOrigin(origin, trustedOrigins)
+            ? [origin]
+            : [fallbackOrigin]
     }
 }

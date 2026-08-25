@@ -5,7 +5,10 @@ import { t } from "@infra/ui/components/sonner"
 type OptimisticUpdate<TOptimisticData, TVariables> = {
     queryKey: QueryKey
     /** Applied to the cache immediately, before the mutation resolves. Rolled back if it errors. */
-    updater: (old: TOptimisticData | undefined, variables: TVariables) => TOptimisticData
+    updater: (
+        old: TOptimisticData | undefined,
+        variables: TVariables
+    ) => TOptimisticData
 }
 
 type MutationContext<TOptimisticData> =
@@ -13,14 +16,21 @@ type MutationContext<TOptimisticData> =
     | undefined
 
 type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
-    UseMutationOptions<TData, Error, TVariables, MutationContext<TOptimisticData>>,
+    UseMutationOptions<
+        TData,
+        Error,
+        TVariables,
+        MutationContext<TOptimisticData>
+    >,
     "onSuccess" | "onError" | "onMutate" | "onSettled"
 > & {
     /** Query keys to invalidate once the mutation settles, win or lose. */
     invalidates?: QueryKey[]
     optimisticUpdate?: OptimisticUpdate<TOptimisticData, TVariables>
     successMessage?: string | ((data: TData, variables: TVariables) => string)
-    successDescription?: string | ((data: TData, variables: TVariables) => string | undefined)
+    successDescription?:
+        | string
+        | ((data: TData, variables: TVariables) => string | undefined)
     errorMessage?: string
     onSuccess?: (data: TData, variables: TVariables) => void
     onError?: (error: Error, variables: TVariables) => void
@@ -30,7 +40,11 @@ type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
 // of calling useMutation directly; optimisticUpdate's rollback only
 // restores the snapshot if nothing else wrote to the same queryKey in the
 // meantime
-export function useAppMutation<TData, TVariables = void, TOptimisticData = unknown>({
+export function useAppMutation<
+    TData,
+    TVariables = void,
+    TOptimisticData = unknown,
+>({
     invalidates = [],
     optimisticUpdate,
     successMessage,
@@ -41,7 +55,12 @@ export function useAppMutation<TData, TVariables = void, TOptimisticData = unkno
     ...options
 }: AppMutationOptions<TData, TVariables, TOptimisticData>) {
     const q = useQueryClient()
-    return useMutation<TData, Error, TVariables, MutationContext<TOptimisticData>>({
+    return useMutation<
+        TData,
+        Error,
+        TVariables,
+        MutationContext<TOptimisticData>
+    >({
         ...options,
         onMutate: async (variables) => {
             if (!optimisticUpdate) return undefined
@@ -78,7 +97,9 @@ export function useAppMutation<TData, TVariables = void, TOptimisticData = unkno
                     q.setQueryData(optimisticUpdate.queryKey, context.previous)
                 }
             }
-            t.error(errorMessage ?? "Something went wrong", { description: error.message })
+            t.error(errorMessage ?? "Something went wrong", {
+                description: error.message,
+            })
             onError?.(error, variables)
         },
         onSettled: () => {

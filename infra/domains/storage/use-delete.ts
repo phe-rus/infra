@@ -1,5 +1,5 @@
 import { deleteObjects } from "./fnc"
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 
 export const useDeleteObjects = () =>
     useAppMutation({

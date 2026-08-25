@@ -6,14 +6,23 @@
         "useIgnoreFile": true
     },
     "files": {
-        "includes": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json", "**/*.jsonc"]
+        "includes": [
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.js",
+            "**/*.jsx",
+            "**/*.json",
+            "**/*.jsonc"
+        ]
     },
     "formatter": {
         "enabled": true,
+        "formatWithErrors": false,
         "indentStyle": "space",
         "indentWidth": 4,
-        "lineWidth": 100,
-        "lineEnding": "lf"
+        "lineWidth": 80,
+        "lineEnding": "lf",
+        "attributePosition": "auto"
     },
     "javascript": {
         "formatter": {

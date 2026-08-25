@@ -10,8 +10,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@infra/ui/components/select"
-import { statsQueryOptions, useStats } from "@/domains/stats"
-import { consoleOptions, useConsole, CREATE_CLIENT_ID, ApplicationGrid } from "@/domains/console"
+import { statsOptions, useStats } from "@/domains/stats"
+import {
+    consoleOptions,
+    useConsole,
+    CREATE_CLIENT_ID,
+    ApplicationGrid,
+} from "@/domains/console"
 import { useWalletBalances } from "@/domains/payments"
 import { ViewController, ContentView } from "@/components/views"
 
@@ -35,7 +40,7 @@ const PREFERRED_CURRENCIES = [
 export const Route = createFileRoute("/_workspace/")({
     loader: async ({ context: { q } }) => {
         await Promise.all([
-            q.ensureQueryData(statsQueryOptions()),
+            q.ensureQueryData(statsOptions()),
             q.ensureQueryData(consoleOptions()),
         ])
     },
@@ -64,7 +69,10 @@ function RouteComponent() {
                     <IconInfoCircle />
                     <ContentView.H2 className="flex items-center gap-1 text-sm">
                         Your code and connections all look good
-                        <Link to="/logs" className="cursor-pointer hover:underline">
+                        <Link
+                            to="/logs"
+                            className="cursor-pointer hover:underline"
+                        >
                             View status page
                         </Link>
                     </ContentView.H2>
@@ -75,7 +83,10 @@ function RouteComponent() {
                 <ContentView.H1>Your business</ContentView.H1>
                 <ContentView variant="elevated">
                     <ContentView.Row className="mx-auto w-full justify-evenly gap-5 p-5">
-                        <ContentView.Header heading="Monthly active users" p="Last 30 days">
+                        <ContentView.Header
+                            heading="Monthly active users"
+                            p="Last 30 days"
+                        >
                             <h1>{stats.monthlyActiveUsers}</h1>
                         </ContentView.Header>
                         <ContentView.Divider />
@@ -100,7 +111,10 @@ function RouteComponent() {
                 <ApplicationGrid data={apps} />
             </ContentView.Section>
 
-            <ContentView variant="elevated" className="relative flex flex-col px-10 py-5">
+            <ContentView
+                variant="elevated"
+                className="relative flex flex-col px-10 py-5"
+            >
                 <IconCardsFilled className="size-18" />
                 <ContentView.Row className="justify-between gap-3">
                     <h1 className="tracking-tight">Wallet balance</h1>
@@ -112,7 +126,9 @@ function RouteComponent() {
                                 maximumFractionDigits: 2,
                             })}{" "}
                         </ContentView.Span>
-                        <ContentView.Sub>{wallet.total.currency}</ContentView.Sub>
+                        <ContentView.Sub>
+                            {wallet.total.currency}
+                        </ContentView.Sub>
                     </ContentView.P>
                 )}
                 <Select
@@ -130,10 +146,17 @@ function RouteComponent() {
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent
-                        className={cn("max-h-40! rounded-md! px-1! *:no-scrollbar!", "pt-1 pb-20!")}
+                        className={cn(
+                            "max-h-40! rounded-md! px-1! *:no-scrollbar!",
+                            "pt-1 pb-20!"
+                        )}
                     >
                         {PREFERRED_CURRENCIES.map((code) => (
-                            <SelectItem key={code} id={code} className="rounded-full!">
+                            <SelectItem
+                                key={code}
+                                id={code}
+                                className="rounded-full!"
+                            >
                                 {code}
                             </SelectItem>
                         ))}

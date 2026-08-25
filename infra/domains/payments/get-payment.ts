@@ -1,9 +1,20 @@
-import { keepPreviousData, queryOptions, useSuspenseQuery } from "@tanstack/react-query"
+import {
+    keepPreviousData,
+    queryOptions,
+    useSuspenseQuery,
+} from "@tanstack/react-query"
 import type * as z from "zod"
-import { findPayment, getPaymentConfig, getWalletBalances, listPayments } from "./fnc"
+import {
+    findPayment,
+    getPaymentConfig,
+    getWalletBalances,
+    listPayments,
+} from "./fnc"
 import type { listPaymentsSchema, walletBalancesSchema } from "./schema"
 
-export const paymentsOptions = (filters: z.infer<typeof listPaymentsSchema> = {}) =>
+export const paymentsOptions = (
+    filters: z.infer<typeof listPaymentsSchema> = {}
+) =>
     queryOptions({
         queryKey: ["payments", filters],
         queryFn: () => listPayments({ data: filters }),
@@ -20,7 +31,9 @@ export const paymentConfigOptions = () =>
 
 export const usePaymentConfig = () => useSuspenseQuery(paymentConfigOptions())
 
-export const walletBalancesOptions = (filters: z.infer<typeof walletBalancesSchema> = {}) =>
+export const walletBalancesOptions = (
+    filters: z.infer<typeof walletBalancesSchema> = {}
+) =>
     queryOptions({
         queryKey: ["payments", "balances", filters],
         queryFn: () => getWalletBalances({ data: filters }),
@@ -30,8 +43,9 @@ export const walletBalancesOptions = (filters: z.infer<typeof walletBalancesSche
         placeholderData: keepPreviousData,
     })
 
-export const useWalletBalances = (filters?: z.infer<typeof walletBalancesSchema>) =>
-    useSuspenseQuery(walletBalancesOptions(filters))
+export const useWalletBalances = (
+    filters?: z.infer<typeof walletBalancesSchema>
+) => useSuspenseQuery(walletBalancesOptions(filters))
 
 export const paymentOptions = (paymentId: string) =>
     queryOptions({
@@ -39,4 +53,5 @@ export const paymentOptions = (paymentId: string) =>
         queryFn: () => findPayment({ data: { paymentId } }),
     })
 
-export const usePayment = (paymentId: string) => useSuspenseQuery(paymentOptions(paymentId))
+export const usePayment = (paymentId: string) =>
+    useSuspenseQuery(paymentOptions(paymentId))

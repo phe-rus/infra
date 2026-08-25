@@ -22,7 +22,11 @@ function RouteComponent() {
                     title="Billing"
                     description="Every deposit and payout across this instance."
                     action={
-                        <Button type="button" size="sm" onClick={() => setPayoutOpen(true)}>
+                        <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => setPayoutOpen(true)}
+                        >
                             Cash out
                         </Button>
                     }

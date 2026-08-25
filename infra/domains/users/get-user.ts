@@ -1,15 +1,15 @@
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { getUserDetail, listUsers } from "./fnc"
 
-export const usersQueryOptions = () =>
+export const usersOptions = () =>
     queryOptions({
         queryKey: ["users"],
         queryFn: () => listUsers(),
     })
 
-export const useUsers = () => useSuspenseQuery(usersQueryOptions())
+export const useUsers = () => useSuspenseQuery(usersOptions())
 
-export const userDetailQueryOptions = (userId: string) =>
+export const userDetailOptions = (userId: string) =>
     queryOptions({
         queryKey: ["users", userId],
         queryFn: () => getUserDetail({ data: { userId } }),
@@ -19,7 +19,7 @@ export const userDetailQueryOptions = (userId: string) =>
 export const useUserDetail = (userId: string | null) =>
     useQuery(
         queryOptions({
-            ...userDetailQueryOptions(userId ?? ""),
+            ...userDetailOptions(userId ?? ""),
             enabled: Boolean(userId),
         })
     )

@@ -15,8 +15,12 @@ export function usePaymentFields() {
     const defaultCountry: (typeof countries)[number] | undefined =
         countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
 
-    const [countryCode, setCountryCode] = useState(defaultCountry?.country ?? "")
-    const [providerCode, setProviderCode] = useState(defaultCountry?.providers[0]?.provider ?? "")
+    const [countryCode, setCountryCode] = useState(
+        defaultCountry?.country ?? ""
+    )
+    const [providerCode, setProviderCode] = useState(
+        defaultCountry?.providers[0]?.provider ?? ""
+    )
     const [phoneNumber, setPhoneNumber] = useState(defaultCountry?.prefix ?? "")
 
     const country = countries.find((c) => c.country === countryCode)

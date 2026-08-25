@@ -8,10 +8,10 @@ import {
     signIn,
     signOut,
 } from "./fnc"
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@infra/ui/components/sonner"
-import { meQueryOptions, setupStatusQueryOptions } from "./get-auth"
+import { meOptions, setupOptions } from "./get-auth"
 
 export const useSignIn = () => {
     const router = useRouter()
@@ -20,7 +20,9 @@ export const useSignIn = () => {
         mutationFn: signIn,
         onSuccess: (data) => {
             if (data.error) {
-                t.error("Sign in failed", { description: data.error })
+                t.error("Sign in failed", {
+                    description: data.error,
+                })
                 return
             }
             t.success("Signed in", {
@@ -28,19 +30,19 @@ export const useSignIn = () => {
                 duration: 2000,
             })
             q.clear()
-            // mid-OAuth-authorize-flow: hand the browser back to the
-            // connecting application instead of landing on the dashboard
             if (data.redirectUri) {
                 window.location.href = data.redirectUri
                 return
             }
-            q.prefetchQuery(meQueryOptions())
+            q.prefetchQuery(meOptions())
             setTimeout(() => {
                 router.navigate({ to: "/", replace: true })
             }, 50)
         },
         onError: (error) => {
-            t.error("Sign in failed", { description: error.message })
+            t.error("Sign in failed", {
+                description: error.message,
+            })
         },
     })
 }
@@ -48,22 +50,21 @@ export const useSignIn = () => {
 export const useLogout = () => {
     const router = useRouter()
     const q = getContext()
-    return useMutation({
+    return useAppMutation({
         mutationFn: signOut,
+        successMessage: "Signed out",
+        successDescription: "You have been signed out successfully",
         onSuccess: () => {
-            t.success("Signed out", {
-                description: "You have been signed out successfully",
-                duration: 2000,
-            })
-            q.invalidateQueries(meQueryOptions())
+            q.invalidateQueries(meOptions())
             q.clear()
             setTimeout(() => {
-                router.navigate({ to: "/sign-in", replace: true })
+                router.navigate({
+                    to: "/sign-in",
+                    replace: true,
+                })
             }, 50)
         },
-        onError: (error) => {
-            t.error("Sign out failed", { description: error.message })
-        },
+        errorMessage: "Sign out failed",
     })
 }
 
@@ -74,24 +75,28 @@ export const useCompleteSetup = () => {
         mutationFn: completeSetup,
         onSuccess: (data) => {
             if (data.error) {
-                t.error("Setup failed", { description: data.error })
+                t.error("Setup failed", {
+                    description: data.error,
+                })
                 return
             }
-            t.success("Setup complete", {
-                description: "Welcome to Infra.",
-                duration: 2000,
+            t.success("Check your email", {
+                description: "Verify your address, then sign in to continue.",
+                duration: 4000,
             })
-            q.clear()
-            q.invalidateQueries(meQueryOptions())
-            q.invalidateQueries(setupStatusQueryOptions())
-            q.prefetchQuery(meQueryOptions())
-            q.prefetchQuery(setupStatusQueryOptions())
+            q.invalidateQueries(setupOptions())
             setTimeout(() => {
-                router.navigate({ to: "/", replace: true })
+                router.navigate({
+                    to: "/",
+                    replace: true,
+                    reloadDocument: true,
+                })
             }, 50)
         },
         onError: (error) => {
-            t.error("Setup failed", { description: error.message })
+            t.error("Setup failed", {
+                description: error.message,
+            })
         },
     })
 }
@@ -103,14 +108,11 @@ export const useRunSetupMigrations = () =>
     })
 
 export const useRequestPasswordReset = () =>
-    useMutation({
+    useAppMutation({
         mutationFn: requestPasswordReset,
-        onSuccess: (data) => {
-            t.success("Check your email", { description: data.message })
-        },
-        onError: (error) => {
-            t.error("Could not send reset email", { description: error.message })
-        },
+        successMessage: "Check your email",
+        successDescription: (data) => data.message,
+        errorMessage: "Could not send reset email",
     })
 
 export const useResetPassword = () => {
@@ -119,16 +121,25 @@ export const useResetPassword = () => {
         mutationFn: resetPassword,
         onSuccess: (data) => {
             if (data.error) {
-                t.error("Could not reset password", { description: data.error })
+                t.error("Could not reset password", {
+                    description: data.error,
+                })
                 return
             }
-            t.success("Password reset", { description: "Sign in with your new password." })
+            t.success("Password reset", {
+                description: "Sign in with your new password.",
+            })
             setTimeout(() => {
-                router.navigate({ to: "/sign-in", replace: true })
+                router.navigate({
+                    to: "/sign-in",
+                    replace: true,
+                })
             }, 50)
         },
         onError: (error) => {
-            t.error("Could not reset password", { description: error.message })
+            t.error("Could not reset password", {
+                description: error.message,
+            })
         },
     })
 }

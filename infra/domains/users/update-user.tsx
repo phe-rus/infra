@@ -3,7 +3,11 @@ import type { FC } from "react"
 import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@infra/ui/components/avatar"
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@infra/ui/components/avatar"
 import { useUpdateUserDetails, useUploadUserImage } from "@/domains/users"
 import type { UserDetail } from "@/domains/users"
 
@@ -13,7 +17,8 @@ export type UpdateUserProps = {
 
 export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
     const { mutateAsync: updateUserDetails } = useUpdateUserDetails()
-    const { mutateAsync: uploadUserImage, isPending: isUploadingImage } = useUploadUserImage()
+    const { mutateAsync: uploadUserImage, isPending: isUploadingImage } =
+        useUploadUserImage()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [editName, setEditName] = useState(viewUser.user.name)
     const [editEmail, setEditEmail] = useState(viewUser.user.email)

@@ -13,8 +13,15 @@ import { SafeUrlSchema } from "@better-auth/core/utils/redirect-uri"
 export const CLIENT_TYPES = ["web", "native"] as const
 export type ClientType = (typeof CLIENT_TYPES)[number]
 
-export const CLIENT_TYPE_INFO: Record<ClientType, { label: string; description: string }> = {
-    web: { label: "Web", description: "Server-rendered applications — Next.js, Nuxt, Rails, etc." },
+export const CLIENT_TYPE_INFO: Record<
+    ClientType,
+    { label: string; description: string }
+> = {
+    web: {
+        label: "Web",
+        description:
+            "Server-rendered applications — Next.js, Nuxt, Rails, etc.",
+    },
     native: {
         label: "Native",
         description:
@@ -27,7 +34,8 @@ export const TOKEN_ENDPOINT_AUTH_METHODS = [
     "client_secret_basic",
     "client_secret_post",
 ] as const
-export type TokenEndpointAuthMethod = (typeof TOKEN_ENDPOINT_AUTH_METHODS)[number]
+export type TokenEndpointAuthMethod =
+    (typeof TOKEN_ENDPOINT_AUTH_METHODS)[number]
 
 export const TOKEN_ENDPOINT_AUTH_METHOD_INFO: Record<
     TokenEndpointAuthMethod,
@@ -50,12 +58,22 @@ export const TOKEN_ENDPOINT_AUTH_METHOD_INFO: Record<
     },
 }
 
-export const GRANT_TYPES = ["authorization_code", "client_credentials", "refresh_token"] as const
+export const GRANT_TYPES = [
+    "authorization_code",
+    "client_credentials",
+    "refresh_token",
+] as const
 export type GrantType = (typeof GRANT_TYPES)[number]
 
 export const GRANT_TYPE_OPTIONS: { label: string; value: GrantType }[] = [
-    { label: "Authorization code — user login flows", value: "authorization_code" },
-    { label: "Client credentials — machine-to-machine", value: "client_credentials" },
+    {
+        label: "Authorization code — user login flows",
+        value: "authorization_code",
+    },
+    {
+        label: "Client credentials — machine-to-machine",
+        value: "client_credentials",
+    },
     { label: "Refresh token — extend sessions", value: "refresh_token" },
 ]
 
@@ -64,13 +82,21 @@ export const GRANT_TYPE_OPTIONS: { label: string; value: GrantType }[] = [
 // could never actually be granted to a client: not selectable in this form,
 // and createAppSchema/updateAppSchema's z.enum(SCOPES) would reject it even
 // via a direct API call
-export const SCOPES = ["openid", "profile", "email", "offline_access", "payments"] as const
+export const SCOPES = [
+    "openid",
+    "profile",
+    "email",
+    "offline_access",
+    "payments",
+] as const
 export type Scope = (typeof SCOPES)[number]
 
-export const SCOPE_OPTIONS: { label: string; value: Scope }[] = SCOPES.map((s) => ({
-    label: s,
-    value: s,
-}))
+export const SCOPE_OPTIONS: { label: string; value: Scope }[] = SCOPES.map(
+    (s) => ({
+        label: s,
+        value: s,
+    })
+)
 
 export const CREATE_CLIENT_ID = "create-oauth2"
 
@@ -142,7 +168,9 @@ export const appFormSchema = z
     // applications") — a browser-based client can't securely hold a secret,
     // so anything other than "web" must stay a public (no-secret) client
     .refine(
-        (data) => data.application_type === "web" || data.token_endpoint_auth_method === "none",
+        (data) =>
+            data.application_type === "web" ||
+            data.token_endpoint_auth_method === "none",
         {
             message:
                 "Only a Web application can use a client secret — set confidentiality to Public",

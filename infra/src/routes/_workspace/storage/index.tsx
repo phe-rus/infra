@@ -1,13 +1,13 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { listQueryOptions } from "@/domains/storage"
+import { listOptions } from "@/domains/storage"
 import { Button } from "@infra/ui/components/button"
 import { BrowseObjects } from "@/domains/storage"
 import { ViewController } from "@/components/views"
 
 export const Route = createFileRoute("/_workspace/storage/")({
     loader: async ({ context: { q } }) => {
-        await q.ensureQueryData(listQueryOptions(""))
+        await q.ensureQueryData(listOptions(""))
     },
     component: RouteComponent,
 })
@@ -30,7 +30,12 @@ function RouteComponent() {
             }
         >
             <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Button type="button" variant="ghost" size="xs" onClick={() => setPrefix("")}>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setPrefix("")}
+                >
                     Storage
                 </Button>
                 {segments.map((segment, index) => (

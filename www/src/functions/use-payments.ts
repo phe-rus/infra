@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth-client"
-import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
+import { useAppMutation } from "@infra/ui/hooks"
 import { walletsOptions } from "./get-payments"
 
 export const useAddWallet = () =>
@@ -10,7 +10,8 @@ export const useAddWallet = () =>
             label?: string
         }) => {
             const { data, error } = await authClient.pay.wallets.add(variables)
-            if (error) throw new Error(error.message ?? "Could not save this number")
+            if (error)
+                throw new Error(error.message ?? "Could not save this number")
             return data
         },
         invalidates: [walletsOptions().queryKey],
@@ -22,7 +23,8 @@ export const useRemoveWallet = () =>
     useAppMutation({
         mutationFn: async (walletId: string) => {
             const { error } = await authClient.pay.wallets.remove({ walletId })
-            if (error) throw new Error(error.message ?? "Could not remove this number")
+            if (error)
+                throw new Error(error.message ?? "Could not remove this number")
         },
         invalidates: [walletsOptions().queryKey],
         successMessage: "Number removed",
@@ -33,7 +35,10 @@ export const useSetPrimaryWallet = () =>
     useAppMutation({
         mutationFn: async (walletId: string) => {
             const { error } = await authClient.pay.wallets.primary({ walletId })
-            if (error) throw new Error(error.message ?? "Could not set this as primary")
+            if (error)
+                throw new Error(
+                    error.message ?? "Could not set this as primary"
+                )
         },
         invalidates: [walletsOptions().queryKey],
         successMessage: "Primary number updated",
@@ -44,7 +49,8 @@ export const useResendReceipt = () =>
     useAppMutation({
         mutationFn: async (paymentId: string) => {
             const { error } = await authClient.pay.receipt.resend({ paymentId })
-            if (error) throw new Error(error.message ?? "Could not send this receipt")
+            if (error)
+                throw new Error(error.message ?? "Could not send this receipt")
         },
         successMessage: "Receipt sent",
         errorMessage: "Could not send this receipt",
@@ -62,7 +68,9 @@ export const useResendReceipts = () =>
                     })
                 )
             )
-            const failed = results.filter((r) => r.status === "rejected" || r.value.error).length
+            const failed = results.filter(
+                (r) => r.status === "rejected" || r.value.error
+            ).length
             if (failed === results.length)
                 throw new Error("Could not send any of the selected receipts")
             return { sent: results.length - failed, failed }
