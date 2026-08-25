@@ -1,5 +1,0 @@
-export * from "./list-payments"
-export * from "./payment"
-export * from "./deposit-form"
-export * from "./payment-history"
-export * from "./wallet-balances"

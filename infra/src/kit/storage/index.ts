@@ -1,4 +1,0 @@
-export * from "./fnc"
-export * from "./schema"
-export * from "./get-list"
-export * from "./use-delete"
