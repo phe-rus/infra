@@ -1,15 +1,6 @@
 import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
-import { initiateDeposit, initiatePayout, initiateRefund } from "./fnc"
-import { myPaymentsOptions, paymentsOptions } from "./get-payment"
-
-export const useInitiateDeposit = () =>
-    useAppMutation({
-        mutationFn: initiateDeposit,
-        invalidates: [myPaymentsOptions().queryKey],
-        successMessage: "Deposit initiated",
-        successDescription: "You'll get a mobile money prompt on your phone shortly",
-        errorMessage: "Could not initiate deposit",
-    })
+import { initiatePayout, initiateRefund } from "./fnc"
+import { paymentsOptions } from "./get-payment"
 
 export const useInitiatePayout = () =>
     useAppMutation({

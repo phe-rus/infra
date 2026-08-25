@@ -1,12 +1,6 @@
 import { keepPreviousData, queryOptions, useSuspenseQuery } from "@tanstack/react-query"
 import type * as z from "zod"
-import {
-    findPayment,
-    getPaymentConfig,
-    getWalletBalances,
-    listMyPayments,
-    listPayments,
-} from "./fnc"
+import { findPayment, getPaymentConfig, getWalletBalances, listPayments } from "./fnc"
 import type { listPaymentsSchema, walletBalancesSchema } from "./schema"
 
 export const paymentsOptions = (filters: z.infer<typeof listPaymentsSchema> = {}) =>
@@ -17,14 +11,6 @@ export const paymentsOptions = (filters: z.infer<typeof listPaymentsSchema> = {}
 
 export const usePayments = (filters?: z.infer<typeof listPaymentsSchema>) =>
     useSuspenseQuery(paymentsOptions(filters))
-
-export const myPaymentsOptions = () =>
-    queryOptions({
-        queryKey: ["payments", "mine"],
-        queryFn: () => listMyPayments(),
-    })
-
-export const useMyPayments = () => useSuspenseQuery(myPaymentsOptions())
 
 export const paymentConfigOptions = () =>
     queryOptions({

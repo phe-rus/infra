@@ -31,10 +31,6 @@ export function createOAuthProviderPlugin(options: CreateOAuthProviderOptions) {
         codeExpiresIn: 60 * 2, // 2 minutes — exchanged immediately after the redirect
         refreshTokenGracePeriod: 30,
         resources: options.resources,
-        // every resource server this instance issues tokens for (e.g. a
-        // payment plugin's resolveOAuthAccess) reads scopes/clientId back off
-        // /oauth2/userinfo this same way — keep this in sync with any such
-        // consumer rather than changing the shape here alone
         customUserInfoClaims: async ({ user, scopes, jwt }) => ({
             scopes,
             clientId: typeof jwt.client_id === "string" ? jwt.client_id : null,

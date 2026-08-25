@@ -9,15 +9,6 @@ const purposeSchema = z
     .regex(/^[a-zA-Z0-9 ]*$/, "Letters, numbers, and spaces only")
     .optional()
 
-export const depositSchema = z.object({
-    amount: z.string().min(1),
-    currency: z.string().length(3),
-    phoneNumber: z.string().min(1),
-    provider: z.string().min(1),
-    purpose: purposeSchema,
-    clientId: z.string().optional(),
-})
-
 export const payoutSchema = z.object({
     amount: z.string().min(1),
     currency: z.string().length(3),

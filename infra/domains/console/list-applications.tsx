@@ -3,18 +3,11 @@ import type { FC } from "react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
-import { Checkbox } from "@infra/ui/components/checkbox"
-import {
-    DropdownMenu,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@infra/ui/components/dropdown-menu"
-import { DataTable } from "@infra/ui/widgets/tables"
+import { DropdownMenuItem, DropdownMenuSeparator } from "@infra/ui/components/dropdown-menu"
+import { DataTable, RowActionsMenu, selectColumn } from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import { CLIENT_TYPE_INFO } from "@/domains/console"
 import type { ClientType, ListedApp } from "@/domains/console"
-import { IconDotsVertical } from "@tabler/icons-react"
 import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"
 
@@ -33,30 +26,7 @@ export const ListApplications: FC<ListApplicationsProps> = ({
 }) => {
     const columns = useMemo(
         (): DataTableColumnDef<ListedApp>[] => [
-            {
-                id: "select",
-                enableColumnFilter: false,
-                enableGlobalFilter: false,
-                header: ({ table }) => (
-                    <Checkbox
-                        slot={null}
-                        isSelected={table.getIsAllPageRowsSelected()}
-                        isIndeterminate={
-                            table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
-                        }
-                        onChange={(checked) => table.toggleAllPageRowsSelected(checked)}
-                        aria-label="Select all"
-                    />
-                ),
-                cell: ({ row }) => (
-                    <Checkbox
-                        slot={null}
-                        isSelected={row.getIsSelected()}
-                        onChange={(checked) => row.toggleSelected(checked)}
-                        aria-label="Select row"
-                    />
-                ),
-            },
+            selectColumn(),
             {
                 accessorKey: "id",
                 header: "ID",
@@ -126,35 +96,23 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                 cell: ({ row }) => {
                     const app = row.original
                     return (
-                        <DropdownMenuTrigger>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                aria-label="Row actions"
+                        <RowActionsMenu>
+                            <DropdownMenuItem
+                                onAction={() => onSetActive(app.clientId, Boolean(app.disabled))}
                             >
-                                <IconDotsVertical className="size-4" />
-                            </Button>
-                            <DropdownMenu aria-label="Row actions">
-                                <DropdownMenuItem
-                                    onAction={() =>
-                                        onSetActive(app.clientId, Boolean(app.disabled))
-                                    }
-                                >
-                                    {app.disabled ? "Enable" : "Disable"}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onAction={() => onRotate(app.clientId)}>
-                                    Rotate secret
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    variant="destructive"
-                                    onAction={() => onRemove(app.clientId)}
-                                >
-                                    Remove
-                                </DropdownMenuItem>
-                            </DropdownMenu>
-                        </DropdownMenuTrigger>
+                                {app.disabled ? "Enable" : "Disable"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onAction={() => onRotate(app.clientId)}>
+                                Rotate secret
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                variant="destructive"
+                                onAction={() => onRemove(app.clientId)}
+                            >
+                                Remove
+                            </DropdownMenuItem>
+                        </RowActionsMenu>
                     )
                 },
             },

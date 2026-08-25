@@ -3,7 +3,7 @@ import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { useResetPassword } from "@/domains/auth"
-import { cn } from "@infra/ui/lib/utils"
+import { ViewController } from "@/components/views"
 
 const resetPasswordSearchSchema = z.object({
     // better-auth's own /reset-password/:token callback redirects here with
@@ -41,53 +41,62 @@ function RouteComponent() {
 
     if (!token || error) {
         return (
-            <div className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}>
-                <section>
-                    <h1 className="text-3xl">Link expired</h1>
-                    <p className="text-muted-foreground">
-                        This password reset link is invalid or has expired — request a new one.
-                    </p>
-                </section>
+            <ViewController
+                className="m-auto py-10 md:max-w-md"
+                heading={
+                    <ViewController.Heading
+                        size="compact"
+                        title="Link expired"
+                        description="This password reset link is invalid or has expired — request a new one."
+                    />
+                }
+            >
                 <Link
                     to="/forgot-password"
                     className="text-xs text-muted-foreground hover:underline"
                 >
                     ← Request a new link
                 </Link>
-            </div>
+            </ViewController>
         )
     }
 
     return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault()
-                void form.handleSubmit()
-            }}
-            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
+        <ViewController
+            className="m-auto py-10 md:max-w-md"
+            heading={
+                <ViewController.Heading
+                    size="compact"
+                    title="Set a new password"
+                    description="Choose a new password for your account."
+                />
+            }
         >
-            <section>
-                <h1 className="text-3xl">Set a new password</h1>
-                <p className="text-muted-foreground">Choose a new password for your account.</p>
-            </section>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    void form.handleSubmit()
+                }}
+                className="flex flex-col gap-5"
+            >
+                <form.AppForm>
+                    <FieldGroup>
+                        <form.AppField
+                            name="newPassword"
+                            children={(field) => (
+                                <field.input
+                                    label="New password"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    placeholder="At least 8 characters"
+                                />
+                            )}
+                        />
+                    </FieldGroup>
 
-            <form.AppForm>
-                <FieldGroup>
-                    <form.AppField
-                        name="newPassword"
-                        children={(field) => (
-                            <field.input
-                                label="New password"
-                                type="password"
-                                autoComplete="new-password"
-                                placeholder="At least 8 characters"
-                            />
-                        )}
-                    />
-                </FieldGroup>
-
-                <form.submit label="Reset password" />
-            </form.AppForm>
-        </form>
+                    <form.submit label="Reset password" />
+                </form.AppForm>
+            </form>
+        </ViewController>
     )
 }

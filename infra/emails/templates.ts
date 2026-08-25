@@ -50,13 +50,7 @@ function colorStyleBlock(): string {
     </style>`
 }
 
-function baseTemplate(
-    appName: string,
-    heading: string,
-    body: string,
-    ctaLabel: string,
-    ctaUrl: string
-): string {
+function layout(appName: string, cardContent: string, footerText: string): string {
     return `<!doctype html>
 <html>
   <head>
@@ -76,7 +70,31 @@ function baseTemplate(
             <tr>
               <td class="card divider" style="background-color:${COLORS.light.card};border:1px solid ${COLORS.light.border};">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
+                  ${cardContent}
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 4px 0 4px;">
+                <p class="muted" style="margin:0;font-size:12px;line-height:1.6;color:${COLORS.light.muted};">${footerText}</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
+}
+
+function baseTemplate(
+    appName: string,
+    heading: string,
+    body: string,
+    ctaLabel: string,
+    ctaUrl: string
+): string {
+    const cardContent = `<tr>
                     <td style="padding:28px 28px 0 28px;">
                       <h1 class="text" style="margin:0;font-size:18px;line-height:1.4;color:${COLORS.light.text};font-weight:600;">${heading}</h1>
                     </td>
@@ -98,21 +116,13 @@ function baseTemplate(
                         <span style="word-break:break-all;">${ctaUrl}</span>
                       </p>
                     </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:20px 4px 0 4px;">
-                <p class="muted" style="margin:0;font-size:12px;line-height:1.6;color:${COLORS.light.muted};">If you didn't request this, you can safely ignore this email.</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`
+                  </tr>`
+
+    return layout(
+        appName,
+        cardContent,
+        "If you didn't request this, you can safely ignore this email."
+    )
 }
 
 export function verificationEmailHtml(appName: string, name: string, url: string): string {
@@ -145,8 +155,6 @@ export function deleteAccountEmailHtml(appName: string, name: string, url: strin
     )
 }
 
-export type ReceiptLine = { label: string; qty: number; amount: string; currency: string }
-
 export type PaymentReceiptData = {
     userName: string
     type: "deposit" | "payout" | "refund"
@@ -160,9 +168,9 @@ export type PaymentReceiptData = {
 
 function receiptRow(label: string, value: string, valueColor = COLORS.light.text): string {
     return `<tr>
-    <td class="muted" style="padding:6px 0;font-size:13px;color:${COLORS.light.muted};">${label}</td>
-    <td class="text" align="right" style="padding:6px 0;font-size:13px;color:${valueColor};">${value}</td>
-  </tr>`
+      <td class="muted" style="padding:6px 0;font-size:13px;color:${COLORS.light.muted};">${label}</td>
+      <td class="text" align="right" style="padding:6px 0;font-size:13px;color:${valueColor};">${value}</td>
+    </tr>`
 }
 
 const TYPE_LABEL: Record<PaymentReceiptData["type"], string> = {
@@ -179,30 +187,12 @@ export function paymentReceiptEmailHtml(appName: string, receipt: PaymentReceipt
     const maskedPhone = receipt.phoneNumber ? `•••• ${receipt.phoneNumber.slice(-4)}` : null
     const paymentMethod = [receipt.provider, maskedPhone].filter(Boolean).join(" · ")
     const lineLabel = TYPE_LABEL[receipt.type]
+    const amount = `${receipt.amount} ${receipt.currency}`
 
-    return `<!doctype html>
-<html>
-  <head>
-    ${COLOR_SCHEME_HEAD}
-    ${colorStyleBlock()}
-  </head>
-  <body class="bg" style="margin:0;padding:0;background-color:${COLORS.light.bg};font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="bg" style="background-color:${COLORS.light.bg};padding:40px 16px;">
-      <tr>
-        <td align="center">
-          <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
-            <tr>
-              <td style="padding-bottom:20px;">
-                <span class="text" style="font-size:15px;font-weight:700;letter-spacing:-0.01em;color:${COLORS.light.text};">${appName}</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="card divider" style="background-color:${COLORS.light.card};border:1px solid ${COLORS.light.border};">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
+    const cardContent = `<tr>
                     <td style="padding:28px 28px 0 28px;">
                       <p class="muted" style="margin:0 0 4px 0;font-size:13px;color:${COLORS.light.muted};">Receipt from ${appName}</p>
-                      <p class="text" style="margin:0;font-size:32px;font-weight:700;color:${COLORS.light.text};">${receipt.amount} ${receipt.currency}</p>
+                      <p class="text" style="margin:0;font-size:32px;font-weight:700;color:${COLORS.light.text};">${amount}</p>
                       <p class="muted" style="margin:4px 0 0 0;font-size:13px;color:${COLORS.light.muted};">Paid ${receipt.date}</p>
                     </td>
                   </tr>
@@ -221,7 +211,7 @@ export function paymentReceiptEmailHtml(appName: string, receipt: PaymentReceipt
                           <td class="text" style="padding:4px 0;font-size:13px;color:${COLORS.light.text};">
                             ${lineLabel}<br /><span class="muted" style="font-size:12px;color:${COLORS.light.muted};">Qty 1</span>
                           </td>
-                          <td class="text" align="right" style="padding:4px 0;font-size:13px;color:${COLORS.light.text};">${receipt.amount} ${receipt.currency}</td>
+                          <td class="text" align="right" style="padding:4px 0;font-size:13px;color:${COLORS.light.text};">${amount}</td>
                         </tr>
                       </table>
                     </td>
@@ -229,23 +219,15 @@ export function paymentReceiptEmailHtml(appName: string, receipt: PaymentReceipt
                   <tr>
                     <td class="divider" style="padding:16px 28px 24px 28px;border-top:1px solid ${COLORS.light.border};">
                       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
-                        ${receiptRow("Total", `${receipt.amount} ${receipt.currency}`)}
-                        ${receiptRow("Amount paid", `${receipt.amount} ${receipt.currency}`, COLORS.light.text)}
+                        ${receiptRow("Total", amount)}
+                        ${receiptRow("Amount paid", amount, COLORS.light.text)}
                       </table>
                     </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:20px 4px 0 4px;">
-                <p class="muted" style="margin:0;font-size:12px;line-height:1.6;color:${COLORS.light.muted};">Questions about this transaction? Contact your account admin.</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`
+                  </tr>`
+
+    return layout(
+        appName,
+        cardContent,
+        "Questions about this transaction? Contact your account admin."
+    )
 }

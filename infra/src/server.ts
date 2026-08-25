@@ -13,9 +13,11 @@ export type RequestContext = {
     passThroughOnException: () => void
 }
 
-declare module "@tanstack/react-start" {
+declare module "@tanstack/react-router" {
     interface Register {
-        server: RequestContext
+        server: {
+            requestContext: RequestContext
+        }
     }
 }
 
@@ -33,102 +35,93 @@ function withCors(res: Response, origin: string): Response {
     return new Response(res.body, { status: res.status, headers })
 }
 
+async function handleOAuthMetadataRoutes(request: Request, url: URL): Promise<Response | null> {
+    if (url.pathname.includes("/.well-known/openid-configuration")) {
+        const res = await oauthProviderOpenIdConfigMetadata(auth)(request)
+        const headers = new Headers(res.headers)
+        headers.set("Access-Control-Allow-Methods", "GET")
+        headers.set("Access-Control-Allow-Origin", "*")
+        return withNoIndex(new Response(res.body, { status: res.status, headers }))
+    }
+    if (url.pathname.includes("/.well-known/oauth-authorization-server/api/auth")) {
+        const res = await oauthProviderAuthServerMetadata(auth)(request)
+        const headers = new Headers(res.headers)
+        headers.set("Access-Control-Allow-Methods", "GET")
+        headers.set("Access-Control-Allow-Origin", "*")
+        return withNoIndex(new Response(res.body, { status: res.status, headers }))
+    }
+    if (url.pathname.endsWith("/jwks")) {
+        const res = await auth.handler(request)
+        const headers = new Headers(res.headers)
+        headers.set("Access-Control-Allow-Methods", "GET")
+        headers.set("Access-Control-Allow-Origin", "*")
+        return withNoIndex(new Response(res.body, { status: res.status, headers }))
+    }
+    return null
+}
+
+async function handleCdnCache(
+    request: Request,
+    url: URL,
+    context: RequestContext
+): Promise<Response | null> {
+    if (request.method !== "GET" || !url.pathname.startsWith("/api/auth/cdn/")) return null
+    const res = await withEdgeCache(request, { waitUntil: context.waitUntil }, async () =>
+        handler.fetch(request, { context })
+    )
+    return withNoIndex(res)
+}
+
+function handleCorsPreflight(request: Request, url: URL, env: Env): Response | null {
+    const origin = request.headers.get("Origin")
+    const isApiAuthPath = url.pathname.startsWith("/api/auth/")
+    if (
+        !(
+            isApiAuthPath &&
+            request.method === "OPTIONS" &&
+            origin &&
+            isTrustedOrigin(origin, env.TRUSTED_ORIGINS)
+        )
+    ) {
+        return null
+    }
+    const requestedHeaders = request.headers.get("Access-Control-Request-Headers")
+    return new Response(null, {
+        status: 204,
+        headers: {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": requestedHeaders ?? "Content-Type",
+            "Access-Control-Max-Age": "86400",
+            Vary: "Origin",
+        },
+    })
+}
+
 export default {
     async fetch(request: Request, env: Env, ctx: ExecutionContext) {
         const url = new URL(request.url)
-        if (url.pathname.includes("/.well-known/openid-configuration")) {
-            const openIdHandler = oauthProviderOpenIdConfigMetadata(auth)
-            const res = await openIdHandler(request)
-            const newHeaders = new Headers(res.headers)
-            newHeaders.set("Access-Control-Allow-Methods", "GET")
-            newHeaders.set("Access-Control-Allow-Origin", "*")
-
-            return withNoIndex(
-                new Response(res.body, {
-                    status: res.status,
-                    headers: newHeaders,
-                })
-            )
-        }
-        if (url.pathname.includes("/.well-known/oauth-authorization-server/api/auth")) {
-            const authServerHandler = oauthProviderAuthServerMetadata(auth)
-            const res = await authServerHandler(request)
-
-            const newHeaders = new Headers(res.headers)
-            newHeaders.set("Access-Control-Allow-Methods", "GET")
-            newHeaders.set("Access-Control-Allow-Origin", "*")
-            return withNoIndex(
-                new Response(res.body, {
-                    status: res.status,
-                    headers: newHeaders,
-                })
-            )
-        }
-        if (url.pathname.endsWith("/jwks")) {
-            const res = await auth.handler(request)
-            const newHeaders = new Headers(res.headers)
-            newHeaders.set("Access-Control-Allow-Methods", "GET")
-            newHeaders.set("Access-Control-Allow-Origin", "*")
-
-            return withNoIndex(
-                new Response(res.body, {
-                    status: res.status,
-                    headers: newHeaders,
-                })
-            )
+        const context: RequestContext = {
+            env,
+            waitUntil: ctx.waitUntil.bind(ctx),
+            passThroughOnException: ctx.passThroughOnException.bind(ctx),
         }
 
-        // CDN reads are public, unauthenticated, and immutable by key (see
-        // getCdnFile in plugins/r2) but still went through the full
-        // TanStack Start -> better-auth pipeline on every request, paying
-        // for a rate-limit KV get+put (and an R2 read) even on a repeat
-        // fetch of the same file a second later. withEdgeCache short-
-        // circuits that for the common case; a cache miss still falls
-        // through to the normal rate-limited path below
-        if (request.method === "GET" && url.pathname.startsWith("/api/auth/cdn/")) {
-            const res = await withEdgeCache(
-                request,
-                { waitUntil: ctx.waitUntil.bind(ctx) },
-                async () =>
-                    handler.fetch(request, {
-                        context: {
-                            // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
-                            env: env,
-                            waitUntil: ctx.waitUntil.bind(ctx),
-                            passThroughOnException: ctx.passThroughOnException.bind(ctx),
-                        },
-                    })
-            )
-            return withNoIndex(res)
-        }
+        const metadataResponse = await handleOAuthMetadataRoutes(request, url)
+        if (metadataResponse) return metadataResponse
+
+        const cdnResponse = await handleCdnCache(request, url, context)
+        if (cdnResponse) return cdnResponse
+
+        const preflightResponse = handleCorsPreflight(request, url, env)
+        if (preflightResponse) return preflightResponse
 
         const origin = request.headers.get("Origin")
-        const isApiAuthPath = url.pathname.startsWith("/api/auth/")
-        const originIsTrusted = isApiAuthPath && isTrustedOrigin(origin, env.TRUSTED_ORIGINS)
+        const originIsTrusted =
+            url.pathname.startsWith("/api/auth/") && isTrustedOrigin(origin, env.TRUSTED_ORIGINS)
 
-        if (isApiAuthPath && request.method === "OPTIONS" && originIsTrusted && origin) {
-            const requestedHeaders = request.headers.get("Access-Control-Request-Headers")
-            return new Response(null, {
-                status: 204,
-                headers: {
-                    "Access-Control-Allow-Origin": origin,
-                    "Access-Control-Allow-Credentials": "true",
-                    "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
-                    "Access-Control-Allow-Headers": requestedHeaders ?? "Content-Type",
-                    "Access-Control-Max-Age": "86400",
-                    Vary: "Origin",
-                },
-            })
-        }
-
-        const res = await handler.fetch(request, {
-            context: {
-                // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
-                env: env,
-                waitUntil: ctx.waitUntil.bind(ctx),
-                passThroughOnException: ctx.passThroughOnException.bind(ctx),
-            },
-        })
+        const res = await handler.fetch(request, { context })
         return withNoIndex(originIsTrusted && origin ? withCors(res, origin) : res)
     },
 }

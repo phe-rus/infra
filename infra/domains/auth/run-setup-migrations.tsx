@@ -1,7 +1,7 @@
 import type { FC } from "react"
 import { Button } from "@infra/ui/components/button"
 import { useRunSetupMigrations } from "@/domains/auth"
-import { cn } from "@infra/ui/lib/utils"
+import { ViewController } from "@/components/views"
 import { IconLoader2 } from "@tabler/icons-react"
 
 export type RunSetupMigrationsProps = {
@@ -17,11 +17,16 @@ export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({ onInitialized 
     }
 
     return (
-        <div className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}>
-            <section>
-                <h1 className="text-3xl">Infra</h1>
-                <p className="text-muted-foreground">Set up your instance</p>
-            </section>
+        <ViewController
+            className="m-auto py-10 md:max-w-md"
+            heading={
+                <ViewController.Heading
+                    size="compact"
+                    title="Infra"
+                    description="Set up your instance"
+                />
+            }
+        >
             <p className="text-sm text-muted-foreground">
                 This instance hasn't been initialized yet. This prepares the database and only needs
                 to run once.
@@ -30,6 +35,6 @@ export const RunSetupMigrations: FC<RunSetupMigrationsProps> = ({ onInitialized 
                 {migrating && <IconLoader2 className="animate-spin" />}
                 {migrating ? "Initializing…" : "Initialize"}
             </Button>
-        </div>
+        </ViewController>
     )
 }

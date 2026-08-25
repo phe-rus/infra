@@ -14,22 +14,7 @@ import {
     updateAppSchema,
 } from "./schema"
 
-// oauth-provider's own rotateClientSecret/deleteOAuthClient endpoints
-// re-check ownership via client.userId after assertClientPrivileges already
-// passed, and unconditionally reject any client with no userId — exactly
-// the shape of every client this console creates through
-// adminCreateOAuthClient (no session, so no userId), so those endpoints
-// would 401 on every single console-created app. Bypassed here via a
-// direct ctx.adapter call instead, matching setAppActive's existing
-// pattern — AdminMiddleware already guarantees the caller is admin/owner,
-// so there's no privilege check left to replicate, just the actual work
 const generateSecret = createRandomStringGenerator("a-z", "A-Z")
-
-// oauth-provider's own client-metadata validation (e.g. "Type must be 'web'
-// for confidential applications") throws APIError with an empty .message
-// and the real reason in .body.error_description — re-surface it as the
-// message so it actually reaches the console UI's error toast instead of a
-// generic "Could not create/save application"
 function withClientMetadataError(error: unknown): never {
     if (
         error instanceof APIError &&
@@ -38,29 +23,18 @@ function withClientMetadataError(error: unknown): never {
         typeof error.body === "object" &&
         "error_description" in error.body
     ) {
-        throw new APIError(error.status, { message: String(error.body.error_description) })
+        throw new APIError(error.status, {
+            message: String(error.body.error_description),
+        })
     }
     throw error
 }
 
-// matches oauth-provider's own defaultHasher exactly (confirmed by reading
-// its bundled source): SHA-256, base64url, no padding — required so a
-// rotated secret still verifies at /oauth2/token against storeClientSecret:
-// "hashed"
 async function hashClientSecret(secret: string): Promise<string> {
     const digest = await createHash("SHA-256").digest(new TextEncoder().encode(secret))
     return base64Url.encode(new Uint8Array(digest), { padding: false })
 }
 
-// the oauthClient schema declares redirectUris/postLogoutRedirectUris/
-// grantTypes/scopes as type:"string[]" and metadata as type:"json" — the
-// adapter deserializes those into real arrays/objects itself before a raw
-// ctx.adapter.* call ever sees them (confirmed live: a JSON.parse layered
-// on top, as this file used to do, receives an array/object rather than a
-// string, coerces it to a comma-joined string via JSON.parse's implicit
-// String() call, fails to parse as JSON, and silently returns [] — every
-// scope/grant-type/redirect-uri/framework value was being discarded on
-// every read)
 type OAuthClientRow = {
     id: string
     clientId: string
@@ -239,6 +213,9 @@ export const rotateApp = createServerFn({ method: "POST" })
     .validator(appIdSchema)
     .handler(async ({ data }): Promise<{ clientSecret: string | null }> => {
         const ctx = await auth.$context
+        // not Pick<OAuthClientRow, ...>: that type is deliberately the
+        // client-safe row shape toAppDetail maps from, clientSecret is never
+        // in it on purpose
         const client = await ctx.adapter.findOne<{
             clientSecret: string | null
             tokenEndpointAuthMethod: string | null
@@ -250,18 +227,17 @@ export const rotateApp = createServerFn({ method: "POST" })
         if (!client) {
             throw new APIError("NOT_FOUND", { message: "Application not found" })
         }
-        // matches rotateClientSecretEndpoint's own guard: public clients
-        // (no secret, or explicitly token_endpoint_auth_method: "none")
-        // have nothing to rotate
         if (!client.clientSecret || client.tokenEndpointAuthMethod === "none") {
             throw new APIError("BAD_REQUEST", { message: "Public clients cannot be rotated" })
         }
-
         const clientSecret = generateSecret(32)
         await ctx.adapter.update({
             model: "oauthClient",
             where: [{ field: "clientId", value: data.clientId }],
-            update: { clientSecret: await hashClientSecret(clientSecret), updatedAt: new Date() },
+            update: {
+                clientSecret: await hashClientSecret(clientSecret),
+                updatedAt: new Date(),
+            },
         })
         return { clientSecret }
     })

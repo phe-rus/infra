@@ -33,12 +33,12 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
             {data.folders.length > 0 && (
                 <div className="grid grid-cols-2 gap-1 sm:grid-cols-3">
                     {data.folders.map((folder) => (
-                        <div
+                        <article
                             key={folder.key}
                             onClick={() => onNavigate(folder.key)}
                             className={cn(
                                 "flex min-w-0 items-center gap-2 overflow-hidden",
-                                "col-span-1 bg-card px-2 py-2",
+                                "col-span-1 bg-card px-2 py-2 border! border-border/35!",
                                 "cursor-pointer hover:bg-accent"
                             )}
                         >
@@ -55,7 +55,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({ prefix, onNavigate }) =>
                             >
                                 <IconMinus />
                             </Button>
-                        </div>
+                        </article>
                     ))}
                 </div>
             )}

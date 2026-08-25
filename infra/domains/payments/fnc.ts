@@ -4,13 +4,7 @@ import * as z from "zod"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { AdminMiddleware, SessionMiddleware } from "@/middleware"
-import {
-    depositSchema,
-    listPaymentsSchema,
-    payoutSchema,
-    refundSchema,
-    walletBalancesSchema,
-} from "./schema"
+import { listPaymentsSchema, payoutSchema, refundSchema, walletBalancesSchema } from "./schema"
 
 type PaymentRow = {
     id: string
@@ -27,6 +21,12 @@ type PaymentRow = {
     metadata: string | null
     createdAt: Date
     updatedAt: Date
+}
+
+type UserStub = {
+    id: string
+    name: string
+    email: string
 }
 
 const PAYMENT_SELECT = [
@@ -46,7 +46,7 @@ const PAYMENT_SELECT = [
     "updatedAt",
 ] as const
 
-function toPayment(row: PaymentRow, user?: { name: string; email: string }) {
+function toPayment(row: PaymentRow, user?: Pick<UserStub, "name" | "email">) {
     return {
         id: row.id,
         userId: row.userId,
@@ -86,7 +86,7 @@ export const listPayments = createServerFn({ method: "GET" })
 
         const userIds = [...new Set(rows.map((row) => row.userId))]
         const users = userIds.length
-            ? await ctx.adapter.findMany<{ id: string; name: string; email: string }>({
+            ? await ctx.adapter.findMany<UserStub>({
                   model: "user",
                   where: [{ field: "id", operator: "in", value: userIds }],
                   select: ["id", "name", "email"],
@@ -126,7 +126,7 @@ export const findPayment = createServerFn({ method: "GET" })
         })
         if (!row) return null
 
-        const user = await ctx.adapter.findOne<{ id: string; name: string; email: string }>({
+        const user = await ctx.adapter.findOne<UserStub>({
             model: "user",
             where: [{ field: "id", value: row.userId }],
             select: ["id", "name", "email"],
@@ -146,14 +146,28 @@ export const findPayment = createServerFn({ method: "GET" })
 
         let refunds: ListedPayment[] = []
         if (row.type === "deposit") {
-            const refundRows = await ctx.adapter.findMany<PaymentRow>({
+            // metadata isn't indexed/queryable directly (D1/SQLite, no JSONB
+            // operators to push this filter into the query), so the match is
+            // still found in memory — but only `id`+`metadata` are fetched
+            // for every refund row to find it, not the full row, then only
+            // the actual matches (typically 0-1) are fetched in full
+            const refundStubs = await ctx.adapter.findMany<Pick<PaymentRow, "id" | "metadata">>({
                 model: "payment",
                 where: [{ field: "type", value: "refund" }],
-                select: [...PAYMENT_SELECT],
+                select: ["id", "metadata"],
             })
-            refunds = refundRows
+            const matchingIds = refundStubs
                 .filter((r) => parseOriginalPaymentId(r.metadata) === row.id)
-                .map((r) => toPayment(r))
+                .map((r) => r.id)
+
+            const refundRows = matchingIds.length
+                ? await ctx.adapter.findMany<PaymentRow>({
+                      model: "payment",
+                      where: [{ field: "id", operator: "in", value: matchingIds }],
+                      select: [...PAYMENT_SELECT],
+                  })
+                : []
+            refunds = refundRows.map((r) => toPayment(r))
         }
 
         return { payment, relatedDeposit, refunds }
@@ -161,23 +175,8 @@ export const findPayment = createServerFn({ method: "GET" })
 
 export type PaymentDetail = Awaited<ReturnType<typeof findPayment>>
 
-// self-service: only the signed-in user's own payment history — the first
-// non-admin-gated kit/ read since self-service API keys were removed
-export const listMyPayments = createServerFn({ method: "GET" })
-    .middleware([SessionMiddleware])
-    .handler(async ({ context }) => {
-        const ctx = await auth.$context
-        const rows = await ctx.adapter.findMany<PaymentRow>({
-            model: "payment",
-            where: [{ field: "userId", value: context.sessions.user.id }],
-            sortBy: { field: "createdAt", direction: "desc" },
-            select: [...PAYMENT_SELECT],
-        })
-        return { payments: rows.map((row) => toPayment(row)) }
-    })
-
-// any signed-in user — backs the country/provider picker on both the
-// self-service deposit form and the admin payout dialog
+// any signed-in user — backs the country/provider picker on the admin
+// payout dialog
 export const getPaymentConfig = createServerFn({ method: "GET" })
     .middleware([SessionMiddleware])
     .handler(async () => {
@@ -198,20 +197,6 @@ export const getWalletBalances = createServerFn({ method: "GET" })
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
         const response = await auth.api.walletBalances({ headers, query: data })
-        return response
-    })
-
-export const initiateDeposit = createServerFn({ method: "POST" })
-    .middleware([SessionMiddleware])
-    .validator(depositSchema)
-    .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } = await auth.api.depositPayment({
-            headers,
-            returnHeaders: true,
-            body: data,
-        })
-        forwardAuthHeaders(responseHeaders)
         return response
     })
 

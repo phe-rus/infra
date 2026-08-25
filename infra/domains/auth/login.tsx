@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { signInSchema, useSignIn } from "@/domains/auth"
-import { cn } from "@infra/ui/lib/utils"
+import { ViewController } from "@/components/views"
 import type { z } from "zod"
 
 export const Login: FC = () => {
@@ -44,60 +44,66 @@ export const Login: FC = () => {
     })
 
     return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault()
-                void form.handleSubmit()
-            }}
-            className={cn("flex w-full flex-col gap-5 md:max-w-md", "container m-auto py-10")}
+        <ViewController
+            className="m-auto py-10 md:max-w-md"
+            heading={
+                <ViewController.Heading
+                    size="compact"
+                    title="Infra"
+                    description="Sign in to your account"
+                />
+            }
         >
-            <section>
-                <h1 className="text-3xl">Infra</h1>
-                <p className="text-muted-foreground">Sign in to your account</p>
-            </section>
-
-            <form.AppForm>
-                <FieldGroup>
-                    <form.AppField
-                        name="email"
-                        children={(field) => (
-                            <field.input
-                                label="Email"
-                                type="email"
-                                autoComplete="email"
-                                placeholder="Enter your email"
-                            />
-                        )}
-                    />
-
-                    <form.AppField
-                        name="password"
-                        children={(field) => (
-                            <field.input
-                                label="Password"
-                                type="password"
-                                autoComplete="current-password"
-                                placeholder="Enter your password"
-                            />
-                        )}
-                    />
-
-                    <div className="flex items-center justify-between truncate">
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    void form.handleSubmit()
+                }}
+                className="flex flex-col gap-5"
+            >
+                <form.AppForm>
+                    <FieldGroup>
                         <form.AppField
-                            name="rememberMe"
-                            children={(field) => <field.checkbox label="Remember me" />}
+                            name="email"
+                            children={(field) => (
+                                <field.input
+                                    label="Email"
+                                    type="email"
+                                    autoComplete="email"
+                                    placeholder="Enter your email"
+                                />
+                            )}
                         />
-                        <Link
-                            to="/forgot-password"
-                            className="text-xs text-muted-foreground hover:underline"
-                        >
-                            Forgot password?
-                        </Link>
-                    </div>
-                </FieldGroup>
 
-                <form.submit label="Sign in" />
-            </form.AppForm>
-        </form>
+                        <form.AppField
+                            name="password"
+                            children={(field) => (
+                                <field.input
+                                    label="Password"
+                                    type="password"
+                                    autoComplete="current-password"
+                                    placeholder="Enter your password"
+                                />
+                            )}
+                        />
+
+                        <div className="flex items-center justify-between truncate">
+                            <form.AppField
+                                name="rememberMe"
+                                children={(field) => <field.checkbox label="Remember me" />}
+                            />
+                            <Link
+                                to="/forgot-password"
+                                className="text-xs text-muted-foreground hover:underline"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
+                    </FieldGroup>
+
+                    <form.submit label="Sign in" />
+                </form.AppForm>
+            </form>
+        </ViewController>
     )
 }

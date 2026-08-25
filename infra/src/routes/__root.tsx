@@ -1,14 +1,11 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { meQueryOptions, setupStatusQueryOptions } from "@/domains/auth"
-import { TanStackDevtools } from "@tanstack/react-devtools"
+import { ToasterProvider } from "@infra/ui/components/sonner"
 import type { QueryClient } from "@tanstack/react-query"
+import { ComposeViewport } from "@/components/views"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
-import { cn } from "@infra/ui/lib/utils"
 import { seo } from "@/lib/seo"
-import { ToasterProvider } from "@infra/ui/components/sonner"
 
 export interface RouterAppContext {
     q: QueryClient
@@ -50,40 +47,24 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
     return (
-        <html lang="en" className="antialiased blur-none" suppressHydrationWarning>
+        <ComposeViewport>
             <head>
                 <HeadContent />
             </head>
-            <body
-                id="root"
-                className={cn(
-                    "relative min-h-dvh min-w-full border bg-background",
-                    "overflow-x-hidden selection:bg-olive-500/15",
-                    "typeset wrap-anywhere duration-200",
-                    "flex flex-col"
-                )}
-            >
-                <ThemeProvider attribute="class" defaultTheme="system">
+            <ComposeViewport.Window>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    disableTransitionOnChange
+                    enableColorScheme
+                    enableSystem
+                >
                     <Outlet />
                     <ToasterProvider richColors />
                 </ThemeProvider>
-                <TanStackDevtools
-                    config={{
-                        position: "bottom-right",
-                    }}
-                    plugins={[
-                        {
-                            name: "TanStack Query",
-                            render: <ReactQueryDevtoolsPanel />,
-                        },
-                        {
-                            name: "Tanstack Router",
-                            render: <TanStackRouterDevtoolsPanel />,
-                        },
-                    ]}
-                />
+                <ComposeViewport.Devtools />
                 <Scripts />
-            </body>
-        </html>
+            </ComposeViewport.Window>
+        </ComposeViewport>
     )
 }

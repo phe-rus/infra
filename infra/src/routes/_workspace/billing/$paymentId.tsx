@@ -1,12 +1,17 @@
-import type { ReactNode } from "react"
 import { createFileRoute, Link, notFound } from "@tanstack/react-router"
 import { formatUtc } from "@infra/ui/lib/date"
-import { paymentOptions, usePayment } from "@/domains/payments"
-import type { ListedPayment } from "@/domains/payments"
+import {
+    paymentOptions,
+    parseFailureReason,
+    Receipt,
+    statusVariant,
+    usePayment,
+} from "@/domains/payments"
 import { Badge } from "@infra/ui/components/badge"
 import { Button, buttonVariants } from "@infra/ui/components/button"
 import { Separator } from "@infra/ui/components/separator"
 import { cn } from "@infra/ui/lib/utils"
+import { ViewController } from "@/components/views"
 
 export const Route = createFileRoute("/_workspace/billing/$paymentId")({
     loader: async ({ context: { q }, params }) => {
@@ -15,52 +20,6 @@ export const Route = createFileRoute("/_workspace/billing/$paymentId")({
     },
     component: RouteComponent,
 })
-
-function statusVariant(status: string): "outline" | "destructive" | "secondary" {
-    if (status === "completed") return "outline"
-    if (status === "failed" || status === "cancelled") return "destructive"
-    return "secondary"
-}
-
-function parseFailureReason(
-    value: string | null
-): { failureCode: string; failureMessage: string } | null {
-    if (!value) return null
-    try {
-        return JSON.parse(value)
-    } catch {
-        return null
-    }
-}
-
-function Row({ label, value }: { label: string; value: ReactNode }) {
-    return (
-        <div className="flex items-center justify-between gap-4 py-1.5 text-sm">
-            <span className="text-muted-foreground">{label}</span>
-            <span className="text-right">{value}</span>
-        </div>
-    )
-}
-
-function RelatedPaymentLink({ payment }: { payment: ListedPayment }) {
-    return (
-        <Link
-            to="/billing/$paymentId"
-            params={{ paymentId: payment.id }}
-            className="flex items-center justify-between gap-4 rounded border px-3 py-2 text-sm hover:bg-muted/50"
-        >
-            <span className="flex flex-col">
-                <span>
-                    {payment.amount} {payment.currency}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                    {formatUtc(payment.createdAt, "PPp")}
-                </span>
-            </span>
-            <Badge variant={statusVariant(payment.status)}>{payment.status}</Badge>
-        </Link>
-    )
-}
 
 function RouteComponent() {
     const { paymentId } = Route.useParams()
@@ -71,28 +30,31 @@ function RouteComponent() {
     const failureReason = parseFailureReason(payment.failureReason)
 
     return (
-        <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-2xl print:py-4">
-            <section className="flex items-center justify-between gap-2">
-                <div>
-                    <Link
-                        to="/billing"
-                        className="text-xs text-muted-foreground hover:underline print:hidden"
+        <ViewController
+            className="md:max-w-2xl print:py-4"
+            heading={
+                <div className="flex items-center justify-between gap-2">
+                    <div>
+                        <Link
+                            to="/billing"
+                            className="text-xs text-muted-foreground hover:underline print:hidden"
+                        >
+                            ← Back to Billing
+                        </Link>
+                        <h1 className="text-3xl md:text-4xl">Receipt</h1>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="print:hidden"
+                        onClick={() => window.print()}
                     >
-                        ← Back to Billing
-                    </Link>
-                    <h1 className="text-3xl md:text-4xl">Receipt</h1>
+                        Print
+                    </Button>
                 </div>
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="print:hidden"
-                    onClick={() => window.print()}
-                >
-                    Print
-                </Button>
-            </section>
-
+            }
+        >
             <section className="flex items-center justify-between rounded-lg border p-4">
                 <div>
                     <p className="text-2xl font-medium">
@@ -114,21 +76,23 @@ function RouteComponent() {
             )}
 
             <section className="flex flex-col rounded-lg border p-4">
-                <Row label="User" value={payment.userName ?? payment.userId} />
-                {payment.userEmail && <Row label="Email" value={payment.userEmail} />}
+                <Receipt.Row label="User" value={payment.userName ?? payment.userId} />
+                {payment.userEmail && <Receipt.Row label="Email" value={payment.userEmail} />}
                 <Separator className="my-1" />
-                {payment.provider && <Row label="Provider" value={payment.provider} />}
-                {payment.phoneNumber && <Row label="Phone number" value={payment.phoneNumber} />}
-                <Row label="Currency" value={payment.currency} />
+                {payment.provider && <Receipt.Row label="Provider" value={payment.provider} />}
+                {payment.phoneNumber && (
+                    <Receipt.Row label="Phone number" value={payment.phoneNumber} />
+                )}
+                <Receipt.Row label="Currency" value={payment.currency} />
                 <Separator className="my-1" />
-                <Row label="Created" value={formatUtc(payment.createdAt, "PPPp")} />
-                <Row label="Updated" value={formatUtc(payment.updatedAt, "PPPp")} />
+                <Receipt.Row label="Created" value={formatUtc(payment.createdAt, "PPPp")} />
+                <Receipt.Row label="Updated" value={formatUtc(payment.updatedAt, "PPPp")} />
             </section>
 
             {relatedDeposit && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-medium">Refunds this deposit</h2>
-                    <RelatedPaymentLink payment={relatedDeposit} />
+                    <Receipt.RelatedLink payment={relatedDeposit} />
                 </section>
             )}
 
@@ -137,7 +101,7 @@ function RouteComponent() {
                     <h2 className="text-sm font-medium">Refunds against this deposit</h2>
                     <div className="flex flex-col gap-2">
                         {refunds.map((refund) => (
-                            <RelatedPaymentLink key={refund.id} payment={refund} />
+                            <Receipt.RelatedLink key={refund.id} payment={refund} />
                         ))}
                     </div>
                 </section>
@@ -149,6 +113,6 @@ function RouteComponent() {
             >
                 Back to Billing
             </Link>
-        </article>
+        </ViewController>
     )
 }

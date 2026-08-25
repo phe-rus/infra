@@ -1,19 +1,12 @@
 import { useMemo } from "react"
 import type { FC } from "react"
-import { Checkbox } from "@infra/ui/components/checkbox"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
-import {
-    DropdownMenu,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@infra/ui/components/dropdown-menu"
-import { DataTable } from "@infra/ui/widgets/tables"
+import { DropdownMenuItem, DropdownMenuSeparator } from "@infra/ui/components/dropdown-menu"
+import { DataTable, RowActionsMenu, selectColumn } from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
 import { isAdminTier, isOwner as isOwnerRole } from "@infra/auth/permissions"
 import type { ListedUser } from "@/domains/users"
-import { IconDotsVertical } from "@tabler/icons-react"
 import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"
 
@@ -36,30 +29,7 @@ export const ListUsers: FC<ListUsersProps> = ({
 }) => {
     const columns = useMemo(
         (): DataTableColumnDef<ListedUser>[] => [
-            {
-                id: "select",
-                enableColumnFilter: false,
-                enableGlobalFilter: false,
-                header: ({ table }) => (
-                    <Checkbox
-                        slot={null}
-                        isSelected={table.getIsAllPageRowsSelected()}
-                        isIndeterminate={
-                            table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
-                        }
-                        onChange={(checked) => table.toggleAllPageRowsSelected(checked)}
-                        aria-label="Select all"
-                    />
-                ),
-                cell: ({ row }) => (
-                    <Checkbox
-                        slot={null}
-                        isSelected={row.getIsSelected()}
-                        onChange={(checked) => row.toggleSelected(checked)}
-                        aria-label="Select row"
-                    />
-                ),
-            },
+            selectColumn(),
             {
                 accessorKey: "id",
                 header: "ID",
@@ -135,66 +105,56 @@ export const ListUsers: FC<ListUsersProps> = ({
                     const canRemove = !isSelf && (isOwner || !isOwnerRole(role))
 
                     return (
-                        <DropdownMenuTrigger>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                aria-label="Row actions"
-                            >
-                                <IconDotsVertical className="size-4" />
-                            </Button>
-                            <DropdownMenu aria-label="Row actions">
-                                <DropdownMenuItem onAction={() => onView(rowUser.id)}>
-                                    View
-                                </DropdownMenuItem>
+                        <RowActionsMenu>
+                            <DropdownMenuItem onAction={() => onView(rowUser.id)}>
+                                View
+                            </DropdownMenuItem>
 
-                                {canManageRole && (
-                                    <>
-                                        <DropdownMenuSeparator />
-                                        {!isAdminTier(role) && (
-                                            <DropdownMenuItem
-                                                onAction={() => onSetRole(rowUser.id, "admin")}
-                                            >
-                                                Make admin
-                                            </DropdownMenuItem>
-                                        )}
-                                        {role === "admin" && (
-                                            <>
-                                                <DropdownMenuItem
-                                                    onAction={() => onSetRole(rowUser.id, "owner")}
-                                                >
-                                                    Make owner
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onAction={() => onSetRole(rowUser.id, "user")}
-                                                >
-                                                    Demote to user
-                                                </DropdownMenuItem>
-                                            </>
-                                        )}
-                                        {isOwnerRole(role) && (
-                                            <DropdownMenuItem
-                                                onAction={() => onSetRole(rowUser.id, "admin")}
-                                            >
-                                                Demote to admin
-                                            </DropdownMenuItem>
-                                        )}
-                                    </>
-                                )}
-                                {canRemove && (
-                                    <>
-                                        <DropdownMenuSeparator />
+                            {canManageRole && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    {!isAdminTier(role) && (
                                         <DropdownMenuItem
-                                            variant="destructive"
-                                            onAction={() => onRemove(rowUser.id)}
+                                            onAction={() => onSetRole(rowUser.id, "admin")}
                                         >
-                                            Remove
+                                            Make admin
                                         </DropdownMenuItem>
-                                    </>
-                                )}
-                            </DropdownMenu>
-                        </DropdownMenuTrigger>
+                                    )}
+                                    {role === "admin" && (
+                                        <>
+                                            <DropdownMenuItem
+                                                onAction={() => onSetRole(rowUser.id, "owner")}
+                                            >
+                                                Make owner
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onAction={() => onSetRole(rowUser.id, "user")}
+                                            >
+                                                Demote to user
+                                            </DropdownMenuItem>
+                                        </>
+                                    )}
+                                    {isOwnerRole(role) && (
+                                        <DropdownMenuItem
+                                            onAction={() => onSetRole(rowUser.id, "admin")}
+                                        >
+                                            Demote to admin
+                                        </DropdownMenuItem>
+                                    )}
+                                </>
+                            )}
+                            {canRemove && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        onAction={() => onRemove(rowUser.id)}
+                                    >
+                                        Remove
+                                    </DropdownMenuItem>
+                                </>
+                            )}
+                        </RowActionsMenu>
                     )
                 },
             },

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import {
+    consoleOptions,
     CREATE_CLIENT_ID,
     useConsole,
     useRemoveApp,
@@ -9,8 +10,12 @@ import {
 import { buttonVariants } from "@infra/ui/components/button"
 import { ListApplications } from "@/domains/console"
 import { cn } from "@infra/ui/lib/utils"
+import { ViewController } from "@/components/views"
 
 export const Route = createFileRoute("/_workspace/console/")({
+    loader: async ({ context: { q } }) => {
+        await q.ensureQueryData(consoleOptions())
+    },
     component: RouteComponent,
 })
 
@@ -21,23 +26,23 @@ function RouteComponent() {
     const { mutateAsync: removeApp } = useRemoveApp()
 
     return (
-        <article className="container mx-auto flex w-full flex-col gap-5 py-20 md:max-w-3xl">
-            <section>
-                <div className="flex items-center gap-2">
-                    <h1 className="text-3xl md:text-4xl">Console</h1>
-                    <Link
-                        to="/console/$client_id"
-                        params={{ client_id: CREATE_CLIENT_ID }}
-                        className={cn(buttonVariants({ size: "sm" }))}
-                    >
-                        Add application
-                    </Link>
-                </div>
-                <p className="text-muted-foreground">
-                    Applications registered to use this instance.
-                </p>
-            </section>
-
+        <ViewController
+            heading={
+                <ViewController.Heading
+                    title="Console"
+                    description="Applications registered to use this instance."
+                    action={
+                        <Link
+                            to="/console/$client_id"
+                            params={{ client_id: CREATE_CLIENT_ID }}
+                            className={cn(buttonVariants({ size: "sm" }))}
+                        >
+                            Add application
+                        </Link>
+                    }
+                />
+            }
+        >
             <ListApplications
                 applications={data.applications}
                 onSetActive={(clientId, active) =>
@@ -46,6 +51,6 @@ function RouteComponent() {
                 onRotate={(clientId) => void rotateApp({ data: { clientId } })}
                 onRemove={(clientId) => void removeApp({ data: { clientId } })}
             />
-        </article>
+        </ViewController>
     )
 }

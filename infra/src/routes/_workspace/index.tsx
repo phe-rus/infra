@@ -1,10 +1,36 @@
+import { useState } from "react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { IconInfoCircle } from "@tabler/icons-react"
+import { IconCardsFilled, IconInfoCircle } from "@tabler/icons-react"
 import { cn } from "@infra/ui/lib/utils"
 import { buttonVariants } from "@infra/ui/components/button"
-import { statsQueryOptions, useStats, BusinessStats } from "@/domains/stats"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@infra/ui/components/select"
+import { statsQueryOptions, useStats } from "@/domains/stats"
 import { consoleOptions, useConsole, CREATE_CLIENT_ID, ApplicationGrid } from "@/domains/console"
-import { WalletBalances } from "@/domains/payments"
+import { useWalletBalances } from "@/domains/payments"
+import { ViewController, ContentView } from "@/components/views"
+
+const PREFERRED_CURRENCIES = [
+    "UGX",
+    "USD",
+    "KES",
+    "ZMW",
+    "NGN",
+    "GHS",
+    "XAF",
+    "XOF",
+    "RWF",
+    "TZS",
+    "MWK",
+    "MZN",
+    "CDF",
+    "SLE",
+]
 
 export const Route = createFileRoute("/_workspace/")({
     loader: async ({ context: { q } }) => {
@@ -21,42 +47,48 @@ function RouteComponent() {
     const { data: stats } = useStats()
     const { data: apps } = useConsole()
 
-    return (
-        <article
-            className={cn("container mx-auto flex w-full flex-col md:max-w-3xl", "gap-5 py-20")}
-        >
-            <section>
-                <h1 className="text-3xl md:text-4xl">
-                    Good morning, {session?.user?.name ?? "there!"}
-                </h1>
-                <p>Here&apos;s what&apos;s happening with your business</p>
-            </section>
+    const [currency, setCurrency] = useState("UGX")
+    const { data: wallet } = useWalletBalances({ currency })
 
-            <section
-                className={cn(
-                    "rounded-2xl bg-card border border-border/35",
-                    "shadow hover:shadow-md cursor-pointer group"
-                )}
-            >
-                <div className="flex items-center gap-3 p-3">
+    return (
+        <ViewController
+            heading={
+                <ViewController.Heading
+                    title={`Good morning, ${session?.user?.name ?? "there!"}`}
+                    description="Here's what's happening with your business"
+                />
+            }
+        >
+            <ContentView variant="elevated">
+                <ContentView.Row className="gap-3 p-3">
                     <IconInfoCircle />
-                    <h2 className="flex items-center gap-1 text-sm">
+                    <ContentView.H2 className="flex items-center gap-1 text-sm">
                         Your code and connections all look good
                         <Link to="/logs" className="cursor-pointer hover:underline">
                             View status page
                         </Link>
-                    </h2>
-                </div>
-            </section>
+                    </ContentView.H2>
+                </ContentView.Row>
+            </ContentView>
 
-            <section className="flex flex-col gap-3">
-                <h2>Your business</h2>
-                <BusinessStats data={stats} />
-            </section>
+            <ContentView.Section>
+                <ContentView.H1>Your business</ContentView.H1>
+                <ContentView variant="elevated">
+                    <ContentView.Row className="mx-auto w-full justify-evenly gap-5 p-5">
+                        <ContentView.Header heading="Monthly active users" p="Last 30 days">
+                            <h1>{stats.monthlyActiveUsers}</h1>
+                        </ContentView.Header>
+                        <ContentView.Divider />
+                        <ContentView.Header heading="Total users" p="Current">
+                            <h1>{stats.totalUsers}</h1>
+                        </ContentView.Header>
+                    </ContentView.Row>
+                </ContentView>
+            </ContentView.Section>
 
-            <section className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                    <h2>Your applications</h2>
+            <ContentView.Section>
+                <ContentView.Row className="justify-between">
+                    <ContentView.H2>Your applications</ContentView.H2>
                     <Link
                         to="/console/$client_id"
                         params={{ client_id: CREATE_CLIENT_ID }}
@@ -64,11 +96,50 @@ function RouteComponent() {
                     >
                         Add application
                     </Link>
-                </div>
+                </ContentView.Row>
                 <ApplicationGrid data={apps} />
-            </section>
+            </ContentView.Section>
 
-            <WalletBalances />
-        </article>
+            <ContentView variant="elevated" className="relative flex flex-col px-10 py-5">
+                <IconCardsFilled className="size-18" />
+                <ContentView.Row className="justify-between gap-3">
+                    <h1 className="tracking-tight">Wallet balance</h1>
+                </ContentView.Row>
+                {wallet.total && (
+                    <ContentView.P>
+                        <ContentView.Span>
+                            {wallet.total.amount.toLocaleString(undefined, {
+                                maximumFractionDigits: 2,
+                            })}{" "}
+                        </ContentView.Span>
+                        <ContentView.Sub>{wallet.total.currency}</ContentView.Sub>
+                    </ContentView.P>
+                )}
+                <Select
+                    aria-label="Preferred currency"
+                    value={currency}
+                    onChange={(key) => setCurrency(String(key))}
+                >
+                    <SelectTrigger
+                        size="sm"
+                        className={cn(
+                            "w-38 rounded-full! bg-input!",
+                            "border-0 absolute top-5 right-5"
+                        )}
+                    >
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent
+                        className={cn("max-h-40! rounded-md! px-1! *:no-scrollbar!", "pt-1 pb-20!")}
+                    >
+                        {PREFERRED_CURRENCIES.map((code) => (
+                            <SelectItem key={code} id={code} className="rounded-full!">
+                                {code}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </ContentView>
+        </ViewController>
     )
 }
