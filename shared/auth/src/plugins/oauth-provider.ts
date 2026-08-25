@@ -32,7 +32,7 @@ export function createOAuthProviderPlugin(options: CreateOAuthProviderOptions) {
         refreshTokenGracePeriod: 30,
         resources: options.resources,
         customUserInfoClaims: async ({ user, scopes, jwt }) => ({
-            scopes,
+            scopes: scopes,
             clientId: typeof jwt.client_id === "string" ? jwt.client_id : null,
             ...user,
         }),
