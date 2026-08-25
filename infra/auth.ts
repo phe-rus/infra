@@ -1,13 +1,20 @@
 import { env } from "cloudflare:workers"
 import { createAuth, isAdminTier } from "@infra/auth"
 import { r2Provider } from "@infra/r2"
-import { infraPayment } from "@infra/payment"
+import { infraPayment, type OAuthAccess } from "@infra/payment"
+import * as z from "zod"
 import {
     sendDeleteAccountEmail,
     sendPaymentReceiptEmail,
     sendResetPasswordEmail,
     sendVerificationEmail,
 } from "./emails"
+
+const oauthUserInfoSchema = z.object({
+    id: z.string(),
+    scopes: z.array(z.string()),
+    clientId: z.string().nullable(),
+})
 
 export const auth = createAuth({
     baseURL: env.BETTER_AUTH_URL,
@@ -39,23 +46,23 @@ export const auth = createAuth({
         }),
         infraPayment({
             apiToken: env.PAWAPAY_API_TOKEN,
-            environment: env.PAWAPAY_ENV === "production" ? "production" : "sandbox",
+            environment:
+                env.PAWAPAY_ENV === "production" ? "production" : "sandbox",
             cache: env.PAYMENTS,
             isAdmin: isAdminTier,
             onPaymentCompleted: sendPaymentReceiptEmail,
             resolveOAuthAccess: async (
                 headers: Headers
-            ): Promise<{ userId: string; clientId: string | null; scopes: string[] } | null> => {
-                const info: Record<string, unknown> | null = await auth.api
+            ): Promise<OAuthAccess | null> => {
+                const info = await auth.api
                     .oauth2UserInfo({ headers })
                     .catch(() => null)
-                if (!info || !Array.isArray(info.scopes)) return null
-                const userId = typeof info.id === "string" ? info.id : undefined
-                if (!userId) return null
+                const parsed = oauthUserInfoSchema.safeParse(info)
+                if (!parsed.success) return null
                 return {
-                    userId,
-                    clientId: typeof info.clientId === "string" ? info.clientId : null,
-                    scopes: info.scopes as string[],
+                    userId: parsed.data.id,
+                    clientId: parsed.data.clientId,
+                    scopes: parsed.data.scopes,
                 }
             },
         }),

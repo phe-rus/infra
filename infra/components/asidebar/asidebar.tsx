@@ -66,11 +66,13 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
     } = useStopImpersonating()
     const impersonatedBy = session?.session.impersonatedBy
     const [open, setOpen] = useState<boolean>(true)
+    const [isPeeking, setIsPeeking] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
     const isMobile = useIsMobile()
 
     const toggleSidebar = useCallback(() => {
         setOpen((prev) => !prev)
+        setIsPeeking(false)
     }, [])
 
     useEffect(() => {
@@ -78,6 +80,8 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
             setOpen(true)
         }
     }, [isMobile])
+
+    const isExpanded = open || isPeeking
 
     return (
         <SidebarContext.Provider
@@ -99,38 +103,52 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                     )}
                     <aside
                         ref={ref}
+                        onMouseEnter={() => {
+                            if (!open && !isMobile) setIsPeeking(true)
+                        }}
+                        onMouseLeave={() => setIsPeeking(false)}
                         className={cn(
                             "fixed h-full shrink-0 border-r bg-secondary/5 shadow-md",
-                            "border-primary/5 inset-y-0 backdrop-blur-3xl md:relative",
+                            "border-primary/5 inset-y-0 backdrop-blur-3xl",
                             "transition-all duration-300 ease-in-out ease-initial",
                             "will-change-transform will-change-backdrop-filter",
+                            // Prevent layout shifts by keeping width constant (w-72)
+                            // and using md:absolute for peeking/closed states so it overlays.
                             open
-                                ? "w-72 translate-x-0 z-55"
-                                : "w-fit -translate-x-full z-10"
+                                ? "w-72 translate-x-0 z-55 md:relative"
+                                : isPeeking
+                                  ? "w-72 translate-x-0 z-55 md:absolute shadow-2xl"
+                                  : "w-72 -translate-x-full z-10 md:absolute"
                         )}
                     >
                         <Button
                             size="icon-xs"
                             variant="secondary"
                             aria-label={
-                                open ? "Collapse sidebar" : "Expand sidebar"
+                                isExpanded
+                                    ? "Collapse sidebar"
+                                    : "Expand sidebar"
                             }
                             className={cn(
-                                "absolute top-10 z-56 -translate-y-1/2 cursor-pointer",
+                                "absolute top-5 z-56 -translate-y-1/2 cursor-pointer",
                                 "rounded-full transition-all duration-300 select-none",
-                                !open && "hidden md:flex",
-                                open
+                                !isExpanded && "hidden md:flex",
+                                isExpanded
                                     ? "left-full -translate-x-1/2"
                                     : "left-[calc(100%+8px)] translate-x-0.5"
                             )}
                             onClick={() => toggleSidebar()}
                         >
-                            {!open ? <IconChevronRight /> : <IconChevronLeft />}
+                            {!isExpanded ? (
+                                <IconChevronRight />
+                            ) : (
+                                <IconChevronLeft />
+                            )}
                         </Button>
                         <section
                             className={cn(
-                                "min-h-svh flex-col gap-5 p-5",
-                                !open ? "hidden" : "flex"
+                                "min-h-svh flex-col gap-5 px-5 py-2",
+                                !isExpanded ? "hidden" : "flex"
                             )}
                         >
                             <section className="flex flex-col gap-3">
@@ -145,7 +163,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                         <img
                                             src="/favicon.svg"
                                             alt="Infra"
-                                            className="size-5 mix-blend-normal rounded-full!"
+                                            className="size-4.5 mix-blend-normal rounded-full!"
                                         />
                                         Infra
                                     </Link>
@@ -213,22 +231,6 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             </div>
                         )}
                         {children}
-                        <Button
-                            size="icon"
-                            variant="secondary"
-                            aria-label={
-                                open ? "Collapse sidebar" : "Expand sidebar"
-                            }
-                            className={cn(
-                                "sticky ml-auto right-3 bottom-0 z-56 -translate-y-1/2",
-                                "transition-all duration-300 select-none cursor-pointer",
-                                "flex md:hidden bg-primary! text-primary-foreground!",
-                                open && "hidden"
-                            )}
-                            onClick={() => toggleSidebar()}
-                        >
-                            {!open ? <IconChevronRight /> : <IconChevronLeft />}
-                        </Button>
                     </div>
                 </main>
             </div>

@@ -107,11 +107,6 @@ export const createUser = createServerFn({ method: "POST" })
             },
         })
         forwardAuthHeaders(responseHeaders)
-
-        // admin-created accounts aren't auto-verified like the setup-flow
-        // admin account is — send the real verification email now so the
-        // "verification email sent" toast on the client is actually true,
-        // not just copy. A delivery failure shouldn't fail account creation.
         if (!user.emailVerified) {
             await auth.api
                 .sendVerificationEmail({ headers, body: { email: data.email } })
@@ -144,8 +139,6 @@ export const updateUser = createServerFn({ method: "POST" })
     .validator(updateUserDetailsSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        // adminUpdateUser returns the user directly, not wrapped in { user }
-        // like its sibling admin.* endpoints
         const { response: user, headers: responseHeaders } =
             await auth.api.adminUpdateUser({
                 headers: headers,
@@ -171,7 +164,10 @@ export const uploadUserImage = createServerFn({ method: "POST" })
             await auth.api.uploadAvatar({
                 headers,
                 returnHeaders: true,
-                body: { file: data.file, userId: data.userId },
+                body: {
+                    file: data.file,
+                    userId: data.userId,
+                },
             })
         forwardAuthHeaders(responseHeaders)
         return response
@@ -191,7 +187,10 @@ export const setUserRole = createServerFn({ method: "POST" })
         } = await auth.api.setRole({
             headers,
             returnHeaders: true,
-            body: { userId: data.userId, role: data.role },
+            body: {
+                userId: data.userId,
+                role: data.role,
+            },
         })
         forwardAuthHeaders(responseHeaders)
         return user
@@ -206,17 +205,15 @@ export const setUserPassword = createServerFn({ method: "POST" })
             await auth.api.setUserPassword({
                 headers,
                 returnHeaders: true,
-                body: { userId: data.userId, newPassword: data.newPassword },
+                body: {
+                    userId: data.userId,
+                    newPassword: data.newPassword,
+                },
             })
         forwardAuthHeaders(responseHeaders)
         return result
     })
 
-// better-auth's own disableTwoFactor endpoint is self-service only (it
-// requires the CALLER's password to confirm), so an admin can't call it on
-// someone else's behalf — this clears the flag and the stored secret/backup
-// codes directly, for when a user has lost their authenticator and needs
-// an admin to reset it for them
 export const disableUserTwoFactor = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
@@ -284,7 +281,9 @@ export const revokeUserSession = createServerFn({ method: "POST" })
             await auth.api.revokeUserSession({
                 headers,
                 returnHeaders: true,
-                body: { sessionToken: data.sessionToken },
+                body: {
+                    sessionToken: data.sessionToken,
+                },
             })
         forwardAuthHeaders(responseHeaders)
         return result
@@ -299,7 +298,9 @@ export const revokeUserSessions = createServerFn({ method: "POST" })
             await auth.api.revokeUserSessions({
                 headers,
                 returnHeaders: true,
-                body: { userId: data.userId },
+                body: {
+                    userId: data.userId,
+                },
             })
         forwardAuthHeaders(responseHeaders)
         return result
@@ -321,8 +322,6 @@ export const impersonateUser = createServerFn({ method: "POST" })
         forwardAuthHeaders(responseHeaders)
     })
 
-// no middleware: while impersonating, the session's role is the target's
-// role, so an admin gate here would lock the admin out of this
 export const stopImpersonating = createServerFn({ method: "POST" }).handler(
     async () => {
         const headers = getRequestHeaders()
