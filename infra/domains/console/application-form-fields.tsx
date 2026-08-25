@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useSelector, withForm } from "@infra/ui/widgets/blocks"
-import { FrameworkIcon } from "@/components/widgets/framework-icon"
+import { FrameworkIcon } from "@/domains/console/framework-icon"
 import {
     CLIENT_TYPE_INFO,
     CLIENT_TYPES,
@@ -11,8 +11,8 @@ import {
     SCOPE_OPTIONS,
     TOKEN_ENDPOINT_AUTH_METHOD_INFO,
     TOKEN_ENDPOINT_AUTH_METHODS,
-} from "@/kit/console"
-import type { appFormSchema } from "@/kit/console"
+} from "@/domains/console"
+import type { appFormSchema } from "@/domains/console"
 import type { z } from "zod"
 
 // shape only, for withForm's type inference — the real defaults come from

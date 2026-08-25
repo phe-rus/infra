@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { auth } from "@/auth"
-import { AdminMiddleware } from "@/kit/middleware"
+import { AdminMiddleware } from "@/middleware"
 import { APIError } from "better-auth/api"
 import { createHash } from "@better-auth/utils/hash"
 import { base64Url } from "@better-auth/utils/base64"

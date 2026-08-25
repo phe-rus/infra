@@ -2,10 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { cn } from "@infra/ui/lib/utils"
 import { buttonVariants } from "@infra/ui/components/button"
-import { statsQueryOptions, useStats } from "@/kit/stats"
-import { consoleOptions, useConsole, CREATE_CLIENT_ID } from "@/kit/console"
-import { BusinessStats, ApplicationGrid } from "@/features/dashboard"
-import { WalletBalances } from "@/features/payments"
+import { statsQueryOptions, useStats, BusinessStats } from "@/domains/stats"
+import { consoleOptions, useConsole, CREATE_CLIENT_ID, ApplicationGrid } from "@/domains/console"
+import { WalletBalances } from "@/domains/payments"
 
 export const Route = createFileRoute("/_workspace/")({
     loader: async ({ context: { q } }) => {

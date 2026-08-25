@@ -12,8 +12,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@infra/ui/components/select"
-import { FIXED_ROLE_NAMES } from "@/auth/utils/permissions"
-import { useCreateUser } from "@/kit/users"
+import { FIXED_ROLE_NAMES } from "@infra/auth/permissions"
+import { useCreateUser } from "@/domains/users"
 
 export type CreateUserProps = {
     open: boolean

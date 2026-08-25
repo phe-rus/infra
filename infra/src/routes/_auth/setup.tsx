@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { RunSetupMigrations } from "@/features/auth/run-setup-migrations"
-import { CreateFirstUser } from "@/features/auth/create-first-user"
+import { RunSetupMigrations } from "@/domains/auth/run-setup-migrations"
+import { CreateFirstUser } from "@/domains/auth/create-first-user"
 import { useState } from "react"
 
 export const Route = createFileRoute("/_auth/setup")({

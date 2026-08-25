@@ -8,7 +8,7 @@ import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
 import { Separator } from "@infra/ui/components/separator"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { ApplicationFormFields } from "@/features/console"
+import { ApplicationFormFields } from "@/domains/console"
 import { t } from "@infra/ui/components/sonner"
 import {
     appDetailSearchSchema,
@@ -20,7 +20,7 @@ import {
     useRotateApp,
     useSetAppActive,
     useUpdateApp,
-} from "@/kit/console"
+} from "@/domains/console"
 import type {
     AppDetail,
     ClientType,
@@ -28,7 +28,7 @@ import type {
     GrantType,
     Scope,
     TokenEndpointAuthMethod,
-} from "@/kit/console"
+} from "@/domains/console"
 
 export const Route = createFileRoute("/_workspace/console/$client_id/")({
     validateSearch: appDetailSearchSchema,

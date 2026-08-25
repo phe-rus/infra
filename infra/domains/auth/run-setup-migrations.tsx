@@ -1,6 +1,6 @@
 import type { FC } from "react"
 import { Button } from "@infra/ui/components/button"
-import { useRunSetupMigrations } from "@/kit/auth"
+import { useRunSetupMigrations } from "@/domains/auth"
 import { cn } from "@infra/ui/lib/utils"
 import { IconLoader2 } from "@tabler/icons-react"
 

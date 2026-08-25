@@ -1,7 +1,7 @@
 import type { FC } from "react"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { completeSetupSchema, useCompleteSetup } from "@/kit/auth"
+import { completeSetupSchema, useCompleteSetup } from "@/domains/auth"
 import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
 

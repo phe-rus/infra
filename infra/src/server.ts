@@ -4,8 +4,8 @@ import {
 } from "@better-auth/oauth-provider"
 import handler from "@tanstack/react-start/server-entry"
 import { withEdgeCache } from "@infra/tanstack-image/server"
-import { auth } from "./auth"
-import { isTrustedOrigin } from "./auth/utils/trusted-origins"
+import { auth } from "../auth"
+import { isTrustedOrigin } from "@infra/auth"
 
 export type RequestContext = {
     env: Env

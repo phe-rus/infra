@@ -4,7 +4,7 @@ import {
     payoutSchema,
     refundSchema,
     walletBalancesSchema,
-} from "@/kit/payments/schema"
+} from "@/domains/payments/schema"
 
 const validDeposit = {
     amount: "5000",

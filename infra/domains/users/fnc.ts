@@ -3,9 +3,9 @@ import { getRequestHeaders } from "@tanstack/react-start/server"
 import type { SessionWithImpersonatedBy, UserWithRole } from "better-auth/plugins/admin"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
-import { isOwner } from "@/auth/utils/permissions"
-import { AdminMiddleware, OwnerMiddleware } from "@/kit/middleware"
-import { assertCanAssignRole } from "@/kit/shared"
+import { isOwner } from "@infra/auth/permissions"
+import { AdminMiddleware, OwnerMiddleware } from "@/middleware"
+import { assertCanAssignRole } from "./assert-can-assign-role"
 import {
     banUserSchema,
     createUserSchema,
@@ -100,6 +100,17 @@ export const createUser = createServerFn({ method: "POST" })
             },
         })
         forwardAuthHeaders(responseHeaders)
+
+        // admin-created accounts aren't auto-verified like the setup-flow
+        // owner account is — send the real verification email now so the
+        // "verification email sent" toast on the client is actually true,
+        // not just copy. A delivery failure shouldn't fail account creation.
+        if (!user.emailVerified) {
+            await auth.api
+                .sendVerificationEmail({ headers, body: { email: data.email } })
+                .catch(() => {})
+        }
+
         return user
     })
 

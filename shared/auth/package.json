@@ -1,0 +1,28 @@
+{
+    "name": "@infra/auth",
+    "version": "0.0.0",
+    "license": "MIT",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run"
+    },
+    "peerDependencies": {
+        "better-auth": "^1.7.1"
+    },
+    "dependencies": {
+        "@better-auth/oauth-provider": "1.7.1",
+        "@better-auth/passkey": "1.7.1"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4",
+        "@types/node": "^26",
+        "typescript": "7",
+        "vitest": "^4"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./permissions": "./src/core/permissions.ts"
+    }
+}

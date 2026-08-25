@@ -15,11 +15,12 @@ import {
     updateUser,
     uploadUserImage,
 } from "./fnc"
-import { patchUserInCache, useAppMutation } from "@/kit/shared"
+import { patchUserInCache } from "./patch-user-cache"
+import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
 import type { UsersListData } from "./fnc"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@infra/ui/components/sonner"
-import { meQueryOptions } from "@/kit/auth"
+import { meQueryOptions } from "@/domains/auth"
 import { usersQueryOptions } from "./get-user"
 
 export const useCreateUser = () =>
@@ -27,6 +28,8 @@ export const useCreateUser = () =>
         mutationFn: createUser,
         invalidates: [usersQueryOptions().queryKey],
         successMessage: "User added",
+        successDescription: (user) =>
+            user.emailVerified ? undefined : `Verification email sent to ${user.email}`,
         errorMessage: "Could not add user",
     })
 

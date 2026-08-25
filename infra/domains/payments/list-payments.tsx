@@ -11,7 +11,7 @@ import {
 import { TableCell, TableRow } from "@infra/ui/components/table"
 import { DataTable } from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
-import type { ListedPayment } from "@/kit/payments"
+import type { ListedPayment } from "@/domains/payments"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { formatUtc } from "@infra/ui/lib/date"
 import { cn } from "@infra/ui/lib/utils"

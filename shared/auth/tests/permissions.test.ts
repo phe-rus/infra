@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { FIXED_ROLE_NAMES, isAdminTier, isOwner } from "@/auth/utils/permissions"
+import { FIXED_ROLE_NAMES, isAdminTier, isOwner } from "../src/core/permissions"
 
 describe("isAdminTier", () => {
     it("treats owner as admin tier", () => {

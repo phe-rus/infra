@@ -8,7 +8,7 @@ import {
     signIn,
     signOut,
 } from "./fnc"
-import { useAppMutation } from "@/kit/shared"
+import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@infra/ui/components/sonner"
 import { meQueryOptions, setupStatusQueryOptions } from "./get-auth"

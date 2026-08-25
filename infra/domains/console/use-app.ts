@@ -1,5 +1,5 @@
 import { createApp, removeApp, rotateApp, setAppActive, updateApp } from "./fnc"
-import { useAppMutation } from "@/kit/shared"
+import { useAppMutation } from "@infra/ui/hooks/use-app-mutation"
 import type { AppListData } from "./fnc"
 import { consoleOptions } from "./get-app"
 

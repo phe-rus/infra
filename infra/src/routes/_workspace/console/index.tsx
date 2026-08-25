@@ -5,9 +5,9 @@ import {
     useRemoveApp,
     useRotateApp,
     useSetAppActive,
-} from "@/kit/console"
+} from "@/domains/console"
 import { buttonVariants } from "@infra/ui/components/button"
-import { ListApplications } from "@/features/console"
+import { ListApplications } from "@/domains/console"
 import { cn } from "@infra/ui/lib/utils"
 
 export const Route = createFileRoute("/_workspace/console/")({

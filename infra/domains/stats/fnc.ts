@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import { auth } from "@/auth"
-import { AdminMiddleware } from "@/kit/middleware"
+import { AdminMiddleware } from "@/middleware"
 
 const ACTIVE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000
 

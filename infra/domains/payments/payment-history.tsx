@@ -3,7 +3,7 @@ import type { FC } from "react"
 import { Badge } from "@infra/ui/components/badge"
 import { DataTable } from "@infra/ui/widgets/tables"
 import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
-import type { ListedPayment } from "@/kit/payments"
+import type { ListedPayment } from "@/domains/payments"
 import { formatUtc } from "@infra/ui/lib/date"
 import { statusVariant } from "./status-variant"
 

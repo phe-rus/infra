@@ -4,8 +4,8 @@ import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@infra/ui/components/avatar"
-import { useUpdateUserDetails, useUploadUserImage } from "@/kit/users"
-import type { UserDetail } from "@/kit/users"
+import { useUpdateUserDetails, useUploadUserImage } from "@/domains/users"
+import type { UserDetail } from "@/domains/users"
 
 export type UpdateUserProps = {
     viewUser: UserDetail

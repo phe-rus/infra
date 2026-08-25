@@ -10,8 +10,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@infra/ui/components/select"
-import { useBanUser, useUnbanUser } from "@/kit/users"
-import type { UserDetail } from "@/kit/users"
+import { useBanUser, useUnbanUser } from "@/domains/users"
+import type { UserDetail } from "@/domains/users"
 import { formatUtc } from "@infra/ui/lib/date"
 
 const BAN_DURATIONS = [

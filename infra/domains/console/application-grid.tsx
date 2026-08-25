@@ -2,8 +2,8 @@ import type { FC } from "react"
 import { Avatar, AvatarFallback } from "@infra/ui/components/avatar"
 import { Link } from "@tanstack/react-router"
 import { cn } from "@infra/ui/lib/utils"
-import { FrameworkIcon } from "@/components/widgets/framework-icon"
-import type { AppListData } from "@/kit/console"
+import { FrameworkIcon } from "@/domains/console/framework-icon"
+import type { AppListData } from "@/domains/console"
 
 type ApplicationGridProps = {
     data: AppListData

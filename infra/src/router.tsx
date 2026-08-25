@@ -2,7 +2,7 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import { DefaultBoundary, DefaultLoader, NotFound } from "@infra/ui/defaults"
 import { createRouter as createTanStackRouter } from "@tanstack/react-router"
 import { QueryProvider, getContext } from "@/lib/queryClient"
-import { routeTree } from "@/routeTree.gen"
+import { routeTree } from "./routeTree.gen"
 
 export function getRouter() {
     const q = getContext()

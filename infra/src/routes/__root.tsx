@@ -1,7 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
-import { meQueryOptions, setupStatusQueryOptions } from "@/kit/auth"
+import { meQueryOptions, setupStatusQueryOptions } from "@/domains/auth"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
 import tailwind from "@infra/ui/globals.css?url"

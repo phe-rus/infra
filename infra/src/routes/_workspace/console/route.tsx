@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { consoleOptions } from "@/kit/console"
-import { isAdminTier } from "@/auth/utils/permissions"
+import { consoleOptions } from "@/domains/console"
+import { isAdminTier } from "@infra/auth/permissions"
 
 export const Route = createFileRoute("/_workspace/console")({
     beforeLoad: ({ context: { user } }) => {

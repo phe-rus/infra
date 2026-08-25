@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { myPaymentsOptions, paymentConfigOptions, useMyPayments } from "@/kit/payments"
-import { DepositForm, PaymentHistory } from "@/features/payments"
+import { myPaymentsOptions, paymentConfigOptions, useMyPayments } from "@/domains/payments"
+import { DepositForm, PaymentHistory } from "@/domains/payments"
 
 export const Route = createFileRoute("/_account/payments")({
     loader: async ({ context: { q } }) => {

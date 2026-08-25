@@ -1,6 +1,6 @@
 import type { FC } from "react"
 import { Button } from "@infra/ui/components/button"
-import { useImpersonateUser } from "@/kit/users"
+import { useImpersonateUser } from "@/domains/users"
 
 export type ImpersonateUserProps = {
     userId: string

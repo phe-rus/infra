@@ -1,4 +1,4 @@
-import type { ListedUser, UsersListData } from "@/kit/users"
+import type { ListedUser, UsersListData } from "./fnc"
 
 export function patchUserInCache(
     old: UsersListData | undefined,

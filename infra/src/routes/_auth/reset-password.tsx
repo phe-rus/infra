@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { useResetPassword } from "@/kit/auth"
+import { useResetPassword } from "@/domains/auth"
 import { cn } from "@infra/ui/lib/utils"
 
 const resetPasswordSearchSchema = z.object({

@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { isAdminTier } from "@/auth/utils/permissions"
-import { Dashboard } from "@/components/dashboard"
+import { isAdminTier } from "@infra/auth/permissions"
+import { Dashboard } from "@/components/asidebar/asidebar"
 
 export const Route = createFileRoute("/_workspace")({
     beforeLoad: ({ context: { session } }) => {

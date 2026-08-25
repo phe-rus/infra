@@ -1,4 +1,4 @@
-import type { Framework } from "@/kit/console"
+import type { Framework } from "@/domains/console"
 import { IconCode } from "@tabler/icons-react"
 
 // simplified, hand-drawn stand-ins for each framework's mark — not traced

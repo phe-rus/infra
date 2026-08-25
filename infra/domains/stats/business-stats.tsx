@@ -1,5 +1,5 @@
 import type { FC } from "react"
-import type { StatsData } from "@/kit/stats"
+import type { StatsData } from "@/domains/stats"
 import { cn } from "@infra/ui/lib/utils"
 
 type BusinessStatsProps = {

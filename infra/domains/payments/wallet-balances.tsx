@@ -7,7 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@infra/ui/components/select"
-import { useWalletBalances } from "@/kit/payments"
+import { useWalletBalances } from "@/domains/payments"
 import { cn } from "@infra/ui/lib/utils"
 import { IconCardsFilled } from "@tabler/icons-react"
 

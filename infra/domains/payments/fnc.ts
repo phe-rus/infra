@@ -3,7 +3,7 @@ import { getRequestHeaders } from "@tanstack/react-start/server"
 import * as z from "zod"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
-import { AdminMiddleware, SessionMiddleware } from "@/kit/middleware"
+import { AdminMiddleware, SessionMiddleware } from "@/middleware"
 import {
     depositSchema,
     listPaymentsSchema,

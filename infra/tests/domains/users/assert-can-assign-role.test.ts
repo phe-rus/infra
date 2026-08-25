@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { assertCanAssignRole } from "@/kit/shared/assert-can-assign-role"
+import { assertCanAssignRole } from "@/domains/users/assert-can-assign-role"
 
 describe("assertCanAssignRole", () => {
     it("allows an owner to assign any role", () => {

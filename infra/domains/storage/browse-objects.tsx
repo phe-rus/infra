@@ -1,5 +1,5 @@
 import { IconFileFilled, IconFolderFilled, IconMinus } from "@tabler/icons-react"
-import { useListObjects, useDeleteObjects } from "@/kit/storage"
+import { useListObjects, useDeleteObjects } from "@/domains/storage"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
 import { TanstackImage } from "@infra/tanstack-image"

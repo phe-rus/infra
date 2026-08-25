@@ -5,7 +5,7 @@ export default defineConfig({
     resolve: {
         tsconfigPaths: true,
         alias: {
-            "@": path.resolve(import.meta.dirname, "./src"),
+            "@": path.resolve(import.meta.dirname, "."),
         },
     },
     test: {

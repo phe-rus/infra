@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { forgotPasswordSchema, useRequestPasswordReset } from "@/kit/auth"
+import { forgotPasswordSchema, useRequestPasswordReset } from "@/domains/auth"
 import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
 import { buttonVariants } from "@infra/ui/components/button"

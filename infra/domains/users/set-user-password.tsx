@@ -3,7 +3,7 @@ import type { FC } from "react"
 import { Field, FieldLabel } from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
-import { useSetUserPassword } from "@/kit/users"
+import { useSetUserPassword } from "@/domains/users"
 
 export type SetUserPasswordProps = {
     userId: string

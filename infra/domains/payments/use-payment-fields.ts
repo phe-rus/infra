@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { usePaymentConfig } from "@/kit/payments"
+import { usePaymentConfig } from "@/domains/payments"
 
 // Uganda — matches where this instance's operator actually is
 const DEFAULT_COUNTRY = "UGA"

@@ -20,7 +20,7 @@ type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
     invalidates?: QueryKey[]
     optimisticUpdate?: OptimisticUpdate<TOptimisticData, TVariables>
     successMessage?: string | ((data: TData, variables: TVariables) => string)
-    successDescription?: string | ((data: TData, variables: TVariables) => string)
+    successDescription?: string | ((data: TData, variables: TVariables) => string | undefined)
     errorMessage?: string
     onSuccess?: (data: TData, variables: TVariables) => void
     onError?: (error: Error, variables: TVariables) => void
