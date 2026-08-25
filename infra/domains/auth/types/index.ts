@@ -32,3 +32,12 @@ export const resetPasswordSchema = z.object({
         .max(48, "At most 48 characters"),
     token: z.string().min(1),
 })
+
+export const newPasswordSchema = resetPasswordSchema.pick({ newPassword: true })
+
+// better-auth's own /reset-password/:token callback redirects here with
+// ?token= appended (or ?error=INVALID_TOKEN if the link is bad/expired)
+export const resetPasswordSearchSchema = z.object({
+    token: z.string().optional(),
+    error: z.string().optional(),
+})

@@ -1,8 +1,7 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_auth")({
-    loader: async ({ context: { session }, location }) => {
-        if (location.pathname === "/consent") return
+    loader: async ({ context: { session } }) => {
         if (session)
             throw redirect({
                 to: "/",

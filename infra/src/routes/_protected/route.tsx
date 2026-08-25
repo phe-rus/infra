@@ -1,6 +1,9 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router"
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_protected")({
+    beforeLoad: ({ context: { session } }) => {
+        if (!session) throw redirect({ to: "/sign-in", replace: true })
+    },
     component: RouteComponent,
 })
 

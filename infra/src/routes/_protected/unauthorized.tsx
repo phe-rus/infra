@@ -1,11 +1,8 @@
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { useLogout } from "@/domains/auth"
 import { Button } from "@infra/ui/components/button"
 
 export const Route = createFileRoute("/_protected/unauthorized")({
-    beforeLoad: ({ context: { session } }) => {
-        if (!session) throw redirect({ to: "/sign-in", replace: true })
-    },
     component: RouteComponent,
 })
 
