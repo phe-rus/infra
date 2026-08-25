@@ -46,14 +46,7 @@ export const listUsers = createServerFn({ method: "GET" })
         return { users, total }
     })
 
-// UserWithRole is better-auth's admin plugin's own declared return type for
-// listUsers, hardcoded regardless of what other plugins are registered —
-// deriving from Awaited<ReturnType<typeof listUsers>> doesn't help, it
-// resolves back to this same declared type. twoFactorEnabled is real at
-// runtime (the twoFactor plugin adds it to every user row, confirmed live)
-// but missing from the static type, so it's added here by hand
 export type ListedUser = UserWithRole & { twoFactorEnabled?: boolean }
-
 export const getUserDetail = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
@@ -67,7 +60,6 @@ export const getUserDetail = createServerFn({ method: "GET" })
             }),
             auth.$context,
         ])
-        // only the identifying fields, never tokens or password hashes
         const accounts = await ctx.adapter.findMany<{
             id: string
             providerId: string
@@ -80,8 +72,6 @@ export const getUserDetail = createServerFn({ method: "GET" })
             limit: 50,
             select: ["id", "providerId", "accountId", "createdAt", "updatedAt"],
         })
-        // same static-type gap as ListedUser above — auth.api.getUser's
-        // declared return doesn't know about the twoFactor plugin either
         return { user: user as ListedUser, sessions, accounts }
     })
 

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { IconCopy } from "@tabler/icons-react"
 import { formatUtc } from "@infra/ui/lib/date"
 import { Badge } from "@infra/ui/components/badge"
@@ -12,12 +11,12 @@ import { t } from "@infra/ui/components/sonner"
 import {
     appDetailSearchSchema,
     appFormSchema,
-    appOptions,
     computeChangedFields,
     CREATE_CLIENT_ID,
     CREATE_DEFAULT_VALUES,
     editDefaultValues,
     infraConfigSnippet,
+    useApp,
     useCreateApp,
     useRemoveApp,
     useRotateApp,
@@ -37,7 +36,7 @@ function RouteComponent() {
     const navigate = Route.useNavigate()
 
     const isCreate = clientId === CREATE_CLIENT_ID
-    const { data: application } = useSuspenseQuery(appOptions(clientId))
+    const { data: application } = useApp(clientId)
 
     const { mutateAsync: createApp } = useCreateApp()
     const { mutateAsync: updateApp } = useUpdateApp()

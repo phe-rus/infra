@@ -1,10 +1,19 @@
-import { createApp, removeApp, rotateApp, setAppActive, updateApp } from "./func"
+import {
+    createApp,
+    removeApp,
+    rotateApp,
+    setAppActive,
+    updateApp,
+} from "./func"
 import { useAppMutation } from "@infra/ui/hooks"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import type { AppListData } from "./func"
-import { consoleOptions } from "./get-console"
+import { appOptions, consoleOptions } from "./get-console"
 
 export const useConsole = () => useSuspenseQuery(consoleOptions())
+
+export const useApp = (clientId: string) =>
+    useSuspenseQuery(appOptions(clientId))
 
 export const useCreateApp = () =>
     useAppMutation({
@@ -17,8 +26,6 @@ export const useCreateApp = () =>
 export const useUpdateApp = () =>
     useAppMutation({
         mutationFn: updateApp,
-        // ["applications"] cascades to ["applications", clientId] too
-        // (React Query's default prefix match), no need to invalidate both
         invalidates: [consoleOptions().queryKey],
         successMessage: "Application saved",
         errorMessage: "Could not save application",

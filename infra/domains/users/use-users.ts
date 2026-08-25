@@ -96,9 +96,6 @@ export const useUpdateUserDetails = () =>
         errorMessage: "Could not update details",
     })
 
-// invalidating ["users"] cascades to the open detail drawer's ["users", userId]
-// query too (React Query's default prefix match), so no manual cache patch
-// is needed here despite not knowing the versioned image URL until it lands
 export const useUploadUserImage = () =>
     useAppMutation({
         mutationFn: uploadUserImage,

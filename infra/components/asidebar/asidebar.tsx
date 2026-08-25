@@ -250,7 +250,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                             }
                                             return (
                                                 <Fragment key={index}>
-                                                    <h4 className="pt-3 pb-1 text-sm text-muted-foreground tracking-tight">
+                                                    <h4 className="pt-3 pb-1 text-sm font-light tracking-tight">
                                                         {label}
                                                     </h4>
                                                     <nav className="flex flex-col">
