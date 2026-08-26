@@ -4,6 +4,7 @@ import { formatDistanceToNow } from "date-fns"
 import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
 import { Checkbox } from "@infra/ui/components/checkbox"
+import { ContentView } from "@infra/ui/widgets/content-view"
 import { cn } from "@infra/ui/lib/utils"
 import { IconLoader2, IconMail, IconPdf } from "@tabler/icons-react"
 import type { MyPaymentsData, PaymentConfigData } from "../func"
@@ -40,38 +41,44 @@ export const TransactionHistory: FC<TransactionHistoryProps> = ({ data, config }
 
     if (payments.length === 0) {
         return (
-            <article className="flex flex-col gap-5">
-                <h2>Transactions &amp; receipts</h2>
-                <p className="text-sm text-muted-foreground">No transactions yet</p>
-            </article>
+            <ContentView.Section className="gap-5">
+                <ContentView.Header
+                    heading="Transactions & receipts"
+                    p="No transactions yet"
+                    pClassName="text-sm text-muted-foreground"
+                />
+            </ContentView.Section>
         )
     }
 
     return (
-        <article className="flex flex-col gap-5">
-            <div className="flex items-center justify-between gap-3">
-                <h2>Transactions &amp; receipts</h2>
-                {selected.size > 0 && (
-                    <Button
-                        type="button"
-                        size="xs"
-                        variant="secondary"
-                        isDisabled={resendManyMutation.isPending}
-                        onClick={() => {
-                            resendManyMutation.mutate([...selected], {
-                                onSuccess: () => setSelected(new Set()),
-                            })
-                        }}
-                    >
-                        {resendManyMutation.isPending ? (
-                            <IconLoader2 className="animate-spin" />
-                        ) : (
-                            <IconMail />
-                        )}
-                        Email {selected.size} receipt{selected.size > 1 ? "s" : ""}
-                    </Button>
-                )}
-            </div>
+        <ContentView.Section className="gap-5">
+            <ContentView.Header
+                heading="Transactions & receipts"
+                action={
+                    selected.size > 0 && (
+                        <Button
+                            type="button"
+                            size="xs"
+                            variant="secondary"
+                            isDisabled={resendManyMutation.isPending}
+                            onClick={() => {
+                                resendManyMutation.mutate([...selected], {
+                                    onSuccess: () => setSelected(new Set()),
+                                })
+                            }}
+                        >
+                            {resendManyMutation.isPending ? (
+                                <IconLoader2 className="animate-spin" />
+                            ) : (
+                                <IconMail />
+                            )}
+                            Email {selected.size} receipt{selected.size > 1 ? "s" : ""}
+                        </Button>
+                    )
+                }
+                actionClassName="justify-between"
+            />
 
             <div className="flex flex-col gap-1">
                 {payments.map((payment) => {
@@ -152,6 +159,6 @@ export const TransactionHistory: FC<TransactionHistoryProps> = ({ data, config }
                     )
                 })}
             </div>
-        </article>
+        </ContentView.Section>
     )
 }

@@ -14,6 +14,7 @@ import {
     IconChevronRight,
     IconDownload,
     IconLogs,
+    IconMessage2,
     IconMeteorFilled,
     IconMoneybag,
     IconPackage,
@@ -58,6 +59,12 @@ const navLists = [
         Icon: IconLogs,
     },
     {
+        isDev: true,
+        label: "Messaging",
+        path: "/messaging",
+        Icon: IconMessage2,
+    },
+    {
         label: "Billing",
         path: "/billing",
         Icon: IconMoneybag,
@@ -66,16 +73,19 @@ const navLists = [
         label: "System",
         items: [
             {
+                isDev: true,
                 label: "Application",
                 path: "/settings",
                 Icon: IconSettings,
             },
             {
+                isDev: true,
                 label: "Metrics",
                 path: "/settings/metrics",
                 Icon: IconMeteorFilled,
             },
             {
+                isDev: true,
                 label: "Crons",
                 path: "/settings/crons",
                 Icon: IconBone,
@@ -86,11 +96,13 @@ const navLists = [
         label: "Sync",
         items: [
             {
+                isDev: true,
                 label: "Export store",
                 path: "/settings/sync#export",
                 Icon: IconDownload,
             },
             {
+                isDev: true,
                 label: "Import store",
                 path: "/settings/sync#import",
                 Icon: IconUpload,
@@ -101,6 +113,7 @@ const navLists = [
         label: "Debug",
         items: [
             {
+                isDev: true,
                 label: "SQL console",
                 path: "/settings/sql",
                 Icon: IconDownload,
@@ -224,7 +237,10 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                 </nav>
                                 <nav className="flex flex-col">
                                     {navLists.map(
-                                        ({ label, items, ...props }, index) => {
+                                        (
+                                            { label, items, ...props },
+                                            index
+                                        ) => {
                                             if (!items) {
                                                 return (
                                                     <Link
@@ -232,12 +248,17 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                         to={props.path}
                                                         className={cn(
                                                             "group tracking-tight flex items-center gap-2",
-                                                            "transition-colors duration-150 ease-out"
+                                                            "transition-colors duration-150 ease-out",
+                                                            "relative",
+                                                            props.isDev &&
+                                                                "duration-150 opacity-60"
                                                         )}
                                                         activeProps={{
                                                             className:
                                                                 cn(
-                                                                    "text-current"
+                                                                    "text-current",
+                                                                    props.isDev &&
+                                                                        "opacity-100"
                                                                 ),
                                                         }}
                                                     >
@@ -245,6 +266,18 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                             <props.Icon className="size-5" />
                                                         )}
                                                         {label}
+                                                        {props.isDev && (
+                                                            <span
+                                                                className={cn(
+                                                                    "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
+                                                                    "text-destructive-foreground rounded-2xl",
+                                                                    "px-1 py-0.5"
+                                                                )}
+                                                            >
+                                                                comming
+                                                                soon
+                                                            </span>
+                                                        )}
                                                     </Link>
                                                 )
                                             }
@@ -255,7 +288,10 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                     </h4>
                                                     <nav className="flex flex-col">
                                                         {items?.map(
-                                                            (i, inx) => {
+                                                            (
+                                                                i,
+                                                                inx
+                                                            ) => {
                                                                 return (
                                                                     <Link
                                                                         key={
@@ -266,12 +302,17 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                                         }
                                                                         className={cn(
                                                                             "group tracking-tight flex items-center gap-2",
-                                                                            "transition-colors duration-150 ease-out"
+                                                                            "transition-colors duration-150 ease-out",
+                                                                            "relative",
+                                                                            i.isDev &&
+                                                                                "duration-150 opacity-60"
                                                                         )}
                                                                         activeProps={{
                                                                             className:
                                                                                 cn(
-                                                                                    "text-current"
+                                                                                    "text-current",
+                                                                                    i.isDev &&
+                                                                                        "opacity-100"
                                                                                 ),
                                                                         }}
                                                                     >
@@ -279,6 +320,18 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                                         {
                                                                             i.label
                                                                         }
+                                                                        {i.isDev && (
+                                                                            <span
+                                                                                className={cn(
+                                                                                    "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
+                                                                                    "text-destructive-foreground rounded-2xl",
+                                                                                    "px-1 py-0.5"
+                                                                                )}
+                                                                            >
+                                                                                comming
+                                                                                soon
+                                                                            </span>
+                                                                        )}
                                                                     </Link>
                                                                 )
                                                             }
@@ -303,7 +356,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     onClick={() => signOut({})}
                                     isDisabled={isPending}
                                 >
-                                    {isPending ? "Signing out..." : "Sign out"}
+                                    {isPending
+                                        ? "Signing out..."
+                                        : "Sign out"}
                                 </Button>
                             </nav>
                         </section>
@@ -313,13 +368,15 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-destructive/10 px-5 py-2 text-xs text-destructive">
                                 <span>
                                     Impersonating{" "}
-                                    <strong>{session.user.name}</strong> (
-                                    {session.user.email})
+                                    <strong>{session.user.name}</strong>{" "}
+                                    ({session.user.email})
                                 </span>
                                 <Button
                                     size="xs"
                                     variant="outline"
-                                    onClick={() => void stopImpersonating({})}
+                                    onClick={() =>
+                                        void stopImpersonating({})
+                                    }
                                     isDisabled={isStoppingImpersonation}
                                 >
                                     {isStoppingImpersonation
@@ -339,7 +396,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
 export function useSidebar() {
     const context = useContext(SidebarContext)
     if (!context) {
-        throw new Error("useDashboardContext must be used within Dashboard")
+        throw new Error(
+            "useDashboardContext must be used within Dashboard"
+        )
     }
     return context
 }

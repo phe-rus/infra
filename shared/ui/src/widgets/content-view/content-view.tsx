@@ -15,6 +15,7 @@ type HeaderProps = PropsWithChildren<{
     pClassName?: string
     icon?: ReactNode
     action?: ReactNode
+    actionClassName?: string
     as?: "h1" | "h2" | "h3"
     className?: string
 }>
@@ -71,6 +72,7 @@ function Header({
     pClassName,
     icon,
     action,
+    actionClassName,
     as: Tag = "h3",
     className,
     children,
@@ -85,7 +87,7 @@ function Header({
     return (
         <div className={className}>
             {action ? (
-                <div className="flex items-center gap-3">
+                <div className={cn("flex items-center gap-3", actionClassName)}>
                     {title}
                     {action}
                 </div>
