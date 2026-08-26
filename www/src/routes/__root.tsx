@@ -58,7 +58,7 @@ function RootDocument() {
                     enableSystem
                 >
                     <Outlet />
-                    <ToasterProvider richColors />
+                    <ToasterProvider />
                 </ThemeProvider>
                 <ComposeViewport.Devtools />
                 <Scripts />

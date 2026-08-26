@@ -51,7 +51,7 @@ export const QueryProvider = ({ children, query }: TRProviderProps) => {
     return (
         <QueryClientProvider client={client}>
             {children}
-            <ToasterProvider richColors />
+            <ToasterProvider />
         </QueryClientProvider>
     )
 }

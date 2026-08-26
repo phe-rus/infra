@@ -3,7 +3,6 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 @import "./typeset.css";
-@import "goey-toast/styles.css";
 
 @custom-variant dark (&:is(.dark *));
 @source '**/**/*.{tsx,ts}';
