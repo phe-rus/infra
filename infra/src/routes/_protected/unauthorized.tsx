@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useLogout } from "@/domains/auth"
 import { Button } from "@infra/ui/components/button"
+import { ViewController } from "@/components/views"
 
 export const Route = createFileRoute("/_protected/unauthorized")({
     component: RouteComponent,
@@ -10,12 +11,15 @@ function RouteComponent() {
     const { isPending, mutateAsync: signOut } = useLogout()
 
     return (
-        <div className="container mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-3 py-20 text-center">
-            <h1 className="text-3xl md:text-4xl">Access restricted</h1>
-            <p className="text-muted-foreground">
-                Your account doesn't have a role that's permitted to access this
-                instance. Ask an owner or admin to grant your role access.
-            </p>
+        <ViewController
+            className="m-auto items-center py-20 text-center md:max-w-md"
+            heading={
+                <ViewController.Heading
+                    title="Access restricted"
+                    description="Your account doesn't have a role that's permitted to access this instance. Ask an owner or admin to grant your role access."
+                />
+            }
+        >
             <Button
                 className="mt-3"
                 onClick={() => signOut({})}
@@ -23,6 +27,6 @@ function RouteComponent() {
             >
                 {isPending ? "Signing out…" : "Sign out"}
             </Button>
-        </div>
+        </ViewController>
     )
 }
