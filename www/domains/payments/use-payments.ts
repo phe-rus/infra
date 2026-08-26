@@ -3,6 +3,8 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { authClient } from "@/lib/auth-client"
 import { useAppMutation } from "@infra/ui/hooks"
 import {
+    dodoBalanceOptions,
+    dodoPaymentMethodsOptions,
     myPaymentsOptions,
     paymentConfigOptions,
     paymentIntentOptions,
@@ -179,3 +181,93 @@ export const useConfirmPaymentIntent = (intentId: string) =>
         invalidates: [paymentIntentOptions(intentId).queryKey],
         errorMessage: "Could not start this payment",
     })
+
+// not suspense: Dodo may not be configured on this instance at all, and a
+// NOT_FOUND there shouldn't take down a page that also shows mobile money
+export const useDodoPaymentMethods = () => useQuery(dodoPaymentMethodsOptions())
+
+export const useDodoBalance = () => useQuery(dodoBalanceOptions())
+
+export const useRemoveDodoPaymentMethod = () =>
+    useAppMutation({
+        mutationFn: async (paymentMethodId: string) => {
+            const { error } = await authClient.pay.dodoPaymentMethods.remove({
+                paymentMethodId,
+            })
+            if (error)
+                throw new Error(error.message ?? "Could not remove this card")
+        },
+        invalidates: [dodoPaymentMethodsOptions().queryKey],
+        successMessage: "Card removed",
+        errorMessage: "Could not remove this card",
+    })
+
+export type CreateDodoCheckoutVariables = {
+    amount: number
+    currency: string
+    purpose?: string
+    returnUrl: string
+    grantsCredits?: boolean
+    intentId?: string
+}
+
+// redirects to Dodo's hosted checkout on success rather than showing a
+// toast, the same as every other redirect-based flow in this app (e.g.
+// consent.tsx's oauth2 accept/deny)
+export const useCreateDodoCheckout = () =>
+    useAppMutation({
+        mutationFn: async (variables: CreateDodoCheckoutVariables) => {
+            const { data, error } = await authClient.pay.dodoCheckout(variables)
+            if (error)
+                throw new Error(error.message ?? "Could not start checkout")
+            window.location.href = data.url
+            return data
+        },
+        errorMessage: "Could not start checkout",
+    })
+
+// dodoWebhook can't reach a local dev instance, so this reconciles a
+// payment against Dodo's API directly instead of waiting on it
+export const useSyncDodoPayment = () =>
+    useAppMutation({
+        mutationFn: async (dodoPaymentId: string) => {
+            const { data, error } = await authClient.pay.dodoSync({
+                dodoPaymentId,
+            })
+            if (error)
+                throw new Error(error.message ?? "Could not confirm payment status")
+            return data
+        },
+        invalidates: [
+            myPaymentsOptions().queryKey,
+            dodoBalanceOptions().queryKey,
+            dodoPaymentMethodsOptions().queryKey,
+        ],
+        errorMessage: "Could not confirm payment status",
+    })
+
+// Dodo appends payment_id/status to the return URL after checkout — read
+// straight off window.location.search rather than each route's own
+// validateSearch schema, since this is a one-off external-redirect param,
+// not real routing state. Strips it from the URL once handled so a
+// refresh doesn't re-trigger the sync
+export function useSyncDodoReturn() {
+    const syncMutation = useSyncDodoPayment()
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        const dodoPaymentId = params.get("payment_id")
+        if (!dodoPaymentId) return
+
+        syncMutation.mutate(dodoPaymentId, {
+            onSettled: () => {
+                const url = new URL(window.location.href)
+                url.searchParams.delete("payment_id")
+                url.searchParams.delete("status")
+                window.history.replaceState({}, "", url.toString())
+            },
+        })
+        // only ever run once, on mount — this reads the URL at load time
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+}

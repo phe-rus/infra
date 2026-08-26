@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { verifyPawaPayCallback } from "../src/verify-signature"
-import type { PublicKey } from "../src/pawapay-client"
+import { verifyPawaPayCallback } from "../src/pawapay/verify-signature"
+import type { PublicKey } from "../src/pawapay/pawapay-client"
 
 // Builds a real RFC-9421-signed request the same way PawaPay's own servers
 // would, so these tests exercise verifyPawaPayCallback end to end against

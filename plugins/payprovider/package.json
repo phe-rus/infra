@@ -1,5 +1,5 @@
 {
-    "name": "@infra/payment",
+    "name": "@infra/payprovider",
     "version": "0.0.0",
     "license": "MIT",
     "type": "module",
@@ -13,7 +13,9 @@
         "@better-auth/oauth-provider": "^1.7.1"
     },
     "dependencies": {
-        "zod": "^4.4.3"
+        "zod": "^4.4.3",
+        "dodopayments": "^2.48.0",
+        "@dodopayments/core": "^0.3.15"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4",

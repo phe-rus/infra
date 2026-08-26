@@ -1,3 +1,4 @@
+import { useState } from "react"
 import type { FC } from "react"
 import { DrawerClose } from "@infra/ui/components/drawer"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
@@ -16,6 +17,7 @@ import { UpdateUser } from "./update-user"
 import { BanUser } from "./ban-user"
 import { RevokeUserSessions } from "./revoke-user-sessions"
 import { UserAccounts } from "./user-accounts"
+import { UserWallet } from "./user-wallet"
 import { SetUserPassword } from "./set-user-password"
 import { ImpersonateUser } from "./impersonate-user"
 import { DisableTwoFactor } from "./disable-two-factor"
@@ -33,6 +35,7 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
 }) => {
     const { data: viewUser, isLoading } = useUserDetail(userId)
     const isViewingSelf = userId === currentUserId
+    const [tab, setTab] = useState("overview")
 
     return (
         <DialogWidget
@@ -55,7 +58,7 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
             )}
 
             {viewUser && (
-                <Tabs defaultValue="overview">
+                <Tabs value={tab} onValueChange={setTab}>
                     <TabsList variant="line" className="px-0! gap-1!">
                         <TabsTrigger
                             value="overview"
@@ -74,6 +77,12 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                             className="text-xs! px-0!"
                         >
                             Sessions
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="wallet"
+                            className="text-xs! px-0!"
+                        >
+                            Wallet
                         </TabsTrigger>
                     </TabsList>
 
@@ -188,6 +197,13 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
 
                     <TabsContent value="sessions">
                         <RevokeUserSessions viewUser={viewUser} />
+                    </TabsContent>
+
+                    <TabsContent value="wallet">
+                        <UserWallet
+                            userId={viewUser.user.id}
+                            enabled={tab === "wallet"}
+                        />
                     </TabsContent>
                 </Tabs>
             )}

@@ -8,7 +8,7 @@ const DEFAULT_COUNTRY = "UGA"
 // needs, same shape as infra's own domains/payments/use-payment-fields.ts.
 // Deliberately a separate small copy rather than shared: it's app-level
 // state (useState), and neither @infra/ui (UI-only, no business logic) nor
-// @infra/payment (framework-agnostic on purpose, no React) is a clean home
+// @infra/payprovider (framework-agnostic on purpose, no React) is a clean home
 // for it. Keep the two in sync if the cascade logic itself ever changes.
 export function usePaymentFields() {
     const { data } = usePaymentConfig()

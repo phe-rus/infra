@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from "vitest"
-import { convertViaUsd, fetchUsdRates } from "../src/fx"
+import { convertViaUsd, fetchUsdRates } from "../src/pawapay/fx"
 
 describe("convertViaUsd", () => {
     // matches the shape fawazahmed0's API actually returns: lowercase

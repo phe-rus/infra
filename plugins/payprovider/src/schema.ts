@@ -43,11 +43,28 @@ export const schema = {
                 type: "string",
                 required: true,
             },
+            // which rail processed this payment — defaults to pawapay so
+            // every existing row (written before this field existed) reads
+            // back the same as if it had always been set explicitly
+            rail: {
+                type: "string", // "pawapay" | "dodo"
+                required: true,
+                defaultValue: "pawapay",
+            },
             // PawaPay's own deposit/payout/refund id — how a callback gets
-            // matched back to this row
+            // matched back to this row. Only pawapay rows set this;
+            // dodoReferenceId below is the dodo-side sibling
             pawapayReferenceId: {
                 type: "string",
-                required: true,
+                required: false,
+                unique: true,
+                index: true,
+            },
+            // Dodo's own checkout_session_id — how dodoWebhook matches a
+            // callback back to this row
+            dodoReferenceId: {
+                type: "string",
+                required: false,
                 unique: true,
                 index: true,
             },
@@ -171,6 +188,37 @@ export const schema = {
                 references: { model: "payment", field: "id" },
             },
             failureReason: { type: "string", required: false },
+            createdAt: {
+                type: "date",
+                required: true,
+                defaultValue: () => new Date(),
+            },
+            updatedAt: {
+                type: "date",
+                required: true,
+                defaultValue: () => new Date(),
+                onUpdate: () => new Date(),
+            },
+        },
+    },
+    // links our own userId to Dodo's own customer_id — Dodo's API is
+    // keyed by their own customer record, not ours, so every dodo endpoint
+    // needs this row (created lazily, find-or-create, the first time a
+    // user needs one)
+    dodoCustomer: {
+        fields: {
+            userId: {
+                type: "string",
+                required: true,
+                references: { model: "user", field: "id" },
+                index: true,
+                unique: true,
+            },
+            dodoCustomerId: {
+                type: "string",
+                required: true,
+                unique: true,
+            },
             createdAt: {
                 type: "date",
                 required: true,

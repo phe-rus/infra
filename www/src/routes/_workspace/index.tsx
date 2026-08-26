@@ -23,7 +23,10 @@ import {
     useMyPayments,
     usePaymentConfig,
     useWallets,
+    useDodoPaymentMethods,
+    useSyncDodoReturn,
     ExpenditureEstimateCard,
+    DodoBalanceCard,
     Wallet,
     TransactionHistory,
 } from "@/domains/payments"
@@ -38,10 +41,12 @@ export const Route = createFileRoute("/_workspace/")({
 })
 
 function RouteComponent() {
+    useSyncDodoReturn()
     const { data: session } = useSuspenseQuery(currentOptions())
     const { data: payments } = useMyPayments()
     const { data: wallets } = useWallets()
     const { data: config } = usePaymentConfig()
+    const { data: dodoPaymentMethods } = useDodoPaymentMethods()
 
     const user = useMemo(() => {
         if (!session?.user) return null
@@ -102,12 +107,18 @@ function RouteComponent() {
                             config={config}
                         />
                     ))}
+                    {dodoPaymentMethods?.paymentMethods.map((method) => (
+                        <Wallet.DodoCard key={method.id} data={method} />
+                    ))}
                     <Wallet.AddTile
                         wallets={wallets.wallets}
                         config={config}
                     />
                 </Wallet.Cards>
-                <ExpenditureEstimateCard data={payments} />
+                <div className="grid grid-cols-2 gap-2">
+                    <ExpenditureEstimateCard data={payments} />
+                    {config.dodoEnabled && <DodoBalanceCard />}
+                </div>
 
                 <TransactionHistory data={payments} config={config} />
             </ContentView.Section>

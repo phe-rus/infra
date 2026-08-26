@@ -15,7 +15,7 @@
     "dependencies": {
         "@better-auth/oauth-provider": "1.7.1",
         "@better-auth/passkey": "1.7.1",
-        "@infra/payment": "workspace:*",
+        "@infra/payprovider": "workspace:*",
         "@infra/r2": "workspace:*",
         "@infra/tanstack-image": "workspace:*",
         "@infra/ui": "workspace:*",

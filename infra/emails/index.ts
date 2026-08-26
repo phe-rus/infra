@@ -58,7 +58,7 @@ export async function sendDeleteAccountEmail({
     })
 }
 
-// called from @infra/payment's webhook handler when a payment transitions
+// called from @infra/payprovider's webhook handler when a payment transitions
 // to "completed" — not a better-auth callback, this app's own shape
 export async function sendPaymentReceiptEmail(
     to: string,

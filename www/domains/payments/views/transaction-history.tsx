@@ -106,11 +106,15 @@ export const TransactionHistory: FC<TransactionHistoryProps> = ({ data, config }
                                 )}
                                 <div className="flex flex-col">
                                     <h3 className="font-semibold">
-                                        {providerLabel(config.countries, payment.provider)}
+                                        {payment.rail === "dodo"
+                                            ? "Card"
+                                            : providerLabel(config.countries, payment.provider)}
                                     </h3>
                                     <div className="flex items-center gap-2">
                                         <p className="line-clamp-1 text-xs text-muted-foreground md:max-w-58">
-                                            {payment.phoneNumber ?? payment.pawapayReferenceId}
+                                            {payment.phoneNumber ??
+                                                payment.pawapayReferenceId ??
+                                                payment.dodoReferenceId}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
                                             {formatDistanceToNow(new Date(payment.createdAt), {

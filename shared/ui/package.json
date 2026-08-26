@@ -54,6 +54,7 @@
         "./widgets/compose-viewport": "./src/widgets/compose-viewport/index.ts",
         "./widgets/view-controller": "./src/widgets/view-controller/index.ts",
         "./widgets/content-view": "./src/widgets/content-view/index.ts",
+        "./widgets/payment-rail-toggle": "./src/widgets/payment-rail-toggle/index.ts",
         "./hooks": "./src/hooks/index.ts",
         "./theme": "./src/hooks/theme.tsx",
         "./defaults": "./src/hooks/defaults/index.ts"

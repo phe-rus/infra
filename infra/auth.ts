@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers"
 import { createAuth, isAdminTier } from "@infra/auth"
 import { resources } from "../plugins/resources/src"
-import { infraPayment } from "@infra/payment"
+import { payProvider } from "@infra/payprovider"
 import {
     sendDeleteAccountEmail as sendDeleteAccountVerification,
     sendPaymentReceiptEmail as sendPaymentReceipt,
@@ -45,7 +45,7 @@ export const auth = createAuth({
             binding: env.R2,
             isAdmin: isAdminTier,
         }),
-        infraPayment({
+        payProvider({
             apiToken: env.PAWAPAY_API_TOKEN,
             environment:
                 env.PAWAPAY_ENV === "production"
@@ -54,6 +54,19 @@ export const auth = createAuth({
             cache: env.PAYMENTS,
             isAdmin: isAdminTier,
             emails: { sendPaymentReceipt },
+            dodo: env.DODO_API_KEY
+                ? {
+                      apiKey: env.DODO_API_KEY,
+                      webhookSecret: env.DODO_WEBHOOK_SECRET,
+                      checkoutId: env.DODO_CHECKOUT_ID,
+                      creditEntitlementId:
+                          env.DODO_CREDIT_ENTITLEMENT_ID || undefined,
+                      environment:
+                          env.NODE_ENV === "production"
+                              ? "live_mode"
+                              : "test_mode",
+                  }
+                : undefined,
         }),
     ],
 })

@@ -1,5 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import {
+    fetchDodoBalance,
+    fetchDodoPaymentMethods,
     fetchMyPayments,
     fetchPaymentConfig,
     fetchPaymentIntent,
@@ -28,4 +30,16 @@ export const paymentIntentOptions = (intentId: string) =>
     queryOptions({
         queryKey: ["payments", "intent", intentId],
         queryFn: () => fetchPaymentIntent({ data: { id: intentId } }),
+    })
+
+export const dodoPaymentMethodsOptions = () =>
+    queryOptions({
+        queryKey: ["payments", "dodo", "payment-methods"],
+        queryFn: () => fetchDodoPaymentMethods(),
+    })
+
+export const dodoBalanceOptions = () =>
+    queryOptions({
+        queryKey: ["payments", "dodo", "balance"],
+        queryFn: () => fetchDodoBalance(),
     })

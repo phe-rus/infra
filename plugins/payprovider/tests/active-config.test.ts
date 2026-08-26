@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { toPaymentCountryOptions } from "../src/active-config"
-import type { ActiveConfigResponse } from "../src/pawapay-client"
+import { toPaymentCountryOptions } from "../src/pawapay/active-config"
+import type { ActiveConfigResponse } from "../src/pawapay/pawapay-client"
 
 function makeRaw(
     overrides: Partial<ActiveConfigResponse["countries"][number]> = {}
