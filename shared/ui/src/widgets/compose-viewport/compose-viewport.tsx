@@ -12,7 +12,11 @@ type WindowProps = ComponentPropsWithoutRef<"body">
 
 export function ComposeViewport({ children }: ComposeViewportProps) {
     return (
-        <html lang="en" className="antialiased blur-none" suppressHydrationWarning>
+        <html
+            lang="en"
+            className="antialiased blur-none"
+            suppressHydrationWarning
+        >
             {children}
         </html>
     )
@@ -39,7 +43,8 @@ function Devtools() {
     return (
         <TanStackDevtools
             config={{
-                position: "bottom-right",
+                triggerMode: "floating",
+                position: "top-right",
             }}
             plugins={[
                 {
