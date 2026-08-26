@@ -19,7 +19,10 @@ import {
 
 export type UserSession = SessionWithImpersonatedBy
 
-function readImageUpload(data: unknown): { file: File; userId: string } {
+function readImageUpload(data: unknown): {
+    file: File
+    userId: string
+} {
     if (!(data instanceof FormData)) {
         throw new Error("Expected FormData")
     }
@@ -41,7 +44,11 @@ export const listUsers = createServerFn({ method: "GET" })
         const headers = getRequestHeaders()
         const { users, total } = await auth.api.listUsers({
             headers,
-            query: { limit: 100, sortBy: "createdAt", sortDirection: "desc" },
+            query: {
+                limit: 100,
+                sortBy: "createdAt",
+                sortDirection: "desc",
+            },
         })
         return { users, total }
     })
@@ -52,26 +59,17 @@ export const getUserDetail = createServerFn({ method: "GET" })
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const [user, { sessions }, ctx] = await Promise.all([
+        const [user, { sessions }, { accounts }] = await Promise.all([
             auth.api.getUser({ headers, query: { id: data.userId } }),
             auth.api.listUserSessions({
                 headers,
                 body: { userId: data.userId },
             }),
-            auth.$context,
+            auth.api.listUserAccounts({
+                headers,
+                query: { userId: data.userId },
+            }),
         ])
-        const accounts = await ctx.adapter.findMany<{
-            id: string
-            providerId: string
-            accountId: string
-            createdAt: Date
-            updatedAt: Date
-        }>({
-            model: "account",
-            where: [{ field: "userId", value: data.userId }],
-            limit: 50,
-            select: ["id", "providerId", "accountId", "createdAt", "updatedAt"],
-        })
         return { user: user as ListedUser, sessions, accounts }
     })
 
@@ -99,7 +97,10 @@ export const createUser = createServerFn({ method: "POST" })
         forwardAuthHeaders(responseHeaders)
         if (!user.emailVerified) {
             await auth.api
-                .sendVerificationEmail({ headers, body: { email: data.email } })
+                .sendVerificationEmail({
+                    headers,
+                    body: { email: data.email },
+                })
                 .catch(() => {})
         }
 
@@ -136,8 +137,12 @@ export const updateUser = createServerFn({ method: "POST" })
                 body: {
                     userId: data.userId,
                     data: {
-                        ...(data.name !== undefined && { name: data.name }),
-                        ...(data.email !== undefined && { email: data.email }),
+                        ...(data.name !== undefined && {
+                            name: data.name,
+                        }),
+                        ...(data.email !== undefined && {
+                            email: data.email,
+                        }),
                     },
                 },
             })
@@ -304,21 +309,23 @@ export const impersonateUser = createServerFn({ method: "POST" })
             throw new Error("You can't impersonate your own account")
         }
         const headers = getRequestHeaders()
-        const { headers: responseHeaders } = await auth.api.impersonateUser({
-            headers,
-            body: { userId: data.userId },
-            returnHeaders: true,
-        })
+        const { headers: responseHeaders } =
+            await auth.api.impersonateUser({
+                headers,
+                body: { userId: data.userId },
+                returnHeaders: true,
+            })
         forwardAuthHeaders(responseHeaders)
     })
 
-export const stopImpersonating = createServerFn({ method: "POST" }).handler(
-    async () => {
-        const headers = getRequestHeaders()
-        const { headers: responseHeaders } = await auth.api.stopImpersonating({
+export const stopImpersonating = createServerFn({
+    method: "POST",
+}).handler(async () => {
+    const headers = getRequestHeaders()
+    const { headers: responseHeaders } =
+        await auth.api.stopImpersonating({
             headers,
             returnHeaders: true,
         })
-        forwardAuthHeaders(responseHeaders)
-    }
-)
+    forwardAuthHeaders(responseHeaders)
+})

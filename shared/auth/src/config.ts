@@ -2,6 +2,7 @@ import { admin, jwt, twoFactor } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
 import { oauthProvider } from "@better-auth/oauth-provider"
 import type { BetterAuthOptions } from "better-auth/types"
+import { listUserAccounts } from "./core/admin-accounts"
 
 type OptionsProps = Partial<BetterAuthOptions>
 
@@ -24,6 +25,7 @@ export type ConfigOptions = {
 export const config = (options: ConfigOptions) =>
     [
         admin(),
+        listUserAccounts({ isAdmin: options.oauth.isAdmin }),
         twoFactor({
             issuer: options.appName,
             backupCodeOptions: {
