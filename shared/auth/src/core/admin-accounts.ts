@@ -16,7 +16,11 @@ export const listUserAccounts = ({
     ({
         id: "list-user-accounts",
         endpoints: {
-            listUserAccounts: createAuthEndpoint(
+            // better-auth already ships a core "/list-accounts" endpoint under
+            // this same auth.api.listUserAccounts key (self-service, lists the
+            // caller's own accounts) — plugin endpoints are spread in after
+            // the core ones, so reusing that name here would silently shadow it
+            adminListAccounts: createAuthEndpoint(
                 "/admin/list-accounts",
                 {
                     method: "GET",

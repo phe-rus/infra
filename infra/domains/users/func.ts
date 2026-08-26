@@ -65,7 +65,7 @@ export const getUserDetail = createServerFn({ method: "GET" })
                 headers,
                 body: { userId: data.userId },
             }),
-            auth.api.listUserAccounts({
+            auth.api.adminListAccounts({
                 headers,
                 query: { userId: data.userId },
             }),
