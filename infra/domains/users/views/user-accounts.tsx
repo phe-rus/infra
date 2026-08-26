@@ -17,12 +17,20 @@ export const UserAccounts: FC<UserAccountsProps> = ({ viewUser }) => (
         {viewUser.accounts.map((account) => (
             <div
                 key={account.id}
-                className="flex items-center justify-between border border-input px-2.5 py-1.5 text-xs"
+                className="flex flex-col gap-1 border border-input px-2.5 py-1.5 text-xs"
             >
-                <span className="capitalize">{account.providerId}</span>
-                <span className="text-muted-foreground">
-                    linked {formatUtc(account.createdAt, "PPP")}
-                </span>
+                <div className="flex items-center justify-between">
+                    <span className="capitalize">{account.providerId}</span>
+                    <span className="text-muted-foreground">
+                        linked {formatUtc(account.createdAt, "PPP")}
+                    </span>
+                </div>
+                <div className="flex items-center justify-between text-muted-foreground">
+                    <span>{account.issuer}</span>
+                    {account.scopes.length > 0 && (
+                        <span className="truncate">{account.scopes.join(", ")}</span>
+                    )}
+                </div>
             </div>
         ))}
     </section>
