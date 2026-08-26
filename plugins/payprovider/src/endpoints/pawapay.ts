@@ -26,6 +26,7 @@ const FX_CACHE_TTL = 60 * 60 * 12 // 12 hours — the upstream rate table itself
 
 export type PaymentReceiptInfo = {
     userName: string
+    email: string
     type: "deposit" | "payout" | "refund"
     amount: string
     currency: string
@@ -208,6 +209,130 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
         return { userId: access.userId, clientId: access.clientId }
     }
 
+    // shared by paymentWebhook (real webhook delivery) and getPaymentIntent
+    // (active reconciliation — PawaPay's sandbox webhook can't reach a
+    // local dev instance, so the confirm page's own poll doubles as the
+    // thing that discovers a terminal outcome). Every side effect a
+    // completed/failed deposit triggers lives here once, not duplicated
+    // per caller: the payment row itself, the linked intent (if this
+    // deposit fulfilled one), the wallet-number verification, and the
+    // receipt email
+    async function applyPaymentOutcome(
+        ctx: Parameters<typeof signJWT>[0],
+        existing: {
+            id: string
+            userId: string
+            type: string
+            provider: string | null
+            phoneNumber: string | null
+            amount: string
+            currency: string
+            pawapayReferenceId: string | null
+            status: string
+        },
+        status: PaymentStatus,
+        failureReason?: unknown
+    ) {
+        if (status === existing.status) return
+
+        await ctx.context.adapter.update({
+            model: "payment",
+            where: [{ field: "id", value: existing.id }],
+            update: {
+                status,
+                ...(failureReason
+                    ? { failureReason: JSON.stringify(failureReason) }
+                    : {}),
+            },
+        })
+
+        if (status === "completed" || status === "failed") {
+            await ctx.context.adapter.updateMany({
+                model: "paymentIntent",
+                where: [{ field: "paymentId", value: existing.id }],
+                update: {
+                    status,
+                    ...(failureReason
+                        ? { failureReason: JSON.stringify(failureReason) }
+                        : {}),
+                },
+            })
+        }
+
+        // a saved number graduates from "pending" to "verified" the
+        // first time a deposit through it actually clears
+        if (status === "completed" && existing.type === "deposit") {
+            const matchingWallet =
+                existing.phoneNumber && existing.provider
+                    ? await ctx.context.adapter.findOne<{
+                          id: string
+                          status: string
+                      }>({
+                          model: "walletNumber",
+                          where: [
+                              { field: "userId", value: existing.userId },
+                              {
+                                  field: "phoneNumber",
+                                  value: existing.phoneNumber,
+                              },
+                              { field: "provider", value: existing.provider },
+                          ],
+                      })
+                    : null
+
+            if (matchingWallet && matchingWallet.status !== "verified") {
+                await ctx.context.adapter.update({
+                    model: "walletNumber",
+                    where: [{ field: "id", value: matchingWallet.id }],
+                    update: { status: "verified" },
+                })
+
+                const hasPrimary = await ctx.context.adapter.findOne({
+                    model: "walletNumber",
+                    where: [
+                        { field: "userId", value: existing.userId },
+                        { field: "isPrimary", value: true },
+                    ],
+                })
+                if (!hasPrimary) {
+                    await ctx.context.adapter.update({
+                        model: "walletNumber",
+                        where: [{ field: "id", value: matchingWallet.id }],
+                        update: { isPrimary: true },
+                    })
+                }
+            }
+        }
+
+        if (status === "completed" && sendPaymentReceipt) {
+            const user = await ctx.context.internalAdapter.findUserById(
+                existing.userId
+            )
+            if (user) {
+                await sendPaymentReceipt(user.email, {
+                    userName: user.name,
+                    email: user.email,
+                    type: existing.type as "deposit" | "payout" | "refund",
+                    amount: existing.amount,
+                    currency: existing.currency,
+                    provider: existing.provider,
+                    phoneNumber: existing.phoneNumber,
+                    referenceId: existing.pawapayReferenceId ?? "",
+                    date: new Date().toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                    }),
+                }).catch((error) => {
+                    ctx.context.logger.error(
+                        "Failed to send payment receipt email",
+                        error
+                    )
+                })
+            }
+        }
+    }
+
     return {
         // any signed-in user — the deposit/payout forms need this to
         // populate a country/provider picker, not just admins
@@ -374,6 +499,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
 
                 await sendPaymentReceipt(ctx.context.session.user.email, {
                     userName: ctx.context.session.user.name,
+                    email: ctx.context.session.user.email,
                     type: payment.type as "deposit" | "payout" | "refund",
                     amount: payment.amount,
                     currency: payment.currency,
@@ -743,6 +869,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                     purpose: string | null
                     returnUrl: string
                     failureReason: string | null
+                    paymentId: string | null
                 }>({
                     model: "paymentIntent",
                     where: [{ field: "id", value: ctx.query.id }],
@@ -751,6 +878,60 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                     throw new APIError("NOT_FOUND", {
                         message: "Payment intent not found",
                     })
+                }
+
+                // active reconciliation: PawaPay's sandbox/webhook can't
+                // reach a local dev instance, so this page's own poll is
+                // what actually discovers a terminal outcome there — a
+                // dodo-rail payment is reconciled separately, on return,
+                // by useSyncDodoReturn/dodoSync
+                if (intent.status === "pending" && intent.paymentId) {
+                    const payment = await ctx.context.adapter.findOne<{
+                        id: string
+                        userId: string
+                        type: string
+                        rail: string
+                        provider: string | null
+                        phoneNumber: string | null
+                        amount: string
+                        currency: string
+                        pawapayReferenceId: string | null
+                        status: string
+                    }>({
+                        model: "payment",
+                        where: [{ field: "id", value: intent.paymentId }],
+                    })
+                    if (
+                        payment &&
+                        payment.rail === "pawapay" &&
+                        payment.pawapayReferenceId
+                    ) {
+                        const checked = await client.checkDepositStatus(
+                            payment.pawapayReferenceId
+                        )
+                        if (checked.status === "FOUND" && checked.data) {
+                            const resolvedStatus: PaymentStatus =
+                                checked.data.status === "COMPLETED"
+                                    ? "completed"
+                                    : checked.data.status === "FAILED"
+                                      ? "failed"
+                                      : "pending"
+                            if (resolvedStatus !== "pending") {
+                                await applyPaymentOutcome(
+                                    ctx,
+                                    payment,
+                                    resolvedStatus,
+                                    checked.data.failureReason
+                                )
+                                intent.status = resolvedStatus
+                                if (checked.data.failureReason) {
+                                    intent.failureReason = JSON.stringify(
+                                        checked.data.failureReason
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 let token: string | undefined
@@ -783,6 +964,75 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
         ),
         // session-gated: called from Infraccount's confirm screen once
         // the payer picked/entered a mobile-money number
+        // self-service: reconciles one of the caller's own standalone
+        // deposits (not tied to a paymentIntent — that case already
+        // reconciles itself via getPaymentIntent's own poll) against
+        // PawaPay's API directly, same reasoning as dodoSync
+        pawaPaySync: createAuthEndpoint(
+            "/pay/pawapay-sync",
+            {
+                method: "POST",
+                use: [sessionMiddleware],
+                body: z.object({ pawapayReferenceId: z.string().min(1) }),
+            },
+            async (ctx) => {
+                const existing = await ctx.context.adapter.findOne<{
+                    id: string
+                    userId: string
+                    type: string
+                    provider: string | null
+                    phoneNumber: string | null
+                    amount: string
+                    currency: string
+                    pawapayReferenceId: string | null
+                    status: string
+                }>({
+                    model: "payment",
+                    where: [
+                        {
+                            field: "pawapayReferenceId",
+                            value: ctx.body.pawapayReferenceId,
+                        },
+                        { field: "userId", value: ctx.context.session.user.id },
+                    ],
+                })
+                if (!existing) {
+                    throw new APIError("NOT_FOUND", {
+                        message: "Payment not found",
+                    })
+                }
+
+                // deposits and refunds are different resources on
+                // PawaPay's side, each with their own status-check call
+                const checked =
+                    existing.type === "refund"
+                        ? await client.checkRefundStatus(
+                              ctx.body.pawapayReferenceId
+                          )
+                        : await client.checkDepositStatus(
+                              ctx.body.pawapayReferenceId
+                          )
+                if (checked.status !== "FOUND" || !checked.data) {
+                    return ctx.json({ status: existing.status })
+                }
+
+                const status: PaymentStatus =
+                    checked.data.status === "COMPLETED"
+                        ? "completed"
+                        : checked.data.status === "FAILED"
+                          ? "failed"
+                          : "pending"
+
+                await applyPaymentOutcome(
+                    ctx,
+                    existing,
+                    status,
+                    checked.data.failureReason
+                )
+
+                return ctx.json({ status })
+            }
+        ),
         confirmPaymentIntent: createAuthEndpoint(
             "/pay/intent/confirm",
             {
@@ -1099,156 +1349,12 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                           ? "failed"
                           : "pending"
 
-                await ctx.context.adapter.update({
-                    model: "payment",
-                    where: [{ field: "id", value: existing.id }],
-                    update: {
-                        status,
-                        ...(payload.failureReason
-                            ? {
-                                  failureReason: JSON.stringify(
-                                      payload.failureReason
-                                  ),
-                              }
-                            : {}),
-                    },
-                })
-
-                // this deposit may have been made against a redirect-
-                // checkout intent (confirmPaymentIntent set payment.id on
-                // it), carry the same real outcome over so Infraccount's
-                // poll of /pay/intent/get sees it and can finish the flow
-                if (status === "completed" || status === "failed") {
-                    await ctx.context.adapter.updateMany({
-                        model: "paymentIntent",
-                        where: [
-                            {
-                                field: "paymentId",
-                                value: existing.id,
-                            },
-                        ],
-                        update: {
-                            status,
-                            ...(payload.failureReason
-                                ? {
-                                      failureReason: JSON.stringify(
-                                          payload.failureReason
-                                      ),
-                                  }
-                                : {}),
-                        },
-                    })
-                }
-
-                // a saved number graduates from "pending" to "verified"
-                // the first time a deposit through it actually clears —
-                // idempotent, a webhook retry on an already-verified
-                // number is a no-op
-                if (status === "completed" && existing.type === "deposit") {
-                    const matchingWallet =
-                        existing.phoneNumber && existing.provider
-                            ? await ctx.context.adapter.findOne<{
-                                  id: string
-                                  status: string
-                              }>({
-                                  model: "walletNumber",
-                                  where: [
-                                      {
-                                          field: "userId",
-                                          value: existing.userId,
-                                      },
-                                      {
-                                          field: "phoneNumber",
-                                          value: existing.phoneNumber,
-                                      },
-                                      {
-                                          field: "provider",
-                                          value: existing.provider,
-                                      },
-                                  ],
-                              })
-                            : null
-
-                    if (matchingWallet && matchingWallet.status !== "verified") {
-                        await ctx.context.adapter.update({
-                            model: "walletNumber",
-                            where: [
-                                {
-                                    field: "id",
-                                    value: matchingWallet.id,
-                                },
-                            ],
-                            update: { status: "verified" },
-                        })
-
-                        const hasPrimary = await ctx.context.adapter.findOne({
-                            model: "walletNumber",
-                            where: [
-                                {
-                                    field: "userId",
-                                    value: existing.userId,
-                                },
-                                {
-                                    field: "isPrimary",
-                                    value: true,
-                                },
-                            ],
-                        })
-                        // the first number to ever prove itself becomes primary automatically
-                        if (!hasPrimary) {
-                            await ctx.context.adapter.update({
-                                model: "walletNumber",
-                                where: [
-                                    {
-                                        field: "id",
-                                        value: matchingWallet.id,
-                                    },
-                                ],
-                                update: { isPrimary: true },
-                            })
-                        }
-                    }
-                }
-
-                // only the first time this reference transitions to
-                // completed — PawaPay can retry a webhook delivery, and
-                // this shouldn't email a receipt twice for the same payment
-                if (
-                    status === "completed" &&
-                    existing.status !== "completed" &&
-                    sendPaymentReceipt
-                ) {
-                    const user = await ctx.context.internalAdapter.findUserById(
-                        existing.userId
-                    )
-                    if (user) {
-                        await sendPaymentReceipt(user.email, {
-                            userName: user.name,
-                            type: existing.type as
-                                | "deposit"
-                                | "payout"
-                                | "refund",
-                            amount: existing.amount,
-                            currency: existing.currency,
-                            provider: existing.provider,
-                            phoneNumber: existing.phoneNumber,
-                            referenceId: existing.pawapayReferenceId,
-                            date: new Date().toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            }),
-                        }).catch((error) => {
-                            // a failed receipt email shouldn't fail the
-                            // webhook ack — PawaPay would just retry
-                            // delivery forever on a 500
-                            ctx.context.logger.error(
-                                "Failed to send payment receipt email",
-                                error
-                            )
-                        })
-                    }
-                }
+                await applyPaymentOutcome(
+                    ctx,
+                    existing,
+                    status,
+                    payload.failureReason
+                )
 
                 return ctx.json({ received: true })
             }

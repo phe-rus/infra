@@ -17,14 +17,19 @@ export const DodoBalanceCard: FC = () => {
             )}
         >
             <h2 className="font-bold">Balance</h2>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
                 {entitlements.map((entitlement) => (
-                    <p key={entitlement.id} className="text-sm">
-                        {entitlement.balance} {entitlement.unit}{" "}
-                        <span className="text-xs text-muted-foreground">
+                    <div key={entitlement.id}>
+                        <p className="text-xs text-muted-foreground">
                             {entitlement.name}
-                        </span>
-                    </p>
+                        </p>
+                        <p className="text-lg font-semibold leading-tight">
+                            {entitlement.balance}{" "}
+                            <span className="text-xs font-normal text-muted-foreground">
+                                {entitlement.unit}
+                            </span>
+                        </p>
+                    </div>
                 ))}
             </div>
             <div className={cn("absolute top-0 right-0 rounded-bl-2xl", "bg-input/35 p-3")}>

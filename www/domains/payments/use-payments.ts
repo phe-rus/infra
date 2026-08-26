@@ -11,10 +11,6 @@ import {
     walletsOptions,
 } from "./get-payments"
 
-// polling is customer-facing and runs on every single checkout, so it needs
-// a real ceiling: fast at first (a normal mobile-money approval resolves in
-// seconds), backing off after a bit, and giving up well before "forever" if
-// the customer walks away without approving on their phone
 const FAST_POLL_MS = 2000
 const SLOW_POLL_MS = 5000
 const FAST_POLL_WINDOW_MS = 20_000
@@ -24,7 +20,8 @@ export const useMyPayments = () => useSuspenseQuery(myPaymentsOptions())
 
 export const useWallets = () => useSuspenseQuery(walletsOptions())
 
-export const usePaymentConfig = () => useSuspenseQuery(paymentConfigOptions())
+export const usePaymentConfig = () =>
+    useSuspenseQuery(paymentConfigOptions())
 
 export const useAddWallet = () =>
     useAppMutation({
@@ -33,9 +30,12 @@ export const useAddWallet = () =>
             provider: string
             label?: string
         }) => {
-            const { data, error } = await authClient.pay.wallets.add(variables)
+            const { data, error } =
+                await authClient.pay.wallets.add(variables)
             if (error)
-                throw new Error(error.message ?? "Could not save this number")
+                throw new Error(
+                    error.message ?? "Could not save this number"
+                )
             return data
         },
         invalidates: [walletsOptions().queryKey],
@@ -46,9 +46,13 @@ export const useAddWallet = () =>
 export const useRemoveWallet = () =>
     useAppMutation({
         mutationFn: async (walletId: string) => {
-            const { error } = await authClient.pay.wallets.remove({ walletId })
+            const { error } = await authClient.pay.wallets.remove({
+                walletId,
+            })
             if (error)
-                throw new Error(error.message ?? "Could not remove this number")
+                throw new Error(
+                    error.message ?? "Could not remove this number"
+                )
         },
         invalidates: [walletsOptions().queryKey],
         successMessage: "Number removed",
@@ -58,7 +62,9 @@ export const useRemoveWallet = () =>
 export const useSetPrimaryWallet = () =>
     useAppMutation({
         mutationFn: async (walletId: string) => {
-            const { error } = await authClient.pay.wallets.primary({ walletId })
+            const { error } = await authClient.pay.wallets.primary({
+                walletId,
+            })
             if (error)
                 throw new Error(
                     error.message ?? "Could not set this as primary"
@@ -72,16 +78,18 @@ export const useSetPrimaryWallet = () =>
 export const useResendReceipt = () =>
     useAppMutation({
         mutationFn: async (paymentId: string) => {
-            const { error } = await authClient.pay.receipt.resend({ paymentId })
+            const { error } = await authClient.pay.receipt.resend({
+                paymentId,
+            })
             if (error)
-                throw new Error(error.message ?? "Could not send this receipt")
+                throw new Error(
+                    error.message ?? "Could not send this receipt"
+                )
         },
         successMessage: "Receipt sent",
         errorMessage: "Could not send this receipt",
     })
 
-// bulk "email selected receipts" — sequential rather than Promise.all so one
-// already-pending payment among the selection doesn't abort the rest
 export const useResendReceipts = () =>
     useAppMutation({
         mutationFn: async (paymentIds: string[]) => {
@@ -96,7 +104,9 @@ export const useResendReceipts = () =>
                 (r) => r.status === "rejected" || r.value.error
             ).length
             if (failed === results.length)
-                throw new Error("Could not send any of the selected receipts")
+                throw new Error(
+                    "Could not send any of the selected receipts"
+                )
             return { sent: results.length - failed, failed }
         },
         successMessage: (data) =>
@@ -107,7 +117,9 @@ export const useResendReceipts = () =>
     })
 
 export const usePaymentIntent = (intentId: string) => {
-    const [pollStartedAt, setPollStartedAt] = useState<number | null>(null)
+    const [pollStartedAt, setPollStartedAt] = useState<number | null>(
+        null
+    )
     const [timedOut, setTimedOut] = useState(false)
 
     const { data, refetch } = useQuery({
@@ -124,14 +136,17 @@ export const usePaymentIntent = (intentId: string) => {
             }
             if (timedOut) return false
             const elapsed = Date.now() - (pollStartedAt ?? Date.now())
-            return elapsed < FAST_POLL_WINDOW_MS ? FAST_POLL_MS : SLOW_POLL_MS
+            return elapsed < FAST_POLL_WINDOW_MS
+                ? FAST_POLL_MS
+                : SLOW_POLL_MS
         },
     })
 
-    // marks when active waiting actually began (right after confirming),
-    // not when the page loaded, so the timeout window reflects real wait time
     useEffect(() => {
-        if (data?.intent.status === "pending" && pollStartedAt === null) {
+        if (
+            data?.intent.status === "pending" &&
+            pollStartedAt === null
+        ) {
             setPollStartedAt(Date.now())
         }
     }, [data, pollStartedAt])
@@ -139,14 +154,13 @@ export const usePaymentIntent = (intentId: string) => {
     useEffect(() => {
         if (pollStartedAt === null || timedOut) return
         const remaining = POLL_TIMEOUT_MS - (Date.now() - pollStartedAt)
-        const timer = setTimeout(() => setTimedOut(true), Math.max(0, remaining))
+        const timer = setTimeout(
+            () => setTimedOut(true),
+            Math.max(0, remaining)
+        )
         return () => clearTimeout(timer)
     }, [pollStartedAt, timedOut])
 
-    // once PawaPay resolves it, infra hands back a signed token alongside
-    // the terminal status: that's the whole point of this page. The
-    // requesting app never has to trust this redirect itself, only the
-    // token in it (verified against infra's own JWKS on the other end)
     useEffect(() => {
         if (!data?.token) return
         const url = new URL(data.intent.returnUrl)
@@ -166,7 +180,10 @@ export const usePaymentIntent = (intentId: string) => {
 
 export const useConfirmPaymentIntent = (intentId: string) =>
     useAppMutation({
-        mutationFn: async (variables: { phoneNumber: string; provider: string }) => {
+        mutationFn: async (variables: {
+            phoneNumber: string
+            provider: string
+        }) => {
             if (!variables.provider || !variables.phoneNumber.trim()) {
                 throw new Error("Pick a mobile money number")
             }
@@ -176,26 +193,30 @@ export const useConfirmPaymentIntent = (intentId: string) =>
                 provider: variables.provider,
             })
             if (error)
-                throw new Error(error.message ?? "Could not start this payment")
+                throw new Error(
+                    error.message ?? "Could not start this payment"
+                )
         },
         invalidates: [paymentIntentOptions(intentId).queryKey],
         errorMessage: "Could not start this payment",
     })
 
-// not suspense: Dodo may not be configured on this instance at all, and a
-// NOT_FOUND there shouldn't take down a page that also shows mobile money
-export const useDodoPaymentMethods = () => useQuery(dodoPaymentMethodsOptions())
+export const useDodoPaymentMethods = () =>
+    useQuery(dodoPaymentMethodsOptions())
 
 export const useDodoBalance = () => useQuery(dodoBalanceOptions())
 
 export const useRemoveDodoPaymentMethod = () =>
     useAppMutation({
         mutationFn: async (paymentMethodId: string) => {
-            const { error } = await authClient.pay.dodoPaymentMethods.remove({
-                paymentMethodId,
-            })
+            const { error } =
+                await authClient.pay.dodoPaymentMethods.remove({
+                    paymentMethodId,
+                })
             if (error)
-                throw new Error(error.message ?? "Could not remove this card")
+                throw new Error(
+                    error.message ?? "Could not remove this card"
+                )
         },
         invalidates: [dodoPaymentMethodsOptions().queryKey],
         successMessage: "Card removed",
@@ -211,23 +232,21 @@ export type CreateDodoCheckoutVariables = {
     intentId?: string
 }
 
-// redirects to Dodo's hosted checkout on success rather than showing a
-// toast, the same as every other redirect-based flow in this app (e.g.
-// consent.tsx's oauth2 accept/deny)
 export const useCreateDodoCheckout = () =>
     useAppMutation({
         mutationFn: async (variables: CreateDodoCheckoutVariables) => {
-            const { data, error } = await authClient.pay.dodoCheckout(variables)
+            const { data, error } =
+                await authClient.pay.dodoCheckout(variables)
             if (error)
-                throw new Error(error.message ?? "Could not start checkout")
+                throw new Error(
+                    error.message ?? "Could not start checkout"
+                )
             window.location.href = data.url
             return data
         },
         errorMessage: "Could not start checkout",
     })
 
-// dodoWebhook can't reach a local dev instance, so this reconciles a
-// payment against Dodo's API directly instead of waiting on it
 export const useSyncDodoPayment = () =>
     useAppMutation({
         mutationFn: async (dodoPaymentId: string) => {
@@ -235,7 +254,9 @@ export const useSyncDodoPayment = () =>
                 dodoPaymentId,
             })
             if (error)
-                throw new Error(error.message ?? "Could not confirm payment status")
+                throw new Error(
+                    error.message ?? "Could not confirm payment status"
+                )
             return data
         },
         invalidates: [
@@ -246,14 +267,8 @@ export const useSyncDodoPayment = () =>
         errorMessage: "Could not confirm payment status",
     })
 
-// Dodo appends payment_id/status to the return URL after checkout — read
-// straight off window.location.search rather than each route's own
-// validateSearch schema, since this is a one-off external-redirect param,
-// not real routing state. Strips it from the URL once handled so a
-// refresh doesn't re-trigger the sync
 export function useSyncDodoReturn() {
     const syncMutation = useSyncDodoPayment()
-
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
         const dodoPaymentId = params.get("payment_id")
@@ -267,7 +282,5 @@ export function useSyncDodoReturn() {
                 window.history.replaceState({}, "", url.toString())
             },
         })
-        // only ever run once, on mount — this reads the URL at load time
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [syncMutation.mutate])
 }

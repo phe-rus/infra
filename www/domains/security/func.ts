@@ -18,8 +18,11 @@ export const fetchSessions = createServerFn({ method: "GET" }).handler(async () 
     const { data, error } = await authClient.listSessions({
         fetchOptions: { headers },
     })
-    if (error) throw new Error(error.message ?? "Could not load your sessions")
+    if (error) {
+        if ("code" in error && error.code === "SESSION_NOT_FRESH") return null
+        throw new Error(error.message ?? "Could not load your sessions")
+    }
     return data
 })
 
-export type SessionsData = Awaited<ReturnType<typeof fetchSessions>>
+export type SessionsData = Exclude<Awaited<ReturnType<typeof fetchSessions>>, null>

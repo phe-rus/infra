@@ -17,7 +17,7 @@ import {
     CREATE_CLIENT_ID,
     ApplicationGrid,
 } from "@/domains/console"
-import { useWalletBalances } from "@/domains/payments"
+import { useDodoMerchantBalance, useWalletBalances } from "@/domains/payments"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { ContentView } from "@infra/ui/widgets/content-view"
 
@@ -55,6 +55,7 @@ function RouteComponent() {
 
     const [currency, setCurrency] = useState("UGX")
     const { data: wallet } = useWalletBalances({ currency })
+    const { data: dodoBalance } = useDodoMerchantBalance()
 
     return (
         <ViewController
@@ -112,58 +113,88 @@ function RouteComponent() {
                 <ApplicationGrid data={apps} />
             </ContentView.Section>
 
-            <ContentView
-                variant="elevated"
-                className="relative flex flex-col px-10 py-5"
-            >
-                <IconCardsFilled className="size-18" />
-                <ContentView.Row className="justify-between gap-3">
-                    <h1 className="tracking-tight">Wallet balance</h1>
-                </ContentView.Row>
-                {wallet.total && (
-                    <ContentView.P>
-                        <ContentView.Span>
-                            {wallet.total.amount.toLocaleString(undefined, {
-                                maximumFractionDigits: 2,
-                            })}{" "}
-                        </ContentView.Span>
-                        <ContentView.Sub>
-                            {wallet.total.currency}
-                        </ContentView.Sub>
-                    </ContentView.P>
-                )}
-                <Select
-                    aria-label="Preferred currency"
-                    value={currency}
-                    onChange={(key) => setCurrency(String(key))}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <ContentView
+                    variant="elevated"
+                    className="relative flex flex-col px-10 py-5"
                 >
-                    <SelectTrigger
-                        size="sm"
-                        className={cn(
-                            "w-38 rounded-full! bg-input!",
-                            "border-0 absolute top-5 right-5"
-                        )}
+                    <IconCardsFilled className="size-18" />
+                    <ContentView.Row className="justify-between gap-3">
+                        <h1 className="tracking-tight">Wallet balance</h1>
+                    </ContentView.Row>
+                    {wallet.total && (
+                        <ContentView.P>
+                            <ContentView.Span>
+                                {wallet.total.amount.toLocaleString(
+                                    undefined,
+                                    { maximumFractionDigits: 2 }
+                                )}{" "}
+                            </ContentView.Span>
+                            <ContentView.Sub>
+                                {wallet.total.currency}
+                            </ContentView.Sub>
+                        </ContentView.P>
+                    )}
+                    <Select
+                        aria-label="Preferred currency"
+                        value={currency}
+                        onChange={(key) => setCurrency(String(key))}
                     >
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent
-                        className={cn(
-                            "max-h-40! rounded-md! px-1! *:no-scrollbar!",
-                            "pt-1 pb-20!"
-                        )}
+                        <SelectTrigger
+                            size="sm"
+                            className={cn(
+                                "w-38 rounded-full! bg-input!",
+                                "border-0 absolute top-5 right-5"
+                            )}
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent
+                            className={cn(
+                                "max-h-40! rounded-md! px-1! *:no-scrollbar!",
+                                "pt-1 pb-20!"
+                            )}
+                        >
+                            {PREFERRED_CURRENCIES.map((code) => (
+                                <SelectItem
+                                    key={code}
+                                    id={code}
+                                    className="rounded-full!"
+                                >
+                                    {code}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </ContentView>
+
+                {dodoBalance && dodoBalance.balances.length > 0 && (
+                    <ContentView
+                        variant="elevated"
+                        className="relative flex flex-col px-10 py-5"
                     >
-                        {PREFERRED_CURRENCIES.map((code) => (
-                            <SelectItem
-                                key={code}
-                                id={code}
-                                className="rounded-full!"
-                            >
-                                {code}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </ContentView>
+                        <IconCardsFilled className="size-18" />
+                        <ContentView.Row className="justify-between gap-3">
+                            <h1 className="tracking-tight">Dodo balance</h1>
+                        </ContentView.Row>
+                        <ContentView.Row className="flex-wrap gap-5">
+                            {dodoBalance.balances.map((balance) => (
+                                <ContentView.P key={balance.currency}>
+                                    <ContentView.Span>
+                                        {balance.balance.toLocaleString(
+                                            undefined,
+                                            { maximumFractionDigits: 2 }
+                                        )}{" "}
+                                    </ContentView.Span>
+                                    <ContentView.Sub>
+                                        {balance.currency}
+                                    </ContentView.Sub>
+                                </ContentView.P>
+                            ))}
+                        </ContentView.Row>
+                    </ContentView>
+                )}
+            </div>
         </ViewController>
     )
 }

@@ -13,7 +13,9 @@ import {
     PENDING_REDIRECT_URI,
     setAppActiveSchema,
     updateAppSchema,
+    APP_SELECT,
 } from "./types"
+import type { OAuthClientRow } from "./types"
 
 const generateSecret = createRandomStringGenerator("a-z", "A-Z")
 function withClientMetadataError(error: unknown): never {
@@ -37,50 +39,6 @@ async function hashClientSecret(secret: string): Promise<string> {
     )
     return base64Url.encode(new Uint8Array(digest), { padding: false })
 }
-
-type OAuthClientRow = {
-    id: string
-    clientId: string
-    name: string | null
-    uri: string | null
-    icon: string | null
-    applicationType: string | null
-    disabled: boolean | null
-    redirectUris: string[] | null
-    postLogoutRedirectUris: string[] | null
-    grantTypes: string[] | null
-    scopes: string[] | null
-    tokenEndpointAuthMethod: string | null
-    requirePKCE: boolean | null
-    skipConsent: boolean | null
-    enableEndSession: boolean | null
-    metadata: { framework?: string } | null
-    userId: string | null
-    createdAt: Date
-    updatedAt: Date
-}
-
-const APP_SELECT = [
-    "id",
-    "clientId",
-    "name",
-    "uri",
-    "icon",
-    "applicationType",
-    "disabled",
-    "redirectUris",
-    "postLogoutRedirectUris",
-    "grantTypes",
-    "scopes",
-    "tokenEndpointAuthMethod",
-    "requirePKCE",
-    "skipConsent",
-    "enableEndSession",
-    "metadata",
-    "userId",
-    "createdAt",
-    "updatedAt",
-] as const
 
 function toAppDetail(row: OAuthClientRow, callerId: string) {
     return {

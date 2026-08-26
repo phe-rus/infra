@@ -38,3 +38,8 @@ export const setUserPasswordSchema = z.object({
     userId: z.string().min(1),
     newPassword: z.string().min(8).max(48),
 })
+
+export type ImageUpload = {
+    file: File
+    userId: string
+}

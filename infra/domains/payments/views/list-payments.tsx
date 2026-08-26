@@ -85,6 +85,15 @@ export const ListPayments: FC<ListPaymentsProps> = ({ payments, onRefund }) => {
                 ),
             },
             {
+                accessorKey: "rail",
+                header: "Rail",
+                cell: ({ row }) => (
+                    <Badge variant="secondary" className="capitalize">
+                        {row.original.rail}
+                    </Badge>
+                ),
+            },
+            {
                 accessorKey: "provider",
                 header: "Provider",
                 cell: ({ row }) => row.original.provider ?? "—",

@@ -16,13 +16,11 @@ import {
     updateUserDetailsSchema,
     userIdSchema,
 } from "./types"
+import type { ImageUpload } from "./types"
 
 export type UserSession = SessionWithImpersonatedBy
 
-function readImageUpload(data: unknown): {
-    file: File
-    userId: string
-} {
+function readImageUpload(data: unknown): ImageUpload {
     if (!(data instanceof FormData)) {
         throw new Error("Expected FormData")
     }

@@ -53,6 +53,22 @@ export type InitiatePayoutResponse = {
     failureReason?: { failureCode: string; failureMessage: string }
 }
 
+export type DepositStatusResponse = {
+    status: "FOUND" | "NOT_FOUND"
+    data?: {
+        depositId: string
+        status:
+            | "ACCEPTED"
+            | "PROCESSING"
+            | "IN_RECONCILIATION"
+            | "COMPLETED"
+            | "FAILED"
+        amount: string
+        currency: string
+        failureReason?: { failureCode: string; failureMessage: string }
+    }
+}
+
 export type InitiateRefundBody = {
     refundId: string
     depositId: string
@@ -173,6 +189,19 @@ export class PawaPayClient {
         body: InitiateDepositBody
     ): Promise<InitiateDepositResponse> {
         return this.request("POST", "/v2/deposits", body)
+    }
+
+    // reconciles a deposit directly rather than waiting on the webhook —
+    // same reasoning as dodo's payments.retrieve: a webhook can't reach
+    // a local dev instance, so this asks PawaPay for the real outcome
+    checkDepositStatus(depositId: string): Promise<DepositStatusResponse> {
+        return this.request("GET", `/v2/deposits/${depositId}`)
+    }
+
+    // same idea, for a refund — a different resource on PawaPay's side,
+    // not covered by checkDepositStatus
+    checkRefundStatus(refundId: string): Promise<DepositStatusResponse> {
+        return this.request("GET", `/v2/refunds/${refundId}`)
     }
 
     initiatePayout(

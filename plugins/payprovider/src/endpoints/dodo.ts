@@ -301,6 +301,7 @@ export function createDodoEndpoints(deps: DodoEndpointsDeps) {
                     if (user) {
                         await sendPaymentReceipt(user.email, {
                             userName: user.name,
+                            email: user.email,
                             type: "deposit",
                             amount: ((data.total_amount ?? 0) / 100).toFixed(2),
                             currency: data.currency ?? "",
@@ -583,6 +584,58 @@ export function createDodoEndpoints(deps: DodoEndpointsDeps) {
                     dodoCustomer.dodoCustomerId
                 )
                 return ctx.json({ entitlements })
+            }
+        ),
+        // admin/owner only — this is the whole business's balance at
+        // Dodo, not a per-user one, mirrors walletBalances (pawapay's own
+        // merchant balance). Dodo has no single "current balance" call:
+        // it's a ledger of individual events, so this takes the most
+        // recent entry per currency and reads its own after_balance
+        adminDodoMerchantBalance: createAuthEndpoint(
+            "/pay/admin/dodo-merchant-balance",
+            { method: "GET", use: [sessionMiddleware] },
+            async (ctx) => {
+                if (!dodoClient) {
+                    throw new APIError("NOT_FOUND", {
+                        message:
+                            "Dodo payments are not configured on this instance",
+                    })
+                }
+                if (!isAdmin(ctx.context.session.user.role ?? "")) {
+                    throw new APIError("FORBIDDEN", {
+                        message: "Admin access required",
+                    })
+                }
+
+                const ledger = await dodoClient.balances.retrieveLedger({
+                    limit: 100,
+                })
+                const latestByCurrency = new Map<
+                    string,
+                    { created_at: string; after_balance: number }
+                >()
+                for (const entry of ledger.items) {
+                    if (entry.after_balance == null) continue
+                    const existing = latestByCurrency.get(entry.currency)
+                    if (
+                        !existing ||
+                        entry.created_at > existing.created_at
+                    ) {
+                        latestByCurrency.set(entry.currency, {
+                            created_at: entry.created_at,
+                            after_balance: entry.after_balance,
+                        })
+                    }
+                }
+
+                return ctx.json({
+                    balances: [...latestByCurrency.entries()].map(
+                        ([currency, { after_balance }]) => ({
+                            currency,
+                            balance: after_balance,
+                        })
+                    ),
+                })
             }
         ),
     }

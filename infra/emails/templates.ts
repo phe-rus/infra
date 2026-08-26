@@ -157,6 +157,7 @@ export function deleteAccountEmailHtml(appName: string, name: string, url: strin
 
 export type PaymentReceiptData = {
     userName: string
+    email: string
     type: "deposit" | "payout" | "refund"
     amount: string
     currency: string
@@ -191,6 +192,7 @@ export function paymentReceiptEmailHtml(appName: string, receipt: PaymentReceipt
 
     const cardContent = `<tr>
                     <td style="padding:28px 28px 0 28px;">
+                      <p class="text" style="margin:0 0 8px 0;font-size:14px;color:${COLORS.light.text};">Hi ${receipt.userName}, here's your receipt from ${appName}.</p>
                       <p class="muted" style="margin:0 0 4px 0;font-size:13px;color:${COLORS.light.muted};">Receipt from ${appName}</p>
                       <p class="text" style="margin:0;font-size:32px;font-weight:700;color:${COLORS.light.text};">${amount}</p>
                       <p class="muted" style="margin:4px 0 0 0;font-size:13px;color:${COLORS.light.muted};">Paid ${receipt.date}</p>
@@ -199,6 +201,7 @@ export function paymentReceiptEmailHtml(appName: string, receipt: PaymentReceipt
                   <tr>
                     <td style="padding:20px 28px 0 28px;">
                       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                        ${receiptRow("Billed to", receipt.email)}
                         ${receiptRow("Receipt number", receipt.referenceId)}
                         ${paymentMethod ? receiptRow("Payment method", paymentMethod) : ""}
                       </table>

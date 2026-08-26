@@ -25,57 +25,63 @@ export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken })
 
     return (
         <div className="flex flex-col gap-3">
-            {data.map((session) => {
-                const isCurrent = session.token === currentSessionToken
-                return (
-                    <div
-                        key={session.id}
-                        className={cn(
-                            "flex items-center justify-between gap-3",
-                            "rounded-md bg-accent p-3"
-                        )}
-                    >
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                                <p className="text-sm font-bold">
-                                    {describeDevice(session.userAgent)}
-                                </p>
-                                {isCurrent && (
-                                    <Badge variant="secondary" className="rounded-full">
-                                        This device
-                                    </Badge>
-                                )}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                {session.ipAddress ?? "Unknown location"} · Signed in{" "}
-                                {formatUtc(String(session.createdAt), "PPP")}
-                            </p>
-                        </div>
-                        {!isCurrent && (
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon-xs"
-                                className="rounded-full"
-                                aria-label="Sign out this device"
-                                isDisabled={
-                                    revokeMutation.isPending && revokingToken === session.token
-                                }
-                                onClick={() => {
-                                    setRevokingToken(session.token)
-                                    revokeMutation.mutate(session.token)
-                                }}
-                            >
-                                {revokeMutation.isPending && revokingToken === session.token ? (
-                                    <IconLoader2 className="animate-spin" />
-                                ) : (
-                                    <IconTrash />
-                                )}
-                            </Button>
-                        )}
-                    </div>
+            {[...data]
+                .sort(
+                    (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
                 )
-            })}
+                .map((session) => {
+                    const isCurrent = session.token === currentSessionToken
+                    return (
+                        <div
+                            key={session.id}
+                            className={cn(
+                                "flex items-center justify-between gap-3",
+                                "rounded-md bg-accent p-3"
+                            )}
+                        >
+                            <div className="flex flex-col">
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm font-bold">
+                                        {describeDevice(session.userAgent)}
+                                    </p>
+                                    {isCurrent && (
+                                        <Badge variant="secondary" className="rounded-full">
+                                            This device
+                                        </Badge>
+                                    )}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {session.ipAddress ?? "Unknown location"} · Signed in{" "}
+                                    {formatUtc(String(session.createdAt), "PPP")}
+                                </p>
+                            </div>
+                            {!isCurrent && (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon-xs"
+                                    className="rounded-full"
+                                    aria-label="Sign out this device"
+                                    isDisabled={
+                                        revokeMutation.isPending && revokingToken === session.token
+                                    }
+                                    onClick={() => {
+                                        setRevokingToken(session.token)
+                                        revokeMutation.mutate(session.token)
+                                    }}
+                                >
+                                    {revokeMutation.isPending && revokingToken === session.token ? (
+                                        <IconLoader2 className="animate-spin" />
+                                    ) : (
+                                        <IconTrash />
+                                    )}
+                                </Button>
+                            )}
+                        </div>
+                    )
+                })}
         </div>
     )
 }

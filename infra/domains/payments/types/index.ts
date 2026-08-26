@@ -30,3 +30,47 @@ export const refundSchema = z.object({
     amount: z.string().min(1).optional(),
     purpose: purposeSchema,
 })
+
+export type PaymentRow = {
+    id: string
+    userId: string
+    clientId: string | null
+    type: string
+    rail: string
+    provider: string | null
+    phoneNumber: string | null
+    amount: string
+    currency: string
+    pawapayReferenceId: string | null
+    dodoReferenceId: string | null
+    status: string
+    failureReason: string | null
+    metadata: string | null
+    createdAt: Date
+    updatedAt: Date
+}
+
+export type UserStub = {
+    id: string
+    name: string
+    email: string
+}
+
+export const PAYMENT_SELECT = [
+    "id",
+    "userId",
+    "clientId",
+    "type",
+    "rail",
+    "provider",
+    "phoneNumber",
+    "amount",
+    "currency",
+    "pawapayReferenceId",
+    "dodoReferenceId",
+    "status",
+    "failureReason",
+    "metadata",
+    "createdAt",
+    "updatedAt",
+] as const

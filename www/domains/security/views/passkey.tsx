@@ -185,7 +185,13 @@ const List: FC<ListProps> = ({ data }) => {
 
     return (
         <div className="flex flex-col gap-3">
-            {data.map((passkey) => (
+            {[...data]
+                .sort(
+                    (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                )
+                .map((passkey) => (
                 <div
                     key={passkey.id}
                     className={cn(

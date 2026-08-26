@@ -14,7 +14,13 @@ export const UserAccounts: FC<UserAccountsProps> = ({ viewUser }) => (
                 No connected accounts.
             </p>
         )}
-        {viewUser.accounts.map((account) => (
+        {[...viewUser.accounts]
+            .sort(
+                (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+            )
+            .map((account) => (
             <div
                 key={account.id}
                 className="flex flex-col gap-1 border border-input px-2.5 py-1.5 text-xs"

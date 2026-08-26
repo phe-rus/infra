@@ -216,3 +216,47 @@ export const updateAppSchema = z.object({
     skip_consent: z.boolean().optional(),
     enable_end_session: z.boolean().optional(),
 })
+
+export type OAuthClientRow = {
+    id: string
+    clientId: string
+    name: string | null
+    uri: string | null
+    icon: string | null
+    applicationType: string | null
+    disabled: boolean | null
+    redirectUris: string[] | null
+    postLogoutRedirectUris: string[] | null
+    grantTypes: string[] | null
+    scopes: string[] | null
+    tokenEndpointAuthMethod: string | null
+    requirePKCE: boolean | null
+    skipConsent: boolean | null
+    enableEndSession: boolean | null
+    metadata: { framework?: string } | null
+    userId: string | null
+    createdAt: Date
+    updatedAt: Date
+}
+
+export const APP_SELECT = [
+    "id",
+    "clientId",
+    "name",
+    "uri",
+    "icon",
+    "applicationType",
+    "disabled",
+    "redirectUris",
+    "postLogoutRedirectUris",
+    "grantTypes",
+    "scopes",
+    "tokenEndpointAuthMethod",
+    "requirePKCE",
+    "skipConsent",
+    "enableEndSession",
+    "metadata",
+    "userId",
+    "createdAt",
+    "updatedAt",
+] as const

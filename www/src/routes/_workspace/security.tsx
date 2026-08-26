@@ -110,7 +110,14 @@ function RouteComponent() {
                     p="Everywhere you're currently signed in. Sign out of any device that isn't yours."
                     pClassName="text-sm text-muted-foreground"
                 />
-                <SessionList data={sessions} currentSessionToken={data?.session.token} />
+                {sessions === null ? (
+                    <p className="text-sm text-muted-foreground">
+                        For your security, viewing sessions requires a recent sign-in. Sign
+                        out and back in to manage your devices here.
+                    </p>
+                ) : (
+                    <SessionList data={sessions} currentSessionToken={data?.session.token} />
+                )}
             </ContentView.Section>
 
             <ContentView.Section className="md:max-w-md">

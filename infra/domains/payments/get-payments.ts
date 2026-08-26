@@ -2,6 +2,7 @@ import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 import type * as z from "zod"
 import {
     findPayment,
+    getDodoMerchantBalance,
     getPaymentConfig,
     getWalletBalances,
     listPayments,
@@ -29,6 +30,12 @@ export const walletBalancesOptions = (
         queryKey: ["payments", "balances", filters],
         queryFn: () => getWalletBalances({ data: filters }),
         placeholderData: keepPreviousData,
+    })
+
+export const dodoMerchantBalanceOptions = () =>
+    queryOptions({
+        queryKey: ["payments", "dodo-merchant-balance"],
+        queryFn: () => getDodoMerchantBalance(),
     })
 
 export const paymentOptions = (paymentId: string) =>
