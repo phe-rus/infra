@@ -76,7 +76,7 @@ function RouteComponent() {
                         />
 
                         <FieldGroup>
-                            <div className="flex flex-col gap-3">
+                            <ContentView.Section>
                                 <ContentView.Header
                                     as="h2"
                                     className="flex flex-col"
@@ -97,9 +97,9 @@ function RouteComponent() {
                                         <field.textarea label="Bio" placeholder="A short bio" />
                                     )}
                                 />
-                            </div>
+                            </ContentView.Section>
 
-                            <div className="flex flex-col gap-3">
+                            <ContentView.Section>
                                 <ContentView.Header
                                     as="h2"
                                     className="flex flex-col"
@@ -151,7 +151,7 @@ function RouteComponent() {
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                            </ContentView.Section>
                         </FieldGroup>
 
                         <form.submit label="Save changes" />

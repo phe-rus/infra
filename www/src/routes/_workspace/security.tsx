@@ -2,7 +2,6 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "@infra/ui/components/button"
 import { Switch } from "@infra/ui/components/switch"
-import { cn } from "@infra/ui/lib/utils"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { ContentView } from "@infra/ui/widgets/content-view"
 import { useState } from "react"
@@ -47,13 +46,8 @@ function RouteComponent() {
                 />
             }
         >
-            <section className="flex flex-col gap-3 md:max-w-md">
-                <article
-                    className={cn(
-                        "flex w-full justify-between rounded-md!",
-                        "bg-input/35 px-3 py-2"
-                    )}
-                >
+            <ContentView.Section className="md:max-w-md">
+                <ContentView.Row className="w-full justify-between rounded-md! bg-input/35 px-3 py-2">
                     <div className="flex gap-3">
                         <Button size="icon-sm" variant="secondary" className="rounded-full">
                             <IconKeyFilled />
@@ -70,7 +64,7 @@ function RouteComponent() {
                         onChange={() => setTwoFactorDialogOpen(true)}
                         aria-label="Two-factor authentication"
                     />
-                </article>
+                </ContentView.Row>
                 {!isTwoFactorEnabled && (
                     <Badge
                         variant="secondary"
@@ -80,7 +74,7 @@ function RouteComponent() {
                         Backup codes
                     </Badge>
                 )}
-            </section>
+            </ContentView.Section>
 
             {isTwoFactorEnabled ? (
                 <TwoFactor.Disable
@@ -98,7 +92,7 @@ function RouteComponent() {
                 onOpenChange={setBackupCodesDialogOpen}
             />
 
-            <section className="flex flex-col gap-3 md:max-w-md">
+            <ContentView.Section className="md:max-w-md">
                 <ContentView.Header
                     as="h2"
                     heading="Passkeys"
@@ -107,9 +101,9 @@ function RouteComponent() {
                     pClassName="text-sm text-muted-foreground"
                 />
                 <Passkey.List data={passkeys} />
-            </section>
+            </ContentView.Section>
 
-            <section className="flex flex-col gap-3 md:max-w-md">
+            <ContentView.Section className="md:max-w-md">
                 <ContentView.Header
                     as="h2"
                     heading="Sessions & devices"
@@ -117,9 +111,9 @@ function RouteComponent() {
                     pClassName="text-sm text-muted-foreground"
                 />
                 <SessionList data={sessions} currentSessionToken={data?.session.token} />
-            </section>
+            </ContentView.Section>
 
-            <section className="flex flex-col gap-3 md:max-w-md">
+            <ContentView.Section className="md:max-w-md">
                 <ContentView.Header
                     as="h2"
                     heading="Danger zone"
@@ -134,7 +128,7 @@ function RouteComponent() {
                 >
                     Terminate account permanently
                 </Button>
-            </section>
+            </ContentView.Section>
 
             <DeleteAccountDialog
                 open={deleteAccountDialogOpen}

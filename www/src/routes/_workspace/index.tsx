@@ -2,8 +2,16 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { currentOptions } from "@/domains/auth"
 import { ViewController } from "@infra/ui/widgets/view-controller"
-import { Avatar, AvatarFallback, AvatarImage } from "@infra/ui/components/avatar"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@infra/ui/components/input-group"
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@infra/ui/components/avatar"
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupInput,
+} from "@infra/ui/components/input-group"
 import { ContentView } from "@infra/ui/widgets/content-view"
 import { IconSearch, IconWallet } from "@tabler/icons-react"
 import { useMemo } from "react"
@@ -54,25 +62,29 @@ function RouteComponent() {
                 <>
                     <Avatar className="mx-auto! size-55! flex-none">
                         <AvatarImage src={resolveCdnUrl(user?.image)} />
-                        <AvatarFallback>{user?.shortHand}</AvatarFallback>
+                        <AvatarFallback>
+                            {user?.shortHand}
+                        </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col text-center">
-                        <h2 className="text-2xl font-bold">{user?.name}</h2>
-                        <p className="text-muted-foreground">{user?.email}</p>
+                        <h2 className="text-2xl font-bold">
+                            {user?.name}
+                        </h2>
+                        <p className="text-muted-foreground">
+                            {user?.email}
+                        </p>
                     </div>
                 </>
             }
         >
-            <section>
-                <InputGroup className="mx-auto md:max-w-md!">
-                    <InputGroupInput placeholder="Search your account" />
-                    <InputGroupAddon>
-                        <IconSearch />
-                    </InputGroupAddon>
-                </InputGroup>
-            </section>
+            <InputGroup className="mx-auto md:max-w-md!">
+                <InputGroupInput placeholder="Search your account" />
+                <InputGroupAddon>
+                    <IconSearch />
+                </InputGroupAddon>
+            </InputGroup>
 
-            <section className="mx-auto flex w-full flex-col gap-5 md:max-w-md">
+            <ContentView.Section className="mx-auto w-full gap-5 md:max-w-md">
                 <ContentView.Header
                     as="h1"
                     icon={<IconWallet />}
@@ -90,12 +102,15 @@ function RouteComponent() {
                             config={config}
                         />
                     ))}
-                    <Wallet.AddTile wallets={wallets.wallets} config={config} />
+                    <Wallet.AddTile
+                        wallets={wallets.wallets}
+                        config={config}
+                    />
                 </Wallet.Cards>
                 <ExpenditureEstimateCard data={payments} />
 
                 <TransactionHistory data={payments} config={config} />
-            </section>
+            </ContentView.Section>
         </ViewController>
     )
 }
