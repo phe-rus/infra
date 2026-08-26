@@ -222,3 +222,22 @@ input[type="number"]::-webkit-inner-spin-button {
 [data-slot="drawer-viewport"] {
   z-index: 60;
 }
+
+/* gooey-style pop: layers a spring-scale on top of sonner's own --y slide,
+   so it doesn't fight sonner's positioning transform. squishes in on mount,
+   squishes back down right before sonner removes it (data-removed). */
+[data-sonner-toaster] [data-sonner-toast] {
+  transform: var(--y) scale(var(--toast-scale, 0.85)) !important;
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease !important;
+}
+[data-sonner-toaster] [data-sonner-toast][data-mounted="true"] {
+  --toast-scale: 1;
+}
+[data-sonner-toaster] [data-sonner-toast][data-removed="true"] {
+  --toast-scale: 0.85;
+  transition:
+    transform 0.25s cubic-bezier(0.4, 0, 1, 1),
+    opacity 0.25s ease !important;
+}
