@@ -35,7 +35,9 @@ export const config = (options: ConfigOptions) =>
         }),
         passkey({
             rpName: options.appName,
-            rpID: options.isProduction ? options.cookieDomain : undefined,
+            rpID: options.isProduction
+                ? options.cookieDomain
+                : undefined,
         }),
         jwt({
             disableSettingJwtHeader: true,
@@ -67,7 +69,9 @@ export const config = (options: ConfigOptions) =>
             customUserInfoClaims: async ({ user, scopes, jwt }) => ({
                 scopes: scopes,
                 clientId:
-                    typeof jwt.client_id === "string" ? jwt.client_id : null,
+                    typeof jwt.client_id === "string"
+                        ? jwt.client_id
+                        : null,
                 ...user,
             }),
         }),

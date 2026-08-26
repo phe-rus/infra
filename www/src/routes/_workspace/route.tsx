@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { Headers } from "@/features/headers"
+import { Headers } from "@/components/headers"
 
 export const Route = createFileRoute("/_workspace")({
     loader: ({ context: { session } }) => {

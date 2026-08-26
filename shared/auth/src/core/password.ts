@@ -12,7 +12,10 @@ const fromHex = (hex: string) => {
     return out
 }
 
-const derive = async (password: string, salt: Uint8Array<ArrayBuffer>) => {
+const derive = async (
+    password: string,
+    salt: Uint8Array<ArrayBuffer>
+) => {
     const key = await crypto.subtle.importKey(
         "raw",
         new TextEncoder().encode(password),
@@ -33,14 +36,18 @@ const hashPassword = async (password: string) => {
     return `${toHex(salt.buffer)}:${toHex(derived)}`
 }
 
-const verifyPassword = async (data: { password: string; hash: string }) => {
+const verifyPassword = async (data: {
+    password: string
+    hash: string
+}) => {
     const [saltHex, hashHex] = data.hash.split(":")
     const derived = await derive(data.password, fromHex(saltHex))
     const expected = fromHex(hashHex)
     const actual = new Uint8Array(derived)
     if (actual.length !== expected.length) return false
     let diff = 0
-    for (let i = 0; i < actual.length; i++) diff |= actual[i] ^ expected[i]
+    for (let i = 0; i < actual.length; i++)
+        diff |= actual[i] ^ expected[i]
     return diff === 0
 }
 type TPassword = NonNullable<BetterAuthOptions["emailAndPassword"]>

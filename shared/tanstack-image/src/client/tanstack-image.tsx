@@ -2,7 +2,10 @@ import { forwardRef, useState } from "react"
 import type { ComponentPropsWithoutRef, CSSProperties } from "react"
 import { buildSrc, type ImageLoader } from "./loader"
 
-export type TanstackImageProps = Omit<ComponentPropsWithoutRef<"img">, "src" | "alt"> & {
+export type TanstackImageProps = Omit<
+    ComponentPropsWithoutRef<"img">,
+    "src" | "alt"
+> & {
     src: string
     alt: string
     proxyPath?: string
@@ -22,7 +25,10 @@ export type TanstackImageProps = Omit<ComponentPropsWithoutRef<"img">, "src" | "
 // A drop-in <img> replacement, not a walled-off component: every native img
 // prop (className, style, onLoad, loading, ...) passes straight through,
 // and the ref points at the real <img> node, same as plain <img> would.
-export const TanstackImage = forwardRef<HTMLImageElement, TanstackImageProps>(
+export const TanstackImage = forwardRef<
+    HTMLImageElement,
+    TanstackImageProps
+>(
     (
         {
             src,
@@ -42,10 +48,15 @@ export const TanstackImage = forwardRef<HTMLImageElement, TanstackImageProps>(
         ref
     ) => {
         const [loaded, setLoaded] = useState(false)
-        const resolvedSrc = unoptimized ? src : buildSrc(src, loader, proxyPath)
+        const resolvedSrc = unoptimized
+            ? src
+            : buildSrc(src, loader, proxyPath)
 
         const placeholderStyle: CSSProperties =
-            !unoptimized && placeholder === "blur" && blurDataURL && !loaded
+            !unoptimized &&
+            placeholder === "blur" &&
+            blurDataURL &&
+            !loaded
                 ? {
                       backgroundImage: `url(${blurDataURL})`,
                       backgroundSize: "cover",

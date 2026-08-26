@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { listOptions } from "@/domains/storage"
 import { Button } from "@infra/ui/components/button"
 import { BrowseObjects } from "@/domains/storage"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/storage/")({
     loader: async ({ context: { q } }) => {

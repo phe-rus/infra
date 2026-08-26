@@ -18,7 +18,8 @@ import {
     ApplicationGrid,
 } from "@/domains/console"
 import { useWalletBalances } from "@/domains/payments"
-import { ViewController, ContentView } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
+import { ContentView } from "@infra/ui/widgets/content-view"
 
 const PREFERRED_CURRENCIES = [
     "UGX",

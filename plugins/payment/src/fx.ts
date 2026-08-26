@@ -5,7 +5,8 @@
 // XAF/SLE/XOF/ZMW/KES/CDF/USD/GHS/NGN/UGX/RWF/TZS/MWK/MZN)
 const FX_PRIMARY_URL =
     "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json"
-const FX_FALLBACK_URL = "https://latest.currency-api.pages.dev/v1/currencies/usd.json"
+const FX_FALLBACK_URL =
+    "https://latest.currency-api.pages.dev/v1/currencies/usd.json"
 
 // usd -> lowercase currency code -> rate (1 USD = N of that currency)
 export type FxRates = Record<string, number>

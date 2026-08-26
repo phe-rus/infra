@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers"
 import { createAuth, isAdminTier } from "@infra/auth"
-import { resources } from "@infra/r2"
+import { resources } from "../plugins/resources/src"
 import { infraPayment } from "@infra/payment"
 import {
     sendDeleteAccountEmail as sendDeleteAccountVerification,
@@ -31,7 +31,13 @@ export const auth = createAuth({
         loginPage: `${env.WWW_URL}/sign-in`,
         consentPage: `${env.WWW_URL}/consent`,
         signUpPage: `${env.WWW_URL}/create-account`,
-        scopes: ["openid", "profile", "email", "offline_access", "payments"],
+        scopes: [
+            "openid",
+            "profile",
+            "email",
+            "offline_access",
+            "payments",
+        ],
         resources: [env.BETTER_AUTH_URL],
     },
     plugins: [
@@ -42,7 +48,9 @@ export const auth = createAuth({
         infraPayment({
             apiToken: env.PAWAPAY_API_TOKEN,
             environment:
-                env.PAWAPAY_ENV === "production" ? "production" : "sandbox",
+                env.PAWAPAY_ENV === "production"
+                    ? "production"
+                    : "sandbox",
             cache: env.PAYMENTS,
             isAdmin: isAdminTier,
             emails: { sendPaymentReceipt },

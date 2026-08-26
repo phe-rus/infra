@@ -3,7 +3,9 @@ import type { BetterAuthOptions } from "better-auth/types"
 type OptionsProps = Partial<BetterAuthOptions>
 type SecondaryStorage = NonNullable<OptionsProps["secondaryStorage"]>
 
-export function createSecondaryStorage(cache: KVNamespace): SecondaryStorage {
+export function createSecondaryStorage(
+    cache: KVNamespace
+): SecondaryStorage {
     return {
         increment: async (key, ttl) => {
             const existing = await cache.get(key)
@@ -47,7 +49,9 @@ export function createRateLimitStorage(
 
     function needsSharedCounter(key: string): boolean {
         const path = key.slice(key.indexOf("|") + 1)
-        return sharedCounterPrefixes.some((prefix) => path.startsWith(prefix))
+        return sharedCounterPrefixes.some((prefix) =>
+            path.startsWith(prefix)
+        )
     }
 
     return {

@@ -8,7 +8,7 @@ import {
     useCompleteSetup,
     useRunSetupMigrations,
 } from "@/domains/auth"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 import { IconLoader2 } from "@tabler/icons-react"
 import type { z } from "zod"
 

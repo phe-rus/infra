@@ -3,7 +3,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { signInSchema, signInSearchSchema, useSignIn } from "@/domains/auth"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 import { t } from "@infra/ui/components/sonner"
 import type { z } from "zod"
 

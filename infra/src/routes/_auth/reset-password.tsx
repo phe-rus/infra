@@ -6,7 +6,7 @@ import {
     resetPasswordSearchSchema,
     useResetPassword,
 } from "@/domains/auth"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_auth/reset-password")({
     validateSearch: resetPasswordSearchSchema,

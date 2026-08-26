@@ -3,8 +3,10 @@ import path from "node:path"
 import type { Plugin } from "vite"
 
 const NODE_ENV_CHECK = /process\.env\.NODE_ENV/
-const PROD_REQUIRE = /require\(\s*["']([^"']*production[^"']*)["']\s*\)/i
-const DEV_REQUIRE = /require\(\s*["']([^"']*development[^"']*)["']\s*\)/i
+const PROD_REQUIRE =
+    /require\(\s*["']([^"']*production[^"']*)["']\s*\)/i
+const DEV_REQUIRE =
+    /require\(\s*["']([^"']*development[^"']*)["']\s*\)/i
 // the dev/prod switcher files this targets (react, react-dom, scheduler,
 // and anything else following the same convention) are a handful of lines
 // — anything bigger than this is a real module, not a switcher, and not
@@ -40,7 +42,8 @@ export function minifyBuild(options: MinifyBuildOptions = {}): Plugin {
             isProd = config.mode === "production"
         },
         async resolveId(source, importer, resolveOptions) {
-            if (!stripEnvConditionals || !isProd || !importer) return null
+            if (!stripEnvConditionals || !isProd || !importer)
+                return null
 
             const resolved = await this.resolve(source, importer, {
                 ...resolveOptions,
@@ -56,14 +59,23 @@ export function minifyBuild(options: MinifyBuildOptions = {}): Plugin {
             } catch {
                 return null
             }
-            if (content.length > MAX_WRAPPER_SIZE || !NODE_ENV_CHECK.test(content)) return null
+            if (
+                content.length > MAX_WRAPPER_SIZE ||
+                !NODE_ENV_CHECK.test(content)
+            )
+                return null
 
             const prodMatch = content.match(PROD_REQUIRE)
             const devMatch = content.match(DEV_REQUIRE)
             if (!prodMatch || !devMatch) return null
 
-            const prodTarget = path.resolve(path.dirname(resolved.id), prodMatch[1])
-            return this.resolve(prodTarget, resolved.id, { skipSelf: true })
+            const prodTarget = path.resolve(
+                path.dirname(resolved.id),
+                prodMatch[1]
+            )
+            return this.resolve(prodTarget, resolved.id, {
+                skipSelf: true,
+            })
         },
     }
 }

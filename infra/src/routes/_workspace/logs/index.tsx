@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/logs/")({
     component: RouteComponent,

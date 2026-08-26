@@ -23,7 +23,7 @@ import {
     useSetAppActive,
     useUpdateApp,
 } from "@/domains/console"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/console/$client_id/")({
     validateSearch: appDetailSearchSchema,

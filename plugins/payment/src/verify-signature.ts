@@ -16,18 +16,22 @@ import type { PublicKey } from "./pawapay-client"
 function base64ToBytes(base64: string): Uint8Array<ArrayBuffer> {
     const binary = atob(base64)
     const bytes = new Uint8Array(binary.length)
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+    for (let i = 0; i < binary.length; i++)
+        bytes[i] = binary.charCodeAt(i)
     return bytes
 }
 
 function bytesToBase64(bytes: ArrayBuffer): string {
     let binary = ""
-    for (const byte of new Uint8Array(bytes)) binary += String.fromCharCode(byte)
+    for (const byte of new Uint8Array(bytes))
+        binary += String.fromCharCode(byte)
     return btoa(binary)
 }
 
 // "sig1=:BASE64:" -> raw bytes
-function parseStructuredByteSequence(headerValue: string): Uint8Array<ArrayBuffer> {
+function parseStructuredByteSequence(
+    headerValue: string
+): Uint8Array<ArrayBuffer> {
     const match = headerValue.match(/:([A-Za-z0-9+/=]+):/)
     if (!match) throw new Error("Malformed signature header")
     return base64ToBytes(match[1])
@@ -43,9 +47,13 @@ function pemToDer(pem: string): Uint8Array<ArrayBuffer> {
 
 async function importEcPublicKey(pem: string): Promise<CryptoKey> {
     const der = pemToDer(pem)
-    return crypto.subtle.importKey("spki", der, { name: "ECDSA", namedCurve: "P-256" }, false, [
-        "verify",
-    ])
+    return crypto.subtle.importKey(
+        "spki",
+        der,
+        { name: "ECDSA", namedCurve: "P-256" },
+        false,
+        ["verify"]
+    )
 }
 
 type SignatureInputInfo = {
@@ -65,8 +73,11 @@ function parseSignatureInput(headerValue: string): SignatureInputInfo {
     const rawParamsValue = headerValue.slice(eq + 1).trim()
 
     const listMatch = rawParamsValue.match(/^\(([^)]*)\)/)
-    if (!listMatch) throw new Error("Malformed Signature-Input component list")
-    const coveredComponents = [...listMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1])
+    if (!listMatch)
+        throw new Error("Malformed Signature-Input component list")
+    const coveredComponents = [
+        ...listMatch[1].matchAll(/"([^"]+)"/g),
+    ].map((m) => m[1])
 
     const params: Record<string, string> = {}
     for (const m of rawParamsValue
@@ -81,8 +92,13 @@ function parseSignatureInput(headerValue: string): SignatureInputInfo {
     return { label, coveredComponents, params, rawParamsValue }
 }
 
-async function verifyContentDigest(digestHeader: string, rawBody: string): Promise<boolean> {
-    const match = digestHeader.match(/^(sha-256|sha-512)=:([A-Za-z0-9+/=]+):/)
+async function verifyContentDigest(
+    digestHeader: string,
+    rawBody: string
+): Promise<boolean> {
+    const match = digestHeader.match(
+        /^(sha-256|sha-512)=:([A-Za-z0-9+/=]+):/
+    )
     if (!match) return false
     const [, algo, expectedBase64] = match
     const digest = await crypto.subtle.digest(
@@ -118,7 +134,9 @@ function buildSignatureBase(
                 // an actual key — this genuinely catches a covered signature
                 // component missing from the real request headers
                 if (headerValue === undefined)
-                    throw new Error(`Missing covered header: ${component}`)
+                    throw new Error(
+                        `Missing covered header: ${component}`
+                    )
                 value = headerValue.trim()
             }
         }
@@ -139,7 +157,12 @@ export async function verifyPawaPayCallback(
     const signatureDate = request.headers.get("signature-date")
     const contentType = request.headers.get("content-type")
 
-    if (!signature || !signatureInputHeader || !contentDigest || !signatureDate) {
+    if (
+        !signature ||
+        !signatureInputHeader ||
+        !contentDigest ||
+        !signatureDate
+    ) {
         return false
     }
 
@@ -147,7 +170,8 @@ export async function verifyPawaPayCallback(
         return false
     }
 
-    const { coveredComponents, rawParamsValue, params } = parseSignatureInput(signatureInputHeader)
+    const { coveredComponents, rawParamsValue, params } =
+        parseSignatureInput(signatureInputHeader)
     if (params.alg !== "ecdsa-p256-sha256") {
         return false
     }
@@ -158,11 +182,16 @@ export async function verifyPawaPayCallback(
         return false
     }
 
-    const base = buildSignatureBase(coveredComponents, rawParamsValue, request, {
-        "signature-date": signatureDate,
-        "content-digest": contentDigest,
-        ...(contentType && { "content-type": contentType }),
-    })
+    const base = buildSignatureBase(
+        coveredComponents,
+        rawParamsValue,
+        request,
+        {
+            "signature-date": signatureDate,
+            "content-digest": contentDigest,
+            ...(contentType && { "content-type": contentType }),
+        }
+    )
 
     const signatureBytes = parseStructuredByteSequence(signature)
     const publicKey = await importEcPublicKey(matchingKey.key)

@@ -1,5 +1,6 @@
 import { defineConfig } from "vite"
 import { cloudflare } from "@cloudflare/vite-plugin"
+import { devtools } from "@tanstack/devtools-vite"
 import { tanstackStart } from "@tanstack/react-start/plugin/vite"
 import babel from "@rolldown/plugin-babel"
 import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react"
@@ -11,7 +12,7 @@ const config = defineConfig({
     resolve: {
         tsconfigPaths: true,
         alias: {
-            "@": path.resolve(import.meta.dirname, "./src"),
+            "@": path.resolve(import.meta.dirname, "."),
         },
     },
     plugins: [
@@ -21,6 +22,7 @@ const config = defineConfig({
             },
             persistState: true,
         }),
+        devtools(),
         tailwindcss(),
         tanstackStart(),
         babel({

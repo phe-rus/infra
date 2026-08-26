@@ -7,7 +7,10 @@ import {
     type SessionEmailCallbacks,
 } from "./core/session"
 import { createAdvanced } from "./core/advanced"
-import { createSecondaryStorage, createRateLimitStorage } from "./core/storage"
+import {
+    createSecondaryStorage,
+    createRateLimitStorage,
+} from "./core/storage"
 import { databaseHooks, isAdminTier } from "./core/permissions"
 import { createTrustedOrigins } from "./core/trusted-origins"
 import { config, type CreateOAuthProviderOptions } from "./config"

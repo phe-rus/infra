@@ -4,6 +4,9 @@
  * remote origin directly. A repeat visitor is then served from this app's
  * own edge cache rather than re-fetching cross-origin every time.
  */
-export function proxiedImageSrc(src: string, proxyPath = "/_image"): string {
+export function proxiedImageSrc(
+    src: string,
+    proxyPath = "/_image"
+): string {
     return `${proxyPath}?url=${encodeURIComponent(src)}`
 }

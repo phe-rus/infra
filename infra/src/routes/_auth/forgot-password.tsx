@@ -6,7 +6,7 @@ import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
 import { buttonVariants } from "@infra/ui/components/button"
 import { IconArrowLeft } from "@tabler/icons-react"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_auth/forgot-password")({
     component: RouteComponent,

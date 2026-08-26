@@ -24,7 +24,9 @@ export type PaymentCountryOption = {
 // scripts, callback URLs, French display names, ...) down to exactly what a
 // country/provider picker needs, and drops anything neither OPERATIONAL for
 // deposit nor for payout — nothing a customer could actually use right now
-export function toPaymentCountryOptions(raw: ActiveConfigResponse): PaymentCountryOption[] {
+export function toPaymentCountryOptions(
+    raw: ActiveConfigResponse
+): PaymentCountryOption[] {
     return raw.countries
         .map((country) => ({
             country: country.country,
@@ -35,8 +37,10 @@ export function toPaymentCountryOptions(raw: ActiveConfigResponse): PaymentCount
                 provider.currencies
                     .filter(
                         (c) =>
-                            c.operationTypes.DEPOSIT?.status === "OPERATIONAL" ||
-                            c.operationTypes.PAYOUT?.status === "OPERATIONAL"
+                            c.operationTypes.DEPOSIT?.status ===
+                                "OPERATIONAL" ||
+                            c.operationTypes.PAYOUT?.status ===
+                                "OPERATIONAL"
                     )
                     .map(
                         (c): PaymentProviderOption => ({
@@ -44,13 +48,23 @@ export function toPaymentCountryOptions(raw: ActiveConfigResponse): PaymentCount
                             displayName: provider.displayName,
                             logo: provider.logo,
                             currency: c.currency,
-                            depositMinAmount: c.operationTypes.DEPOSIT?.minAmount ?? null,
-                            depositMaxAmount: c.operationTypes.DEPOSIT?.maxAmount ?? null,
-                            payoutMinAmount: c.operationTypes.PAYOUT?.minAmount ?? null,
-                            payoutMaxAmount: c.operationTypes.PAYOUT?.maxAmount ?? null,
+                            depositMinAmount:
+                                c.operationTypes.DEPOSIT?.minAmount ??
+                                null,
+                            depositMaxAmount:
+                                c.operationTypes.DEPOSIT?.maxAmount ??
+                                null,
+                            payoutMinAmount:
+                                c.operationTypes.PAYOUT?.minAmount ??
+                                null,
+                            payoutMaxAmount:
+                                c.operationTypes.PAYOUT?.maxAmount ??
+                                null,
                             decimalsInAmount:
-                                (c.operationTypes.DEPOSIT ?? c.operationTypes.PAYOUT)
-                                    ?.decimalsInAmount ?? "TWO_PLACES",
+                                (
+                                    c.operationTypes.DEPOSIT ??
+                                    c.operationTypes.PAYOUT
+                                )?.decimalsInAmount ?? "TWO_PLACES",
                         })
                     )
             ),

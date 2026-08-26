@@ -1,9 +1,7 @@
 import type { BetterAuthOptions } from "better-auth/types"
 
 type OptionsProps = Partial<BetterAuthOptions>
-
 export const FIXED_ROLE_NAMES = ["admin", "user"] as const
-
 export function isAdminTier(role: string): boolean {
     return role === "admin"
 }

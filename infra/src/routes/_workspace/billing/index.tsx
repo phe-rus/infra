@@ -9,7 +9,7 @@ import {
 import type { ListedPayment } from "@/domains/payments"
 import { Button } from "@infra/ui/components/button"
 import { ListPayments, Payment } from "@/domains/payments"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/billing/")({
     loader: async ({ context: { q } }) => {

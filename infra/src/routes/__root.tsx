@@ -7,7 +7,7 @@ import {
 import { meOptions, setupOptions } from "@/domains/auth"
 import { ToasterProvider } from "@infra/ui/components/sonner"
 import type { QueryClient } from "@tanstack/react-query"
-import { ComposeViewport } from "@/components/views"
+import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { seo } from "@/lib/seo"

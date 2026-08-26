@@ -10,7 +10,7 @@ import {
 import { buttonVariants } from "@infra/ui/components/button"
 import { ListApplications } from "@/domains/console"
 import { cn } from "@infra/ui/lib/utils"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/console/")({
     loader: async ({ context: { q } }) => {

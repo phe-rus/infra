@@ -1,8 +1,12 @@
 import type { BetterAuthOptions } from "better-auth/types"
 import { password } from "./password"
 
-type EmailAndPassword = NonNullable<BetterAuthOptions["emailAndPassword"]>
-type EmailVerification = NonNullable<BetterAuthOptions["emailVerification"]>
+type EmailAndPassword = NonNullable<
+    BetterAuthOptions["emailAndPassword"]
+>
+type EmailVerification = NonNullable<
+    BetterAuthOptions["emailVerification"]
+>
 type UserOptions = NonNullable<BetterAuthOptions["user"]>
 type AdditionalFields = NonNullable<UserOptions["additionalFields"]>
 
@@ -14,8 +18,6 @@ export type SessionEmailCallbacks = {
     >["sendDeleteAccountVerification"]
 }
 
-// extra columns an app needs on top of "bio" — kept optional so most callers
-// never have to think about it, in case a future app needs its own fields
 export function createSessionOptions(
     emails: SessionEmailCallbacks,
     additionalFields?: AdditionalFields

@@ -7,15 +7,15 @@ export function isTrustedOrigin(
         const { hostname } = new URL(origin)
         return trustedOrigins.split(",").some((suffix) => {
             const trusted = suffix.trim()
-            return hostname === trusted || hostname.endsWith(`.${trusted}`)
+            return (
+                hostname === trusted || hostname.endsWith(`.${trusted}`)
+            )
         })
     } catch {
         return false
     }
 }
 
-// returns a trustedOrigins function matching better-auth's own signature:
-// the request's Origin header if it's in the allowlist, otherwise fallbackOrigin
 export function createTrustedOrigins(
     trustedOrigins: string,
     fallbackOrigin: string

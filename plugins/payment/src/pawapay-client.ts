@@ -15,7 +15,11 @@ export type InitiateDepositBody = {
     currency: string
     clientReferenceId?: string
     customerMessage?: string
-    metadata?: { fieldName: string; fieldValue: string; isPII?: boolean }[]
+    metadata?: {
+        fieldName: string
+        fieldValue: string
+        isPII?: boolean
+    }[]
 }
 
 export type InitiateDepositResponse = {
@@ -35,7 +39,11 @@ export type InitiatePayoutBody = {
     currency: string
     clientReferenceId?: string
     customerMessage?: string
-    metadata?: { fieldName: string; fieldValue: string; isPII?: boolean }[]
+    metadata?: {
+        fieldName: string
+        fieldValue: string
+        isPII?: boolean
+    }[]
 }
 
 export type InitiatePayoutResponse = {
@@ -51,7 +59,11 @@ export type InitiateRefundBody = {
     amount: string
     currency: string
     clientReferenceId?: string
-    metadata?: { fieldName: string; fieldValue: string; isPII?: boolean }[]
+    metadata?: {
+        fieldName: string
+        fieldValue: string
+        isPII?: boolean
+    }[]
 }
 
 export type InitiateRefundResponse = {
@@ -120,7 +132,11 @@ export class PawaPayClient {
         this.baseUrl = BASE_URLS[environment]
     }
 
-    private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
+    private async request<T>(
+        method: string,
+        path: string,
+        body?: unknown
+    ): Promise<T> {
         const res = await fetch(`${this.baseUrl}${path}`, {
             method,
             headers: {
@@ -144,22 +160,30 @@ export class PawaPayClient {
                 }
             })()
             if (!parsed?.status) {
-                throw new Error(`PawaPay ${method} ${path} failed: ${res.status} ${text}`)
+                throw new Error(
+                    `PawaPay ${method} ${path} failed: ${res.status} ${text}`
+                )
             }
             return parsed as T
         }
         return JSON.parse(text) as T
     }
 
-    initiateDeposit(body: InitiateDepositBody): Promise<InitiateDepositResponse> {
+    initiateDeposit(
+        body: InitiateDepositBody
+    ): Promise<InitiateDepositResponse> {
         return this.request("POST", "/v2/deposits", body)
     }
 
-    initiatePayout(body: InitiatePayoutBody): Promise<InitiatePayoutResponse> {
+    initiatePayout(
+        body: InitiatePayoutBody
+    ): Promise<InitiatePayoutResponse> {
         return this.request("POST", "/v2/payouts", body)
     }
 
-    initiateRefund(body: InitiateRefundBody): Promise<InitiateRefundResponse> {
+    initiateRefund(
+        body: InitiateRefundBody
+    ): Promise<InitiateRefundResponse> {
         return this.request("POST", "/v2/refunds", body)
     }
 

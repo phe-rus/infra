@@ -7,7 +7,7 @@ import {
 import { ListUsers, CreateUser, GetUserDetail } from "@/domains/users"
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "@infra/ui/components/button"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 import { useState } from "react"
 
 export const Route = createFileRoute("/_workspace/users/")({

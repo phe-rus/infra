@@ -11,7 +11,7 @@ import { Badge } from "@infra/ui/components/badge"
 import { Button, buttonVariants } from "@infra/ui/components/button"
 import { Separator } from "@infra/ui/components/separator"
 import { cn } from "@infra/ui/lib/utils"
-import { ViewController } from "@/components/views"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/billing/$paymentId")({
     loader: async ({ context: { q }, params }) => {

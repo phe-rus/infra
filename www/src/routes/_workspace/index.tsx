@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { currentOptions } from "@/functions/get-auth"
-import { cn } from "@infra/ui/lib/utils"
+import { currentOptions } from "@/domains/auth"
+import { ViewController } from "@infra/ui/widgets/view-controller"
 import { Avatar, AvatarFallback, AvatarImage } from "@infra/ui/components/avatar"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@infra/ui/components/input-group"
+import { ContentView } from "@infra/ui/widgets/content-view"
 import { IconSearch, IconWallet } from "@tabler/icons-react"
 import { useMemo } from "react"
 import { resolveCdnUrl } from "@/lib/auth-client"
@@ -14,8 +15,10 @@ import {
     useMyPayments,
     usePaymentConfig,
     useWallets,
-} from "@/functions/get-payments"
-import { ExpenditureEstimateCard, Wallet, TransactionHistory } from "@/features/payments"
+    ExpenditureEstimateCard,
+    Wallet,
+    TransactionHistory,
+} from "@/domains/payments"
 
 export const Route = createFileRoute("/_workspace/")({
     loader: async ({ context }) => {
@@ -46,20 +49,20 @@ function RouteComponent() {
     }, [session])
 
     return (
-        <article
-            className={cn("container mx-auto flex w-full flex-col", "gap-5 py-20 md:max-w-3xl")}
+        <ViewController
+            heading={
+                <>
+                    <Avatar className="mx-auto! size-55! flex-none">
+                        <AvatarImage src={resolveCdnUrl(user?.image)} />
+                        <AvatarFallback>{user?.shortHand}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col text-center">
+                        <h2 className="text-2xl font-bold">{user?.name}</h2>
+                        <p className="text-muted-foreground">{user?.email}</p>
+                    </div>
+                </>
+            }
         >
-            <section>
-                <Avatar className="mx-auto! size-55! flex-none">
-                    <AvatarImage src={resolveCdnUrl(user?.image)} />
-                    <AvatarFallback>{user?.shortHand}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col text-center">
-                    <h2 className="text-2xl font-bold">{user?.name}</h2>
-                    <p className="text-muted-foreground">{user?.email}</p>
-                </div>
-            </section>
-
             <section>
                 <InputGroup className="mx-auto md:max-w-md!">
                     <InputGroupInput placeholder="Search your account" />
@@ -70,15 +73,13 @@ function RouteComponent() {
             </section>
 
             <section className="mx-auto flex w-full flex-col gap-5 md:max-w-md">
-                <div>
-                    <h1 className="flex items-center gap-2">
-                        <IconWallet />
-                        Wallets
-                    </h1>
-                    <p className="md:max-w-sm">
-                        Manage your wallets, accounts, assets, and transactions.
-                    </p>
-                </div>
+                <ContentView.Header
+                    as="h1"
+                    icon={<IconWallet />}
+                    heading="Wallets"
+                    p="Manage your wallets, accounts, assets, and transactions."
+                    pClassName="md:max-w-sm"
+                />
 
                 <Wallet.Cards>
                     {wallets.wallets.map((wallet) => (
@@ -95,6 +96,6 @@ function RouteComponent() {
 
                 <TransactionHistory data={payments} config={config} />
             </section>
-        </article>
+        </ViewController>
     )
 }
