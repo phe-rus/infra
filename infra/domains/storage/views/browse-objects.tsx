@@ -60,9 +60,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                 className="mr-auto size-5!"
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    deleteObjects({
-                                        data: { prefix: folder.key },
-                                    })
+                                    deleteObjects({ prefix: folder.key })
                                 }}
                             >
                                 <IconMinus />
@@ -119,9 +117,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
-                                    deleteObjects({
-                                        data: { keys: [file.key] },
-                                    })
+                                    deleteObjects({ keys: [file.key] })
                                 }}
                             >
                                 <IconMinus />

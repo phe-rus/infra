@@ -24,9 +24,7 @@ export const DisableTwoFactor: FC<DisableTwoFactorProps> = ({ viewUser }) => {
                 variant="outline"
                 isDisabled={isPending}
                 onClick={() =>
-                    void disableTwoFactor({
-                        data: { userId: viewUser.user.id },
-                    })
+                    void disableTwoFactor(viewUser.user.id)
                 }
             >
                 Disable 2FA

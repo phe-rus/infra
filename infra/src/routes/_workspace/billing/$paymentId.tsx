@@ -1,7 +1,6 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { formatUtc } from "@infra/ui/lib/date"
 import {
-    paymentOptions,
     parseFailureReason,
     Receipt,
     statusVariant,
@@ -14,10 +13,6 @@ import { cn } from "@infra/ui/lib/utils"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/billing/$paymentId")({
-    loader: async ({ context: { q }, params }) => {
-        const detail = await q.ensureQueryData(paymentOptions(params.paymentId))
-        if (!detail) throw notFound()
-    },
     component: RouteComponent,
 })
 

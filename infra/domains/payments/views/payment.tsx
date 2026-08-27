@@ -28,12 +28,10 @@ const Payout: FC<PayoutProps> = ({ open, onOpenChange }) => {
     const handlePayout = async () => {
         if (!fields.provider) return
         await initiatePayout({
-            data: {
-                amount,
-                currency: fields.provider.currency,
-                phoneNumber: fields.phoneNumber,
-                provider: fields.provider.provider,
-            },
+            amount,
+            currency: fields.provider.currency,
+            phoneNumber: fields.phoneNumber,
+            provider: fields.provider.provider,
         })
         setAmount("")
         fields.reset()
@@ -91,7 +89,7 @@ const Refund: FC<RefundProps> = ({ payment, onOpenChange }) => {
 
     const handleRefund = async () => {
         if (!payment) return
-        await initiateRefund({ data: { paymentId: payment.id, amount } })
+        await initiateRefund({ paymentId: payment.id, amount })
         onOpenChange(false)
     }
 

@@ -10,6 +10,6 @@ export const usersOptions = () =>
 export const userDetailOptions = (userId: string) =>
     queryOptions({
         queryKey: ["users", userId],
-        queryFn: () => getUserDetail({ data: { userId } }),
+        queryFn: () => getUserDetail(userId),
         enabled: Boolean(userId),
     })

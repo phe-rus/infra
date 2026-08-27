@@ -29,12 +29,10 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
 
     async function handleAddUser() {
         await createUser({
-            data: {
-                name: draftName.trim(),
-                email: draftEmail.trim(),
-                password: draftPassword,
-                role: draftRole,
-            },
+            name: draftName.trim(),
+            email: draftEmail.trim(),
+            password: draftPassword,
+            role: draftRole,
         })
         setDraftName("")
         setDraftEmail("")

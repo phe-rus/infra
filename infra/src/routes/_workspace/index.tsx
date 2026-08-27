@@ -10,9 +10,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@infra/ui/components/select"
-import { statsOptions, useStats } from "@/domains/stats"
+import { useStats } from "@/domains/stats"
 import {
-    consoleOptions,
     useConsole,
     CREATE_CLIENT_ID,
     ApplicationGrid,
@@ -39,12 +38,6 @@ const PREFERRED_CURRENCIES = [
 ]
 
 export const Route = createFileRoute("/_workspace/")({
-    loader: async ({ context: { q } }) => {
-        await Promise.all([
-            q.ensureQueryData(statsOptions()),
-            q.ensureQueryData(consoleOptions()),
-        ])
-    },
     component: RouteComponent,
 })
 

@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import {
-    consoleOptions,
     CREATE_CLIENT_ID,
     useConsole,
     useRemoveApp,
@@ -13,9 +12,6 @@ import { cn } from "@infra/ui/lib/utils"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/console/")({
-    loader: async ({ context: { q } }) => {
-        await q.ensureQueryData(consoleOptions())
-    },
     component: RouteComponent,
 })
 
@@ -46,10 +42,10 @@ function RouteComponent() {
             <ListApplications
                 applications={data.applications}
                 onSetActive={(clientId, active) =>
-                    void setAppActive({ data: { clientId, active } })
+                    void setAppActive({ clientId, active })
                 }
-                onRotate={(clientId) => void rotateApp({ data: { clientId } })}
-                onRemove={(clientId) => void removeApp({ data: { clientId } })}
+                onRotate={(clientId) => void rotateApp(clientId)}
+                onRemove={(clientId) => void removeApp(clientId)}
             />
         </ViewController>
     )

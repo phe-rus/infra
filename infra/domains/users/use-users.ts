@@ -13,6 +13,7 @@ import {
     stopImpersonating,
     unbanUser,
     updateUser,
+    uploadOwnAvatar,
     uploadUserImage,
 } from "./func"
 import { useAppMutation } from "@infra/ui/hooks"
@@ -55,19 +56,22 @@ export const useCreateUser = () =>
         errorMessage: "Could not add user",
     })
 
-export const useRemoveUser = () =>
+export const useRemoveUser = (currentUserId: string) =>
     useAppMutation({
-        mutationFn: removeUser,
+        mutationFn: (userId: string) => {
+            if (userId === currentUserId) {
+                throw new Error("You can't remove your own account")
+            }
+            return removeUser(userId)
+        },
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
+            updater: (old: UsersListData | undefined, userId: string) =>
                 old
                     ? {
                           ...old,
-                          users: old.users.filter(
-                              (u) => u.id !== variables.data.userId
-                          ),
+                          users: old.users.filter((u) => u.id !== userId),
                           total: Math.max(0, old.total - 1),
                       }
                     : { users: [], total: 0 },
@@ -83,12 +87,12 @@ export const useUpdateUserDetails = () =>
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, {
-                    ...(variables.data.name !== undefined && {
-                        name: variables.data.name,
+                patchUserInCache(old, variables.userId, {
+                    ...(variables.name !== undefined && {
+                        name: variables.name,
                     }),
-                    ...(variables.data.email !== undefined && {
-                        email: variables.data.email,
+                    ...(variables.email !== undefined && {
+                        email: variables.email,
                     }),
                 }),
         },
@@ -104,15 +108,28 @@ export const useUploadUserImage = () =>
         errorMessage: "Could not update image",
     })
 
-export const useSetUserRole = () =>
+export const useUploadOwnAvatar = () =>
     useAppMutation({
-        mutationFn: setUserRole,
+        mutationFn: uploadOwnAvatar,
+        invalidates: [usersOptions().queryKey, ["me"]],
+        successMessage: "Image updated",
+        errorMessage: "Could not update image",
+    })
+
+export const useSetUserRole = (currentUserId: string) =>
+    useAppMutation({
+        mutationFn: (input: { userId: string; role: "admin" | "user" }) => {
+            if (input.userId === currentUserId) {
+                throw new Error("You can't change your own role here")
+            }
+            return setUserRole(input)
+        },
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, {
-                    role: variables.data.role,
+                patchUserInCache(old, variables.userId, {
+                    role: variables.role,
                 }),
         },
         successMessage: "Role updated",
@@ -132,8 +149,8 @@ export const useDisableUserTwoFactor = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, {
+            updater: (old: UsersListData | undefined, userId: string) =>
+                patchUserInCache(old, userId, {
                     twoFactorEnabled: false,
                 }),
         },
@@ -141,14 +158,23 @@ export const useDisableUserTwoFactor = () =>
         errorMessage: "Could not disable two-factor",
     })
 
-export const useBanUser = () =>
+export const useBanUser = (currentUserId: string) =>
     useAppMutation({
-        mutationFn: banUser,
+        mutationFn: (input: {
+            userId: string
+            banReason?: string
+            banExpiresIn?: number
+        }) => {
+            if (input.userId === currentUserId) {
+                throw new Error("You can't ban your own account")
+            }
+            return banUser(input)
+        },
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, { banned: true }),
+                patchUserInCache(old, variables.userId, { banned: true }),
         },
         successMessage: "User banned",
         errorMessage: "Could not ban user",
@@ -160,8 +186,8 @@ export const useUnbanUser = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, { banned: false }),
+            updater: (old: UsersListData | undefined, userId: string) =>
+                patchUserInCache(old, userId, { banned: false }),
         },
         successMessage: "User unbanned",
         errorMessage: "Could not unban user",
@@ -183,11 +209,16 @@ export const useRevokeUserSessions = () =>
         errorMessage: "Could not revoke sessions",
     })
 
-export const useImpersonateUser = () => {
+export const useImpersonateUser = (currentUserId: string) => {
     const router = useRouter()
     const q = getContext()
     return useAppMutation({
-        mutationFn: impersonateUser,
+        mutationFn: (userId: string) => {
+            if (userId === currentUserId) {
+                throw new Error("You can't impersonate your own account")
+            }
+            return impersonateUser(userId)
+        },
         successMessage: "Impersonating user",
         onSuccess: () => {
             q.clear()

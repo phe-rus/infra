@@ -353,7 +353,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                 <Button
                                     size="sm"
                                     className="w-fit!"
-                                    onClick={() => signOut({})}
+                                    onClick={() => signOut()}
                                     isDisabled={isPending}
                                 >
                                     {isPending
@@ -375,7 +375,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     size="xs"
                                     variant="outline"
                                     onClick={() =>
-                                        void stopImpersonating({})
+                                        void stopImpersonating()
                                     }
                                     isDisabled={isStoppingImpersonation}
                                 >

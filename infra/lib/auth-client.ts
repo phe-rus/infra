@@ -25,7 +25,7 @@ export function resolveCdnUrl(path?: string | null): string | undefined {
 }
 
 export const authClient = createAuthClient({
-    baseURL: 'http://localhost:3000',
+    baseURL: apiUrl(),
     plugins: [
         inferAdditionalFields({
             user: {

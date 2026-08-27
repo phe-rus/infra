@@ -37,11 +37,11 @@ export const useRemoveApp = () =>
         invalidates: [consoleOptions().queryKey],
         optimisticUpdate: {
             queryKey: consoleOptions().queryKey,
-            updater: (old: AppListData | undefined, variables) =>
+            updater: (old: AppListData | undefined, clientId: string) =>
                 old
                     ? {
                           applications: old.applications.filter(
-                              (a) => a.clientId !== variables.data.clientId
+                              (a) => a.clientId !== clientId
                           ),
                       }
                     : { applications: [] },
@@ -56,12 +56,15 @@ export const useSetAppActive = () =>
         invalidates: [consoleOptions().queryKey],
         optimisticUpdate: {
             queryKey: consoleOptions().queryKey,
-            updater: (old: AppListData | undefined, variables) =>
+            updater: (
+                old: AppListData | undefined,
+                variables: { clientId: string; active: boolean }
+            ) =>
                 old
                     ? {
                           applications: old.applications.map((a) =>
-                              a.clientId === variables.data.clientId
-                                  ? { ...a, disabled: !variables.data.active }
+                              a.clientId === variables.clientId
+                                  ? { ...a, disabled: !variables.active }
                                   : a
                           ),
                       }

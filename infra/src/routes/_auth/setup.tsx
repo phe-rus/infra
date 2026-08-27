@@ -26,7 +26,7 @@ function RouteComponent() {
             onChange: setupSchema,
         },
         onSubmit: async ({ value }) => {
-            await completeSetup({ data: value })
+            await completeSetup(value)
         },
     })
 

@@ -24,10 +24,8 @@ function RouteComponent() {
         onSubmit: async ({ value }) => {
             if (!token) return
             await resetPassword({
-                data: {
-                    newPassword: value.newPassword,
-                    token: token,
-                },
+                newPassword: value.newPassword,
+                token: token,
             })
         },
     })

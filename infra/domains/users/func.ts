@@ -1,262 +1,176 @@
-import { createServerFn } from "@tanstack/react-start"
-import { getRequestHeaders, getRequestUrl } from "@tanstack/react-start/server"
 import type {
     SessionWithImpersonatedBy,
-    UserWithRole,
+    UserWithRole
 } from "better-auth/plugins/admin"
-import { authClient } from "@/lib/auth-client"
-import { forwardAuthHeaders } from "@/lib/forward-headers"
-import { AdminMiddleware } from "@/middleware"
-import {
+import { authClient, apiUrl } from "@/lib/auth-client"
+import type {
     banUserSchema,
     createUserSchema,
-    revokeUserSessionSchema,
     setUserPasswordSchema,
     setUserRoleSchema,
     updateUserDetailsSchema,
-    userIdSchema,
 } from "./types"
-import type { ImageUpload } from "./types"
-
-function readImageUpload(data: unknown): ImageUpload {
-    if (!(data instanceof FormData)) {
-        throw new Error("Expected FormData")
-    }
-    const file = data.get("file")
-    const userId = data.get("userId")
-    if (
-        !(file instanceof File) ||
-        typeof userId !== "string" ||
-        userId.length === 0
-    ) {
-        throw new Error("Missing file or userId")
-    }
-    return { file, userId }
-}
+import type { z } from "zod"
 
 export type UserSession = SessionWithImpersonatedBy
+export type ListedUser = UserWithRole & { twoFactorEnabled?: boolean }
 
-function headers() {
-    return Object.fromEntries(Object.entries(getRequestHeaders()))
+export async function listUsers() {
+    const { data, error } = await authClient.admin.listUsers({
+        query: {
+            limit: 100,
+            sortBy: "createdAt",
+            sortDirection: "desc",
+        },
+    })
+    if (error) throw new Error(error.message ?? "Could not list users")
+    return {
+        users: data?.users ?? [],
+        total: data?.total ?? 0,
+    }
 }
 
-export const listUsers = createServerFn({ method: "GET" })
-    .handler(async () => {
-        const { data, error } = await authClient.admin.listUsers({
-            query: {
-                limit: 100,
-                sortBy: "createdAt",
-                sortDirection: "desc",
-            }
-        })
-        if (error) throw new Error(error.message ?? "Could not list users")
-        return {
-            users: data?.users ?? [],
-            total: data?.total ?? 0
-        }
-    })
-
-export type ListedUser = UserWithRole & { twoFactorEnabled?: boolean }
-export const getUserDetail = createServerFn({ method: "GET" })
-    .validator(userIdSchema)
-    .handler(async ({ data }) => {
-        const h = headers()
-        const [
-            { data: user, error: userError },
-            { data: sessionData, error: sessionError },
-            { data: accountData, error: accountError },
-        ] = await Promise.all([
-            authClient.admin.getUser({
-                query: { id: data.userId },
-                fetchOptions: { headers: h },
-            }),
-            authClient.admin.listUserSessions({
-                userId: data.userId,
-                fetchOptions: { headers: h },
-            }),
-            authClient.admin.listAccounts({
-                query: { userId: data.userId },
-                fetchOptions: { headers: h },
-            }),
-        ])
-        const error = userError ?? sessionError ?? accountError
-        if (error) throw new Error(error.message ?? "Could not load user")
-        return {
-            user: user as ListedUser,
-            sessions: sessionData?.sessions ?? [],
-            accounts: accountData?.accounts ?? [],
-        }
-    })
-
-export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>
 export type UsersListData = Awaited<ReturnType<typeof listUsers>>
 
-export const createUser = createServerFn({ method: "POST" })
-    .validator(createUserSchema)
-    .handler(async ({ data }) => {
-        const h = headers()
-        const { data: created, error } = await authClient.admin.createUser({
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            role: data.role,
-            fetchOptions: { headers: h },
-        })
-        if (error || !created) {
-            throw new Error(error?.message ?? "Could not create user")
-        }
-        if (!created.user.emailVerified) {
-            await authClient
-                .sendVerificationEmail({
-                    email: data.email,
-                    callbackURL: getRequestUrl().origin,
-                    fetchOptions: { headers: h },
-                })
-                .catch(() => { })
-        }
-        return created.user
-    })
+export async function getUserDetail(userId: string) {
+    const [
+        { data: user, error: userError },
+        { data: sessionData, error: sessionError },
+        { data: accountData, error: accountError },
+    ] = await Promise.all([
+        authClient.admin.getUser({ query: { id: userId } }),
+        authClient.admin.listUserSessions({ userId }),
+        authClient.admin.listAccounts({ query: { userId } }),
+    ])
+    const error = userError ?? sessionError ?? accountError
+    if (error) throw new Error(error.message ?? "Could not load user")
+    return {
+        user: user as ListedUser,
+        sessions: sessionData?.sessions ?? [],
+        accounts: accountData?.accounts ?? [],
+    }
+}
 
-export const removeUser = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
-    .validator(userIdSchema)
-    .handler(async ({ data, context: { sessions } }) => {
-        if (data.userId === sessions.user.id) {
-            throw new Error("You can't remove your own account")
-        }
-        const { data: result } = await authClient.admin.removeUser({
-            userId: data.userId,
-            fetchOptions: { headers: headers() },
-        })
-        return result
-    })
+export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>
 
-export const updateUser = createServerFn({ method: "POST" })
-    .validator(updateUserDetailsSchema)
-    .handler(async ({ data }) => {
-        const { data: user } = await authClient.admin.updateUser({
-            userId: data.userId,
-            data: {
-                ...(data.name !== undefined && { name: data.name }),
-                ...(data.email !== undefined && { email: data.email }),
-            },
-            fetchOptions: { headers: headers() },
-        })
-        return user
+export async function createUser(input: z.infer<typeof createUserSchema>) {
+    const { data: created, error } = await authClient.admin.createUser({
+        name: input.name,
+        email: input.email,
+        password: input.password,
+        role: input.role,
     })
+    if (error || !created) {
+        throw new Error(error?.message ?? "Could not create user")
+    }
+    if (!created.user.emailVerified) {
+        await authClient
+            .sendVerificationEmail({
+                email: input.email,
+                callbackURL: window.location.origin,
+            })
+            .catch(() => { })
+    }
+    return created.user
+}
 
-export const setUserRole = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
-    .validator(setUserRoleSchema)
-    .handler(async ({ data, context: { sessions } }) => {
-        if (data.userId === sessions.user.id) {
-            throw new Error("You can't change your own role here")
-        }
-        const { data: result } = await authClient.admin.setRole({
-            userId: data.userId,
-            role: data.role,
-            fetchOptions: { headers: headers() },
-        })
-        return result?.user
-    })
+export async function removeUser(userId: string) {
+    const { data } = await authClient.admin.removeUser({ userId })
+    return data
+}
 
-export const setUserPassword = createServerFn({ method: "POST" })
-    .validator(setUserPasswordSchema)
-    .handler(async ({ data }) => {
-        const { data: result } = await authClient.admin.setUserPassword({
-            userId: data.userId,
-            newPassword: data.newPassword,
-            fetchOptions: { headers: headers() },
-        })
-        return result
+export async function updateUser(
+    input: z.infer<typeof updateUserDetailsSchema>
+) {
+    const { data } = await authClient.admin.updateUser({
+        userId: input.userId,
+        data: {
+            ...(input.name !== undefined && { name: input.name }),
+            ...(input.email !== undefined && { email: input.email }),
+        },
     })
+    return data
+}
 
-export const banUser = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
-    .validator(banUserSchema)
-    .handler(async ({ data, context: { sessions } }) => {
-        if (data.userId === sessions.user.id) {
-            throw new Error("You can't ban your own account")
-        }
-        const { data: result } = await authClient.admin.banUser({
-            userId: data.userId,
-            banReason: data.banReason,
-            banExpiresIn: data.banExpiresIn,
-            fetchOptions: { headers: headers() },
-        })
-        return result?.user
+export async function setUserRole(input: z.infer<typeof setUserRoleSchema>) {
+    const { data } = await authClient.admin.setRole({
+        userId: input.userId,
+        role: input.role,
     })
+    return data?.user
+}
 
-export const unbanUser = createServerFn({ method: "POST" })
-    .validator(userIdSchema)
-    .handler(async ({ data }) => {
-        const { data: result } = await authClient.admin.unbanUser({
-            userId: data.userId,
-            fetchOptions: { headers: headers() },
-        })
-        return result?.user
+export async function setUserPassword(
+    input: z.infer<typeof setUserPasswordSchema>
+) {
+    const { data } = await authClient.admin.setUserPassword({
+        userId: input.userId,
+        newPassword: input.newPassword,
     })
+    return data
+}
 
-export const revokeUserSession = createServerFn({ method: "POST" })
-    .validator(revokeUserSessionSchema)
-    .handler(async ({ data }) => {
-        const { data: result } = await authClient.admin.revokeUserSession({
-            sessionToken: data.sessionToken,
-            fetchOptions: { headers: headers() },
-        })
-        return result
+export async function banUser(input: z.infer<typeof banUserSchema>) {
+    const { data } = await authClient.admin.banUser({
+        userId: input.userId,
+        banReason: input.banReason,
+        banExpiresIn: input.banExpiresIn,
     })
+    return data?.user
+}
 
-export const revokeUserSessions = createServerFn({ method: "POST" })
-    .validator(userIdSchema)
-    .handler(async ({ data }) => {
-        const { data: result } = await authClient.admin.revokeUserSessions({
-            userId: data.userId,
-            fetchOptions: { headers: headers() },
-        })
-        return result
-    })
+export async function unbanUser(userId: string) {
+    const { data } = await authClient.admin.unbanUser({ userId })
+    return data?.user
+}
 
-export const impersonateUser = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
-    .validator(userIdSchema)
-    .handler(async ({ data, context: { sessions } }) => {
-        if (data.userId === sessions.user.id) {
-            throw new Error("You can't impersonate your own account")
-        }
-        await authClient.admin.impersonateUser({
-            userId: data.userId,
-            fetchOptions: {
-                headers: headers(),
-                onResponse: (ctx: { response: Response }) =>
-                    forwardAuthHeaders(ctx.response.headers),
-            },
-        })
+export async function revokeUserSession(sessionToken: string) {
+    const { data } = await authClient.admin.revokeUserSession({
+        sessionToken,
     })
+    return data
+}
 
-export const stopImpersonating = createServerFn({ method: "POST" })
-    .handler(async () => {
-        await authClient.admin.stopImpersonating({
-            fetchOptions: {
-                headers: headers(),
-                onResponse: (ctx: { response: Response }) =>
-                    forwardAuthHeaders(ctx.response.headers),
-            },
-        })
-    })
+export async function revokeUserSessions(userId: string) {
+    const { data } = await authClient.admin.revokeUserSessions({ userId })
+    return data
+}
 
-export const uploadUserImage = createServerFn({ method: "POST" })
-    .validator(readImageUpload)
-    .handler(async (): Promise<{ url: string }> => {
-        throw new Error(
-            "uploadUserImage is no longer supported: admins can't set another user's avatar (self-service only, via api/'s /assets/avatar route)"
-        )
-    })
+export async function impersonateUser(userId: string) {
+    await authClient.admin.impersonateUser({ userId })
+}
 
-export const disableUserTwoFactor = createServerFn({ method: "POST" })
-    .validator(userIdSchema)
-    .handler(async (): Promise<{ success: true }> => {
-        throw new Error(
-            "disableUserTwoFactor is not yet available: it needs a dedicated api/ endpoint (was raw internalAdapter access, no client equivalent)"
-        )
+export async function stopImpersonating() {
+    await authClient.admin.stopImpersonating()
+}
+
+export async function uploadUserImage(
+    _formData: FormData
+): Promise<{ url: string }> {
+    throw new Error(
+        "uploadUserImage is no longer supported: admins can't set another user's avatar (self-service only, via api/'s /assets/avatar route)"
+    )
+}
+
+export async function uploadOwnAvatar(file: File): Promise<{ url: string }> {
+    const formData = new FormData()
+    formData.set("file", file)
+    const res = await fetch(`${apiUrl()}/api/assets/avatar`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
     })
+    if (!res.ok) {
+        const body = await res.text().catch(() => "")
+        throw new Error(`Could not upload avatar (${res.status}): ${body}`)
+    }
+    return await res.json()
+}
+
+export async function disableUserTwoFactor(
+    _userId: string
+): Promise<{ success: true }> {
+    throw new Error(
+        "disableUserTwoFactor is not yet available: it needs a dedicated api/ endpoint (was raw internalAdapter access, no client equivalent)"
+    )
+}

@@ -1,24 +1,12 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import {
-    paymentConfigOptions,
-    paymentsOptions,
-    usePayments,
-    walletBalancesOptions,
-} from "@/domains/payments"
+import { usePayments } from "@/domains/payments"
 import type { ListedPayment } from "@/domains/payments"
 import { Button } from "@infra/ui/components/button"
 import { ListPayments, Payment } from "@/domains/payments"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/billing/")({
-    loader: async ({ context: { q } }) => {
-        await Promise.all([
-            q.ensureQueryData(paymentsOptions()),
-            q.ensureQueryData(paymentConfigOptions()),
-            q.ensureQueryData(walletBalancesOptions({ currency: "UGX" })),
-        ])
-    },
     component: RouteComponent,
 })
 

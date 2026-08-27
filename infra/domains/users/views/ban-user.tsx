@@ -23,10 +23,11 @@ const BAN_DURATIONS = [
 
 export type BanUserProps = {
     viewUser: UserDetail
+    currentUserId: string
 }
 
-export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
-    const { mutateAsync: banUser } = useBanUser()
+export const BanUser: FC<BanUserProps> = ({ viewUser, currentUserId }) => {
+    const { mutateAsync: banUser } = useBanUser(currentUserId)
     const { mutateAsync: unbanUser } = useUnbanUser()
     const [banReason, setBanReason] = useState("")
     const [banDuration, setBanDuration] = useState<string>("permanent")
@@ -34,11 +35,9 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
     async function handleBan() {
         const duration = BAN_DURATIONS.find((d) => d.id === banDuration)
         await banUser({
-            data: {
-                userId: viewUser.user.id,
-                banReason: banReason.trim() || undefined,
-                banExpiresIn: duration?.seconds,
-            },
+            userId: viewUser.user.id,
+            banReason: banReason.trim() || undefined,
+            banExpiresIn: duration?.seconds,
         })
         setBanReason("")
         setBanDuration("permanent")
@@ -63,9 +62,7 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                         type="button"
                         variant="outline"
                         onClick={() =>
-                            void unbanUser({
-                                data: { userId: viewUser.user.id },
-                            })
+                            void unbanUser(viewUser.user.id)
                         }
                     >
                         Unban

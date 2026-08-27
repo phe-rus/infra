@@ -20,7 +20,7 @@ function RouteComponent() {
         defaultValues: { email: "" } as z.input<typeof forgotPasswordSchema>,
         validators: { onChange: forgotPasswordSchema },
         onSubmit: async ({ value }) => {
-            await requestPasswordReset({ data: { email: value.email } })
+            await requestPasswordReset({ email: value.email })
         },
     })
 

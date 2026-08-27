@@ -1,5 +1,7 @@
 import defineHandler from "./utils/defineHandler"
 import { assetsRoute } from "./routes/assets"
+import { consoleRoute } from "./routes/console"
+import { paymentsRoute } from "./routes/payments"
 import { auth } from "./auth/auth"
 
 const authRoutes = defineHandler()
@@ -31,6 +33,8 @@ const cdnRoute = defineHandler()
 export const apiRoute = defineHandler()
     .route("/auth", authRoutes)
     .route("/assets", assetsRoute)
+    .route("/console", consoleRoute)
+    .route("/payments", paymentsRoute)
     .route('/cdn', cdnRoute)
     .get('/first-user', async (c) => {
         const count = await (await auth.$context).adapter.count({

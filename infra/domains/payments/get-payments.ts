@@ -13,7 +13,7 @@ export const paymentsOptions = (
 ) =>
     queryOptions({
         queryKey: ["payments", filters],
-        queryFn: () => listPayments({ data: filters }),
+        queryFn: () => listPayments(filters),
     })
 
 export const paymentConfigOptions = () =>
@@ -27,12 +27,12 @@ export const walletBalancesOptions = (
 ) =>
     queryOptions({
         queryKey: ["payments", "balances", filters],
-        queryFn: () => getWalletBalances({ data: filters }),
+        queryFn: () => getWalletBalances(filters),
         placeholderData: keepPreviousData,
     })
 
 export const paymentOptions = (paymentId: string) =>
     queryOptions({
         queryKey: ["payments", "detail", paymentId],
-        queryFn: () => findPayment({ data: { paymentId } }),
+        queryFn: () => findPayment(paymentId),
     })

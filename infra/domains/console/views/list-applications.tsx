@@ -92,12 +92,18 @@ export const ListApplications: FC<ListApplicationsProps> = ({
             {
                 accessorKey: "createdAt",
                 header: "Created",
-                cell: ({ row }) => formatUtc(row.original.createdAt, "PPP"),
+                cell: ({ row }) =>
+                    row.original.createdAt
+                        ? formatUtc(row.original.createdAt, "PPP")
+                        : "—",
             },
             {
                 accessorKey: "updatedAt",
                 header: "Updated",
-                cell: ({ row }) => formatUtc(row.original.updatedAt, "PPP"),
+                cell: ({ row }) =>
+                    row.original.updatedAt
+                        ? formatUtc(row.original.updatedAt, "PPP")
+                        : "—",
             },
             {
                 id: "actions",

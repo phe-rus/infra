@@ -8,17 +8,29 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@infra/ui/components/avatar"
-import { useUpdateUserDetails, useUploadUserImage } from "@/domains/users"
+import {
+    useUpdateUserDetails,
+    useUploadOwnAvatar,
+    useUploadUserImage,
+} from "@/domains/users"
 import type { UserDetail } from "@/domains/users"
 
 export type UpdateUserProps = {
     viewUser: UserDetail
+    currentUserId: string
 }
 
-export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
+export const UpdateUser: FC<UpdateUserProps> = ({
+    viewUser,
+    currentUserId,
+}) => {
+    const isSelf = viewUser.user.id === currentUserId
     const { mutateAsync: updateUserDetails } = useUpdateUserDetails()
-    const { mutateAsync: uploadUserImage, isPending: isUploadingImage } =
+    const { mutateAsync: uploadUserImage, isPending: isUploadingOther } =
         useUploadUserImage()
+    const { mutateAsync: uploadOwnAvatar, isPending: isUploadingOwn } =
+        useUploadOwnAvatar()
+    const isUploadingImage = isSelf ? isUploadingOwn : isUploadingOther
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [editName, setEditName] = useState(viewUser.user.name)
     const [editEmail, setEditEmail] = useState(viewUser.user.email)
@@ -32,21 +44,23 @@ export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
         const file = e.target.files?.[0]
         e.target.value = ""
         if (!file) return
+        if (isSelf) {
+            await uploadOwnAvatar(file)
+            return
+        }
         const formData = new FormData()
         formData.set("file", file)
         formData.set("userId", viewUser.user.id)
-        await uploadUserImage({ data: formData })
+        await uploadUserImage(formData)
     }
 
     async function handleUpdateDetails() {
         const name = editName.trim()
         const email = editEmail.trim()
         await updateUserDetails({
-            data: {
-                userId: viewUser.user.id,
-                ...(name !== viewUser.user.name && { name }),
-                ...(email !== viewUser.user.email && { email }),
-            },
+            userId: viewUser.user.id,
+            ...(name !== viewUser.user.name && { name }),
+            ...(email !== viewUser.user.email && { email }),
         })
     }
 
@@ -56,9 +70,11 @@ export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
             <div className="flex items-center gap-3">
                 <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploadingImage}
-                    className="cursor-pointer disabled:opacity-50"
+                    onClick={() =>
+                        isSelf && fileInputRef.current?.click()
+                    }
+                    disabled={isUploadingImage || !isSelf}
+                    className={isSelf ? "cursor-pointer disabled:opacity-50" : ""}
                 >
                     <Avatar size="lg">
                         <AvatarImage
@@ -70,16 +86,22 @@ export const UpdateUser: FC<UpdateUserProps> = ({ viewUser }) => {
                         </AvatarFallback>
                     </Avatar>
                 </button>
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => void handleImageSelected(e)}
-                />
-                <span className="text-xs text-muted-foreground">
-                    {isUploadingImage ? "Uploading…" : "Click to change image"}
-                </span>
+                {isSelf && (
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => void handleImageSelected(e)}
+                    />
+                )}
+                {isSelf && (
+                    <span className="text-xs text-muted-foreground">
+                        {isUploadingImage
+                            ? "Uploading…"
+                            : "Click to change image"}
+                    </span>
+                )}
             </div>
             <Field>
                 <FieldLabel htmlFor="edit-user-name">Name</FieldLabel>

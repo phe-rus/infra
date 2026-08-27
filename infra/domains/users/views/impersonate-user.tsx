@@ -4,10 +4,14 @@ import { useImpersonateUser } from "@/domains/users"
 
 export type ImpersonateUserProps = {
     userId: string
+    currentUserId: string
 }
 
-export const ImpersonateUser: FC<ImpersonateUserProps> = ({ userId }) => {
-    const { mutateAsync: impersonateUser } = useImpersonateUser()
+export const ImpersonateUser: FC<ImpersonateUserProps> = ({
+    userId,
+    currentUserId,
+}) => {
+    const { mutateAsync: impersonateUser } = useImpersonateUser(currentUserId)
 
     return (
         <section className="flex flex-col gap-2">
@@ -19,7 +23,7 @@ export const ImpersonateUser: FC<ImpersonateUserProps> = ({ userId }) => {
             <Button
                 type="button"
                 variant="outline"
-                onClick={() => void impersonateUser({ data: { userId } })}
+                onClick={() => void impersonateUser(userId)}
             >
                 Impersonate
             </Button>
