@@ -1,4 +1,14 @@
+import { tanstackStartCookies } from "better-auth/tanstack-start"
+import { databaseHooks, isAdminTier } from "./core/permissions"
+import { createTrustedOrigins } from "./core/trusted-origins"
+import { oauthProvider } from "@better-auth/oauth-provider"
+import { listUserAccounts } from "./core/admin-accounts"
 import { betterAuth } from "better-auth/minimal"
+import { passkey } from "@better-auth/passkey"
+import { password } from "./config/password"
+import { env } from "cloudflare:workers"
+import { emailHooks } from "./emails"
+import { dbContext } from "../db"
 import {
     admin,
     jwt,
@@ -6,22 +16,12 @@ import {
     haveIBeenPwned,
     twoFactor,
 } from "better-auth/plugins"
-import { passkey } from "@better-auth/passkey"
-import { oauthProvider } from "@better-auth/oauth-provider"
-import { emailHooks } from "./emails"
-import { listUserAccounts } from "./core/admin-accounts"
-import { databaseHooks, isAdminTier } from "./core/permissions"
-import { createTrustedOrigins } from "./core/trusted-origins"
 import {
     createSecondaryStorage,
     createRateLimitStorage,
 } from "./core/storage"
-import { password } from "./config/password"
-import { env } from "cloudflare:workers"
-import { dbContext } from "../db"
 
 const isProduction = env.NODE_ENV === "production"
-
 export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
     appName: env.VITE_APPNAME,
@@ -175,5 +175,6 @@ export const auth = betterAuth({
             }),
         }),
         ...(isProduction ? [haveIBeenPwned()] : [openAPI({ path: "docs" })]),
+        tanstackStartCookies()
     ],
 })

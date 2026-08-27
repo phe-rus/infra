@@ -174,44 +174,6 @@ CREATE TABLE `passkey` (
 	CONSTRAINT `fk_passkey_userId_user_id_fk` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
 --> statement-breakpoint
-CREATE TABLE `payment` (
-	`id` text PRIMARY KEY,
-	`userId` text NOT NULL,
-	`clientId` text,
-	`type` text NOT NULL,
-	`provider` text,
-	`phoneNumber` text,
-	`amount` text NOT NULL,
-	`currency` text NOT NULL,
-	`rail` text DEFAULT 'pawapay' NOT NULL,
-	`pawapayReferenceId` text,
-	`status` text DEFAULT 'pending' NOT NULL,
-	`failureReason` text,
-	`metadata` text,
-	`createdAt` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	`updatedAt` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	CONSTRAINT `fk_payment_userId_user_id_fk` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE,
-	CONSTRAINT `fk_payment_clientId_oauthClient_clientId_fk` FOREIGN KEY (`clientId`) REFERENCES `oauthClient`(`clientId`) ON DELETE CASCADE
-);
---> statement-breakpoint
-CREATE TABLE `paymentIntent` (
-	`id` text PRIMARY KEY,
-	`clientId` text NOT NULL,
-	`userId` text NOT NULL,
-	`amount` text NOT NULL,
-	`currency` text NOT NULL,
-	`purpose` text,
-	`returnUrl` text NOT NULL,
-	`status` text DEFAULT 'created' NOT NULL,
-	`paymentId` text,
-	`failureReason` text,
-	`createdAt` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	`updatedAt` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	CONSTRAINT `fk_paymentIntent_clientId_oauthClient_clientId_fk` FOREIGN KEY (`clientId`) REFERENCES `oauthClient`(`clientId`) ON DELETE CASCADE,
-	CONSTRAINT `fk_paymentIntent_userId_user_id_fk` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE,
-	CONSTRAINT `fk_paymentIntent_paymentId_payment_id_fk` FOREIGN KEY (`paymentId`) REFERENCES `payment`(`id`) ON DELETE CASCADE
-);
---> statement-breakpoint
 CREATE TABLE `session` (
 	`id` text PRIMARY KEY,
 	`expiresAt` integer NOT NULL,
@@ -252,19 +214,6 @@ CREATE TABLE `user` (
 	`bio` text
 );
 --> statement-breakpoint
-CREATE TABLE `walletNumber` (
-	`id` text PRIMARY KEY,
-	`userId` text NOT NULL,
-	`phoneNumber` text NOT NULL,
-	`provider` text NOT NULL,
-	`label` text,
-	`status` text DEFAULT 'pending' NOT NULL,
-	`isPrimary` integer DEFAULT false NOT NULL,
-	`createdAt` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	`updatedAt` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
-	CONSTRAINT `fk_walletNumber_userId_user_id_fk` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE
-);
---> statement-breakpoint
 CREATE UNIQUE INDEX `account_issuer_accountId_uidx` ON `account` (`issuer`,`accountId`);--> statement-breakpoint
 CREATE INDEX `account_userId_idx` ON `account` (`userId`);--> statement-breakpoint
 CREATE INDEX `oauthAccessToken_clientId_idx` ON `oauthAccessToken` (`clientId`);--> statement-breakpoint
@@ -284,12 +233,6 @@ CREATE INDEX `oauthRefreshToken_userId_idx` ON `oauthRefreshToken` (`userId`);--
 CREATE INDEX `oauthRefreshToken_authorizationCodeId_idx` ON `oauthRefreshToken` (`authorizationCodeId`);--> statement-breakpoint
 CREATE INDEX `passkey_userId_idx` ON `passkey` (`userId`);--> statement-breakpoint
 CREATE INDEX `passkey_credentialID_idx` ON `passkey` (`credentialID`);--> statement-breakpoint
-CREATE INDEX `payment_userId_idx` ON `payment` (`userId`);--> statement-breakpoint
-CREATE INDEX `payment_clientId_idx` ON `payment` (`clientId`);--> statement-breakpoint
-CREATE UNIQUE INDEX `payment_pawapayReferenceId_uidx` ON `payment` (`pawapayReferenceId`);--> statement-breakpoint
-CREATE INDEX `paymentIntent_clientId_idx` ON `paymentIntent` (`clientId`);--> statement-breakpoint
-CREATE INDEX `paymentIntent_userId_idx` ON `paymentIntent` (`userId`);--> statement-breakpoint
 CREATE INDEX `session_userId_idx` ON `session` (`userId`);--> statement-breakpoint
 CREATE INDEX `twoFactor_secret_idx` ON `twoFactor` (`secret`);--> statement-breakpoint
-CREATE INDEX `twoFactor_userId_idx` ON `twoFactor` (`userId`);--> statement-breakpoint
-CREATE INDEX `walletNumber_userId_idx` ON `walletNumber` (`userId`);
+CREATE INDEX `twoFactor_userId_idx` ON `twoFactor` (`userId`);

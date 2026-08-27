@@ -338,99 +338,6 @@ export const oauthClientAssertion = sqliteTable("oauthClientAssertion", {
   expiresAt: integer("expiresAt", { mode: "timestamp_ms" }).notNull(),
 });
 
-export const payment = sqliteTable(
-  "payment",
-  {
-    id: text("id").primaryKey(),
-    userId: text("userId")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    clientId: text("clientId").references(() => oauthClient.clientId, {
-      onDelete: "cascade",
-    }),
-    type: text("type").notNull(),
-    provider: text("provider"),
-    phoneNumber: text("phoneNumber"),
-    amount: text("amount").notNull(),
-    currency: text("currency").notNull(),
-    rail: text("rail").default("pawapay").notNull(),
-    pawapayReferenceId: text("pawapayReferenceId").unique(),
-    status: text("status").default("pending").notNull(),
-    failureReason: text("failureReason"),
-    metadata: text("metadata"),
-    createdAt: integer("createdAt", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .notNull(),
-    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .$onUpdate(() => new Date())
-      .notNull(),
-  },
-  (table) => [
-    index("payment_userId_idx").on(table.userId),
-    index("payment_clientId_idx").on(table.clientId),
-    uniqueIndex("payment_pawapayReferenceId_uidx").on(table.pawapayReferenceId),
-  ],
-);
-
-export const walletNumber = sqliteTable(
-  "walletNumber",
-  {
-    id: text("id").primaryKey(),
-    userId: text("userId")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    phoneNumber: text("phoneNumber").notNull(),
-    provider: text("provider").notNull(),
-    label: text("label"),
-    status: text("status").default("pending").notNull(),
-    isPrimary: integer("isPrimary", { mode: "boolean" })
-      .default(false)
-      .notNull(),
-    createdAt: integer("createdAt", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .notNull(),
-    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .$onUpdate(() => new Date())
-      .notNull(),
-  },
-  (table) => [index("walletNumber_userId_idx").on(table.userId)],
-);
-
-export const paymentIntent = sqliteTable(
-  "paymentIntent",
-  {
-    id: text("id").primaryKey(),
-    clientId: text("clientId")
-      .notNull()
-      .references(() => oauthClient.clientId, { onDelete: "cascade" }),
-    userId: text("userId")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    amount: text("amount").notNull(),
-    currency: text("currency").notNull(),
-    purpose: text("purpose"),
-    returnUrl: text("returnUrl").notNull(),
-    status: text("status").default("created").notNull(),
-    paymentId: text("paymentId").references(() => payment.id, {
-      onDelete: "cascade",
-    }),
-    failureReason: text("failureReason"),
-    createdAt: integer("createdAt", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .notNull(),
-    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .$onUpdate(() => new Date())
-      .notNull(),
-  },
-  (table) => [
-    index("paymentIntent_clientId_idx").on(table.clientId),
-    index("paymentIntent_userId_idx").on(table.userId),
-  ],
-);
-
 export const authRelations = defineRelationsPart(
   {
     user,
@@ -446,9 +353,6 @@ export const authRelations = defineRelationsPart(
     oauthAccessToken,
     oauthConsent,
     oauthClientAssertion,
-    payment,
-    walletNumber,
-    paymentIntent,
   },
   (r) => ({
     user: {
@@ -483,18 +387,6 @@ export const authRelations = defineRelationsPart(
       oauthConsents: r.many.oauthConsent({
         from: r.user.id,
         to: r.oauthConsent.userId,
-      }),
-      payments: r.many.payment({
-        from: r.user.id,
-        to: r.payment.userId,
-      }),
-      walletNumbers: r.many.walletNumber({
-        from: r.user.id,
-        to: r.walletNumber.userId,
-      }),
-      paymentIntents: r.many.paymentIntent({
-        from: r.user.id,
-        to: r.paymentIntent.userId,
       }),
     },
     session: {
@@ -549,14 +441,6 @@ export const authRelations = defineRelationsPart(
       oauthConsents: r.many.oauthConsent({
         from: r.oauthClient.clientId,
         to: r.oauthConsent.clientId,
-      }),
-      payments: r.many.payment({
-        from: r.oauthClient.clientId,
-        to: r.payment.clientId,
-      }),
-      paymentIntents: r.many.paymentIntent({
-        from: r.oauthClient.clientId,
-        to: r.paymentIntent.clientId,
       }),
     },
     oauthResource: {
@@ -619,40 +503,6 @@ export const authRelations = defineRelationsPart(
       user: r.one.user({
         from: r.oauthConsent.userId,
         to: r.user.id,
-      }),
-    },
-    payment: {
-      user: r.one.user({
-        from: r.payment.userId,
-        to: r.user.id,
-      }),
-      oauthClient: r.one.oauthClient({
-        from: r.payment.clientId,
-        to: r.oauthClient.clientId,
-      }),
-      paymentIntents: r.many.paymentIntent({
-        from: r.payment.id,
-        to: r.paymentIntent.paymentId,
-      }),
-    },
-    walletNumber: {
-      user: r.one.user({
-        from: r.walletNumber.userId,
-        to: r.user.id,
-      }),
-    },
-    paymentIntent: {
-      oauthClient: r.one.oauthClient({
-        from: r.paymentIntent.clientId,
-        to: r.oauthClient.clientId,
-      }),
-      user: r.one.user({
-        from: r.paymentIntent.userId,
-        to: r.user.id,
-      }),
-      payment: r.one.payment({
-        from: r.paymentIntent.paymentId,
-        to: r.payment.id,
       }),
     },
   }),

@@ -1,7 +1,7 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "f3733d19-7dac-431f-87e3-fd37d3d8696a",
+  "id": "4e4094cf-3514-49a3-a4ab-dbe3f3bd41c2",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -47,14 +47,6 @@
       "entityType": "tables"
     },
     {
-      "name": "payment",
-      "entityType": "tables"
-    },
-    {
-      "name": "paymentIntent",
-      "entityType": "tables"
-    },
-    {
       "name": "session",
       "entityType": "tables"
     },
@@ -64,10 +56,6 @@
     },
     {
       "name": "user",
-      "entityType": "tables"
-    },
-    {
-      "name": "walletNumber",
       "entityType": "tables"
     },
     {
@@ -1398,276 +1386,6 @@
       "generated": null,
       "name": "id",
       "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "userId",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "clientId",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "type",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "provider",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "phoneNumber",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "amount",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "currency",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "'pawapay'",
-      "generated": null,
-      "name": "rail",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "pawapayReferenceId",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "'pending'",
-      "generated": null,
-      "name": "status",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "failureReason",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "metadata",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
-      "generated": null,
-      "name": "createdAt",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
-      "generated": null,
-      "name": "updatedAt",
-      "entityType": "columns",
-      "table": "payment"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "id",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "clientId",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "userId",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "amount",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "currency",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "purpose",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "returnUrl",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "'created'",
-      "generated": null,
-      "name": "status",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "paymentId",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "failureReason",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
-      "generated": null,
-      "name": "createdAt",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
-      "generated": null,
-      "name": "updatedAt",
-      "entityType": "columns",
-      "table": "paymentIntent"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "id",
-      "entityType": "columns",
       "table": "session"
     },
     {
@@ -1951,96 +1669,6 @@
       "table": "user"
     },
     {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "id",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "userId",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "phoneNumber",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "provider",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "text",
-      "notNull": false,
-      "autoincrement": false,
-      "default": null,
-      "generated": null,
-      "name": "label",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "text",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "'pending'",
-      "generated": null,
-      "name": "status",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "false",
-      "generated": null,
-      "name": "isPrimary",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
-      "generated": null,
-      "name": "createdAt",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
-      "type": "integer",
-      "notNull": true,
-      "autoincrement": false,
-      "default": "(cast(unixepoch('subsecond') * 1000 as integer))",
-      "generated": null,
-      "name": "updatedAt",
-      "entityType": "columns",
-      "table": "walletNumber"
-    },
-    {
       "columns": [
         "userId"
       ],
@@ -2261,81 +1889,6 @@
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "nameExplicit": false,
-      "name": "fk_payment_userId_user_id_fk",
-      "entityType": "fks",
-      "table": "payment"
-    },
-    {
-      "columns": [
-        "clientId"
-      ],
-      "tableTo": "oauthClient",
-      "columnsTo": [
-        "clientId"
-      ],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": false,
-      "name": "fk_payment_clientId_oauthClient_clientId_fk",
-      "entityType": "fks",
-      "table": "payment"
-    },
-    {
-      "columns": [
-        "clientId"
-      ],
-      "tableTo": "oauthClient",
-      "columnsTo": [
-        "clientId"
-      ],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": false,
-      "name": "fk_paymentIntent_clientId_oauthClient_clientId_fk",
-      "entityType": "fks",
-      "table": "paymentIntent"
-    },
-    {
-      "columns": [
-        "userId"
-      ],
-      "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": false,
-      "name": "fk_paymentIntent_userId_user_id_fk",
-      "entityType": "fks",
-      "table": "paymentIntent"
-    },
-    {
-      "columns": [
-        "paymentId"
-      ],
-      "tableTo": "payment",
-      "columnsTo": [
-        "id"
-      ],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": false,
-      "name": "fk_paymentIntent_paymentId_payment_id_fk",
-      "entityType": "fks",
-      "table": "paymentIntent"
-    },
-    {
-      "columns": [
-        "userId"
-      ],
-      "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": false,
       "name": "fk_session_userId_user_id_fk",
       "entityType": "fks",
       "table": "session"
@@ -2354,21 +1907,6 @@
       "name": "fk_twoFactor_userId_user_id_fk",
       "entityType": "fks",
       "table": "twoFactor"
-    },
-    {
-      "columns": [
-        "userId"
-      ],
-      "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": false,
-      "name": "fk_walletNumber_userId_user_id_fk",
-      "entityType": "fks",
-      "table": "walletNumber"
     },
     {
       "columns": [
@@ -2465,24 +2003,6 @@
         "id"
       ],
       "nameExplicit": false,
-      "name": "payment_pk",
-      "table": "payment",
-      "entityType": "pks"
-    },
-    {
-      "columns": [
-        "id"
-      ],
-      "nameExplicit": false,
-      "name": "paymentIntent_pk",
-      "table": "paymentIntent",
-      "entityType": "pks"
-    },
-    {
-      "columns": [
-        "id"
-      ],
-      "nameExplicit": false,
       "name": "session_pk",
       "table": "session",
       "entityType": "pks"
@@ -2503,15 +2023,6 @@
       "nameExplicit": false,
       "name": "user_pk",
       "table": "user",
-      "entityType": "pks"
-    },
-    {
-      "columns": [
-        "id"
-      ],
-      "nameExplicit": false,
-      "name": "walletNumber_pk",
-      "table": "walletNumber",
       "entityType": "pks"
     },
     {
@@ -2798,76 +2309,6 @@
       "isUnique": false,
       "where": null,
       "origin": "manual",
-      "name": "payment_userId_idx",
-      "entityType": "indexes",
-      "table": "payment"
-    },
-    {
-      "columns": [
-        {
-          "value": "clientId",
-          "isExpression": false
-        }
-      ],
-      "isUnique": false,
-      "where": null,
-      "origin": "manual",
-      "name": "payment_clientId_idx",
-      "entityType": "indexes",
-      "table": "payment"
-    },
-    {
-      "columns": [
-        {
-          "value": "pawapayReferenceId",
-          "isExpression": false
-        }
-      ],
-      "isUnique": true,
-      "where": null,
-      "origin": "manual",
-      "name": "payment_pawapayReferenceId_uidx",
-      "entityType": "indexes",
-      "table": "payment"
-    },
-    {
-      "columns": [
-        {
-          "value": "clientId",
-          "isExpression": false
-        }
-      ],
-      "isUnique": false,
-      "where": null,
-      "origin": "manual",
-      "name": "paymentIntent_clientId_idx",
-      "entityType": "indexes",
-      "table": "paymentIntent"
-    },
-    {
-      "columns": [
-        {
-          "value": "userId",
-          "isExpression": false
-        }
-      ],
-      "isUnique": false,
-      "where": null,
-      "origin": "manual",
-      "name": "paymentIntent_userId_idx",
-      "entityType": "indexes",
-      "table": "paymentIntent"
-    },
-    {
-      "columns": [
-        {
-          "value": "userId",
-          "isExpression": false
-        }
-      ],
-      "isUnique": false,
-      "where": null,
-      "origin": "manual",
       "name": "session_userId_idx",
       "entityType": "indexes",
       "table": "session"
@@ -2899,20 +2340,6 @@
       "name": "twoFactor_userId_idx",
       "entityType": "indexes",
       "table": "twoFactor"
-    },
-    {
-      "columns": [
-        {
-          "value": "userId",
-          "isExpression": false
-        }
-      ],
-      "isUnique": false,
-      "where": null,
-      "origin": "manual",
-      "name": "walletNumber_userId_idx",
-      "entityType": "indexes",
-      "table": "walletNumber"
     },
     {
       "columns": [
