@@ -1,85 +1,31 @@
-import { Suspense, useState } from "react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { IconCardsFilled, IconInfoCircle } from "@tabler/icons-react"
+import { IconInfoCircle } from "@tabler/icons-react"
 import { cn } from "@infra/ui/lib/utils"
 import { buttonVariants } from "@infra/ui/components/button"
+import { statsOptions, useStats } from "@/domains/stats"
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@infra/ui/components/select"
-import { useStats } from "@/domains/stats"
-import {
+    consoleOptions,
     useConsole,
     CREATE_CLIENT_ID,
     ApplicationGrid,
 } from "@/domains/console"
-import { useWalletBalances } from "@/domains/payments"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { ContentView } from "@infra/ui/widgets/content-view"
-import { SectionLoader } from "@/components/section-loader"
-
-const PREFERRED_CURRENCIES = [
-    "UGX",
-    "USD",
-    "KES",
-    "ZMW",
-    "NGN",
-    "GHS",
-    "XAF",
-    "XOF",
-    "RWF",
-    "TZS",
-    "MWK",
-    "MZN",
-    "CDF",
-    "SLE",
-]
 
 export const Route = createFileRoute("/_workspace/")({
+    loader: async ({ context: { q } }) => {
+        await Promise.all([
+            q.ensureQueryData(statsOptions()),
+            q.ensureQueryData(consoleOptions()),
+        ])
+    },
     component: RouteComponent,
 })
 
-function StatsSection() {
-    const { data: stats } = useStats()
-    return (
-        <ContentView.Row className="mx-auto w-full justify-evenly gap-5 p-5">
-            <ContentView.Header heading="Monthly active users" p="Last 30 days">
-                <h1>{stats.monthlyActiveUsers}</h1>
-            </ContentView.Header>
-            <ContentView.Divider />
-            <ContentView.Header heading="Total users" p="Current">
-                <h1>{stats.totalUsers}</h1>
-            </ContentView.Header>
-        </ContentView.Row>
-    )
-}
-
-function AppsSection() {
-    const { data: apps } = useConsole()
-    return <ApplicationGrid data={apps} />
-}
-
-function WalletSection({ currency }: { currency: string }) {
-    const { data: wallet } = useWalletBalances({ currency })
-    if (!wallet?.total) return null
-    return (
-        <ContentView.P>
-            <ContentView.Span>
-                {wallet.total.amount.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                })}{" "}
-            </ContentView.Span>
-            <ContentView.Sub>{wallet.total.currency}</ContentView.Sub>
-        </ContentView.P>
-    )
-}
-
 function RouteComponent() {
     const { session } = Route.useRouteContext()
-    const [currency, setCurrency] = useState("UGX")
+    const { data: stats } = useStats()
+    const { data: apps } = useConsole()
 
     return (
         <ViewController
@@ -108,9 +54,18 @@ function RouteComponent() {
             <ContentView.Section>
                 <ContentView.H1>Your business</ContentView.H1>
                 <ContentView variant="elevated">
-                    <Suspense fallback={<SectionLoader />}>
-                        <StatsSection />
-                    </Suspense>
+                    <ContentView.Row className="mx-auto w-full justify-evenly gap-5 p-5">
+                        <ContentView.Header
+                            heading="Monthly active users"
+                            p="Last 30 days"
+                        >
+                            <h1>{stats.monthlyActiveUsers}</h1>
+                        </ContentView.Header>
+                        <ContentView.Divider />
+                        <ContentView.Header heading="Total users" p="Current">
+                            <h1>{stats.totalUsers}</h1>
+                        </ContentView.Header>
+                    </ContentView.Row>
                 </ContentView>
             </ContentView.Section>
 
@@ -125,54 +80,8 @@ function RouteComponent() {
                         Add application
                     </Link>
                 </ContentView.Row>
-                <Suspense fallback={<SectionLoader />}>
-                    <AppsSection />
-                </Suspense>
+                <ApplicationGrid data={apps} />
             </ContentView.Section>
-
-            <ContentView
-                variant="elevated"
-                className="relative flex flex-col px-10 py-5"
-            >
-                <IconCardsFilled className="size-18" />
-                <ContentView.Row className="justify-between gap-3">
-                    <h1 className="tracking-tight">Wallet balance</h1>
-                </ContentView.Row>
-                <Suspense fallback={<SectionLoader />}>
-                    <WalletSection currency={currency} />
-                </Suspense>
-                <Select
-                    aria-label="Preferred currency"
-                    value={currency}
-                    onChange={(key) => setCurrency(String(key))}
-                >
-                    <SelectTrigger
-                        size="sm"
-                        className={cn(
-                            "w-38 rounded-full! bg-input!",
-                            "border-0 absolute top-5 right-5"
-                        )}
-                    >
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent
-                        className={cn(
-                            "max-h-40! rounded-md! px-1! *:no-scrollbar!",
-                            "pt-1 pb-20!"
-                        )}
-                    >
-                        {PREFERRED_CURRENCIES.map((code) => (
-                            <SelectItem
-                                key={code}
-                                id={code}
-                                className="rounded-full!"
-                            >
-                                {code}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </ContentView>
         </ViewController>
     )
 }

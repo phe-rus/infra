@@ -16,7 +16,6 @@ import {
     IconLogs,
     IconMessage2,
     IconMeteorFilled,
-    IconMoneybag,
     IconPackage,
     IconSettings,
     IconTerminal,
@@ -63,11 +62,6 @@ const navLists = [
         label: "Messaging",
         path: "/messaging",
         Icon: IconMessage2,
-    },
-    {
-        label: "Billing",
-        path: "/billing",
-        Icon: IconMoneybag,
     },
     {
         label: "System",

@@ -1,31 +1,29 @@
-import { authClient } from "@/lib/auth-client"
+import { createServerFn } from "@tanstack/react-start"
+import { getRequestHeaders } from "@tanstack/react-start/server"
+import { auth } from "@/auth"
+import { AdminMiddleware } from "@/middleware"
 
 const ACTIVE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000
 
-export async function getStats() {
-    const cutoff = new Date(Date.now() - ACTIVE_WINDOW_MS).toISOString()
-    const [
-        { data: totals, error: totalsError },
-        { data: monthly, error: monthlyError },
-    ] = await Promise.all([
-        authClient.admin.listUsers({
-            query: { limit: 1 },
-        }),
-        authClient.admin.listUsers({
-            query: {
-                limit: 1,
-                filterField: "updatedAt",
-                filterOperator: "gte",
-                filterValue: cutoff,
-            },
-        }),
-    ])
-    const error = totalsError ?? monthlyError
-    if (error) throw new Error(error.message ?? "Could not load stats")
-    return {
-        totalUsers: totals?.total ?? 0,
-        monthlyActiveUsers: monthly?.total ?? 0,
-    }
-}
+export const getStats = createServerFn({ method: "GET" })
+    .middleware([AdminMiddleware])
+    .handler(async () => {
+        const headers = getRequestHeaders()
+        const cutoff = new Date(Date.now() - ACTIVE_WINDOW_MS).toISOString()
+        const [{ total: totalUsers }, { total: monthlyActiveUsers }] =
+            await Promise.all([
+                auth.api.listUsers({ headers, query: { limit: 1 } }),
+                auth.api.listUsers({
+                    headers,
+                    query: {
+                        limit: 1,
+                        filterField: "updatedAt",
+                        filterOperator: "gte",
+                        filterValue: cutoff,
+                    },
+                }),
+            ])
+        return { totalUsers, monthlyActiveUsers }
+    })
 
 export type StatsData = Awaited<ReturnType<typeof getStats>>
