@@ -20,11 +20,15 @@ export function createTrustedOrigins(
     trustedOrigins: string,
     fallbackOrigin: string
 ) {
-    return async (request: Request | undefined): Promise<string[]> => {
-        const origin = request?.headers.get("origin") ?? ""
-        if (!origin) return [fallbackOrigin]
-        return isTrustedOrigin(origin, trustedOrigins)
-            ? [origin]
-            : [fallbackOrigin]
-    }
+    const suffixes = trustedOrigins
+        .split(",")
+        .map((suffix) => suffix.trim())
+        .filter(Boolean)
+    const patterns = suffixes.flatMap((suffix) => [
+        `http://${suffix}:*`,
+        `http://*.${suffix}:*`,
+        `https://${suffix}`,
+        `https://*.${suffix}`,
+    ])
+    return async (): Promise<string[]> => [...patterns, fallbackOrigin]
 }

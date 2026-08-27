@@ -4,7 +4,7 @@ import {
     Scripts,
     createRootRouteWithContext,
 } from "@tanstack/react-router"
-import { meOptions } from "@/domains/auth"
+import { meOptions, setupOptions } from "@/domains/auth"
 import { ToasterProvider } from "@infra/ui/components/sonner"
 import type { QueryClient } from "@tanstack/react-query"
 import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
@@ -42,8 +42,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     }),
     beforeLoad: async ({ context }) => {
         const session = await context.q.ensureQueryData(meOptions())
+        const { hasAdmin } = await context.q.ensureQueryData(setupOptions())
         return {
             session: session,
+            hasAdmin: hasAdmin,
         }
     },
     pendingComponent: DefaultLoader,

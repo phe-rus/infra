@@ -1,17 +1,19 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import * as z from "zod"
-import { auth } from "@/auth"
-import { forwardAuthHeaders } from "@/lib/forward-headers"
+import { authClient } from "@/lib/auth-client"
 import { AdminMiddleware, SessionMiddleware } from "@/middleware"
 import {
     listPaymentsSchema,
     payoutSchema,
     refundSchema,
     walletBalancesSchema,
-    PAYMENT_SELECT,
 } from "./types"
 import type { PaymentRow, UserStub } from "./types"
+
+function headers() {
+    return Object.fromEntries(Object.entries(getRequestHeaders()))
+}
 
 function toPayment(row: PaymentRow, user?: Pick<UserStub, "name" | "email">) {
     return {
@@ -34,132 +36,57 @@ function toPayment(row: PaymentRow, user?: Pick<UserStub, "name" | "email">) {
     }
 }
 
+export type ListedPayment = ReturnType<typeof toPayment>
+
 export const listPayments = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(listPaymentsSchema)
-    .handler(async ({ data }) => {
-        const ctx = await auth.$context
-        const rows = await ctx.adapter.findMany<PaymentRow>({
-            model: "payment",
-            where: [
-                ...(data.userId
-                    ? [{ field: "userId", value: data.userId }]
-                    : []),
-                ...(data.type ? [{ field: "type", value: data.type }] : []),
-                ...(data.status
-                    ? [{ field: "status", value: data.status }]
-                    : []),
-            ],
-            sortBy: { field: "createdAt", direction: "desc" },
-            select: [...PAYMENT_SELECT],
-        })
-
-        const userIds = [...new Set(rows.map((row) => row.userId))]
-        const users = userIds.length
-            ? await ctx.adapter.findMany<UserStub>({
-                  model: "user",
-                  where: [{ field: "id", operator: "in", value: userIds }],
-                  select: ["id", "name", "email"],
-              })
-            : []
-        const userById = new Map(users.map((user) => [user.id, user]))
-
-        return {
-            payments: rows.map((row) =>
-                toPayment(row, userById.get(row.userId))
-            ),
-        }
+    .handler(async (): Promise<{ payments: ListedPayment[] }> => {
+        throw new Error(
+            "listPayments is not yet available: it needs a dedicated api/ endpoint (was raw internalAdapter access, no client equivalent)"
+        )
     })
 
 export type PaymentListData = Awaited<ReturnType<typeof listPayments>>
-export type ListedPayment = PaymentListData["payments"][number]
-
-function parseOriginalPaymentId(metadata: string | null): string | null {
-    if (!metadata) return null
-    try {
-        const parsed = JSON.parse(metadata) as { originalPaymentId?: string }
-        return parsed.originalPaymentId ?? null
-    } catch {
-        return null
-    }
-}
 
 export const findPayment = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(z.object({ paymentId: z.string().min(1) }))
-    .handler(async ({ data }) => {
-        const ctx = await auth.$context
-        const row = await ctx.adapter.findOne<PaymentRow>({
-            model: "payment",
-            where: [{ field: "id", value: data.paymentId }],
-            select: [...PAYMENT_SELECT],
-        })
-        if (!row) return null
-
-        const user = await ctx.adapter.findOne<UserStub>({
-            model: "user",
-            where: [{ field: "id", value: row.userId }],
-            select: ["id", "name", "email"],
-        })
-        const payment = toPayment(row, user ?? undefined)
-
-        let relatedDeposit: ListedPayment | null = null
-        const originalPaymentId = parseOriginalPaymentId(row.metadata)
-        if (row.type === "refund" && originalPaymentId) {
-            const depositRow = await ctx.adapter.findOne<PaymentRow>({
-                model: "payment",
-                where: [{ field: "id", value: originalPaymentId }],
-                select: [...PAYMENT_SELECT],
-            })
-            if (depositRow) relatedDeposit = toPayment(depositRow)
+    .handler(
+        async (): Promise<{
+            payment: ListedPayment
+            relatedDeposit: ListedPayment | null
+            refunds: ListedPayment[]
+        } | null> => {
+            throw new Error(
+                "findPayment is not yet available: it needs a dedicated api/ endpoint (was raw internalAdapter access, no client equivalent)"
+            )
         }
-
-        let refunds: ListedPayment[] = []
-        if (row.type === "deposit") {
-            const refundStubs = await ctx.adapter.findMany<
-                Pick<PaymentRow, "id" | "metadata">
-            >({
-                model: "payment",
-                where: [{ field: "type", value: "refund" }],
-                select: ["id", "metadata"],
-            })
-            const matchingIds = refundStubs
-                .filter((r) => parseOriginalPaymentId(r.metadata) === row.id)
-                .map((r) => r.id)
-
-            const refundRows = matchingIds.length
-                ? await ctx.adapter.findMany<PaymentRow>({
-                      model: "payment",
-                      where: [
-                          { field: "id", operator: "in", value: matchingIds },
-                      ],
-                      select: [...PAYMENT_SELECT],
-                  })
-                : []
-            refunds = refundRows.map((r) => toPayment(r))
-        }
-
-        return { payment, relatedDeposit, refunds }
-    })
+    )
 
 export type PaymentDetail = Awaited<ReturnType<typeof findPayment>>
+
 export const getPaymentConfig = createServerFn({ method: "GET" })
     .middleware([SessionMiddleware])
     .handler(async () => {
-        const headers = getRequestHeaders()
-        const response = await auth.api.paymentConfig({ headers })
-        return response
+        const { data } = await authClient.pay.config({
+            fetchOptions: { headers: headers() },
+        })
+        return data
     })
 
 export type PaymentConfig = Awaited<ReturnType<typeof getPaymentConfig>>
-export type PaymentCountryOption = PaymentConfig["countries"][number]
+export type PaymentCountryOption = NonNullable<PaymentConfig>["countries"][number]
 export type PaymentProviderOption = PaymentCountryOption["providers"][number]
+
 export const getWalletBalances = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(walletBalancesSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const response = await auth.api.walletBalances({ headers, query: data })
+        const { data: response } = await authClient.pay.balances({
+            query: data,
+            fetchOptions: { headers: headers() },
+        })
         return response
     })
 
@@ -167,14 +94,10 @@ export const initiatePayout = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(payoutSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } =
-            await auth.api.payoutPayment({
-                headers,
-                returnHeaders: true,
-                body: data,
-            })
-        forwardAuthHeaders(responseHeaders)
+        const { data: response } = await authClient.pay.payout({
+            ...data,
+            fetchOptions: { headers: headers() },
+        })
         return response
     })
 
@@ -182,13 +105,9 @@ export const initiateRefund = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(refundSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } =
-            await auth.api.refundPayment({
-                headers,
-                returnHeaders: true,
-                body: data,
-            })
-        forwardAuthHeaders(responseHeaders)
+        const { data: response } = await authClient.pay.refund({
+            ...data,
+            fetchOptions: { headers: headers() },
+        })
         return response
     })

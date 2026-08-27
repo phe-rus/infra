@@ -10,6 +10,7 @@ import { withOrigin } from "@infra/r2/client"
 import { paymentClient } from "@infra/payprovider/client"
 import { proxiedImageSrc } from "@infra/tanstack-image"
 import { listUserAccountsClient } from "./admin-accounts-client"
+import { oauthAdminClient } from "./oauth-admin-client"
 
 export function apiUrl(): string {
     if (import.meta.env.VITE_API_URL) {
@@ -40,6 +41,7 @@ export const authClient = createAuthClient({
         }),
         adminClient(),
         listUserAccountsClient(),
+        oauthAdminClient(),
         twoFactorClient({
             twoFactorPage: "/two-factor",
         }),

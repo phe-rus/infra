@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { getSession, protectedSession } from "./func"
+import { getFirstUserStatus, getSession, protectedSession } from "./func"
 
 export const meOptions = () =>
     queryOptions({
@@ -11,4 +11,10 @@ export const protectedOptions = () =>
     queryOptions({
         queryKey: ["protected"],
         queryFn: protectedSession,
+    })
+
+export const setupOptions = () =>
+    queryOptions({
+        queryKey: ["setup"],
+        queryFn: getFirstUserStatus,
     })

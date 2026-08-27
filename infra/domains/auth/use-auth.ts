@@ -1,10 +1,16 @@
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
-import { requestPasswordReset, resetPassword, signIn, signOut } from "./func"
+import {
+    completeSetup,
+    requestPasswordReset,
+    resetPassword,
+    signIn,
+    signOut,
+} from "./func"
 import { useAppMutation } from "@infra/ui/hooks"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@infra/ui/components/sonner"
-import { meOptions } from "./get-auth"
+import { meOptions, setupOptions } from "./get-auth"
 
 export const useSignIn = () => {
     const router = useRouter()
@@ -58,6 +64,38 @@ export const useLogout = () => {
             }, 50)
         },
         errorMessage: "Sign out failed",
+    })
+}
+
+export const useCompleteSetup = () => {
+    const router = useRouter()
+    const q = getContext()
+    return useMutation({
+        mutationFn: completeSetup,
+        onSuccess: (data) => {
+            if (data.error) {
+                t.error("Setup failed", {
+                    description: data.error,
+                })
+                return
+            }
+            t.success("Account created", {
+                description: "Signed in as the first admin account.",
+            })
+            q.invalidateQueries(setupOptions())
+            setTimeout(() => {
+                router.navigate({
+                    to: "/",
+                    replace: true,
+                    reloadDocument: true,
+                })
+            }, 50)
+        },
+        onError: (error) => {
+            t.error("Setup failed", {
+                description: error.message,
+            })
+        },
     })
 }
 

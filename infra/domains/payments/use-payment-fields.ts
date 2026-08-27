@@ -4,7 +4,7 @@ import { usePaymentConfig } from "@/domains/payments"
 const DEFAULT_COUNTRY = "UGA"
 export function usePaymentFields() {
     const { data } = usePaymentConfig()
-    const countries = data.countries
+    const countries = data?.countries ?? []
     const defaultCountry: (typeof countries)[number] | undefined =
         countries.find((c) => c.country === DEFAULT_COUNTRY) ?? countries[0]
 

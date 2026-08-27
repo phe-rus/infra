@@ -120,7 +120,7 @@ function RouteComponent() {
                 <ContentView.Row className="justify-between gap-3">
                     <h1 className="tracking-tight">Wallet balance</h1>
                 </ContentView.Row>
-                {wallet.total && (
+                {wallet?.total && (
                     <ContentView.P>
                         <ContentView.Span>
                             {wallet.total.amount.toLocaleString(undefined, {

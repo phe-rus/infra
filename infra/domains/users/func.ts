@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start"
-import { getRequestHeaders } from "@tanstack/react-start/server"
+import { getRequestHeaders, getRequestUrl } from "@tanstack/react-start/server"
 import type {
     SessionWithImpersonatedBy,
     UserWithRole,
@@ -16,6 +16,23 @@ import {
     updateUserDetailsSchema,
     userIdSchema,
 } from "./types"
+import type { ImageUpload } from "./types"
+
+function readImageUpload(data: unknown): ImageUpload {
+    if (!(data instanceof FormData)) {
+        throw new Error("Expected FormData")
+    }
+    const file = data.get("file")
+    const userId = data.get("userId")
+    if (
+        !(file instanceof File) ||
+        typeof userId !== "string" ||
+        userId.length === 0
+    ) {
+        throw new Error("Missing file or userId")
+    }
+    return { file, userId }
+}
 
 export type UserSession = SessionWithImpersonatedBy
 
@@ -73,22 +90,26 @@ export const createUser = createServerFn({ method: "POST" })
     .validator(createUserSchema)
     .handler(async ({ data }) => {
         const h = headers()
-        const { data: created } = await authClient.admin.createUser({
+        const { data: created, error } = await authClient.admin.createUser({
             name: data.name,
             email: data.email,
             password: data.password,
             role: data.role,
             fetchOptions: { headers: h },
         })
-        if (created && !created.user.emailVerified) {
+        if (error || !created) {
+            throw new Error(error?.message ?? "Could not create user")
+        }
+        if (!created.user.emailVerified) {
             await authClient
                 .sendVerificationEmail({
                     email: data.email,
+                    callbackURL: getRequestUrl().origin,
                     fetchOptions: { headers: h },
                 })
                 .catch(() => {})
         }
-        return created?.user
+        return created.user
     })
 
 export const removeUser = createServerFn({ method: "POST" })
@@ -207,7 +228,8 @@ export const impersonateUser = createServerFn({ method: "POST" })
             userId: data.userId,
             fetchOptions: {
                 headers: headers(),
-                onResponse: (ctx) => forwardAuthHeaders(ctx.response.headers),
+                onResponse: (ctx: { response: Response }) =>
+                    forwardAuthHeaders(ctx.response.headers),
             },
         })
     })
@@ -218,7 +240,26 @@ export const stopImpersonating = createServerFn({
     await authClient.admin.stopImpersonating({
         fetchOptions: {
             headers: headers(),
-            onResponse: (ctx) => forwardAuthHeaders(ctx.response.headers),
+            onResponse: (ctx: { response: Response }) =>
+                forwardAuthHeaders(ctx.response.headers),
         },
     })
 })
+
+export const uploadUserImage = createServerFn({ method: "POST" })
+    .middleware([AdminMiddleware])
+    .validator(readImageUpload)
+    .handler(async (): Promise<{ url: string }> => {
+        throw new Error(
+            "uploadUserImage is no longer supported: admins can't set another user's avatar (self-service only, via api/'s /assets/avatar route)"
+        )
+    })
+
+export const disableUserTwoFactor = createServerFn({ method: "POST" })
+    .middleware([AdminMiddleware])
+    .validator(userIdSchema)
+    .handler(async (): Promise<{ success: true }> => {
+        throw new Error(
+            "disableUserTwoFactor is not yet available: it needs a dedicated api/ endpoint (was raw internalAdapter access, no client equivalent)"
+        )
+    })

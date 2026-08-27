@@ -4,7 +4,8 @@
     "license": "MIT",
     "type": "module",
     "exports": {
-        ".": "./src/runtime.ts"
+        ".": "./src/runtime.ts",
+        "./auth/admin-accounts": "./src/auth/core/admin-accounts.ts"
     },
     "scripts": {
         "dev": "wrangler dev --port=3000",
