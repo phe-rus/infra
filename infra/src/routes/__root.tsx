@@ -1,17 +1,17 @@
+import { meOptions, setupOptions } from "@/domains/auth"
+import { seo } from "@/lib/seo"
+import { ToasterProvider } from "@infra/ui/components/sonner"
+import { DefaultLoader } from "@infra/ui/defaults"
+import tailwind from "@infra/ui/globals.css?url"
+import { ThemeProvider } from "@infra/ui/theme"
+import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
+import type { QueryClient } from "@tanstack/react-query"
 import {
     HeadContent,
     Outlet,
     Scripts,
     createRootRouteWithContext,
 } from "@tanstack/react-router"
-import { meOptions, setupOptions } from "@/domains/auth"
-import { ToasterProvider } from "@infra/ui/components/sonner"
-import type { QueryClient } from "@tanstack/react-query"
-import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
-import tailwind from "@infra/ui/globals.css?url"
-import { ThemeProvider } from "@infra/ui/theme"
-import { seo } from "@/lib/seo"
-import { DefaultLoader } from "@infra/ui/defaults"
 
 export interface RouterAppContext {
     q: QueryClient
@@ -41,8 +41,14 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         ],
     }),
     beforeLoad: async ({ context }) => {
-        const session = await context.q.ensureQueryData(meOptions())
-        const { hasAdmin } = await context.q.ensureQueryData(setupOptions())
+        const session = await context.q.query({
+            ...meOptions(),
+            staleTime: 'static'
+        })
+        const { hasAdmin } = await context.q.query({
+            ...setupOptions(),
+            staleTime: 'static'
+        })
         return {
             session: session,
             hasAdmin: hasAdmin,

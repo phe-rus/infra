@@ -12,7 +12,7 @@ import { useState } from "react"
 
 export const Route = createFileRoute("/_workspace/users/")({
     loader: async ({ context: { q } }) => {
-        await q.ensureQueryData(usersOptions())
+        await q.query({ ...usersOptions(), staleTime: 'static' })
     },
     component: RouteComponent,
 })

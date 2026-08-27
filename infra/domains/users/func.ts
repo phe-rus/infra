@@ -343,6 +343,7 @@ export const uploadOwnAvatar = createServerFn({ method: "POST" })
                   )
                 : bytes
 
+        if (!sessions) throw new Error("Not authenticated")
         const userId = sessions.user.id
         const [usage, existingAvatarObjects] = await Promise.all([
             getUserUsageBytes(env.R2, userId),

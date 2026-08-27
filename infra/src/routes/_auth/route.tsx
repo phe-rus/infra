@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_auth")({
             })
         }
     },
-    component: RouteComponent,
+    component: RouteComponent
 })
 
 function RouteComponent() {

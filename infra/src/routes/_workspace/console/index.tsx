@@ -14,7 +14,7 @@ import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/console/")({
     loader: async ({ context: { q } }) => {
-        await q.ensureQueryData(consoleOptions())
+        await q.query({ ...consoleOptions(), staleTime: 'static' })
     },
     component: RouteComponent,
 })

@@ -1,20 +1,24 @@
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { setupSchema, useCompleteSetup } from "@/domains/auth"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { setupSchema, useCompleteSetup } from "@/domains/auth"
 import { ViewController } from "@infra/ui/widgets/view-controller"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import type { z } from "zod"
 
 export const Route = createFileRoute("/_auth/setup")({
     loader: async ({ context: { hasAdmin } }) => {
-        if (hasAdmin) throw redirect({ to: "/sign-in", replace: true })
+        if (hasAdmin) {
+            throw redirect({
+                to: "/sign-in",
+                replace: true
+            })
+        }
     },
     component: RouteComponent,
 })
 
 function RouteComponent() {
     const { mutateAsync: completeSetup } = useCompleteSetup()
-
     const form = useAppForm({
         defaultValues: {
             name: "",

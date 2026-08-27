@@ -200,7 +200,8 @@ export const useImpersonateUser = () => {
         successMessage: "Impersonating user",
         onSuccess: () => {
             q.clear()
-            setTimeout(() => {
+            setTimeout(async () => {
+                await router.invalidate()
                 router.navigate({ to: "/", replace: true })
             }, 50)
         },
@@ -216,8 +217,9 @@ export const useStopImpersonating = () => {
         successMessage: "Back to your account",
         onSuccess: () => {
             q.clear()
-            q.prefetchQuery(meOptions())
-            setTimeout(() => {
+            q.query(meOptions()).catch(() => {})
+            setTimeout(async () => {
+                await router.invalidate()
                 router.navigate({ to: "/", replace: true })
             }, 50)
         },

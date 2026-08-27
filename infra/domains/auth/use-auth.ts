@@ -31,8 +31,9 @@ export const useSignIn = () => {
                 window.location.href = data.redirectUri
                 return
             }
-            q.prefetchQuery(meOptions())
-            setTimeout(() => {
+            q.query(meOptions()).catch(() => {})
+            setTimeout(async () => {
+                await router.invalidate()
                 router.navigate({ to: "/", replace: true })
             }, 50)
         },
@@ -52,7 +53,8 @@ export const useLogout = () => {
         onSuccess: () => {
             q.invalidateQueries(meOptions())
             q.clear()
-            setTimeout(() => {
+            setTimeout(async () => {
+                await router.invalidate()
                 router.navigate({ to: "/sign-in", replace: true })
             }, 50)
         },

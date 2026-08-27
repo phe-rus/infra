@@ -15,8 +15,8 @@ import { ContentView } from "@infra/ui/widgets/content-view"
 export const Route = createFileRoute("/_workspace/")({
     loader: async ({ context: { q } }) => {
         await Promise.all([
-            q.ensureQueryData(statsOptions()),
-            q.ensureQueryData(consoleOptions()),
+            q.query({ ...statsOptions(), staleTime: 'static' }),
+            q.query({ ...consoleOptions(), staleTime: 'static' }),
         ])
     },
     component: RouteComponent,

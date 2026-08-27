@@ -4,7 +4,7 @@ import { APIError } from "better-auth/api"
 import { env } from "cloudflare:workers"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
-import { AdminMiddleware } from "@/middleware"
+import { AdminMiddleware, SessionMiddleware } from "@/middleware"
 import {
     forgotPasswordSchema,
     resetPasswordSchema,
@@ -18,15 +18,10 @@ function headers() {
 }
 
 export const getSession = createServerFn({ method: "GET" })
-    .handler(
-        async () => {
-            try {
-                return await auth.api.getSession({ headers: headers() })
-            } catch {
-                return null
-            }
-        }
-    )
+    .middleware([SessionMiddleware])
+    .handler(async ({ context }) => {
+        return context.sessions
+    })
 
 export const protectedSession = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])

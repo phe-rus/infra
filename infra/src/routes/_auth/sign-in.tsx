@@ -6,10 +6,16 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import type { z } from "zod"
 
 export const Route = createFileRoute("/_auth/sign-in")({
-    loader: async ({ context: { hasAdmin } }) => {
+    loader: async ({ context: { hasAdmin, session } }) => {
         if (!hasAdmin) {
             throw redirect({
                 to: "/setup",
+                replace: true
+            })
+        }
+        if (session) {
+            throw redirect({
+                to: "/",
                 replace: true
             })
         }
