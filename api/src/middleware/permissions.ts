@@ -4,16 +4,9 @@ import { auth } from "../auth"
 
 export const currentSession = createMiddleware<AppTypes>(
     async (c, next) => {
-        console.log(
-            "[currentSession]",
-            c.req.path,
-            "cookie:",
-            c.req.raw.headers.get("cookie")
-        )
         const session = await auth.api.getSession({
             headers: c.req.raw.headers,
         })
-
         if (!session) {
             c.set("user", null)
             c.set("session", null)
@@ -29,12 +22,6 @@ export const currentSession = createMiddleware<AppTypes>(
 
 export const protectedSession = createMiddleware<AppTypes>(
     async (c, next) => {
-        console.log(
-            "[protectedSession]",
-            c.req.path,
-            "cookie:",
-            c.req.raw.headers.get("cookie")
-        )
         const session = await auth.api.getSession({
             headers: c.req.raw.headers,
         })

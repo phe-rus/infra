@@ -1,18 +1,8 @@
 import defineHandler from "./utils/defineHandler"
 import { assetsRoute } from "./routes/assets"
 import { auth } from "./auth/auth"
-import { currentSession } from "./middleware"
 
 const authRoutes = defineHandler()
-    .get('/first-user', async (c) => {
-        const count = await (await auth.$context).adapter.count({
-            model: 'user',
-        })
-        if (count === 0) {
-            return c.json(false)
-        }
-        return c.json(true)
-    })
     .on(["POST", "GET"], "/*", (c) => {
         return auth.handler(c.req.raw)
     })
@@ -39,7 +29,15 @@ const cdnRoute = defineHandler()
     })
 
 export const apiRoute = defineHandler()
-    .use("*", currentSession)
     .route("/auth", authRoutes)
     .route("/assets", assetsRoute)
     .route('/cdn', cdnRoute)
+    .get('/first-user', async (c) => {
+        const count = await (await auth.$context).adapter.count({
+            model: 'user',
+        })
+        if (count === 0) {
+            return c.json(false)
+        }
+        return c.json(true)
+    })

@@ -16,38 +16,32 @@ function headers() {
     return Object.fromEntries(Object.entries(getRequestHeaders()))
 }
 
-export const getSession = createServerFn({
-    method: "GET",
-}).handler(async () => {
-    const { data } = await authClient.getSession({
-        fetchOptions: { headers: headers() },
+export const getSession = createServerFn({ method: "GET" })
+    .handler(async () => {
+        const { data } = await authClient.getSession({
+            fetchOptions: { headers: headers() },
+        })
+        return data
     })
-    return data
-})
 
-export const protectedSession = createServerFn({
-    method: "GET",
-})
+export const protectedSession = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async ({ context }) => {
         return context.sessions
     })
 
-export const getFirstUserStatus = createServerFn({
-    method: "GET",
-}).handler(async () => {
-    try {
-        const res = await rpc.api.auth["first-user"].$get()
-        const hasAdmin = await res.json()
-        return { hasAdmin }
-    } catch {
-        return { hasAdmin: false }
-    }
-})
+export const getFirstUserStatus = createServerFn({ method: "GET" })
+    .handler(async () => {
+        try {
+            const res = await rpc.api["first-user"].$get()
+            const hasAdmin = await res.json()
+            return { hasAdmin }
+        } catch {
+            return { hasAdmin: false }
+        }
+    })
 
-export const completeSetup = createServerFn({
-    method: "POST",
-})
+export const completeSetup = createServerFn({ method: "POST" })
     .validator(setupSchema)
     .handler(async ({ data }) => {
         const { error } = await authClient.signUp.email({
@@ -72,12 +66,7 @@ export const signIn = createServerFn({ method: "POST" })
             email: data.email,
             password: data.password,
             rememberMe: data.rememberMe,
-            callbackURL: getClientURL(),
-            fetchOptions: {
-                headers: headers(),
-                onResponse: (ctx: { response: Response }) =>
-                    forwardAuthHeaders(ctx.response.headers),
-            },
+            callbackURL: getClientURL()
         })
         if (error) {
             return { error: error.message ?? "Sign in failed", redirectUri: null }
@@ -88,21 +77,18 @@ export const signIn = createServerFn({ method: "POST" })
         return { error: null, redirectUri: redirectUri ?? null }
     })
 
-export const signOut = createServerFn({
-    method: "POST",
-}).handler(async () => {
-    await authClient.signOut({
-        fetchOptions: {
-            headers: headers(),
-            onResponse: (ctx: { response: Response }) =>
-                forwardAuthHeaders(ctx.response.headers),
-        },
+export const signOut = createServerFn({ method: "POST" })
+    .handler(async () => {
+        await authClient.signOut({
+            fetchOptions: {
+                headers: headers(),
+                onResponse: (ctx: { response: Response }) =>
+                    forwardAuthHeaders(ctx.response.headers),
+            },
+        })
     })
-})
 
-export const requestPasswordReset = createServerFn({
-    method: "POST",
-})
+export const requestPasswordReset = createServerFn({ method: "POST" })
     .validator(forgotPasswordSchema)
     .handler(async ({ data }) => {
         await authClient.requestPasswordReset({
@@ -115,9 +101,7 @@ export const requestPasswordReset = createServerFn({
         }
     })
 
-export const resetPassword = createServerFn({
-    method: "POST",
-})
+export const resetPassword = createServerFn({ method: "POST" })
     .validator(resetPasswordSchema)
     .handler(async ({ data }) => {
         const { error } = await authClient.resetPassword({

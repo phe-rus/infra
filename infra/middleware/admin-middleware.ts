@@ -3,8 +3,11 @@ import { redirect } from "@tanstack/react-router"
 import { authClient } from "@/lib/auth-client"
 
 export const AdminMiddleware = createMiddleware().server(async ({ next, request }) => {
-    const { data: sessions } = await authClient.getSession({
-        fetchOptions: { headers: request.headers },
+    const sessions = await authClient.getSession({
+        fetchOptions: {
+            headers: request.headers,
+            throw: true
+        }
     })
     if (!sessions) {
         throw redirect({
@@ -23,7 +26,7 @@ export const AdminMiddleware = createMiddleware().server(async ({ next, request 
     }
     return next({
         context: {
-            sessions,
-        },
+            sessions: sessions
+        }
     })
 })

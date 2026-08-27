@@ -41,23 +41,23 @@ function headers() {
 }
 
 export const listUsers = createServerFn({ method: "GET" })
-    .middleware([AdminMiddleware])
     .handler(async () => {
         const { data, error } = await authClient.admin.listUsers({
             query: {
                 limit: 100,
                 sortBy: "createdAt",
                 sortDirection: "desc",
-            },
-            fetchOptions: { headers: headers() },
+            }
         })
         if (error) throw new Error(error.message ?? "Could not list users")
-        return { users: data?.users ?? [], total: data?.total ?? 0 }
+        return {
+            users: data?.users ?? [],
+            total: data?.total ?? 0
+        }
     })
 
 export type ListedUser = UserWithRole & { twoFactorEnabled?: boolean }
 export const getUserDetail = createServerFn({ method: "GET" })
-    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const h = headers()
@@ -92,7 +92,6 @@ export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>
 export type UsersListData = Awaited<ReturnType<typeof listUsers>>
 
 export const createUser = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(createUserSchema)
     .handler(async ({ data }) => {
         const h = headers()
@@ -113,7 +112,7 @@ export const createUser = createServerFn({ method: "POST" })
                     callbackURL: getRequestUrl().origin,
                     fetchOptions: { headers: h },
                 })
-                .catch(() => {})
+                .catch(() => { })
         }
         return created.user
     })
@@ -133,7 +132,6 @@ export const removeUser = createServerFn({ method: "POST" })
     })
 
 export const updateUser = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(updateUserDetailsSchema)
     .handler(async ({ data }) => {
         const { data: user } = await authClient.admin.updateUser({
@@ -163,7 +161,6 @@ export const setUserRole = createServerFn({ method: "POST" })
     })
 
 export const setUserPassword = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(setUserPasswordSchema)
     .handler(async ({ data }) => {
         const { data: result } = await authClient.admin.setUserPassword({
@@ -191,7 +188,6 @@ export const banUser = createServerFn({ method: "POST" })
     })
 
 export const unbanUser = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const { data: result } = await authClient.admin.unbanUser({
@@ -202,7 +198,6 @@ export const unbanUser = createServerFn({ method: "POST" })
     })
 
 export const revokeUserSession = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(revokeUserSessionSchema)
     .handler(async ({ data }) => {
         const { data: result } = await authClient.admin.revokeUserSession({
@@ -213,7 +208,6 @@ export const revokeUserSession = createServerFn({ method: "POST" })
     })
 
 export const revokeUserSessions = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const { data: result } = await authClient.admin.revokeUserSessions({
@@ -240,20 +234,18 @@ export const impersonateUser = createServerFn({ method: "POST" })
         })
     })
 
-export const stopImpersonating = createServerFn({
-    method: "POST",
-}).handler(async () => {
-    await authClient.admin.stopImpersonating({
-        fetchOptions: {
-            headers: headers(),
-            onResponse: (ctx: { response: Response }) =>
-                forwardAuthHeaders(ctx.response.headers),
-        },
+export const stopImpersonating = createServerFn({ method: "POST" })
+    .handler(async () => {
+        await authClient.admin.stopImpersonating({
+            fetchOptions: {
+                headers: headers(),
+                onResponse: (ctx: { response: Response }) =>
+                    forwardAuthHeaders(ctx.response.headers),
+            },
+        })
     })
-})
 
 export const uploadUserImage = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(readImageUpload)
     .handler(async (): Promise<{ url: string }> => {
         throw new Error(
@@ -262,7 +254,6 @@ export const uploadUserImage = createServerFn({ method: "POST" })
     })
 
 export const disableUserTwoFactor = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async (): Promise<{ success: true }> => {
         throw new Error(
