@@ -3,8 +3,6 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { authClient } from "@/lib/auth-client"
 import { useAppMutation } from "@infra/ui/hooks"
 import {
-    dodoBalanceOptions,
-    dodoPaymentMethodsOptions,
     myPaymentsOptions,
     paymentConfigOptions,
     paymentIntentOptions,
@@ -201,86 +199,3 @@ export const useConfirmPaymentIntent = (intentId: string) =>
         errorMessage: "Could not start this payment",
     })
 
-export const useDodoPaymentMethods = () =>
-    useQuery(dodoPaymentMethodsOptions())
-
-export const useDodoBalance = () => useQuery(dodoBalanceOptions())
-
-export const useRemoveDodoPaymentMethod = () =>
-    useAppMutation({
-        mutationFn: async (paymentMethodId: string) => {
-            const { error } =
-                await authClient.pay.dodoPaymentMethods.remove({
-                    paymentMethodId,
-                })
-            if (error)
-                throw new Error(
-                    error.message ?? "Could not remove this card"
-                )
-        },
-        invalidates: [dodoPaymentMethodsOptions().queryKey],
-        successMessage: "Card removed",
-        errorMessage: "Could not remove this card",
-    })
-
-export type CreateDodoCheckoutVariables = {
-    amount: number
-    currency: string
-    purpose?: string
-    returnUrl: string
-    grantsCredits?: boolean
-    intentId?: string
-}
-
-export const useCreateDodoCheckout = () =>
-    useAppMutation({
-        mutationFn: async (variables: CreateDodoCheckoutVariables) => {
-            const { data, error } =
-                await authClient.pay.dodoCheckout(variables)
-            if (error)
-                throw new Error(
-                    error.message ?? "Could not start checkout"
-                )
-            window.location.href = data.url
-            return data
-        },
-        errorMessage: "Could not start checkout",
-    })
-
-export const useSyncDodoPayment = () =>
-    useAppMutation({
-        mutationFn: async (dodoPaymentId: string) => {
-            const { data, error } = await authClient.pay.dodoSync({
-                dodoPaymentId,
-            })
-            if (error)
-                throw new Error(
-                    error.message ?? "Could not confirm payment status"
-                )
-            return data
-        },
-        invalidates: [
-            myPaymentsOptions().queryKey,
-            dodoBalanceOptions().queryKey,
-            dodoPaymentMethodsOptions().queryKey,
-        ],
-        errorMessage: "Could not confirm payment status",
-    })
-
-export function useSyncDodoReturn() {
-    const syncMutation = useSyncDodoPayment()
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search)
-        const dodoPaymentId = params.get("payment_id")
-        if (!dodoPaymentId) return
-
-        syncMutation.mutate(dodoPaymentId, {
-            onSettled: () => {
-                const url = new URL(window.location.href)
-                url.searchParams.delete("payment_id")
-                url.searchParams.delete("status")
-                window.history.replaceState({}, "", url.toString())
-            },
-        })
-    }, [syncMutation.mutate])
-}

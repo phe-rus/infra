@@ -7,26 +7,19 @@ import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
 import { CountryProviderFields } from "@infra/ui/widgets/country-provider-fields"
-import {
-    PaymentRailToggle,
-    type PaymentRail,
-} from "@infra/ui/widgets/payment-rail-toggle"
 import { cn } from "@infra/ui/lib/utils"
 import {
     IconCards,
     IconCircleCheckFilled,
     IconClock,
-    IconCreditCard,
     IconLoader2,
     IconPlus,
     IconStar,
     IconTrash,
 } from "@tabler/icons-react"
-import type { WalletsData, PaymentConfigData, DodoPaymentMethodsData } from "../func"
+import type { WalletsData, PaymentConfigData } from "../func"
 import {
     useAddWallet,
-    useCreateDodoCheckout,
-    useRemoveDodoPaymentMethod,
     useRemoveWallet,
     useSetPrimaryWallet,
 } from "../use-payments"
@@ -34,11 +27,6 @@ import { usePaymentFields } from "../use-payment-fields"
 import { providerLabel } from "../provider-label"
 
 type WalletEntry = WalletsData["wallets"][number]
-type DodoPaymentMethodEntry = DodoPaymentMethodsData["paymentMethods"][number]
-
-type DodoCardProps = {
-    data: DodoPaymentMethodEntry
-}
 
 type TriggerProps = Omit<ComponentProps<"button">, "children" | "onClick" | "type">
 
@@ -159,13 +147,10 @@ type AddWalletFormProps = {
     config: PaymentConfigData
 }
 
-const AddWalletForm: FC<AddWalletFormProps> = ({ config }) => {
-    const [rail, setRail] = useState<PaymentRail>("mobile-money")
+const AddWalletForm: FC<AddWalletFormProps> = () => {
     const fields = usePaymentFields()
     const [label, setLabel] = useState("")
-    const [topUpAmount, setTopUpAmount] = useState("")
     const addMutation = useAddWallet()
-    const dodoCheckoutMutation = useCreateDodoCheckout()
 
     const handleAdd = async () => {
         if (!fields.provider || !fields.phoneNumber.trim()) return
@@ -179,134 +164,39 @@ const AddWalletForm: FC<AddWalletFormProps> = ({ config }) => {
     }
 
     return (
-        <div className="flex flex-col gap-3">
-            {config.dodoEnabled && (
-                <PaymentRailToggle value={rail} onChange={setRail} />
-            )}
-
-            {rail === "mobile-money" || !config.dodoEnabled ? (
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        void handleAdd()
-                    }}
-                    className="flex flex-col gap-3"
-                >
-                    <CountryProviderFields idPrefix="wallet" {...fields} />
-
-                    <Field>
-                        <FieldLabel htmlFor="wallet-label">Label (optional)</FieldLabel>
-                        <Input
-                            id="wallet-label"
-                            value={label}
-                            onChange={(e) => setLabel(e.target.value)}
-                            placeholder="e.g. Personal"
-                        />
-                    </Field>
-
-                    <p className="text-xs text-muted-foreground">
-                        A saved number stays pending until you actually pay with it. Unused
-                        pending numbers are removed after {WALLET_PENDING_HOURS}h.
-                    </p>
-
-                    <Button
-                        type="submit"
-                        isDisabled={
-                            !fields.phoneNumber.trim() || !fields.provider || addMutation.isPending
-                        }
-                    >
-                        {addMutation.isPending ? "Saving…" : "Save number"}
-                    </Button>
-                </form>
-            ) : (
-                <div className="flex flex-col gap-3">
-                    <Field>
-                        <FieldLabel htmlFor="dodo-topup-amount">Amount to add (USD)</FieldLabel>
-                        <Input
-                            id="dodo-topup-amount"
-                            inputMode="decimal"
-                            value={topUpAmount}
-                            onChange={(e) => setTopUpAmount(e.target.value)}
-                            placeholder="10.00"
-                        />
-                    </Field>
-
-                    <p className="text-xs text-muted-foreground">
-                        You'll be redirected to a secure checkout to add a card. The amount is
-                        added to your balance and the card is saved for next time.
-                    </p>
-
-                    <Button
-                        type="button"
-                        isDisabled={
-                            !topUpAmount.trim() ||
-                            Number(topUpAmount) <= 0 ||
-                            dodoCheckoutMutation.isPending
-                        }
-                        onClick={() =>
-                            dodoCheckoutMutation.mutate({
-                                amount: Math.round(Number(topUpAmount) * 100),
-                                currency: "USD",
-                                grantsCredits: true,
-                                returnUrl: window.location.href,
-                            })
-                        }
-                    >
-                        {dodoCheckoutMutation.isPending ? "Starting…" : "Continue to secure checkout"}
-                    </Button>
-                    {import.meta.env.DEV && (
-                        <p className="text-xs text-muted-foreground">
-                            Test card: 4242 4242 4242 4242 · any future expiry ·
-                            any CVC
-                        </p>
-                    )}
-                </div>
-            )}
-        </div>
-    )
-}
-
-const DodoCard: FC<DodoCardProps> = ({ data }) => {
-    const removeMutation = useRemoveDodoPaymentMethod()
-
-    return (
-        <div
-            className={cn(
-                "flex-col justify-between overflow-hidden rounded-md p-4",
-                "relative col-span-1 flex h-28 shrink-0 snap-start",
-                "bg-input/35"
-            )}
+        <form
+            onSubmit={(e) => {
+                e.preventDefault()
+                void handleAdd()
+            }}
+            className="flex flex-col gap-3"
         >
-            <div className="flex items-start justify-between">
-                <Button size="icon-xs" variant="secondary" className="rounded-full">
-                    <IconCreditCard />
-                </Button>
-                <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon-xs"
-                    className="rounded-full"
-                    aria-label="Remove card"
-                    isDisabled={removeMutation.isPending}
-                    onClick={() => removeMutation.mutate(data.id)}
-                >
-                    {removeMutation.isPending && removeMutation.variables === data.id ? (
-                        <IconLoader2 className="animate-spin" />
-                    ) : (
-                        <IconTrash />
-                    )}
-                </Button>
-            </div>
-            <div className="flex flex-col gap-1">
-                <p className="font-mono text-base tracking-wider">•••• {data.last4 ?? "----"}</p>
-                <span className="truncate text-xs text-primary-foreground/70 capitalize">
-                    {data.brand ?? "Card"}
-                    {data.expiryMonth && data.expiryYear
-                        ? ` ${data.expiryMonth}/${data.expiryYear}`
-                        : ""}
-                </span>
-            </div>
-        </div>
+            <CountryProviderFields idPrefix="wallet" {...fields} />
+
+            <Field>
+                <FieldLabel htmlFor="wallet-label">Label (optional)</FieldLabel>
+                <Input
+                    id="wallet-label"
+                    value={label}
+                    onChange={(e) => setLabel(e.target.value)}
+                    placeholder="e.g. Personal"
+                />
+            </Field>
+
+            <p className="text-xs text-muted-foreground">
+                A saved number stays pending until you actually pay with it. Unused
+                pending numbers are removed after {WALLET_PENDING_HOURS}h.
+            </p>
+
+            <Button
+                type="submit"
+                isDisabled={
+                    !fields.phoneNumber.trim() || !fields.provider || addMutation.isPending
+                }
+            >
+                {addMutation.isPending ? "Saving…" : "Save number"}
+            </Button>
+        </form>
     )
 }
 
@@ -432,4 +322,4 @@ const AddTile: FC<AddTileProps> = ({ wallets, config }) => {
     )
 }
 
-export const Wallet = { Cards, Content, AddTile, DodoCard }
+export const Wallet = { Cards, Content, AddTile }

@@ -192,8 +192,8 @@ export class PawaPayClient {
     }
 
     // reconciles a deposit directly rather than waiting on the webhook —
-    // same reasoning as dodo's payments.retrieve: a webhook can't reach
-    // a local dev instance, so this asks PawaPay for the real outcome
+    // a webhook can't reach a local dev instance, so this asks PawaPay
+    // for the real outcome
     checkDepositStatus(depositId: string): Promise<DepositStatusResponse> {
         return this.request("GET", `/v2/deposits/${depositId}`)
     }

@@ -66,15 +66,11 @@ function PaymentRow({
                 )}
                 <div className="flex flex-col">
                     <h3 className="font-semibold">
-                        {payment.rail === "dodo"
-                            ? "Card"
-                            : providerLabel(config.countries, payment.provider)}
+                        {providerLabel(config.countries, payment.provider)}
                     </h3>
                     <div className="flex items-center gap-2">
                         <p className="line-clamp-1 text-xs text-muted-foreground md:max-w-58">
-                            {payment.phoneNumber ??
-                                payment.pawapayReferenceId ??
-                                payment.dodoReferenceId}
+                            {payment.phoneNumber ?? payment.pawapayReferenceId}
                         </p>
                         <p className="text-xs text-muted-foreground">
                             {formatDistanceToNow(new Date(payment.createdAt), {

@@ -59,33 +59,3 @@ export const fetchPaymentIntent = createServerFn({ method: "GET" })
     })
 
 export type PaymentIntentData = Awaited<ReturnType<typeof fetchPaymentIntent>>
-
-export const fetchDodoPaymentMethods = createServerFn({ method: "GET" }).handler(
-    async () => {
-        const headers = getRequestHeaders()
-        const { data, error } = await authClient.pay.dodoPaymentMethods({
-            fetchOptions: { headers },
-        })
-        if (error)
-            throw new Error(error.message ?? "Could not load your saved cards")
-        return data
-    }
-)
-
-export type DodoPaymentMethodsData = Awaited<
-    ReturnType<typeof fetchDodoPaymentMethods>
->
-
-export const fetchDodoBalance = createServerFn({ method: "GET" }).handler(
-    async () => {
-        const headers = getRequestHeaders()
-        const { data, error } = await authClient.pay.dodoBalance({
-            fetchOptions: { headers },
-        })
-        if (error)
-            throw new Error(error.message ?? "Could not load your balance")
-        return data
-    }
-)
-
-export type DodoBalanceData = Awaited<ReturnType<typeof fetchDodoBalance>>

@@ -996,7 +996,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
         // self-service: reconciles one of the caller's own standalone
         // deposits (not tied to a paymentIntent — that case already
         // reconciles itself via getPaymentIntent's own poll) against
-        // PawaPay's API directly, same reasoning as dodoSync
+        // PawaPay's API directly
         pawaPaySync: createAuthEndpoint(
             "/pay/pawapay-sync",
             {
