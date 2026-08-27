@@ -20,7 +20,7 @@
         "formatWithErrors": false,
         "indentStyle": "space",
         "indentWidth": 4,
-        "lineWidth": 72,
+        "lineWidth": 62,
         "lineEnding": "lf",
         "attributePosition": "auto"
     },

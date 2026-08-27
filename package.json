@@ -4,6 +4,7 @@
     "license": "MIT",
     "type": "module",
     "workspaces": [
+        "api",
         "infra",
         "www",
         "plugins/*",

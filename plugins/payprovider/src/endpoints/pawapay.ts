@@ -88,35 +88,23 @@ export async function resolveOAuthAccess(
     }
 }
 
-// same getPlugin-and-cast idiom as resolveOAuthAccess above: this plugin
-// doesn't depend on @infra/notify (or any specific email package) — it
-// just looks for whatever plugin registered itself with id "notify" and,
-// if one exists, uses its `send`. No plugin registered → receipts are a
-// no-op even if `buildReceipt` is configured.
-function resolveNotifySend(
-    ctx: Parameters<typeof signJWT>[0]
-): ((data: { to: string; subject: string; html: string }) => Promise<void>) | null {
-    const notify = ctx.context.getPlugin("notify") as {
-        send?: (data: { to: string; subject: string; html: string }) => Promise<void>
-    } | null
-    return notify?.send ?? null
-}
-
 export type PawaPayEndpointsDeps = {
     client: PawaPayClient
     cache: KVNamespace
     isAdmin: (role: string) => boolean
-    /** Builds the receipt email's subject/html. Actual sending is resolved per-request via ctx.context.getPlugin("notify") — see resolveNotifySend. */
+    /** Builds the receipt email's subject/html. */
     buildReceipt?: (receipt: PaymentReceiptInfo) => {
         subject: string
         html: string
     }
+    /** Actually sends the receipt built by buildReceipt. */
+    send?: (data: { to: string; subject: string; html: string }) => Promise<void>
 }
 
 export type { PawaPayEnvironment }
 
 export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
-    const { client, cache, isAdmin, buildReceipt } = deps
+    const { client, cache, isAdmin, buildReceipt, send } = deps
 
     // shared by both the session-gated /pay/config (used by the deposit/
     // payout forms) and the public /pay/countries.jsonc endpoint below —
@@ -317,14 +305,11 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
             }
         }
 
-        if (status === "completed" && buildReceipt) {
-            const sendNotify = resolveNotifySend(ctx)
-            const user = sendNotify
-                ? await ctx.context.internalAdapter.findUserById(
-                      existing.userId
-                  )
-                : null
-            if (user && sendNotify) {
+        if (status === "completed" && buildReceipt && send) {
+            const user = await ctx.context.internalAdapter.findUserById(
+                existing.userId
+            )
+            if (user) {
                 const { subject, html } = buildReceipt({
                     userName: user.name,
                     email: user.email,
@@ -345,7 +330,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                 // wait on Resend's round trip, and it already logs
                 // failures internally so no manual .catch is needed
                 await ctx.context.runInBackgroundOrAwait(
-                    sendNotify({ to: user.email, subject, html })
+                    send({ to: user.email, subject, html })
                 )
             }
         }
@@ -479,8 +464,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                 body: z.object({ paymentId: z.string().min(1) }),
             },
             async (ctx) => {
-                const sendNotify = resolveNotifySend(ctx)
-                if (!buildReceipt || !sendNotify) {
+                if (!buildReceipt || !send) {
                     throw new APIError("BAD_REQUEST", {
                         message:
                             "Receipt emails are not configured on this instance",
@@ -537,7 +521,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                             }
                         ),
                     })
-                    await sendNotify({
+                    await send({
                         to: ctx.context.session.user.email,
                         subject,
                         html,

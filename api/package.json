@@ -1,0 +1,32 @@
+{
+    "name": "api",
+    "private": true,
+    "license": "MIT",
+    "type": "module",
+    "exports": {
+        ".": "./src/runtime.ts"
+    },
+    "scripts": {
+        "dev": "wrangler dev --port=3000",
+        "build": "wrangler deploy --dry-run --outdir dist",
+        "deploy": "wrangler deploy",
+        "type-gen": "wrangler types",
+        "typecheck": "tsc --noEmit",
+        "postinstall": "bun run type-gen"
+    },
+    "dependencies": {
+        "@better-auth/oauth-provider": "1.7.1",
+        "@better-auth/passkey": "1.7.1",
+        "@infra/payprovider": "workspace:*",
+        "@infra/r2": "workspace:*",
+        "@hono/zod-openapi": "^1.6.1",
+        "better-auth": "1.7.1",
+        "hono": "^4.13.5",
+        "zod": "^4.4.3"
+    },
+    "devDependencies": {
+        "@types/node": "^26",
+        "typescript": "^7",
+        "wrangler": "^4.126.0"
+    }
+}

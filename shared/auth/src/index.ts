@@ -1,5 +1,4 @@
 import { betterAuth } from "better-auth"
-import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { openAPI, haveIBeenPwned } from "better-auth/plugins"
 import type { BetterAuthPlugin } from "better-auth/types"
 import {
@@ -168,7 +167,6 @@ export function createAuth<
             ...(options.isProduction
                 ? [haveIBeenPwned()]
                 : [openAPI({ path: "docs" })]),
-            tanstackStartCookies(),
         ],
     })
 }

@@ -4,7 +4,7 @@ import type {
     SessionWithImpersonatedBy,
     UserWithRole,
 } from "better-auth/plugins/admin"
-import { auth } from "@/auth"
+import { authClient } from "@/lib/auth-client"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { AdminMiddleware } from "@/middleware"
 import {
@@ -16,39 +16,25 @@ import {
     updateUserDetailsSchema,
     userIdSchema,
 } from "./types"
-import type { ImageUpload } from "./types"
 
 export type UserSession = SessionWithImpersonatedBy
 
-function readImageUpload(data: unknown): ImageUpload {
-    if (!(data instanceof FormData)) {
-        throw new Error("Expected FormData")
-    }
-    const file = data.get("file")
-    const userId = data.get("userId")
-    if (
-        !(file instanceof File) ||
-        typeof userId !== "string" ||
-        userId.length === 0
-    ) {
-        throw new Error("Missing file or userId")
-    }
-    return { file, userId }
+function headers() {
+    return Object.fromEntries(Object.entries(getRequestHeaders()))
 }
 
 export const listUsers = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async () => {
-        const headers = getRequestHeaders()
-        const { users, total } = await auth.api.listUsers({
-            headers,
+        const { data } = await authClient.admin.listUsers({
             query: {
                 limit: 100,
                 sortBy: "createdAt",
                 sortDirection: "desc",
             },
+            fetchOptions: { headers: headers() },
         })
-        return { users, total }
+        return { users: data?.users ?? [], total: data?.total ?? 0 }
     })
 
 export type ListedUser = UserWithRole & { twoFactorEnabled?: boolean }
@@ -56,19 +42,27 @@ export const getUserDetail = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const [user, { sessions }, { accounts }] = await Promise.all([
-            auth.api.getUser({ headers, query: { id: data.userId } }),
-            auth.api.listUserSessions({
-                headers,
-                body: { userId: data.userId },
-            }),
-            auth.api.adminListAccounts({
-                headers,
-                query: { userId: data.userId },
-            }),
-        ])
-        return { user: user as ListedUser, sessions, accounts }
+        const h = headers()
+        const [{ data: user }, { data: sessionData }, { data: accountData }] =
+            await Promise.all([
+                authClient.admin.getUser({
+                    query: { id: data.userId },
+                    fetchOptions: { headers: h },
+                }),
+                authClient.admin.listUserSessions({
+                    userId: data.userId,
+                    fetchOptions: { headers: h },
+                }),
+                authClient.admin.listAccounts({
+                    query: { userId: data.userId },
+                    fetchOptions: { headers: h },
+                }),
+            ])
+        return {
+            user: user as ListedUser,
+            sessions: sessionData?.sessions ?? [],
+            accounts: accountData?.accounts ?? [],
+        }
     })
 
 export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>
@@ -78,31 +72,23 @@ export const createUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(createUserSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const {
-            response: { user },
-            headers: responseHeaders,
-        } = await auth.api.createUser({
-            headers: headers,
-            returnHeaders: true,
-            body: {
-                name: data.name,
-                email: data.email,
-                password: data.password,
-                role: data.role,
-            },
+        const h = headers()
+        const { data: created } = await authClient.admin.createUser({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            role: data.role,
+            fetchOptions: { headers: h },
         })
-        forwardAuthHeaders(responseHeaders)
-        if (!user.emailVerified) {
-            await auth.api
+        if (created && !created.user.emailVerified) {
+            await authClient
                 .sendVerificationEmail({
-                    headers,
-                    body: { email: data.email },
+                    email: data.email,
+                    fetchOptions: { headers: h },
                 })
                 .catch(() => {})
         }
-
-        return user
+        return created?.user
     })
 
 export const removeUser = createServerFn({ method: "POST" })
@@ -112,14 +98,10 @@ export const removeUser = createServerFn({ method: "POST" })
         if (data.userId === sessions.user.id) {
             throw new Error("You can't remove your own account")
         }
-        const headers = getRequestHeaders()
-        const { headers: responseHeaders, ...result } =
-            await auth.api.removeUser({
-                headers,
-                returnHeaders: true,
-                body: { userId: data.userId },
-            })
-        forwardAuthHeaders(responseHeaders)
+        const { data: result } = await authClient.admin.removeUser({
+            userId: data.userId,
+            fetchOptions: { headers: headers() },
+        })
         return result
     })
 
@@ -127,43 +109,15 @@ export const updateUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(updateUserDetailsSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { response: user, headers: responseHeaders } =
-            await auth.api.adminUpdateUser({
-                headers: headers,
-                returnHeaders: true,
-                body: {
-                    userId: data.userId,
-                    data: {
-                        ...(data.name !== undefined && {
-                            name: data.name,
-                        }),
-                        ...(data.email !== undefined && {
-                            email: data.email,
-                        }),
-                    },
-                },
-            })
-        forwardAuthHeaders(responseHeaders)
+        const { data: user } = await authClient.admin.updateUser({
+            userId: data.userId,
+            data: {
+                ...(data.name !== undefined && { name: data.name }),
+                ...(data.email !== undefined && { email: data.email }),
+            },
+            fetchOptions: { headers: headers() },
+        })
         return user
-    })
-
-export const uploadUserImage = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
-    .validator(readImageUpload)
-    .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { response, headers: responseHeaders } =
-            await auth.api.uploadAvatar({
-                headers,
-                returnHeaders: true,
-                body: {
-                    file: data.file,
-                    userId: data.userId,
-                },
-            })
-        forwardAuthHeaders(responseHeaders)
-        return response
     })
 
 export const setUserRole = createServerFn({ method: "POST" })
@@ -173,55 +127,24 @@ export const setUserRole = createServerFn({ method: "POST" })
         if (data.userId === sessions.user.id) {
             throw new Error("You can't change your own role here")
         }
-        const headers = getRequestHeaders()
-        const {
-            response: { user },
-            headers: responseHeaders,
-        } = await auth.api.setRole({
-            headers,
-            returnHeaders: true,
-            body: {
-                userId: data.userId,
-                role: data.role,
-            },
+        const { data: result } = await authClient.admin.setRole({
+            userId: data.userId,
+            role: data.role,
+            fetchOptions: { headers: headers() },
         })
-        forwardAuthHeaders(responseHeaders)
-        return user
+        return result?.user
     })
 
 export const setUserPassword = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(setUserPasswordSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { headers: responseHeaders, ...result } =
-            await auth.api.setUserPassword({
-                headers,
-                returnHeaders: true,
-                body: {
-                    userId: data.userId,
-                    newPassword: data.newPassword,
-                },
-            })
-        forwardAuthHeaders(responseHeaders)
+        const { data: result } = await authClient.admin.setUserPassword({
+            userId: data.userId,
+            newPassword: data.newPassword,
+            fetchOptions: { headers: headers() },
+        })
         return result
-    })
-
-export const disableUserTwoFactor = createServerFn({ method: "POST" })
-    .middleware([AdminMiddleware])
-    .validator(userIdSchema)
-    .handler(async ({ data }): Promise<{ success: true }> => {
-        const ctx = await auth.$context
-        await ctx.adapter.update({
-            model: "user",
-            where: [{ field: "id", value: data.userId }],
-            update: { twoFactorEnabled: false },
-        })
-        await ctx.adapter.deleteMany({
-            model: "twoFactor",
-            where: [{ field: "userId", value: data.userId }],
-        })
-        return { success: true }
     })
 
 export const banUser = createServerFn({ method: "POST" })
@@ -231,54 +154,34 @@ export const banUser = createServerFn({ method: "POST" })
         if (data.userId === sessions.user.id) {
             throw new Error("You can't ban your own account")
         }
-        const headers = getRequestHeaders()
-        const {
-            response: { user },
-            headers: responseHeaders,
-        } = await auth.api.banUser({
-            headers,
-            returnHeaders: true,
-            body: {
-                userId: data.userId,
-                banReason: data.banReason,
-                banExpiresIn: data.banExpiresIn,
-            },
+        const { data: result } = await authClient.admin.banUser({
+            userId: data.userId,
+            banReason: data.banReason,
+            banExpiresIn: data.banExpiresIn,
+            fetchOptions: { headers: headers() },
         })
-        forwardAuthHeaders(responseHeaders)
-        return user
+        return result?.user
     })
 
 export const unbanUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const {
-            response: { user },
-            headers: responseHeaders,
-        } = await auth.api.unbanUser({
-            headers,
-            returnHeaders: true,
-            body: { userId: data.userId },
+        const { data: result } = await authClient.admin.unbanUser({
+            userId: data.userId,
+            fetchOptions: { headers: headers() },
         })
-        forwardAuthHeaders(responseHeaders)
-        return user
+        return result?.user
     })
 
 export const revokeUserSession = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(revokeUserSessionSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { headers: responseHeaders, ...result } =
-            await auth.api.revokeUserSession({
-                headers,
-                returnHeaders: true,
-                body: {
-                    sessionToken: data.sessionToken,
-                },
-            })
-        forwardAuthHeaders(responseHeaders)
+        const { data: result } = await authClient.admin.revokeUserSession({
+            sessionToken: data.sessionToken,
+            fetchOptions: { headers: headers() },
+        })
         return result
     })
 
@@ -286,16 +189,10 @@ export const revokeUserSessions = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const { headers: responseHeaders, ...result } =
-            await auth.api.revokeUserSessions({
-                headers,
-                returnHeaders: true,
-                body: {
-                    userId: data.userId,
-                },
-            })
-        forwardAuthHeaders(responseHeaders)
+        const { data: result } = await authClient.admin.revokeUserSessions({
+            userId: data.userId,
+            fetchOptions: { headers: headers() },
+        })
         return result
     })
 
@@ -306,24 +203,22 @@ export const impersonateUser = createServerFn({ method: "POST" })
         if (data.userId === sessions.user.id) {
             throw new Error("You can't impersonate your own account")
         }
-        const headers = getRequestHeaders()
-        const { headers: responseHeaders } =
-            await auth.api.impersonateUser({
-                headers,
-                body: { userId: data.userId },
-                returnHeaders: true,
-            })
-        forwardAuthHeaders(responseHeaders)
+        await authClient.admin.impersonateUser({
+            userId: data.userId,
+            fetchOptions: {
+                headers: headers(),
+                onResponse: (ctx) => forwardAuthHeaders(ctx.response.headers),
+            },
+        })
     })
 
 export const stopImpersonating = createServerFn({
     method: "POST",
 }).handler(async () => {
-    const headers = getRequestHeaders()
-    const { headers: responseHeaders } =
-        await auth.api.stopImpersonating({
-            headers,
-            returnHeaders: true,
-        })
-    forwardAuthHeaders(responseHeaders)
+    await authClient.admin.stopImpersonating({
+        fetchOptions: {
+            headers: headers(),
+            onResponse: (ctx) => forwardAuthHeaders(ctx.response.headers),
+        },
+    })
 })

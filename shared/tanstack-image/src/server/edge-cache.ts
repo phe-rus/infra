@@ -12,7 +12,11 @@ export async function withEdgeCache(
     ctx: EdgeCacheContext,
     compute: () => Promise<Response>
 ): Promise<Response> {
-    // @ts-expect-error - lib DOM's CacheStorage type shadows the Workers one that declares `default`
+    // @ts-ignore - lib DOM's CacheStorage type shadows the Workers one that
+    // declares `default`; consumers without DOM in `lib` (e.g. api/, whose
+    // tsconfig relies on wrangler's own generated runtime types instead)
+    // don't hit this conflict at all, so @ts-ignore (not @ts-expect-error,
+    // which errors if unused) is the one directive that's correct for both
     const cache = caches.default as Cache
     const cached = await cache.match(request)
     if (cached) return cached

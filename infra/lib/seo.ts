@@ -6,13 +6,13 @@ type seoProps = {
     keywords?: string[]
 } & {
     type?:
-        | "website"
-        | "article"
-        | "video.other"
-        | "book"
-        | "game"
-        | "article:section"
-        | "article:tag"
+    | "website"
+    | "article"
+    | "video.other"
+    | "book"
+    | "game"
+    | "article:section"
+    | "article:tag"
 }
 export const seo = ({
     siteName = "Infra",
@@ -24,9 +24,6 @@ export const seo = ({
 }: seoProps) => {
     const tags = [
         { title },
-        // admin/owner-only platform, never meant to appear in search results —
-        // robots.txt only stops well-behaved crawlers from starting a crawl,
-        // this is what keeps an already-linked page out of an index
         { name: "robots", content: "noindex, nofollow" },
         ...(description ? [{ name: "description", content: description }] : []),
         ...(keywords ? [{ name: "keywords", content: keywords.join(", ") }] : []),
@@ -44,10 +41,10 @@ export const seo = ({
         { name: "twitter:site", content: "@la_nniina" },
         ...(image
             ? [
-                  { name: "twitter:image", content: image },
-                  { name: "twitter:card", content: "summary_large_image" },
-                  { name: "og:image", content: image },
-              ]
+                { name: "twitter:image", content: image },
+                { name: "twitter:card", content: "summary_large_image" },
+                { name: "og:image", content: image },
+            ]
             : []),
     ]
 

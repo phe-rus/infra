@@ -18,11 +18,13 @@ export type PayProviderOptions = {
     emails?: {
         /** Used for the built-in receipt template's branding/subject line ("{appName}: Receipt for ..."). Ignored if `buildReceipt` is set. Omit both to disable receipt emails entirely. */
         appName?: string
-        /** Full override of the receipt's subject/html — skips the built-in template. Pure, synchronous, no knowledge of how it actually gets sent: the plugin looks up a plugin with id "notify" on the same better-auth instance at request time (via ctx.context.getPlugin) to actually send it; if none is registered, receipts are silently skipped even if this is set. */
+        /** Full override of the receipt's subject/html — skips the built-in template. */
         buildReceipt?: (receipt: PaymentReceiptInfo) => {
             subject: string
             html: string
         }
+        /** Actually sends the receipt. Omit to disable receipt emails entirely, even if appName/buildReceipt is set. */
+        send?: (data: { to: string; subject: string; html: string }) => Promise<void>
     }
 }
 
@@ -49,6 +51,7 @@ export function payProvider(options: PayProviderOptions) {
                 cache: options.cache,
                 isAdmin,
                 buildReceipt,
+                send: emails?.send,
             }),
         },
     }
