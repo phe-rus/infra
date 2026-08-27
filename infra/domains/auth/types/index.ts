@@ -7,10 +7,6 @@ export const signInSchema = z.object({
     oauthQuery: z.string().optional(),
 })
 
-export const signInSearchSchema = z.object({
-    reason: z.enum(["session-expired"]).optional(),
-})
-
 export const setupSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.email("Enter a valid email"),

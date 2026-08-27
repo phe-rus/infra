@@ -10,9 +10,6 @@ export const AdminMiddleware = createMiddleware()
         if (!sessions) {
             throw redirect({
                 to: "/sign-in",
-                search: {
-                    reason: "session-expired",
-                },
                 replace: true,
             })
         }
