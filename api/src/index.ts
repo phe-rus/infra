@@ -1,4 +1,5 @@
 import { protectedMiddleware, publicsMiddleware } from "./middleware"
+import { wellKnownRoute } from "./routes/well-known"
 import defineHandler from "./utils/defineHandler"
 import { apiRoute } from "./api"
 
@@ -9,6 +10,7 @@ const app = defineHandler()
     })
     .use("*", publicsMiddleware)
     .use("*", protectedMiddleware)
+    .route("/.well-known", wellKnownRoute)
     .route("/api", apiRoute)
     .get('/', (c) => {
         return c.text('API')

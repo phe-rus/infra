@@ -74,7 +74,7 @@ export const assetsRoute = defineHandler()
         await env.R2.put(key, bytes, { httpMetadata: { contentType } })
 
         const path = cdnPath(key, Date.now())
-        await env.AUTH_DB.prepare("UPDATE user SET image = ? WHERE id = ?")
+        await env.D1.prepare("UPDATE user SET image = ? WHERE id = ?")
             .bind(path, user.id)
             .run()
 
