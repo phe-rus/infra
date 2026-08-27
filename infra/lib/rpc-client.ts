@@ -1,5 +1,8 @@
 import { hc } from "hono/client"
 import type { AppType } from "api"
-import { apiUrl } from "./auth-client"
 
-export const rpc = hc<AppType>(apiUrl())
+export const rpc = hc<AppType>(import.meta.env.VITE_API_URL ?? 'http://localhost:3000', {
+    init: {
+        credentials: 'include'
+    }
+})

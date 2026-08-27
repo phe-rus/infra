@@ -8,13 +8,6 @@ import tailwindcss from "@tailwindcss/vite"
 import { minifyBuild } from "@infra/minifybuild"
 import path from "node:path"
 
-// zod v4's own external.js does an unconditional `export * as locales from
-// "../locales/index.js"`, which barrel-imports all 53 translated
-// error-message locales — ~170kb nothing here ever uses (we never import
-// zod's `locales` export, only the schema builders). The barrel is
-// re-exported via a relative specifier from inside zod itself, so a plain
-// package-name alias can't intercept it — this redirects that one specific
-// relative import (matched by its importer) to an empty stub instead.
 function stripZodLocales() {
     const STUB_ID = "\0zod-locales-stub"
     return {
@@ -37,9 +30,6 @@ function stripZodLocales() {
 }
 
 const config = defineConfig({
-    server: {
-        cors: false,
-    },
     resolve: {
         tsconfigPaths: true,
         alias: {

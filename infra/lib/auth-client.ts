@@ -32,11 +32,7 @@ export const authClient = createAuthClient({
                 bio: {
                     type: "string",
                     required: false,
-                },
-                role: {
-                    type: "string",
-                    required: false,
-                },
+                }
             },
         }),
         adminClient(),

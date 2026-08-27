@@ -135,7 +135,9 @@ export const auth = betterAuth({
             rpName: env.VITE_APPNAME.toLowerCase().trim(),
             rpID: isProduction ? env.COOKIE_DOMAIN : undefined,
         }),
-        jwt(),
+        jwt({
+            disableSettingJwtHeader: true
+        }),
         oauthProvider({
             loginPage: `${env.WWW_URL}/sign-in`,
             consentPage: `${env.WWW_URL}/consent`,

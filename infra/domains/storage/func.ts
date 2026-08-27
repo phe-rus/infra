@@ -13,7 +13,10 @@ export const listObjects = createServerFn({ method: "GET" })
             { query: { prefix: data.prefix ?? "" } },
             { headers }
         )
-        if (!res.ok) throw new Error("Could not list objects")
+        if (!res.ok) {
+            const body = await res.text().catch(() => "")
+            throw new Error(`Could not list objects (${res.status}): ${body}`)
+        }
         return await res.json()
     })
 

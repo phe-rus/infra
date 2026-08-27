@@ -69,9 +69,10 @@ export type PaymentDetail = Awaited<ReturnType<typeof findPayment>>
 export const getPaymentConfig = createServerFn({ method: "GET" })
     .middleware([SessionMiddleware])
     .handler(async () => {
-        const { data } = await authClient.pay.config({
+        const { data, error } = await authClient.pay.config({
             fetchOptions: { headers: headers() },
         })
+        if (error) throw new Error(error.message ?? "Could not load payment config")
         return data
     })
 
@@ -83,10 +84,11 @@ export const getWalletBalances = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(walletBalancesSchema)
     .handler(async ({ data }) => {
-        const { data: response } = await authClient.pay.balances({
+        const { data: response, error } = await authClient.pay.balances({
             query: data,
             fetchOptions: { headers: headers() },
         })
+        if (error) throw new Error(error.message ?? "Could not load wallet balances")
         return response
     })
 
@@ -94,10 +96,11 @@ export const initiatePayout = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(payoutSchema)
     .handler(async ({ data }) => {
-        const { data: response } = await authClient.pay.payout({
+        const { data: response, error } = await authClient.pay.payout({
             ...data,
             fetchOptions: { headers: headers() },
         })
+        if (error) throw new Error(error.message ?? "Could not initiate payout")
         return response
     })
 
@@ -105,9 +108,10 @@ export const initiateRefund = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(refundSchema)
     .handler(async ({ data }) => {
-        const { data: response } = await authClient.pay.refund({
+        const { data: response, error } = await authClient.pay.refund({
             ...data,
             fetchOptions: { headers: headers() },
         })
+        if (error) throw new Error(error.message ?? "Could not initiate refund")
         return response
     })

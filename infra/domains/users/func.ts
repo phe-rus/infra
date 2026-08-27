@@ -43,7 +43,7 @@ function headers() {
 export const listUsers = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async () => {
-        const { data } = await authClient.admin.listUsers({
+        const { data, error } = await authClient.admin.listUsers({
             query: {
                 limit: 100,
                 sortBy: "createdAt",
@@ -51,6 +51,7 @@ export const listUsers = createServerFn({ method: "GET" })
             },
             fetchOptions: { headers: headers() },
         })
+        if (error) throw new Error(error.message ?? "Could not list users")
         return { users: data?.users ?? [], total: data?.total ?? 0 }
     })
 
@@ -60,21 +61,26 @@ export const getUserDetail = createServerFn({ method: "GET" })
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const h = headers()
-        const [{ data: user }, { data: sessionData }, { data: accountData }] =
-            await Promise.all([
-                authClient.admin.getUser({
-                    query: { id: data.userId },
-                    fetchOptions: { headers: h },
-                }),
-                authClient.admin.listUserSessions({
-                    userId: data.userId,
-                    fetchOptions: { headers: h },
-                }),
-                authClient.admin.listAccounts({
-                    query: { userId: data.userId },
-                    fetchOptions: { headers: h },
-                }),
-            ])
+        const [
+            { data: user, error: userError },
+            { data: sessionData, error: sessionError },
+            { data: accountData, error: accountError },
+        ] = await Promise.all([
+            authClient.admin.getUser({
+                query: { id: data.userId },
+                fetchOptions: { headers: h },
+            }),
+            authClient.admin.listUserSessions({
+                userId: data.userId,
+                fetchOptions: { headers: h },
+            }),
+            authClient.admin.listAccounts({
+                query: { userId: data.userId },
+                fetchOptions: { headers: h },
+            }),
+        ])
+        const error = userError ?? sessionError ?? accountError
+        if (error) throw new Error(error.message ?? "Could not load user")
         return {
             user: user as ListedUser,
             sessions: sessionData?.sessions ?? [],
