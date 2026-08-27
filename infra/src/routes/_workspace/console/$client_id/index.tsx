@@ -69,22 +69,25 @@ function RouteComponent() {
 
             if (isCreate) {
                 const result = await createApp({
-                    client_name: value.client_name,
-                    client_uri: value.client_uri || undefined,
-                    logo_uri: value.logo_uri || undefined,
-                    framework: value.framework,
-                    application_type: value.application_type,
-                    token_endpoint_auth_method:
-                        value.token_endpoint_auth_method,
-                    redirect_uris: redirectUris,
-                    post_logout_redirect_uris: postLogoutRedirectUris?.length
-                        ? postLogoutRedirectUris
-                        : undefined,
-                    scope: value.scope,
-                    grant_types: value.grant_types,
-                    require_pkce: value.require_pkce,
-                    skip_consent: value.skip_consent,
-                    enable_end_session: value.enable_end_session,
+                    data: {
+                        client_name: value.client_name,
+                        client_uri: value.client_uri || undefined,
+                        logo_uri: value.logo_uri || undefined,
+                        framework: value.framework,
+                        application_type: value.application_type,
+                        token_endpoint_auth_method:
+                            value.token_endpoint_auth_method,
+                        redirect_uris: redirectUris,
+                        post_logout_redirect_uris:
+                            postLogoutRedirectUris?.length
+                                ? postLogoutRedirectUris
+                                : undefined,
+                        scope: value.scope,
+                        grant_types: value.grant_types,
+                        require_pkce: value.require_pkce,
+                        skip_consent: value.skip_consent,
+                        enable_end_session: value.enable_end_session,
+                    },
                 }).catch(() => null)
                 if (!result) return
 
@@ -111,17 +114,19 @@ function RouteComponent() {
                 return
             }
 
-            await updateApp({ clientId, ...changed }).catch(() => null)
+            await updateApp({ data: { clientId, ...changed } }).catch(
+                () => null
+            )
         },
     })
 
     async function handleRotate() {
-        const result = await rotateApp(clientId)
+        const result = await rotateApp({ data: { clientId } })
         setRevealedSecret(result.clientSecret)
     }
 
     async function handleRemove() {
-        await removeApp(clientId)
+        await removeApp({ data: { clientId } })
         void navigate({ to: "/console" })
     }
 
@@ -234,10 +239,12 @@ function RouteComponent() {
                                 variant="outline"
                                 onClick={() =>
                                     void setActive({
-                                        clientId,
-                                        active: Boolean(
-                                            application.disabled
-                                        ),
+                                        data: {
+                                            clientId,
+                                            active: Boolean(
+                                                application.disabled
+                                            ),
+                                        },
                                     })
                                 }
                             >

@@ -10,5 +10,5 @@ export const consoleOptions = () =>
 export const appOptions = (clientId: string) =>
     queryOptions({
         queryKey: ["applications", clientId],
-        queryFn: () => findApp(clientId),
+        queryFn: () => findApp({ data: { clientId } }),
     })

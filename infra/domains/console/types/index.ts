@@ -77,17 +77,12 @@ export const GRANT_TYPE_OPTIONS: { label: string; value: GrantType }[] = [
     { label: "Refresh token — extend sessions", value: "refresh_token" },
 ]
 
-// matches the scopes configured on the oauthProvider plugin (auth/index.ts)
-// — "payments" was added there without being added here, which meant it
-// could never actually be granted to a client: not selectable in this form,
-// and createAppSchema/updateAppSchema's z.enum(SCOPES) would reject it even
-// via a direct API call
+// matches the scopes configured on the oauthProvider plugin (auth/auth.ts)
 export const SCOPES = [
     "openid",
     "profile",
     "email",
     "offline_access",
-    "payments",
 ] as const
 export type Scope = (typeof SCOPES)[number]
 

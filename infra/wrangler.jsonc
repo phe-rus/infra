@@ -17,5 +17,30 @@
             "custom_domain": true,
             "pattern": "infra.pherus.org"
         }
+    ],
+    "d1_databases": [
+        {
+            "binding": "D1",
+            "database_name": "infra-authentication",
+            "database_id": "d2b4d713-1806-4f29-99cb-6f3c9fb9d02d",
+            "migrations_dir": "./.migrations",
+            "migrations_pattern": ".migrations/**/*.sql"
+        }
+    ],
+    "kv_namespaces": [
+        {
+            "binding": "RL",
+            "id": "f9be42c538ba41d690b47cf1b38faf27"
+        },
+        {
+            "binding": "CACHE",
+            "id": "c19d128e746746749cf5882b67569ccb"
+        }
+    ],
+    "r2_buckets": [
+        {
+            "bucket_name": "infra-storage",
+            "binding": "R2"
+        }
     ]
 }

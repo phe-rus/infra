@@ -4,6 +4,7 @@ export const signInSchema = z.object({
     email: z.email("Enter a valid email"),
     password: z.string().min(1, "Password is required"),
     rememberMe: z.boolean().optional(),
+    oauthQuery: z.string().optional(),
 })
 
 export const signInSearchSchema = z.object({

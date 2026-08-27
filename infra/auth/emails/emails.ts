@@ -1,4 +1,4 @@
-import { env } from "../../utils/envs"
+import { env } from "cloudflare:workers"
 import {
     verificationEmailHtml,
     resetPasswordEmailHtml,

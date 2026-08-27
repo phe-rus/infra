@@ -8,8 +8,7 @@ import {
 } from "better-auth/plugins"
 import { passkey } from "@better-auth/passkey"
 import { oauthProvider } from "@better-auth/oauth-provider"
-import { payProvider } from "@infra/payprovider"
-import { emailHooks, send } from "./emails"
+import { emailHooks } from "./emails"
 import { listUserAccounts } from "./core/admin-accounts"
 import { databaseHooks, isAdminTier } from "./core/permissions"
 import { createTrustedOrigins } from "./core/trusted-origins"
@@ -18,7 +17,7 @@ import {
     createRateLimitStorage,
 } from "./core/storage"
 import { password } from "./config/password"
-import { env } from "../utils/envs"
+import { env } from "cloudflare:workers"
 import { dbContext } from "../db"
 
 const isProduction = env.NODE_ENV === "production"
@@ -80,12 +79,12 @@ export const auth = betterAuth({
         max: 100,
         storage: "secondary-storage",
         customRules: Object.fromEntries(
-            ["/pay/*", "/r2/*", "/cdn/**"].map((path) => [
+            ["/r2/*", "/cdn/**"].map((path) => [
                 path,
                 { window: 60, max: 100 },
             ])
         ),
-        customStorage: createRateLimitStorage(env.RL, ["/pay/"]),
+        customStorage: createRateLimitStorage(env.RL, []),
     },
     secondaryStorage: createSecondaryStorage(env.CACHE),
     databaseHooks,
@@ -154,7 +153,6 @@ export const auth = betterAuth({
                 "profile",
                 "email",
                 "offline_access",
-                "payments",
             ],
             rateLimit: {
                 authorize: { window: 60, max: 50 },
@@ -175,17 +173,6 @@ export const auth = betterAuth({
                     typeof jwt.client_id === "string" ? jwt.client_id : null,
                 ...user,
             }),
-        }),
-        payProvider({
-            apiToken: env.PAWAPAY_API_TOKEN,
-            environment:
-                env.PAWAPAY_ENV === "production" ? "production" : "sandbox",
-            cache: env.PAYMENTS,
-            isAdmin: isAdminTier,
-            emails: {
-                appName: env.VITE_APPNAME.toLowerCase().trim(),
-                send,
-            }
         }),
         ...(isProduction ? [haveIBeenPwned()] : [openAPI({ path: "docs" })]),
     ],

@@ -1,7 +1,7 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2"
-import * as authSchemas from "./schemas/auth"
+import * as authSchemas from "../schemas/auth"
 import { drizzle } from "drizzle-orm/d1"
-import { env } from "./utils/envs"
+import { env } from "cloudflare:workers"
 
 export const db = drizzle(env.D1, {
     relations: {

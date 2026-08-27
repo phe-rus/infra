@@ -56,22 +56,19 @@ export const useCreateUser = () =>
         errorMessage: "Could not add user",
     })
 
-export const useRemoveUser = (currentUserId: string) =>
+export const useRemoveUser = () =>
     useAppMutation({
-        mutationFn: (userId: string) => {
-            if (userId === currentUserId) {
-                throw new Error("You can't remove your own account")
-            }
-            return removeUser(userId)
-        },
+        mutationFn: removeUser,
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, userId: string) =>
+            updater: (old: UsersListData | undefined, variables) =>
                 old
                     ? {
                           ...old,
-                          users: old.users.filter((u) => u.id !== userId),
+                          users: old.users.filter(
+                              (u) => u.id !== variables.data.userId
+                          ),
                           total: Math.max(0, old.total - 1),
                       }
                     : { users: [], total: 0 },
@@ -87,12 +84,12 @@ export const useUpdateUserDetails = () =>
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.userId, {
-                    ...(variables.name !== undefined && {
-                        name: variables.name,
+                patchUserInCache(old, variables.data.userId, {
+                    ...(variables.data.name !== undefined && {
+                        name: variables.data.name,
                     }),
-                    ...(variables.email !== undefined && {
-                        email: variables.email,
+                    ...(variables.data.email !== undefined && {
+                        email: variables.data.email,
                     }),
                 }),
         },
@@ -116,20 +113,15 @@ export const useUploadOwnAvatar = () =>
         errorMessage: "Could not update image",
     })
 
-export const useSetUserRole = (currentUserId: string) =>
+export const useSetUserRole = () =>
     useAppMutation({
-        mutationFn: (input: { userId: string; role: "admin" | "user" }) => {
-            if (input.userId === currentUserId) {
-                throw new Error("You can't change your own role here")
-            }
-            return setUserRole(input)
-        },
+        mutationFn: setUserRole,
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.userId, {
-                    role: variables.role,
+                patchUserInCache(old, variables.data.userId, {
+                    role: variables.data.role,
                 }),
         },
         successMessage: "Role updated",
@@ -149,8 +141,8 @@ export const useDisableUserTwoFactor = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, userId: string) =>
-                patchUserInCache(old, userId, {
+            updater: (old: UsersListData | undefined, variables) =>
+                patchUserInCache(old, variables.data.userId, {
                     twoFactorEnabled: false,
                 }),
         },
@@ -158,23 +150,14 @@ export const useDisableUserTwoFactor = () =>
         errorMessage: "Could not disable two-factor",
     })
 
-export const useBanUser = (currentUserId: string) =>
+export const useBanUser = () =>
     useAppMutation({
-        mutationFn: (input: {
-            userId: string
-            banReason?: string
-            banExpiresIn?: number
-        }) => {
-            if (input.userId === currentUserId) {
-                throw new Error("You can't ban your own account")
-            }
-            return banUser(input)
-        },
+        mutationFn: banUser,
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
             updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.userId, { banned: true }),
+                patchUserInCache(old, variables.data.userId, { banned: true }),
         },
         successMessage: "User banned",
         errorMessage: "Could not ban user",
@@ -186,8 +169,8 @@ export const useUnbanUser = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, userId: string) =>
-                patchUserInCache(old, userId, { banned: false }),
+            updater: (old: UsersListData | undefined, variables) =>
+                patchUserInCache(old, variables.data.userId, { banned: false }),
         },
         successMessage: "User unbanned",
         errorMessage: "Could not unban user",
@@ -209,16 +192,11 @@ export const useRevokeUserSessions = () =>
         errorMessage: "Could not revoke sessions",
     })
 
-export const useImpersonateUser = (currentUserId: string) => {
+export const useImpersonateUser = () => {
     const router = useRouter()
     const q = getContext()
     return useAppMutation({
-        mutationFn: (userId: string) => {
-            if (userId === currentUserId) {
-                throw new Error("You can't impersonate your own account")
-            }
-            return impersonateUser(userId)
-        },
+        mutationFn: impersonateUser,
         successMessage: "Impersonating user",
         onSuccess: () => {
             q.clear()

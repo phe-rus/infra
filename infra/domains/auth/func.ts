@@ -1,20 +1,30 @@
-import { getRequestHeaders, setResponseHeaders } from "@tanstack/react-start/server"
+import { getRequestHeaders } from "@tanstack/react-start/server"
 import { createServerFn } from "@tanstack/react-start"
-import { authClient } from "@/lib/auth-client"
-import { rpc } from "@/lib/rpc-client"
+import { APIError } from "better-auth/api"
+import { env } from "cloudflare:workers"
+import { auth } from "@/auth"
+import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { AdminMiddleware } from "@/middleware"
+import {
+    forgotPasswordSchema,
+    resetPasswordSchema,
+    setupSchema,
+    signInSchema,
+} from "./types"
 
 function headers() {
     return Object.fromEntries(Object.entries(getRequestHeaders()))
 }
 
-export const getSession = createServerFn({ method: "GET" })
-    .handler(async () => {
-        const { data } = await authClient.getSession({
-            fetchOptions: { headers: headers() },
-        })
-        return data
-    })
+export const getSession = createServerFn({ method: "GET" }).handler(
+    async () => {
+        try {
+            return await auth.api.getSession({ headers: headers() })
+        } catch {
+            return null
+        }
+    }
+)
 
 export const protectedSession = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
@@ -22,16 +32,96 @@ export const protectedSession = createServerFn({ method: "GET" })
         return context.sessions
     })
 
-export const getFirstUserStatus = createServerFn({ method: "GET" })
-    .handler(async () => {
+export const getFirstUserStatus = createServerFn({ method: "GET" }).handler(
+    async () => {
         try {
-            const res = await rpc.api["first-user"].$get()
-            if (res.headers) {
-                setResponseHeaders(res.headers)
-            }
-            const hasAdmin = await res.json()
-            return { hasAdmin }
+            const ctx = await auth.$context
+            const count = await ctx.adapter.count({ model: "user" })
+            return { hasAdmin: count > 0 }
         } catch {
             return { hasAdmin: false }
+        }
+    }
+)
+
+export const signIn = createServerFn({ method: "POST" })
+    .validator(signInSchema)
+    .handler(async ({ data }) => {
+        try {
+            const ctx = await auth.api.signInEmail({
+                body: data,
+                headers: headers(),
+                returnHeaders: true,
+            })
+            forwardAuthHeaders(ctx.headers)
+            const redirectUri = (
+                ctx.response as { redirect_uri?: string } | undefined
+            )?.redirect_uri
+            return { error: null, redirectUri: redirectUri ?? null }
+        } catch (error) {
+            if (error instanceof APIError) {
+                return { error: error.message, redirectUri: null }
+            }
+            throw error
+        }
+    })
+
+export const signOut = createServerFn({ method: "POST" }).handler(
+    async () => {
+        const { headers: responseHeaders } = await auth.api.signOut({
+            headers: headers(),
+            returnHeaders: true,
+        })
+        forwardAuthHeaders(responseHeaders)
+    }
+)
+
+export const requestPasswordReset = createServerFn({ method: "POST" })
+    .validator(forgotPasswordSchema)
+    .handler(async ({ data }) => {
+        await auth.api.requestPasswordReset({
+            body: {
+                email: data.email,
+                redirectTo: `${env.BETTER_AUTH_URL}/reset-password`,
+            },
+        })
+        return {
+            message: "If this email exists, check your inbox for a reset link",
+        }
+    })
+
+export const resetPassword = createServerFn({ method: "POST" })
+    .validator(resetPasswordSchema)
+    .handler(async ({ data }) => {
+        try {
+            await auth.api.resetPassword({
+                body: { newPassword: data.newPassword, token: data.token },
+            })
+            return { error: null }
+        } catch (error) {
+            if (error instanceof APIError) return { error: error.message }
+            throw error
+        }
+    })
+
+export const completeSetup = createServerFn({ method: "POST" })
+    .validator(setupSchema)
+    .handler(async ({ data }) => {
+        try {
+            const ctx = await auth.api.signUpEmail({
+                body: {
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
+                    rememberMe: data.rememberMe,
+                },
+                headers: headers(),
+                returnHeaders: true,
+            })
+            forwardAuthHeaders(ctx.headers)
+            return { error: null }
+        } catch (error) {
+            if (error instanceof APIError) return { error: error.message }
+            throw error
         }
     })

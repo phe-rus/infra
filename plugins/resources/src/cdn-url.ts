@@ -2,9 +2,9 @@
 // importable from client.ts (browser bundle) without dragging in index.ts's
 // server-only dependencies (better-auth/api, sanitize-html via sanitize-svg).
 //
-// The CDN is always mounted at /api/auth/cdn — better-auth's default
-// basePath, never overridden in this app's auth config. cdnPath returns
-// only that relative path, deliberately not baking in an origin: an
+// The CDN is mounted at /api/cdn on the api/ worker (see api/src/api.ts's
+// apiRoute — a plain top-level route, not nested under /auth). cdnPath
+// returns only that relative path, deliberately not baking in an origin: an
 // earlier version stored the full ctx.context.baseURL-prefixed URL on
 // e.g. user.image, which broke the moment the server became reachable at
 // a different host than the one active at upload time (localhost vs a
@@ -12,9 +12,9 @@
 // URL pointed at a host that was no longer serving anything. A same-origin
 // consumer (infra's own dashboard) can use this relative path directly as
 // an <img src>; a cross-origin one (www) needs cdnUrl below to prefix it
-// with whichever host it knows infra is actually reachable at.
+// with whichever host it knows api/ is actually reachable at.
 export function cdnPath(key: string, version: number): string {
-    return `/api/auth/cdn/${key}?v=${version}`
+    return `/api/cdn/${key}?v=${version}`
 }
 
 // path is assumed relative (as cdnPath always returns) unless it's already

@@ -1,24 +1,51 @@
-import { rpc } from "@/lib/rpc-client"
-import type { deleteObjectsSchema } from "./types"
-import type { z } from "zod"
+import { createServerFn } from "@tanstack/react-start"
+import { env } from "cloudflare:workers"
+import { listAllObjects } from "@infra/r2/server"
+import { AdminMiddleware } from "@/middleware"
+import { deleteObjectsSchema, listPrefixSchema } from "./types"
 
-export async function listObjects(prefix: string) {
-    const res = await rpc.api.assets.list.$get({ query: { prefix } })
-    if (!res.ok) {
-        const body = await res.text().catch(() => "")
-        throw new Error(`Could not list objects (${res.status}): ${body}`)
-    }
-    return await res.json()
-}
+export const listObjects = createServerFn({ method: "GET" })
+    .middleware([AdminMiddleware])
+    .validator(listPrefixSchema)
+    .handler(async ({ data }) => {
+        const prefix = data.prefix ?? ""
+        const result = await env.R2.list({
+            prefix,
+            delimiter: "/",
+            include: ["httpMetadata"],
+        })
+        return {
+            prefix,
+            folders: result.delimitedPrefixes.map((folder) => ({
+                key: folder,
+                name: folder.slice(prefix.length).replace(/\/$/, ""),
+            })),
+            files: result.objects.map((obj) => ({
+                key: obj.key,
+                name: obj.key.slice(prefix.length),
+                size: obj.size,
+                uploadedAt: obj.uploaded,
+                contentType: obj.httpMetadata?.contentType ?? null,
+            })),
+        }
+    })
 
 export type ObjectsListResult = Awaited<ReturnType<typeof listObjects>>
 
-export async function deleteObjects(
-    input: z.infer<typeof deleteObjectsSchema>
-) {
-    const res = await rpc.api.assets.delete.$post({
-        json: { keys: input.keys, prefix: input.prefix },
+export const deleteObjects = createServerFn({ method: "POST" })
+    .middleware([AdminMiddleware])
+    .validator(deleteObjectsSchema)
+    .handler(async ({ data }) => {
+        if (!data.keys?.length && !data.prefix) {
+            throw new Error("Provide keys or prefix")
+        }
+        const targetKeys = data.prefix
+            ? (await listAllObjects(env.R2, data.prefix)).map(
+                  (obj) => obj.key
+              )
+            : (data.keys ?? [])
+        for (let i = 0; i < targetKeys.length; i += 1000) {
+            await env.R2.delete(targetKeys.slice(i, i + 1000))
+        }
+        return { success: true, deleted: targetKeys.length }
     })
-    if (!res.ok) throw new Error("Could not delete objects")
-    return await res.json()
-}

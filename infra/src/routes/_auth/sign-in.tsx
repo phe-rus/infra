@@ -39,11 +39,16 @@ function RouteComponent() {
             onBlur: signInSchema,
         },
         onSubmit: async ({ value }) => {
+            const search = window.location.search
+            const oauthQuery = search.length > 1 ? search.slice(1) : undefined
             await signIn(
                 {
-                    email: value.email,
-                    password: value.password,
-                    rememberMe: value.rememberMe,
+                    data: {
+                        email: value.email,
+                        password: value.password,
+                        rememberMe: value.rememberMe,
+                        oauthQuery,
+                    },
                 },
                 {
                     onSettled: () => {

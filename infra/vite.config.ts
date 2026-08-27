@@ -8,27 +8,6 @@ import tailwindcss from "@tailwindcss/vite"
 import { minifyBuild } from "@infra/minifybuild"
 import path from "node:path"
 
-function stripZodLocales() {
-    const STUB_ID = "\0zod-locales-stub"
-    return {
-        name: "strip-zod-locales",
-        enforce: "pre" as const,
-        resolveId(source: string, importer: string | undefined) {
-            if (
-                source === "../locales/index.js" &&
-                importer?.replace(/\\/g, "/").includes("/zod/v4/")
-            ) {
-                return STUB_ID
-            }
-            return undefined
-        },
-        load(id: string) {
-            if (id === STUB_ID) return "export {}"
-            return undefined
-        },
-    }
-}
-
 const config = defineConfig({
     resolve: {
         tsconfigPaths: true,
@@ -37,7 +16,6 @@ const config = defineConfig({
         },
     },
     plugins: [
-        stripZodLocales(),
         cloudflare({
             viteEnvironment: {
                 name: "ssr",

@@ -172,7 +172,6 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                                 <Separator />
                                 <ImpersonateUser
                                     userId={viewUser.user.id}
-                                    currentUserId={currentUserId}
                                 />
                             </>
                         )}
@@ -187,10 +186,7 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                         {(!isViewingSelf || import.meta.env.DEV) && (
                             <>
                                 <Separator />
-                                <BanUser
-                                    viewUser={viewUser}
-                                    currentUserId={currentUserId}
-                                />
+                                <BanUser viewUser={viewUser} />
                             </>
                         )}
                     </TabsContent>

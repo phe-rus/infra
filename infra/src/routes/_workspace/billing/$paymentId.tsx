@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { formatUtc } from "@infra/ui/lib/date"
 import {
@@ -11,12 +12,21 @@ import { Button, buttonVariants } from "@infra/ui/components/button"
 import { Separator } from "@infra/ui/components/separator"
 import { cn } from "@infra/ui/lib/utils"
 import { ViewController } from "@infra/ui/widgets/view-controller"
+import { SectionLoader } from "@/components/section-loader"
 
 export const Route = createFileRoute("/_workspace/billing/$paymentId")({
     component: RouteComponent,
 })
 
 function RouteComponent() {
+    return (
+        <Suspense fallback={<SectionLoader />}>
+            <ReceiptView />
+        </Suspense>
+    )
+}
+
+function ReceiptView() {
     const { paymentId } = Route.useParams()
     const { data } = usePayment(paymentId)
     if (!data) return null

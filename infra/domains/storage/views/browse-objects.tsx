@@ -20,7 +20,7 @@ const formatBytes = (bytes: number): string => {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
-const cdnUrl = (key: string): string => `/api/auth/cdn/${key}`
+const cdnUrl = (key: string): string => `/api/cdn/${key}`
 
 export const BrowseObjects: FC<BrowseObjectsProps> = ({
     prefix,
@@ -60,7 +60,9 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                 className="mr-auto size-5!"
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    deleteObjects({ prefix: folder.key })
+                                    deleteObjects({
+                                        data: { prefix: folder.key },
+                                    })
                                 }}
                             >
                                 <IconMinus />
@@ -117,7 +119,9 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
-                                    deleteObjects({ keys: [file.key] })
+                                    deleteObjects({
+                                        data: { keys: [file.key] },
+                                    })
                                 }}
                             >
                                 <IconMinus />

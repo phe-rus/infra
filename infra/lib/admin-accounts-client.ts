@@ -1,5 +1,5 @@
 import type { BetterAuthClientPlugin } from "better-auth/client"
-import type { listUserAccounts } from "api/auth/admin-accounts"
+import type { listUserAccounts } from "api"
 
 export const listUserAccountsClient = () => {
     return {

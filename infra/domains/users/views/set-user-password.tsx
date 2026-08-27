@@ -14,7 +14,7 @@ export const SetUserPassword: FC<SetUserPasswordProps> = ({ userId }) => {
     const [newPassword, setNewPassword] = useState("")
 
     async function handleSetPassword() {
-        await setPassword({ userId, newPassword })
+        await setPassword({ data: { userId, newPassword } })
         setNewPassword("")
     }
 

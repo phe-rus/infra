@@ -26,7 +26,9 @@ export const RevokeUserSessions: FC<RevokeUserSessionsProps> = ({
                         variant="ghost"
                         size="xs"
                         onClick={() =>
-                            void revokeSessions(viewUser.user.id)
+                            void revokeSessions({
+                                data: { userId: viewUser.user.id },
+                            })
                         }
                     >
                         Revoke all
@@ -82,7 +84,11 @@ export const RevokeUserSessions: FC<RevokeUserSessionsProps> = ({
                                     size="xs"
                                     className="ml-auto"
                                     onClick={() =>
-                                        void revokeSession(session.token)
+                                        void revokeSession({
+                                            data: {
+                                                sessionToken: session.token,
+                                            },
+                                        })
                                     }
                                 >
                                     Revoke

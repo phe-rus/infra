@@ -45,22 +45,26 @@ export const UpdateUser: FC<UpdateUserProps> = ({
         e.target.value = ""
         if (!file) return
         if (isSelf) {
-            await uploadOwnAvatar(file)
+            const ownFormData = new FormData()
+            ownFormData.set("file", file)
+            await uploadOwnAvatar({ data: ownFormData })
             return
         }
         const formData = new FormData()
         formData.set("file", file)
         formData.set("userId", viewUser.user.id)
-        await uploadUserImage(formData)
+        await uploadUserImage({ data: formData })
     }
 
     async function handleUpdateDetails() {
         const name = editName.trim()
         const email = editEmail.trim()
         await updateUserDetails({
-            userId: viewUser.user.id,
-            ...(name !== viewUser.user.name && { name }),
-            ...(email !== viewUser.user.email && { email }),
+            data: {
+                userId: viewUser.user.id,
+                ...(name !== viewUser.user.name && { name }),
+                ...(email !== viewUser.user.email && { email }),
+            },
         })
     }
 

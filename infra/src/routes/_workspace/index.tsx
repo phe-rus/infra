@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { IconCardsFilled, IconInfoCircle } from "@tabler/icons-react"
 import { cn } from "@infra/ui/lib/utils"
@@ -19,6 +19,7 @@ import {
 import { useWalletBalances } from "@/domains/payments"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { ContentView } from "@infra/ui/widgets/content-view"
+import { SectionLoader } from "@/components/section-loader"
 
 const PREFERRED_CURRENCIES = [
     "UGX",
@@ -41,13 +42,44 @@ export const Route = createFileRoute("/_workspace/")({
     component: RouteComponent,
 })
 
+function StatsSection() {
+    const { data: stats } = useStats()
+    return (
+        <ContentView.Row className="mx-auto w-full justify-evenly gap-5 p-5">
+            <ContentView.Header heading="Monthly active users" p="Last 30 days">
+                <h1>{stats.monthlyActiveUsers}</h1>
+            </ContentView.Header>
+            <ContentView.Divider />
+            <ContentView.Header heading="Total users" p="Current">
+                <h1>{stats.totalUsers}</h1>
+            </ContentView.Header>
+        </ContentView.Row>
+    )
+}
+
+function AppsSection() {
+    const { data: apps } = useConsole()
+    return <ApplicationGrid data={apps} />
+}
+
+function WalletSection({ currency }: { currency: string }) {
+    const { data: wallet } = useWalletBalances({ currency })
+    if (!wallet?.total) return null
+    return (
+        <ContentView.P>
+            <ContentView.Span>
+                {wallet.total.amount.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                })}{" "}
+            </ContentView.Span>
+            <ContentView.Sub>{wallet.total.currency}</ContentView.Sub>
+        </ContentView.P>
+    )
+}
+
 function RouteComponent() {
     const { session } = Route.useRouteContext()
-    const { data: stats } = useStats()
-    const { data: apps } = useConsole()
-
     const [currency, setCurrency] = useState("UGX")
-    const { data: wallet } = useWalletBalances({ currency })
 
     return (
         <ViewController
@@ -76,18 +108,9 @@ function RouteComponent() {
             <ContentView.Section>
                 <ContentView.H1>Your business</ContentView.H1>
                 <ContentView variant="elevated">
-                    <ContentView.Row className="mx-auto w-full justify-evenly gap-5 p-5">
-                        <ContentView.Header
-                            heading="Monthly active users"
-                            p="Last 30 days"
-                        >
-                            <h1>{stats.monthlyActiveUsers}</h1>
-                        </ContentView.Header>
-                        <ContentView.Divider />
-                        <ContentView.Header heading="Total users" p="Current">
-                            <h1>{stats.totalUsers}</h1>
-                        </ContentView.Header>
-                    </ContentView.Row>
+                    <Suspense fallback={<SectionLoader />}>
+                        <StatsSection />
+                    </Suspense>
                 </ContentView>
             </ContentView.Section>
 
@@ -102,7 +125,9 @@ function RouteComponent() {
                         Add application
                     </Link>
                 </ContentView.Row>
-                <ApplicationGrid data={apps} />
+                <Suspense fallback={<SectionLoader />}>
+                    <AppsSection />
+                </Suspense>
             </ContentView.Section>
 
             <ContentView
@@ -113,18 +138,9 @@ function RouteComponent() {
                 <ContentView.Row className="justify-between gap-3">
                     <h1 className="tracking-tight">Wallet balance</h1>
                 </ContentView.Row>
-                {wallet?.total && (
-                    <ContentView.P>
-                        <ContentView.Span>
-                            {wallet.total.amount.toLocaleString(undefined, {
-                                maximumFractionDigits: 2,
-                            })}{" "}
-                        </ContentView.Span>
-                        <ContentView.Sub>
-                            {wallet.total.currency}
-                        </ContentView.Sub>
-                    </ContentView.P>
-                )}
+                <Suspense fallback={<SectionLoader />}>
+                    <WalletSection currency={currency} />
+                </Suspense>
                 <Select
                     aria-label="Preferred currency"
                     value={currency}
