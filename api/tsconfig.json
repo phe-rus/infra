@@ -11,10 +11,7 @@
         // Module resolution
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": false,
-        // Output settings
-        "declaration": true,
-        "outDir": "dist",
-        "noEmit": false,
+        "noEmit": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true
     },

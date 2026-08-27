@@ -1,6 +1,5 @@
 import { protectedMiddleware, publicsMiddleware } from "./middleware"
 import defineHandler from "./utils/defineHandler"
-import { migrateRoutes } from "./routes/migrate"
 import { apiRoute } from "./api"
 
 const app = defineHandler()
@@ -10,7 +9,6 @@ const app = defineHandler()
     })
     .use("*", publicsMiddleware)
     .use("*", protectedMiddleware)
-    .route("/migrate", migrateRoutes)
     .route("/api", apiRoute)
     .get('/', (c) => {
         return c.text('API')

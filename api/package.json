@@ -12,6 +12,7 @@
         "deploy": "wrangler deploy",
         "type-gen": "wrangler types",
         "typecheck": "tsc --noEmit",
+        "auth:gen": "bun x auth@latest generate --config=./src/auth/auth.ts --output=./src/schemas/auth.ts --yes",
         "db:gen": "bunx drizzle-kit generate --config=drizzle.config.ts",
         "db:local": "bunx wrangler d1 migrations apply infra-authentication --local",
         "db:remote": "bunx wrangler d1 migrations apply infra-authentication --remote",
@@ -39,6 +40,6 @@
         "drizzle-kit": "^1.0.0-rc.4",
         "tsx": "^4.23.12",
         "typescript": "^7",
-        "wrangler": "^4.126.0"
+        "wrangler": "^4.127.0"
     }
 }

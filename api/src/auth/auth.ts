@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth"
+import { betterAuth } from "better-auth/minimal"
 import {
     admin,
     jwt,
@@ -19,13 +19,14 @@ import {
 } from "./core/storage"
 import { password } from "./config/password"
 import { env } from "../utils/envs"
+import { dbContext } from "../db"
 
 const isProduction = env.NODE_ENV === "production"
 
 export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
     appName: env.VITE_APPNAME,
-    database: env.AUTH_DB,
+    database: dbContext(),
     trustedOrigins: createTrustedOrigins(
         env.TRUSTED_ORIGINS,
         env.BETTER_AUTH_URL
@@ -134,9 +135,7 @@ export const auth = betterAuth({
             rpName: env.VITE_APPNAME.toLowerCase().trim(),
             rpID: isProduction ? env.COOKIE_DOMAIN : undefined,
         }),
-        jwt({
-            disableSettingJwtHeader: true,
-        }),
+        jwt(),
         oauthProvider({
             loginPage: `${env.WWW_URL}/sign-in`,
             consentPage: `${env.WWW_URL}/consent`,
@@ -164,7 +163,10 @@ export const auth = betterAuth({
             refreshTokenExpiresIn: 60 * 60 * 24 * 30, // 30 days, rotates forward on every use
             codeExpiresIn: 60 * 2, // 2 minutes — exchanged immediately after the redirect
             refreshTokenGracePeriod: 30,
-            resources: [env.BETTER_AUTH_URL],
+            cachedTrustedClients: new Set([
+                'seer',
+                'pherus',
+            ]),
             customUserInfoClaims: async ({ user, scopes, jwt }) => ({
                 scopes: scopes,
                 clientId:
