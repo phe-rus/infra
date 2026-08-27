@@ -1,11 +1,5 @@
 import type { ResendOptions, SendEmailOptions } from "../types"
 
-// hand-rolled instead of the `resend` SDK: the SDK's entry point statically
-// pulls in postal-mime + standardwebhooks (inbound-email parsing and
-// webhook verification) even though this only ever calls the one send
-// endpoint — real dead weight in a Cloudflare Workers bundle. This is the
-// entire request the SDK would have made anyway: POST /emails, bearer
-// auth, JSON body, `{data, error}` response shape.
 export function createResendSender(options: ResendOptions) {
     return async function send({
         to,
