@@ -1,10 +1,3 @@
-// table-based layout + a mix of inline styles (the safe default every
-// client honors) and a <style> block with @media (prefers-color-scheme)
-// overrides (honored by Apple Mail, iOS/Gmail apps, Outlook.com — ignored
-// harmlessly everywhere else, which just keeps the light look). Colors are
-// hex conversions of this app's own OKLCH theme tokens (globals.css), not
-// picked freestyle, so the email actually matches the app's real palette.
-
 export const COLORS = {
     light: {
         bg: "#f4f4f0",
@@ -50,7 +43,14 @@ function colorStyleBlock(): string {
     </style>`
 }
 
-function layout(appName: string, cardContent: string, footerText: string): string {
+// exported so other plugins (e.g. @infra/payprovider's receipt email) can
+// build their own branded emails on the same visual system instead of
+// keeping their own copy of this layout/color scaffolding.
+export function layout(
+    appName: string,
+    cardContent: string,
+    footerText: string
+): string {
     return `<!doctype html>
 <html>
   <head>
@@ -85,6 +85,16 @@ function layout(appName: string, cardContent: string, footerText: string): strin
     </table>
   </body>
 </html>`
+}
+
+// a plain label/value row for the same table-based layout — receipts,
+// invoices, order confirmations, anything that needs a simple 2-column
+// line inside a `layout()` card.
+export function tableRow(label: string, value: string, valueColor = COLORS.light.text): string {
+    return `<tr>
+      <td class="muted" style="padding:6px 0;font-size:13px;color:${COLORS.light.muted};">${label}</td>
+      <td class="text" align="right" style="padding:6px 0;font-size:13px;color:${valueColor};">${value}</td>
+    </tr>`
 }
 
 function baseTemplate(
@@ -125,7 +135,11 @@ function baseTemplate(
     )
 }
 
-export function verificationEmailHtml(appName: string, name: string, url: string): string {
+export function verificationEmailHtml(
+    appName: string,
+    name: string,
+    url: string
+): string {
     return baseTemplate(
         appName,
         "Verify your email",
@@ -135,7 +149,11 @@ export function verificationEmailHtml(appName: string, name: string, url: string
     )
 }
 
-export function resetPasswordEmailHtml(appName: string, name: string, url: string): string {
+export function resetPasswordEmailHtml(
+    appName: string,
+    name: string,
+    url: string
+): string {
     return baseTemplate(
         appName,
         "Reset your password",
@@ -145,92 +163,16 @@ export function resetPasswordEmailHtml(appName: string, name: string, url: strin
     )
 }
 
-export function deleteAccountEmailHtml(appName: string, name: string, url: string): string {
+export function deleteAccountEmailHtml(
+    appName: string,
+    name: string,
+    url: string
+): string {
     return baseTemplate(
         appName,
         "Confirm account deletion",
         `Hi ${name}, confirm you want to permanently delete your ${appName} account. This can't be undone.`,
         "Delete my account",
         url
-    )
-}
-
-export type PaymentReceiptData = {
-    userName: string
-    email: string
-    type: "deposit" | "payout" | "refund"
-    amount: string
-    currency: string
-    provider: string | null
-    phoneNumber: string | null
-    referenceId: string
-    date: string
-}
-
-function receiptRow(label: string, value: string, valueColor = COLORS.light.text): string {
-    return `<tr>
-      <td class="muted" style="padding:6px 0;font-size:13px;color:${COLORS.light.muted};">${label}</td>
-      <td class="text" align="right" style="padding:6px 0;font-size:13px;color:${valueColor};">${value}</td>
-    </tr>`
-}
-
-const TYPE_LABEL: Record<PaymentReceiptData["type"], string> = {
-    deposit: "Mobile money deposit",
-    payout: "Payout",
-    refund: "Refund",
-}
-
-// modeled on Stripe/Anthropic-style payment receipts — the itemized detail
-// lives directly in the email body since there's no PDF generation yet
-// (an open decision, not built), rather than a "download receipt" button
-// pointing at something that doesn't exist
-export function paymentReceiptEmailHtml(appName: string, receipt: PaymentReceiptData): string {
-    const maskedPhone = receipt.phoneNumber ? `•••• ${receipt.phoneNumber.slice(-4)}` : null
-    const paymentMethod = [receipt.provider, maskedPhone].filter(Boolean).join(" · ")
-    const lineLabel = TYPE_LABEL[receipt.type]
-    const amount = `${receipt.amount} ${receipt.currency}`
-
-    const cardContent = `<tr>
-                    <td style="padding:28px 28px 0 28px;">
-                      <p class="text" style="margin:0 0 8px 0;font-size:14px;color:${COLORS.light.text};">Hi ${receipt.userName}, here's your receipt from ${appName}.</p>
-                      <p class="muted" style="margin:0 0 4px 0;font-size:13px;color:${COLORS.light.muted};">Receipt from ${appName}</p>
-                      <p class="text" style="margin:0;font-size:32px;font-weight:700;color:${COLORS.light.text};">${amount}</p>
-                      <p class="muted" style="margin:4px 0 0 0;font-size:13px;color:${COLORS.light.muted};">Paid ${receipt.date}</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding:20px 28px 0 28px;">
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                        ${receiptRow("Billed to", receipt.email)}
-                        ${receiptRow("Receipt number", receipt.referenceId)}
-                        ${paymentMethod ? receiptRow("Payment method", paymentMethod) : ""}
-                      </table>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="divider" style="padding:20px 28px 0 28px;border-top:1px solid ${COLORS.light.border};margin-top:8px;">
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px;">
-                        <tr>
-                          <td class="text" style="padding:4px 0;font-size:13px;color:${COLORS.light.text};">
-                            ${lineLabel}<br /><span class="muted" style="font-size:12px;color:${COLORS.light.muted};">Qty 1</span>
-                          </td>
-                          <td class="text" align="right" style="padding:4px 0;font-size:13px;color:${COLORS.light.text};">${amount}</td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="divider" style="padding:16px 28px 24px 28px;border-top:1px solid ${COLORS.light.border};">
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
-                        ${receiptRow("Total", amount)}
-                        ${receiptRow("Amount paid", amount, COLORS.light.text)}
-                      </table>
-                    </td>
-                  </tr>`
-
-    return layout(
-        appName,
-        cardContent,
-        "Questions about this transaction? Contact your account admin."
     )
 }

@@ -17,14 +17,27 @@ export type DodoEndpointsDeps = {
     dodoClient: DodoPayments | null
     dodo: DodoOptions | undefined
     isAdmin: (role: string) => boolean
-    sendPaymentReceipt?: (
-        email: string,
-        receipt: PaymentReceiptInfo
-    ) => Promise<void>
+    /** Builds the receipt email's subject/html. Actual sending is resolved per-request via ctx.context.getPlugin("notify") — see resolveNotifySend. */
+    buildReceipt?: (receipt: PaymentReceiptInfo) => {
+        subject: string
+        html: string
+    }
+}
+
+// same getPlugin-and-cast idiom as pawapay.ts's resolveOAuthAccess — this
+// plugin doesn't depend on @infra/notify (or any specific email package),
+// it just looks for whatever plugin registered itself with id "notify".
+function resolveNotifySend(
+    ctx: Parameters<typeof signJWT>[0]
+): ((data: { to: string; subject: string; html: string }) => Promise<void>) | null {
+    const notify = ctx.context.getPlugin("notify") as {
+        send?: (data: { to: string; subject: string; html: string }) => Promise<void>
+    } | null
+    return notify?.send ?? null
 }
 
 export function createDodoEndpoints(deps: DodoEndpointsDeps) {
-    const { dodoClient, dodo, isAdmin, sendPaymentReceipt } = deps
+    const { dodoClient, dodo, isAdmin, buildReceipt } = deps
 
     // find-or-create: every dodo endpoint needs the caller's own dodo
     // customer_id, Dodo's API is keyed by that, not by our own userId
@@ -293,17 +306,22 @@ export function createDodoEndpoints(deps: DodoEndpointsDeps) {
                 if (
                     status === "completed" &&
                     existing.status !== "completed" &&
-                    sendPaymentReceipt
+                    buildReceipt
                 ) {
-                    const user = await ctx.context.internalAdapter.findUserById(
-                        existing.userId
-                    )
-                    if (user) {
-                        await sendPaymentReceipt(user.email, {
+                    const sendNotify = resolveNotifySend(ctx)
+                    const user = sendNotify
+                        ? await ctx.context.internalAdapter.findUserById(
+                              existing.userId
+                          )
+                        : null
+                    if (user && sendNotify) {
+                        const { subject, html } = buildReceipt({
                             userName: user.name,
                             email: user.email,
                             type: "deposit",
-                            amount: ((data.total_amount ?? 0) / 100).toFixed(2),
+                            amount: (
+                                (data.total_amount ?? 0) / 100
+                            ).toFixed(2),
                             currency: data.currency ?? "",
                             provider: null,
                             phoneNumber: null,
@@ -313,15 +331,15 @@ export function createDodoEndpoints(deps: DodoEndpointsDeps) {
                                 month: "long",
                                 day: "numeric",
                             }),
-                        }).catch((error) => {
-                            // a failed receipt email shouldn't fail the
-                            // webhook ack — Dodo would just retry
-                            // delivery forever on a 500
-                            ctx.context.logger.error(
-                                "Failed to send payment receipt email",
-                                error
-                            )
                         })
+                        // runInBackgroundOrAwait (not a plain await+catch):
+                        // the webhook ack shouldn't wait on Resend's round
+                        // trip, and Dodo would just retry delivery forever
+                        // on a 500 if a failed send were allowed to fail
+                        // the ack — it already logs failures internally
+                        await ctx.context.runInBackgroundOrAwait(
+                            sendNotify({ to: user.email, subject, html })
+                        )
                     }
                 }
 

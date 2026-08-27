@@ -13,6 +13,7 @@
         "@better-auth/oauth-provider": "^1.7.1"
     },
     "dependencies": {
+        "@infra/notify": "workspace:*",
         "zod": "^4.4.3",
         "dodopayments": "^2.48.0",
         "@dodopayments/core": "^0.3.15"

@@ -88,14 +88,29 @@ export async function resolveOAuthAccess(
     }
 }
 
+// same getPlugin-and-cast idiom as resolveOAuthAccess above: this plugin
+// doesn't depend on @infra/notify (or any specific email package) — it
+// just looks for whatever plugin registered itself with id "notify" and,
+// if one exists, uses its `send`. No plugin registered → receipts are a
+// no-op even if `buildReceipt` is configured.
+function resolveNotifySend(
+    ctx: Parameters<typeof signJWT>[0]
+): ((data: { to: string; subject: string; html: string }) => Promise<void>) | null {
+    const notify = ctx.context.getPlugin("notify") as {
+        send?: (data: { to: string; subject: string; html: string }) => Promise<void>
+    } | null
+    return notify?.send ?? null
+}
+
 export type PawaPayEndpointsDeps = {
     client: PawaPayClient
     cache: KVNamespace
     isAdmin: (role: string) => boolean
-    sendPaymentReceipt?: (
-        email: string,
-        receipt: PaymentReceiptInfo
-    ) => Promise<void>
+    /** Builds the receipt email's subject/html. Actual sending is resolved per-request via ctx.context.getPlugin("notify") — see resolveNotifySend. */
+    buildReceipt?: (receipt: PaymentReceiptInfo) => {
+        subject: string
+        html: string
+    }
     /** Whether the Dodo rail is configured on this instance — surfaced to the frontend via paymentConfig. */
     dodoEnabled: boolean
 }
@@ -103,7 +118,7 @@ export type PawaPayEndpointsDeps = {
 export type { PawaPayEnvironment }
 
 export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
-    const { client, cache, isAdmin, sendPaymentReceipt, dodoEnabled } = deps
+    const { client, cache, isAdmin, buildReceipt, dodoEnabled } = deps
 
     // shared by both the session-gated /pay/config (used by the deposit/
     // payout forms) and the public /pay/countries.jsonc endpoint below —
@@ -304,12 +319,15 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
             }
         }
 
-        if (status === "completed" && sendPaymentReceipt) {
-            const user = await ctx.context.internalAdapter.findUserById(
-                existing.userId
-            )
-            if (user) {
-                await sendPaymentReceipt(user.email, {
+        if (status === "completed" && buildReceipt) {
+            const sendNotify = resolveNotifySend(ctx)
+            const user = sendNotify
+                ? await ctx.context.internalAdapter.findUserById(
+                      existing.userId
+                  )
+                : null
+            if (user && sendNotify) {
+                const { subject, html } = buildReceipt({
                     userName: user.name,
                     email: user.email,
                     type: existing.type as "deposit" | "payout" | "refund",
@@ -323,12 +341,14 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                         month: "long",
                         day: "numeric",
                     }),
-                }).catch((error) => {
-                    ctx.context.logger.error(
-                        "Failed to send payment receipt email",
-                        error
-                    )
                 })
+                // runInBackgroundOrAwait: this runs from both the real
+                // webhook and the reconciliation poll — neither should
+                // wait on Resend's round trip, and it already logs
+                // failures internally so no manual .catch is needed
+                await ctx.context.runInBackgroundOrAwait(
+                    sendNotify({ to: user.email, subject, html })
+                )
             }
         }
     }
@@ -452,10 +472,9 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
             }
         ),
         // self-service: re-sends the receipt email for one of the
-        // caller's own completed payments, reusing the same
-        // sendPaymentReceipt callback the webhook fires on first
-        // completion — just triggered on demand instead of by a status
-        // transition
+        // caller's own completed payments, reusing the same buildReceipt
+        // callback the webhook fires on first completion — just triggered
+        // on demand instead of by a status transition
         resendReceipt: createAuthEndpoint(
             "/pay/receipt/resend",
             {
@@ -464,7 +483,8 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                 body: z.object({ paymentId: z.string().min(1) }),
             },
             async (ctx) => {
-                if (!sendPaymentReceipt) {
+                const sendNotify = resolveNotifySend(ctx)
+                if (!buildReceipt || !sendNotify) {
                     throw new APIError("BAD_REQUEST", {
                         message:
                             "Receipt emails are not configured on this instance",
@@ -497,24 +517,44 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                     })
                 }
 
-                await sendPaymentReceipt(ctx.context.session.user.email, {
-                    userName: ctx.context.session.user.name,
-                    email: ctx.context.session.user.email,
-                    type: payment.type as "deposit" | "payout" | "refund",
-                    amount: payment.amount,
-                    currency: payment.currency,
-                    provider: payment.provider,
-                    phoneNumber: payment.phoneNumber,
-                    referenceId: payment.pawapayReferenceId,
-                    date: new Date(payment.createdAt).toLocaleDateString(
-                        "en-US",
-                        {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        }
-                    ),
-                })
+                // a user-clicked "resend" needs a real success/failure
+                // answer (the UI shows an error toast on rejection), so
+                // this one stays a plain await rather than
+                // runInBackgroundOrAwait — just caught and rethrown as a
+                // clean APIError instead of an opaque unhandled rejection
+                try {
+                    const { subject, html } = buildReceipt({
+                        userName: ctx.context.session.user.name,
+                        email: ctx.context.session.user.email,
+                        type: payment.type as "deposit" | "payout" | "refund",
+                        amount: payment.amount,
+                        currency: payment.currency,
+                        provider: payment.provider,
+                        phoneNumber: payment.phoneNumber,
+                        referenceId: payment.pawapayReferenceId,
+                        date: new Date(payment.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }
+                        ),
+                    })
+                    await sendNotify({
+                        to: ctx.context.session.user.email,
+                        subject,
+                        html,
+                    })
+                } catch (error) {
+                    ctx.context.logger.error(
+                        "Failed to resend payment receipt email",
+                        error
+                    )
+                    throw new APIError("INTERNAL_SERVER_ERROR", {
+                        message: "Could not send this receipt",
+                    })
+                }
 
                 return ctx.json({ sent: true })
             }
@@ -721,7 +761,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
         // must have been granted the "payments" scope, checked via
         // resolveOAuthAccess (validated against whatever oauth-provider
         // plugin is registered on this instance, not assumed — same
-        // reasoning as the injected isAdmin/emails.sendPaymentReceipt
+        // reasoning as the injected isAdmin / the notify-plugin lookup
         // elsewhere in this file). clientId in that case comes from the verified token
         // itself, not the caller-supplied body field, so one connected
         // app can't attribute a deposit to another app's clientId.

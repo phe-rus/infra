@@ -2,12 +2,10 @@ import { env } from "cloudflare:workers"
 import { createAuth, isAdminTier } from "@infra/auth"
 import { resources } from "../plugins/resources/src"
 import { payProvider } from "@infra/payprovider"
-import {
-    sendDeleteAccountEmail as sendDeleteAccountVerification,
-    sendPaymentReceiptEmail as sendPaymentReceipt,
-    sendResetPasswordEmail as sendResetPassword,
-    sendVerificationEmail,
-} from "./emails"
+import { notify } from "@infra/notify"
+
+const appName =
+    env.VITE_APPNAME.charAt(0).toUpperCase() + env.VITE_APPNAME.slice(1)
 
 export const auth = createAuth({
     baseURL: env.BETTER_AUTH_URL,
@@ -22,11 +20,7 @@ export const auth = createAuth({
         paths: ["/pay/*", "/r2/*", "/cdn/**"],
         sharedCounterPrefixes: ["/pay/"],
     },
-    emails: {
-        sendResetPassword,
-        sendVerificationEmail,
-        sendDeleteAccountVerification,
-    },
+    email: { enable: true },
     oauth: {
         loginPage: `${env.WWW_URL}/sign-in`,
         consentPage: `${env.WWW_URL}/consent`,
@@ -41,6 +35,14 @@ export const auth = createAuth({
         resources: [env.BETTER_AUTH_URL],
     },
     plugins: [
+        notify({
+            enable: true,
+            appName: appName,
+            resend: {
+                apiKey: env.RESEND_API_KEY,
+                from: env.RESEND_FROM_EMAIL,
+            },
+        }),
         resources({
             binding: env.R2,
             isAdmin: isAdminTier,
@@ -53,7 +55,7 @@ export const auth = createAuth({
                     : "sandbox",
             cache: env.PAYMENTS,
             isAdmin: isAdminTier,
-            emails: { sendPaymentReceipt },
+            emails: { appName },
             dodo: env.DODO_API_KEY
                 ? {
                       apiKey: env.DODO_API_KEY,
