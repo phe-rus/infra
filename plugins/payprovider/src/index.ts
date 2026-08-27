@@ -1,10 +1,7 @@
 import { schema } from "./schema"
 import { PawaPayClient } from "./pawapay/pawapay-client"
 import type { PawaPayEnvironment } from "./pawapay/pawapay-client"
-import { createDodoClient } from "./dodo/dodo-client"
-import type { DodoOptions } from "./dodo/dodo-client"
 import { createPawaPayEndpoints } from "./endpoints/pawapay"
-import { createDodoEndpoints } from "./endpoints/dodo"
 import type { PaymentReceiptInfo } from "./endpoints/pawapay"
 import { paymentReceiptEmailHtml } from "./receipt-template"
 
@@ -27,8 +24,6 @@ export type PayProviderOptions = {
             html: string
         }
     }
-    /** Dodo Payments rail — omitted (or leave undefined) to keep it inert, e.g. when DODO_API_KEY isn't configured. */
-    dodo?: DodoOptions
 }
 
 function defaultBuildReceipt(appName: string) {
@@ -39,12 +34,11 @@ function defaultBuildReceipt(appName: string) {
 }
 
 export function payProvider(options: PayProviderOptions) {
-    const { isAdmin, emails, dodo } = options
+    const { isAdmin, emails } = options
     const buildReceipt =
         emails?.buildReceipt ??
         (emails?.appName ? defaultBuildReceipt(emails.appName) : undefined)
     const client = new PawaPayClient(options.apiToken, options.environment)
-    const dodoClient = dodo ? createDodoClient(dodo) : null
 
     return {
         id: "pawapay",
@@ -53,13 +47,6 @@ export function payProvider(options: PayProviderOptions) {
             ...createPawaPayEndpoints({
                 client,
                 cache: options.cache,
-                isAdmin,
-                buildReceipt,
-                dodoEnabled: Boolean(dodoClient),
-            }),
-            ...createDodoEndpoints({
-                dodoClient,
-                dodo,
                 isAdmin,
                 buildReceipt,
             }),

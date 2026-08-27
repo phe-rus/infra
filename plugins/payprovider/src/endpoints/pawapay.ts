@@ -111,14 +111,12 @@ export type PawaPayEndpointsDeps = {
         subject: string
         html: string
     }
-    /** Whether the Dodo rail is configured on this instance — surfaced to the frontend via paymentConfig. */
-    dodoEnabled: boolean
 }
 
 export type { PawaPayEnvironment }
 
 export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
-    const { client, cache, isAdmin, buildReceipt, dodoEnabled } = deps
+    const { client, cache, isAdmin, buildReceipt } = deps
 
     // shared by both the session-gated /pay/config (used by the deposit/
     // payout forms) and the public /pay/countries.jsonc endpoint below —
@@ -362,7 +360,6 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
             async (ctx) => {
                 return ctx.json({
                     countries: await getCachedCountries(),
-                    dodoEnabled,
                 })
             }
         ),
@@ -449,7 +446,6 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                     amount: string
                     currency: string
                     pawapayReferenceId: string | null
-                    dodoReferenceId: string | null
                     status: string
                     failureReason: string | null
                     metadata: string | null
@@ -922,15 +918,12 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
 
                 // active reconciliation: PawaPay's sandbox/webhook can't
                 // reach a local dev instance, so this page's own poll is
-                // what actually discovers a terminal outcome there — a
-                // dodo-rail payment is reconciled separately, on return,
-                // by useSyncDodoReturn/dodoSync
+                // what actually discovers a terminal outcome there
                 if (intent.status === "pending" && intent.paymentId) {
                     const payment = await ctx.context.adapter.findOne<{
                         id: string
                         userId: string
                         type: string
-                        rail: string
                         provider: string | null
                         phoneNumber: string | null
                         amount: string
@@ -941,11 +934,7 @@ export function createPawaPayEndpoints(deps: PawaPayEndpointsDeps) {
                         model: "payment",
                         where: [{ field: "id", value: intent.paymentId }],
                     })
-                    if (
-                        payment &&
-                        payment.rail === "pawapay" &&
-                        payment.pawapayReferenceId
-                    ) {
+                    if (payment && payment.pawapayReferenceId) {
                         const checked = await client.checkDepositStatus(
                             payment.pawapayReferenceId
                         )

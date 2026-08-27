@@ -74,26 +74,6 @@ export const getUserDetail = createServerFn({ method: "GET" })
 export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>
 export type UsersListData = Awaited<ReturnType<typeof listUsers>>
 
-export const getUserWallet = createServerFn({ method: "GET" })
-    .middleware([AdminMiddleware])
-    .validator(userIdSchema)
-    .handler(async ({ data }) => {
-        const headers = getRequestHeaders()
-        const [{ paymentMethods }, { entitlements }] = await Promise.all([
-            auth.api.adminDodoPaymentMethods({
-                headers,
-                query: { userId: data.userId },
-            }),
-            auth.api.adminDodoBalance({
-                headers,
-                query: { userId: data.userId },
-            }),
-        ])
-        return { paymentMethods, entitlements }
-    })
-
-export type UserWalletData = Awaited<ReturnType<typeof getUserWallet>>
-
 export const createUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(createUserSchema)

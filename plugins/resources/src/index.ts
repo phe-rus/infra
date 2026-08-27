@@ -75,7 +75,7 @@ async function sniffAndValidate(file: File) {
     }
     const contentType = ALLOWED_TYPES[ext]
     if (ext === "svg") {
-        const sanitized = sanitizeSvg(new TextDecoder().decode(bytes))
+        const sanitized = await sanitizeSvg(new TextDecoder().decode(bytes))
         return {
             ext,
             contentType,

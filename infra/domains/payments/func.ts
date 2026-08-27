@@ -26,7 +26,7 @@ function toPayment(row: PaymentRow, user?: Pick<UserStub, "name" | "email">) {
         phoneNumber: row.phoneNumber,
         amount: row.amount,
         currency: row.currency,
-        referenceId: row.pawapayReferenceId ?? row.dodoReferenceId,
+        referenceId: row.pawapayReferenceId,
         status: row.status,
         failureReason: row.failureReason,
         createdAt: row.createdAt,
@@ -161,21 +161,6 @@ export const getWalletBalances = createServerFn({ method: "GET" })
         const headers = getRequestHeaders()
         const response = await auth.api.walletBalances({ headers, query: data })
         return response
-    })
-
-// empty balances (rather than throwing) when dodo isn't configured on
-// this instance, same as the self-service dodoBalance endpoint does when
-// a user has never checked out — lets the dashboard card just not render
-// instead of erroring
-export const getDodoMerchantBalance = createServerFn({ method: "GET" })
-    .middleware([AdminMiddleware])
-    .handler(async () => {
-        const headers = getRequestHeaders()
-        try {
-            return await auth.api.adminDodoMerchantBalance({ headers })
-        } catch {
-            return { balances: [] }
-        }
     })
 
 export const initiatePayout = createServerFn({ method: "POST" })

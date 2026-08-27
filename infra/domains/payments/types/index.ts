@@ -42,7 +42,6 @@ export type PaymentRow = {
     amount: string
     currency: string
     pawapayReferenceId: string | null
-    dodoReferenceId: string | null
     status: string
     failureReason: string | null
     metadata: string | null
@@ -67,7 +66,6 @@ export const PAYMENT_SELECT = [
     "amount",
     "currency",
     "pawapayReferenceId",
-    "dodoReferenceId",
     "status",
     "failureReason",
     "metadata",

@@ -19,7 +19,7 @@ import { useAppMutation } from "@infra/ui/hooks"
 import type { ListedUser, UsersListData } from "./func"
 import { getContext } from "@/lib/queryClient"
 import { meOptions } from "@/domains/auth"
-import { userDetailOptions, userWalletOptions, usersOptions } from "./get-users"
+import { userDetailOptions, usersOptions } from "./get-users"
 
 function patchUserInCache(
     old: UsersListData | undefined,
@@ -40,16 +40,6 @@ export const useUserDetail = (userId: string | null) =>
         queryOptions({
             ...userDetailOptions(userId ?? ""),
             enabled: Boolean(userId),
-        })
-    )
-
-// lazy on purpose: only fetched once the Wallet tab is actually opened,
-// not on every drawer open
-export const useUserWallet = (userId: string | null, enabled: boolean) =>
-    useQuery(
-        queryOptions({
-            ...userWalletOptions(userId ?? ""),
-            enabled: Boolean(userId) && enabled,
         })
     )
 
