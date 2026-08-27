@@ -1,7 +1,7 @@
 import defineHandler from "./utils/defineHandler"
-import { migrateRoutes } from "./routes/migrate"
 import { assetsRoute } from "./routes/assets"
 import { auth } from "./auth/auth"
+import { currentSession } from "./middleware"
 
 const authRoutes = defineHandler()
     .on(["POST", "GET"], "/*", (c) => {
@@ -30,7 +30,7 @@ const cdnRoute = defineHandler()
     })
 
 export const apiRoute = defineHandler()
+    .use("*", currentSession)
     .route("/auth", authRoutes)
     .route("/assets", assetsRoute)
     .route('/cdn', cdnRoute)
-    .route("/migrate", migrateRoutes)

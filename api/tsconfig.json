@@ -2,14 +2,26 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "moduleResolution": "Bundler",
         "strict": true,
         "skipLibCheck": true,
         "lib": ["ESNext"],
         "types": ["bun", "./worker-configuration.d.ts"],
         "jsx": "react-jsx",
-        "jsxImportSource": "hono/jsx"
+        "jsxImportSource": "hono/jsx",
+        // Module resolution
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": false,
+        // Output settings
+        "declaration": true,
+        "outDir": "dist",
+        "noEmit": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true
     },
-    "include": ["src", "**/**/*.ts", "worker-configuration.d.ts"],
+    "include": [
+        "src",
+        "**/**/*.ts",
+        "worker-configuration.d.ts"
+    ],
     "exclude": ["node_modules"]
 }

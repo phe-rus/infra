@@ -1,12 +1,11 @@
 import { getRuntimeKey } from "hono/adapter"
-import type { ApiEnv } from "../types"
 
-async function getEnv(): Promise<ApiEnv> {
+async function getEnv() {
     if (getRuntimeKey() === "workerd") {
         const { env } = await import("cloudflare:workers")
-        return env as unknown as ApiEnv
+        return env as Env
     } else {
-        return process.env as unknown as ApiEnv
+        return process.env as unknown as Env
     }
 }
 

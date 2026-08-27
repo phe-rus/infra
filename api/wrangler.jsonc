@@ -26,7 +26,8 @@
         {
             "binding": "AUTH_DB",
             "database_name": "infra-authentication",
-            "database_id": "d2b4d713-1806-4f29-99cb-6f3c9fb9d02d"
+            "database_id": "d2b4d713-1806-4f29-99cb-6f3c9fb9d02d",
+            "migrations_dir": "./.migrations"
         }
     ],
     "kv_namespaces": [

@@ -12,20 +12,32 @@
         "deploy": "wrangler deploy",
         "type-gen": "wrangler types",
         "typecheck": "tsc --noEmit",
+        "db:gen": "bunx drizzle-kit generate --config=drizzle.config.ts",
+        "db:local": "bunx wrangler d1 migrations apply infra-authentication --local",
+        "db:remote": "bunx wrangler d1 migrations apply infra-authentication --remote",
+        "db:studio": "bunx drizzle-kit studio --config=drizzle.config.ts",
+        "local": "bun run db:gen && bun run db:local",
+        "remote": "bun run local && bun run db:remote",
         "postinstall": "bun run type-gen"
     },
     "dependencies": {
-        "@better-auth/oauth-provider": "1.7.1",
-        "@better-auth/passkey": "1.7.1",
+        "@better-auth/drizzle-adapter": "^1.7.2",
+        "@better-auth/oauth-provider": "1.7.2",
+        "@better-auth/passkey": "1.7.2",
+        "@hono/zod-openapi": "^1.6.1",
         "@infra/payprovider": "workspace:*",
         "@infra/r2": "workspace:*",
-        "@hono/zod-openapi": "^1.6.1",
-        "better-auth": "1.7.1",
+        "@simplewebauthn/server": "^13.3.3",
+        "better-auth": "1.7.2",
+        "dotenv": "^17.4.2",
+        "drizzle-orm": "^1.0.0-rc.4",
         "hono": "^4.13.5",
         "zod": "^4.4.3"
     },
     "devDependencies": {
         "@types/node": "^26",
+        "drizzle-kit": "^1.0.0-rc.4",
+        "tsx": "^4.23.12",
         "typescript": "^7",
         "wrangler": "^4.126.0"
     }

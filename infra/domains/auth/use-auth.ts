@@ -1,17 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
-import {
-    completeSetup,
-    requestPasswordReset,
-    resetPassword,
-    runSetupMigrations,
-    signIn,
-    signOut,
-} from "./func"
+import { requestPasswordReset, resetPassword, signIn, signOut } from "./func"
 import { useAppMutation } from "@infra/ui/hooks"
 import { getContext } from "@/lib/queryClient"
 import { t } from "@infra/ui/components/sonner"
-import { meOptions, setupOptions } from "./get-auth"
+import { meOptions } from "./get-auth"
 
 export const useSignIn = () => {
     const router = useRouter()
@@ -67,45 +60,6 @@ export const useLogout = () => {
         errorMessage: "Sign out failed",
     })
 }
-
-export const useCompleteSetup = () => {
-    const router = useRouter()
-    const q = getContext()
-    return useMutation({
-        mutationFn: completeSetup,
-        onSuccess: (data) => {
-            if (data.error) {
-                t.error("Setup failed", {
-                    description: data.error,
-                })
-                return
-            }
-            t.success("Check your email", {
-                description: "Verify your address, then sign in to continue.",
-                duration: 4000,
-            })
-            q.invalidateQueries(setupOptions())
-            setTimeout(() => {
-                router.navigate({
-                    to: "/",
-                    replace: true,
-                    reloadDocument: true,
-                })
-            }, 50)
-        },
-        onError: (error) => {
-            t.error("Setup failed", {
-                description: error.message,
-            })
-        },
-    })
-}
-
-export const useRunSetupMigrations = () =>
-    useAppMutation({
-        mutationFn: () => runSetupMigrations(),
-        errorMessage: "Could not prepare the database",
-    })
 
 export const useRequestPasswordReset = () =>
     useAppMutation({

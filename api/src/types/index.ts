@@ -1,7 +1,6 @@
 import type { RequestIdVariables } from "hono/request-id"
 import type { auth } from "../auth/auth"
 
-
 export type AppTypes = {
     Bindings: Env
     Variables: RequestIdVariables & {
