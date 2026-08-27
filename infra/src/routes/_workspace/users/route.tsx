@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { isAdminTier } from "@/auth"
+import { isAdminTier } from "@/auth/core/permissions"
 
 export const Route = createFileRoute("/_workspace/users")({
     loader: ({ context: { user } }) => {

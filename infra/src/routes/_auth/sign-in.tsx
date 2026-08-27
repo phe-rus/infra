@@ -1,29 +1,24 @@
-import { useEffect } from "react"
-import { createFileRoute, Link, redirect } from "@tanstack/react-router"
+import { signInSchema, useSignIn } from "@/domains/auth"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { signInSchema, signInSearchSchema, useSignIn } from "@/domains/auth"
 import { ViewController } from "@infra/ui/widgets/view-controller"
-import { t } from "@infra/ui/components/sonner"
+import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import type { z } from "zod"
 
 export const Route = createFileRoute("/_auth/sign-in")({
-    validateSearch: signInSearchSchema,
     loader: async ({ context: { hasAdmin } }) => {
-        if (!hasAdmin) throw redirect({ to: "/setup", replace: true })
+        if (!hasAdmin) {
+            throw redirect({
+                to: "/setup",
+                replace: true
+            })
+        }
     },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const { reason } = Route.useSearch()
     const { mutateAsync: signIn } = useSignIn()
-
-    useEffect(() => {
-        if (reason === "session-expired") {
-            t.error("Signed out", { description: "Sign in again to continue" })
-        }
-    }, [reason])
 
     const defaultValues: z.input<typeof signInSchema> = {
         email: "",

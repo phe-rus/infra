@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@infra/ui/components/select"
-import { FIXED_ROLE_NAMES } from "@/auth"
+import { FIXED_ROLE_NAMES } from "@/auth/core/permissions"
 import { useCreateUser } from "@/domains/users"
 
 export type CreateUserProps = {

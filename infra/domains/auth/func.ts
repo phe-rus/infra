@@ -11,20 +11,22 @@ import {
     setupSchema,
     signInSchema,
 } from "./types"
+import { getServerURL } from "@/lib/getURL"
 
 function headers() {
     return Object.fromEntries(Object.entries(getRequestHeaders()))
 }
 
-export const getSession = createServerFn({ method: "GET" }).handler(
-    async () => {
-        try {
-            return await auth.api.getSession({ headers: headers() })
-        } catch {
-            return null
+export const getSession = createServerFn({ method: "GET" })
+    .handler(
+        async () => {
+            try {
+                return await auth.api.getSession({ headers: headers() })
+            } catch {
+                return null
+            }
         }
-    }
-)
+    )
 
 export const protectedSession = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
@@ -32,24 +34,28 @@ export const protectedSession = createServerFn({ method: "GET" })
         return context.sessions
     })
 
-export const getFirstUserStatus = createServerFn({ method: "GET" }).handler(
-    async () => {
-        try {
-            const ctx = await auth.$context
-            const count = await ctx.adapter.count({ model: "user" })
-            return { hasAdmin: count > 0 }
-        } catch {
-            return { hasAdmin: false }
+export const getFirstUserStatus = createServerFn({ method: "GET" })
+    .handler(
+        async () => {
+            try {
+                const ctx = await auth.$context
+                const count = await ctx.adapter.count({ model: "user" })
+                return { hasAdmin: count > 0 }
+            } catch {
+                return { hasAdmin: false }
+            }
         }
-    }
-)
+    )
 
 export const signIn = createServerFn({ method: "POST" })
     .validator(signInSchema)
     .handler(async ({ data }) => {
         try {
             const ctx = await auth.api.signInEmail({
-                body: data,
+                body: {
+                    ...data,
+                    callbackURL: getServerURL()
+                },
                 headers: headers(),
                 returnHeaders: true,
             })
@@ -66,15 +72,16 @@ export const signIn = createServerFn({ method: "POST" })
         }
     })
 
-export const signOut = createServerFn({ method: "POST" }).handler(
-    async () => {
-        const { headers: responseHeaders } = await auth.api.signOut({
-            headers: headers(),
-            returnHeaders: true,
-        })
-        forwardAuthHeaders(responseHeaders)
-    }
-)
+export const signOut = createServerFn({ method: "POST" })
+    .handler(
+        async () => {
+            const { headers: responseHeaders } = await auth.api.signOut({
+                headers: headers(),
+                returnHeaders: true,
+            })
+            forwardAuthHeaders(responseHeaders)
+        }
+    )
 
 export const requestPasswordReset = createServerFn({ method: "POST" })
     .validator(forgotPasswordSchema)
@@ -114,6 +121,7 @@ export const completeSetup = createServerFn({ method: "POST" })
                     email: data.email,
                     password: data.password,
                     rememberMe: data.rememberMe,
+                    callbackURL: getServerURL()
                 },
                 headers: headers(),
                 returnHeaders: true,
