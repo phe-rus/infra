@@ -12,8 +12,7 @@ Infra is open source, published by Pherus. Pherus uses it, but Infra is not Pher
 - **Centralized.** One Infra instance can serve every application you build, web, mobile, internal tools, APIs, instead of each app wiring up its own auth.
 - **Built on solid, standard primitives.** Email and password, passkeys, and two-factor auth work out of the box, powered by [better-auth](https://www.better-auth.com).
 - **A real OAuth 2.1 / OIDC provider**, not just its own proprietary sessions. Any application that speaks OAuth can register as a client and use Infra to sign users in, with a hosted login and consent screen (served by Infraccount, Infra's own end-user account app), a standard authorization-code + PKCE flow, and JWT-based access tokens.
-- **A real admin console, not just a database.** A dashboard is included for managing every account on the instance, registering and managing OAuth applications, browsing object storage, and reviewing payments, so running it day to day doesn't mean writing SQL by hand.
-- **Mobile-money payments**, via PawaPay: deposits, payouts, and refunds, with a receipt page for every transaction.
+- **A real admin console, not just a database.** A dashboard is included for managing every account on the instance, registering and managing OAuth applications, and browsing object storage, so running it day to day doesn't mean writing SQL by hand.
 
 ## Why a centralized auth server
 
@@ -31,7 +30,6 @@ Continue to **[Getting Started](getting-started.md)** to deploy your own instanc
 
 - **[Connect Your App](connect-your-app.md)**: OAuth 2.1/OIDC federation, for apps on a different domain than Infra. Code examples for TanStack Start, plain fetch/curl, SPAs and mobile, other frameworks, and machine-to-machine.
 - **[Sign In, Sign Up, Passkeys & 2FA](authentication.md)**: the direct-client mode, for apps you own on the same root domain as Infra, sharing a real session instead of an OAuth token. Covers email/password, passkey registration and sign-in, and 2FA.
-- **[Payments](payments.md)**: mobile-money deposits, payouts, and refunds via PawaPay, with real request/response examples.
 
 Or the system-level docs:
 

@@ -15,7 +15,6 @@ A clear, concise description of what the bug is.
 - [ ] `infra` (auth engine / admin dashboard)
 - [ ] `www` (Infraccount, the end-user app)
 - [ ] `@infra/r2` (object storage plugin)
-- [ ] `@infra/payment` (PawaPay plugin)
 - [ ] `@infra/ui` (shared UI kit)
 - [ ] Docs
 - [ ] Something else: <!-- describe -->

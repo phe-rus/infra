@@ -17,7 +17,7 @@ Include as much of the following as you can:
 
 - A description of the vulnerability and its potential impact
 - Steps to reproduce, or a proof of concept
-- The affected component (`infra`, `www`, `plugins/r2`, `plugins/payment`, `shared/ui`, or the deploy/build tooling)
+- The affected component (`infra`, `www`, `plugins/r2`, `shared/ui`, or the deploy/build tooling)
 - Whether it requires a specific configuration to trigger (a particular plugin enabled, a specific role, etc.)
 
 ## What to expect
@@ -28,6 +28,6 @@ Include as much of the following as you can:
 
 ## Scope
 
-In scope: the `infra` auth engine, the `www` end-user app, `@infra/r2`, `@infra/payment`, and `@infra/ui` as shipped in this repository.
+In scope: the `infra` auth engine, the `www` end-user app, `@infra/r2`, and `@infra/ui` as shipped in this repository.
 
 Out of scope: vulnerabilities in third-party dependencies with no Infra-specific exploit path (report those upstream instead), and issues that require an attacker to already have owner/admin access to a target instance (that access is trusted by design, see [`infra/CLAUDE.md`](infra/CLAUDE.md)'s Access model).

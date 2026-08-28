@@ -52,13 +52,12 @@ This is a Turborepo monorepo (bun workspaces):
 | `www/` ("Infraccount") | The end-user "my account" app, the same idea as myaccount.google.com. It runs no auth server of its own; it's a pure client of `infra` via `better-auth/react`'s `createAuthClient`. Hosts the OAuth provider's pages (`/sign-in`, `/create-account`, `/two-factor`, `/consent`, `/forgot-password`, `/reset-password`) plus profile, security (2FA, passkeys, active sessions), and wallets (saved mobile-money numbers, transaction history, receipts). |
 | `shared/ui` (`@infra/ui`) | The one UI kit, consumed by both apps. Neither app owns its own copy of components. |
 | `plugins/r2` (`@infra/r2`) | Object storage, extracted into a standalone package with server and client exports so `www` (or any third-party consumer) can call it too, not just `infra`'s own in-process `auth.api.*`. |
-| `plugins/payment` (`@infra/payment`) | PawaPay mobile-money payments, extracted the same way. |
 
 ## Why two apps
 
 Infra used to be a single app doing everything: the admin dashboard *and* the hosted OAuth login/consent/sign-up pages a connected app's users see. That coupled two very different audiences, the instance owner managing the platform and any end user of any connected app, into one surface.
 
-Splitting them means `infra` only ever needs to authenticate its own admins/owners, and `www`/Infraccount is the one place an end user (of *any* app pointed at this instance) signs in, manages passkeys/2FA, and manages payments. The same shape as how Google separates the internal admin console from `myaccount.google.com`.
+Splitting them means `infra` only ever needs to authenticate its own admins/owners, and `www`/Infraccount is the one place an end user (of *any* app pointed at this instance) signs in and manages passkeys/2FA. The same shape as how Google separates the internal admin console from `myaccount.google.com`.
 
 ## Running locally
 
@@ -76,7 +75,7 @@ bun run build       # production build, every package
 bun run typecheck   # tsc --noEmit, every package
 ```
 
-See [Getting Started](https://phe-rus.github.io/infra/#/getting-started) for prerequisites and first-run setup, or the full [docs site](https://phe-rus.github.io/infra/) for architecture, the OAuth provider, and payments.
+See [Getting Started](https://phe-rus.github.io/infra/#/getting-started) for prerequisites and first-run setup, or the full [docs site](https://phe-rus.github.io/infra/) for architecture and the OAuth provider.
 
 ## Deploying
 

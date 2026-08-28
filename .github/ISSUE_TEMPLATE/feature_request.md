@@ -23,7 +23,6 @@ Any alternative solutions or workarounds you've considered, and why they fall sh
 - [ ] `infra` (auth engine / admin dashboard)
 - [ ] `www` (Infraccount, the end-user app)
 - [ ] `@infra/r2` (object storage plugin)
-- [ ] `@infra/payment` (PawaPay plugin)
 - [ ] `@infra/ui` (shared UI kit)
 - [ ] A new plugin
 - [ ] Not sure

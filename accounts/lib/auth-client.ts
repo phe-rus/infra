@@ -9,7 +9,6 @@ import {
     r2Client,
     withOrigin,
 } from "../../plugins/resources/src/client"
-import { paymentClient } from "@infra/payprovider/client"
 import { proxiedImageSrc } from "@infra/tanstack-image"
 
 export function hosturl(): string {
@@ -47,6 +46,5 @@ export const authClient = createAuthClient({
         passkeyClient(),
         oauthProviderClient(),
         r2Client(),
-        paymentClient(),
     ],
 })

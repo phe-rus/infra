@@ -8,8 +8,7 @@ Infra ships as two apps in one repo: **`infra`**, the auth engine and admin dash
 
 - A Cloudflare account (Workers, D1, KV, and R2 are all available on the free tier to start)
 - [Bun](https://bun.sh) as the package manager
-- A [Resend](https://resend.com) API key, for transactional email (verification, password reset, account deletion, payment receipts)
-- If you want mobile-money payments: a [PawaPay](https://pawapay.io) sandbox or production API token
+- A [Resend](https://resend.com) API key, for transactional email (verification, password reset, account deletion)
 
 ## Install and run locally
 
@@ -40,4 +39,4 @@ bun run --cwd www deploy     # build and deploy www/Infraccount (wrangler deploy
 
 ## What's configurable, and what isn't
 
-Sign-in methods, access control (owner/admin/user), and OAuth provider settings are fixed in code (`infra/src/auth/index.ts`) rather than exposed as a settings page. Environment-specific values (secrets, the PawaPay environment, trusted origins, the URL each app points at the other) go through `.env.local` locally and Cloudflare's secret store / `wrangler.jsonc` in production. This is a deliberate choice: Infra favors sensible defaults you change in code over a large "editable after setup" surface, since most of these settings shouldn't change often and shouldn't be one accidental toggle away from a security regression.
+Sign-in methods, access control (owner/admin/user), and OAuth provider settings are fixed in code (`infra/src/auth/index.ts`) rather than exposed as a settings page. Environment-specific values (secrets, trusted origins, the URL each app points at the other) go through `.env.local` locally and Cloudflare's secret store / `wrangler.jsonc` in production. This is a deliberate choice: Infra favors sensible defaults you change in code over a large "editable after setup" surface, since most of these settings shouldn't change often and shouldn't be one accidental toggle away from a security regression.

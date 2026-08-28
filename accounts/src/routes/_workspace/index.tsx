@@ -12,36 +12,16 @@ import {
     InputGroupAddon,
     InputGroupInput,
 } from "@infra/ui/components/input-group"
-import { ContentView } from "@infra/ui/widgets/content-view"
-import { IconSearch, IconWallet } from "@tabler/icons-react"
+import { IconSearch } from "@tabler/icons-react"
 import { useMemo } from "react"
 import { resolveCdnUrl } from "@/lib/auth-client"
-import {
-    myPaymentsOptions,
-    paymentConfigOptions,
-    walletsOptions,
-    useMyPayments,
-    usePaymentConfig,
-    useWallets,
-    ExpenditureEstimateCard,
-    Wallet,
-    TransactionHistory,
-} from "@/domains/payments"
 
 export const Route = createFileRoute("/_workspace/")({
-    loader: async ({ context }) => {
-        await context.q.ensureQueryData(myPaymentsOptions())
-        await context.q.ensureQueryData(walletsOptions())
-        await context.q.ensureQueryData(paymentConfigOptions())
-    },
     component: RouteComponent,
 })
 
 function RouteComponent() {
     const { data: session } = useSuspenseQuery(currentOptions())
-    const { data: payments } = useMyPayments()
-    const { data: wallets } = useWallets()
-    const { data: config } = usePaymentConfig()
 
     const user = useMemo(() => {
         if (!session?.user) return null
@@ -83,34 +63,6 @@ function RouteComponent() {
                     <IconSearch />
                 </InputGroupAddon>
             </InputGroup>
-
-            <ContentView.Section className="mx-auto w-full gap-5 md:max-w-md">
-                <ContentView.Header
-                    as="h1"
-                    icon={<IconWallet />}
-                    heading="Wallets"
-                    p="Manage your wallets, accounts, assets, and transactions."
-                    pClassName="md:max-w-sm"
-                />
-
-                <Wallet.Cards>
-                    {wallets.wallets.map((wallet) => (
-                        <Wallet.Content
-                            key={wallet.id}
-                            data={wallet}
-                            wallets={wallets.wallets}
-                            config={config}
-                        />
-                    ))}
-                    <Wallet.AddTile
-                        wallets={wallets.wallets}
-                        config={config}
-                    />
-                </Wallet.Cards>
-                <ExpenditureEstimateCard data={payments} />
-
-                <TransactionHistory data={payments} config={config} />
-            </ContentView.Section>
         </ViewController>
     )
 }

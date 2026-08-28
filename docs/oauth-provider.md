@@ -20,7 +20,6 @@ Creating a client shows you its **client secret exactly once**, copy it immediat
 | `profile` | Name, avatar, and other profile fields |
 | `email` | Email address and verification status |
 | `offline_access` | A refresh token, so the application can stay signed in without the user re-authorizing |
-| `payments` | Access to Infra's payments endpoints on the user's behalf |
 
 ## The authorization flow
 

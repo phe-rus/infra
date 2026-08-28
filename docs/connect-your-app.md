@@ -201,6 +201,3 @@ curl -X POST $ISSUER/oauth2/introspect \
   -d token=$access_token
 ```
 
-## What connected apps can't do yet
-
-The `payments` scope exists and is selectable when registering a client, but Infra's payments endpoints (`/pay/*`) don't yet accept OAuth Bearer tokens, only an Infra dashboard session can call them today. Treat `payments` as reserved for a future release rather than something to build against right now.

@@ -9,15 +9,15 @@ Both apps talk to the same `infra` Worker over HTTP (CORS-enabled for `www`'s or
 
 ## Where data lives
 
-- **D1** (SQLite): accounts, sessions, OAuth clients/tokens/consents, payment records. This is the source of truth.
-- **KV**: rate limiting, session cache, and short-lived config caches (PawaPay's active configuration, FX rates). Nothing here is authoritative; it's all safe to lose.
+- **D1** (SQLite): accounts, sessions, OAuth clients/tokens/consents. This is the source of truth.
+- **KV**: rate limiting, session cache, and short-lived config caches. Nothing here is authoritative; it's all safe to lose.
 - **R2**: object storage. Avatars and general file uploads, served back out through a public CDN endpoint.
 
 You should not need to query any of these directly day to day. The dashboard and the auth API are the intended interface.
 
 ## Identity
 
-Sign-in itself (email/password, passkeys, two-factor) is handled by [better-auth](https://www.better-auth.com), rather than reimplemented from scratch. Three fixed roles exist: **owner** (the account created during first-run setup, full control including promoting/demoting other accounts), **admin** (broad operational access: manage users, OAuth applications, payments), and **user** (a plain authenticated account with no dashboard access at all; this is the role every self-service signup gets, including anyone signing up through a connected application's OAuth flow).
+Sign-in itself (email/password, passkeys, two-factor) is handled by [better-auth](https://www.better-auth.com), rather than reimplemented from scratch. Three fixed roles exist: **owner** (the account created during first-run setup, full control including promoting/demoting other accounts), **admin** (broad operational access: manage users, OAuth applications), and **user** (a plain authenticated account with no dashboard access at all; this is the role every self-service signup gets, including anyone signing up through a connected application's OAuth flow).
 
 ## Acting as an OAuth 2.1 / OIDC provider
 
@@ -27,10 +27,6 @@ Infra can be the identity provider for other applications, not just its own dash
 
 A generic, reusable R2 plugin backs avatar and file uploads. Uploads are validated by sniffing the actual file bytes (not trusting the extension or a client-declared content type), and SVGs are sanitized on upload to strip scripts and event handlers. Every object is reachable through one public CDN endpoint by its exact key; there's no separate "download" endpoint.
 
-## Payments
-
-A PawaPay-backed plugin handles mobile-money deposits, payouts, and refunds. See [Payments](payments.md) for details, including webhook signature verification.
-
 ## Rate limiting
 
-Every request is limited per client IP, using [better-auth's built-in rate limiter](https://www.better-auth.com/docs/concepts/rate-limit) backed by KV. Payments (`/pay/*`), object storage (`/r2/*`), and the public CDN endpoint (`/cdn/**`) each track their own independent budget, separate from the platform-wide default and from each other, so a burst against one doesn't eat into another's quota.
+Every request is limited per client IP, using [better-auth's built-in rate limiter](https://www.better-auth.com/docs/concepts/rate-limit) backed by KV. Object storage (`/r2/*`) and the public CDN endpoint (`/cdn/**`) each track their own independent budget, separate from the platform-wide default and from each other, so a burst against one doesn't eat into another's quota.

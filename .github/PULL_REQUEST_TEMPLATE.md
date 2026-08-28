@@ -11,7 +11,6 @@ What problem this solves, or what motivated it. Link an issue if there is one (`
 - [ ] `infra` (auth engine / admin dashboard)
 - [ ] `www` (Infraccount, the end-user app)
 - [ ] `@infra/r2` (object storage plugin)
-- [ ] `@infra/payment` (PawaPay plugin)
 - [ ] `@infra/ui` (shared UI kit)
 - [ ] Docs
 - [ ] Other: <!-- describe -->
