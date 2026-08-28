@@ -30,6 +30,7 @@ export const user = sqliteTable("user", {
     false,
   ),
   bio: text("bio"),
+  lastActiveAt: integer("lastActiveAt", { mode: "timestamp_ms" }),
 });
 
 export const session = sqliteTable(

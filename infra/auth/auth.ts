@@ -58,6 +58,7 @@ export const auth = betterAuth({
     user: {
         additionalFields: {
             bio: { type: "string", required: false },
+            lastActiveAt: { type: "date", required: false, input: false },
         },
         deleteUser: {
             enabled: true,

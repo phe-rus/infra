@@ -17,7 +17,7 @@ export const getStats = createServerFn({ method: "GET" })
                     headers,
                     query: {
                         limit: 1,
-                        filterField: "updatedAt",
+                        filterField: "lastActiveAt",
                         filterOperator: "gte",
                         filterValue: cutoff,
                     },
