@@ -91,14 +91,14 @@ export const auth = betterAuth({
     databaseHooks,
     advanced: {
         cookiePrefix: env.VITE_APPNAME.toLowerCase().trim(),
-        useSecureCookies: true,
+        useSecureCookies: isProduction,
         crossSubDomainCookies: {
             enabled: true,
             domain: isProduction ? env.COOKIE_DOMAIN : undefined,
         },
         defaultCookieAttributes: {
             httpOnly: true,
-            secure: true,
+            secure: isProduction,
             sameSite: 'Lax',
         },
         ipAddress: {

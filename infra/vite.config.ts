@@ -9,6 +9,9 @@ import { minifyBuild } from "@infra/minifybuild"
 import path from "node:path"
 
 const config = defineConfig({
+    server: {
+        cors: true
+    },
     resolve: {
         tsconfigPaths: true,
         alias: {
