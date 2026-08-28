@@ -12,10 +12,6 @@
     Runs on your own Cloudflare account. No per-user bill, no third party holding your users' data.
   </p>
 
-  <p style="margin-top: 15px; margin-bottom: 5px;">
-    📖 <a href="https://phe-rus.github.io/infra/"><b>Documentation</b></a>
-  </p>
-
   <h2 style="margin-top: 50px; margin-bottom: 15px; font-weight: 500;">Technologies we use & love</h2>
 
   <!--
@@ -49,23 +45,25 @@ This is a Turborepo monorepo (bun workspaces):
 | Package | What it is |
 |---|---|
 | [`infra/`](infra) | The auth engine. The real `betterAuth()` instance (all plugins, D1/KV/R2), the admin dashboard, and only the admin/owner-facing pages: `/setup`, admin `/sign-in`, `/forgot-password`. See [`infra/README.md`](infra/README.md). |
-| `www/` ("Infraccount") | The end-user "my account" app, the same idea as myaccount.google.com. It runs no auth server of its own; it's a pure client of `infra` via `better-auth/react`'s `createAuthClient`. Hosts the OAuth provider's pages (`/sign-in`, `/create-account`, `/two-factor`, `/consent`, `/forgot-password`, `/reset-password`) plus profile, security (2FA, passkeys, active sessions), and wallets (saved mobile-money numbers, transaction history, receipts). |
-| `shared/ui` (`@infra/ui`) | The one UI kit, consumed by both apps. Neither app owns its own copy of components. |
-| `plugins/r2` (`@infra/r2`) | Object storage, extracted into a standalone package with server and client exports so `www` (or any third-party consumer) can call it too, not just `infra`'s own in-process `auth.api.*`. |
+| `accounts/` | The end-user "my account" app, the same idea as myaccount.google.com. It runs no auth server of its own; it's a pure client of `infra` via `better-auth/react`'s `createAuthClient`. Hosts the OAuth provider's pages (`/sign-in`, `/create-account`, `/two-factor`, `/consent`, `/forgot-password`, `/reset-password`) plus profile and security (2FA, passkeys, active sessions). |
+| `www/` | The public marketing site, a single placeholder page today. No auth or data layer by design. |
+| `shared/ui` (`@infra/ui`) | The one UI kit, consumed by every app. No app owns its own copy of components. |
+| `plugins/assets` (`@infra/assets`) | Object storage, extracted into a standalone package with server and client exports so other apps (or any third-party consumer) can call it too, not just `infra`'s own in-process `auth.api.*`. |
 
-## Why two apps
+## Why three apps
 
 Infra used to be a single app doing everything: the admin dashboard *and* the hosted OAuth login/consent/sign-up pages a connected app's users see. That coupled two very different audiences, the instance owner managing the platform and any end user of any connected app, into one surface.
 
-Splitting them means `infra` only ever needs to authenticate its own admins/owners, and `www`/Infraccount is the one place an end user (of *any* app pointed at this instance) signs in and manages passkeys/2FA. The same shape as how Google separates the internal admin console from `myaccount.google.com`.
+Splitting them means `infra` only ever needs to authenticate its own admins/owners, and `accounts` is the one place an end user (of *any* app pointed at this instance) signs in and manages passkeys/2FA. The same shape as how Google separates the internal admin console from `myaccount.google.com`. `www` is separate again: the public-facing marketing site, with no auth or data layer at all.
 
 ## Running locally
 
 ```bash
-bun install                              # installs every workspace package
-cp infra/.env.example infra/.env.local   # infra's secrets, see comments in the file
-cp www/.env.example www/.env.local       # www's config (points at infra's URL)
-bun run dev                              # starts infra (:3000) and www (:3001) together
+bun install                                  # installs every workspace package
+cp infra/.env.example infra/.env.local       # infra's secrets, see comments in the file
+cp accounts/.env.example accounts/.env.local # accounts's config (points at infra's URL)
+cp www/.env.example www/.env.local           # www's config (points at accounts's URL)
+bun run dev                                  # starts infra (:3000), accounts (:3001), www (:3002)
 ```
 
 Whenever you edit an `.env`/`.env.local` file, re-run `bun run type-gen` and fully restart the dev server. Vite's own file-watcher restart isn't enough for Cloudflare Worker bindings/secrets to pick up the change.
@@ -75,18 +73,17 @@ bun run build       # production build, every package
 bun run typecheck   # tsc --noEmit, every package
 ```
 
-See [Getting Started](https://phe-rus.github.io/infra/#/getting-started) for prerequisites and first-run setup, or the full [docs site](https://phe-rus.github.io/infra/) for architecture and the OAuth provider.
+See [`infra/CLAUDE.md`](infra/CLAUDE.md) and [`accounts/CLAUDE.md`](accounts/CLAUDE.md) for architecture and the OAuth provider.
 
 ## Deploying
 
-`infra` and `www` are each their own Cloudflare Worker, deployed independently:
+`infra`, `accounts`, and `www` are each their own Cloudflare Worker, deployed independently:
 
 ```bash
 bun run --cwd infra deploy
+bun run --cwd accounts deploy
 bun run --cwd www deploy
 ```
-
-`docs/` stays at the repo root, not nested under `infra/`, since GitHub Pages serves it as a root-level `/docs` folder.
 
 ## Contributing
 

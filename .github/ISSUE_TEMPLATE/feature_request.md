@@ -21,8 +21,9 @@ Any alternative solutions or workarounds you've considered, and why they fall sh
 ## Where this would live
 
 - [ ] `infra` (auth engine / admin dashboard)
-- [ ] `www` (Infraccount, the end-user app)
-- [ ] `@infra/r2` (object storage plugin)
+- [ ] `accounts` (the end-user app)
+- [ ] `www` (public marketing site)
+- [ ] `@infra/assets` (object storage plugin)
 - [ ] `@infra/ui` (shared UI kit)
 - [ ] A new plugin
 - [ ] Not sure

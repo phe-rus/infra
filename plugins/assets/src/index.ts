@@ -85,20 +85,20 @@ async function sniffAndValidate(file: File) {
     return { ext, contentType, bytes }
 }
 
-export type R2ProviderOptions = {
+export type AssetsProviderOptions = {
     /** The R2 bucket binding this instance reads/writes to. */
     binding: R2Bucket
     /** Whether a given role has admin-tier access — the caller's own role model, not assumed here. */
     isAdmin: (role: string) => boolean
 }
 
-export function resources(options: R2ProviderOptions) {
+export function assets(options: AssetsProviderOptions) {
     const { binding, isAdmin } = options
     return {
-        id: "r2",
+        id: "assets",
         endpoints: {
             uploadAvatar: createAuthEndpoint(
-                "/r2/avatar",
+                "/assets/avatar",
                 {
                     method: "POST",
                     use: [sessionMiddleware],
@@ -161,7 +161,7 @@ export function resources(options: R2ProviderOptions) {
                 }
             ),
             uploadFile: createAuthEndpoint(
-                "/r2/upload",
+                "/assets/upload",
                 {
                     method: "POST",
                     use: [sessionMiddleware],
@@ -202,7 +202,7 @@ export function resources(options: R2ProviderOptions) {
                 }
             ),
             listObjects: createAuthEndpoint(
-                "/r2/list",
+                "/assets/list",
                 {
                     method: "GET",
                     use: [sessionMiddleware],
@@ -248,7 +248,7 @@ export function resources(options: R2ProviderOptions) {
             // (covers what used to be the separate self-service
             // files/delete endpoint)
             deleteObjects: createAuthEndpoint(
-                "/r2/delete",
+                "/assets/delete",
                 {
                     method: "POST",
                     use: [sessionMiddleware],
@@ -306,34 +306,6 @@ export function resources(options: R2ProviderOptions) {
                     return ctx.json({
                         success: true,
                         deleted: targetKeys.length,
-                    })
-                }
-            ),
-            // public, unauthenticated, by design — serves anything in the
-            // bucket by its exact key. There's no separate admin-only
-            // "download" path: this is the one way to read object content
-            // back out, for avatars and everything else alike
-            getCdnFile: createAuthEndpoint(
-                "/cdn/**:key",
-                { method: "GET" },
-                async (ctx) => {
-                    const object = await binding.get(ctx.params.key)
-                    if (!object) {
-                        return new Response(null, { status: 404 })
-                    }
-                    return new Response(object.body, {
-                        status: 200,
-                        headers: {
-                            "Content-Type":
-                                object.httpMetadata?.contentType ??
-                                "application/octet-stream",
-                            ...(object.httpEtag
-                                ? { ETag: object.httpEtag }
-                                : {}),
-                            "Cache-Control":
-                                "public, max-age=31536000, stale-while-revalidate=60",
-                            "X-Content-Type-Options": "nosniff",
-                        },
                     })
                 }
             ),

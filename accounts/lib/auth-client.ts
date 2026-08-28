@@ -6,9 +6,9 @@ import {
 import { passkeyClient } from "@better-auth/passkey/client"
 import { oauthProviderClient } from "@better-auth/oauth-provider/client"
 import {
-    r2Client,
+    assetsClient,
     withOrigin,
-} from "../../plugins/resources/src/client"
+} from "@infra/assets/client"
 import { proxiedImageSrc } from "@infra/tanstack-image"
 
 export function hosturl(): string {
@@ -45,6 +45,6 @@ export const authClient = createAuthClient({
         }),
         passkeyClient(),
         oauthProviderClient(),
-        r2Client(),
+        assetsClient(),
     ],
 })

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 import { env } from "cloudflare:workers"
-import { listAllObjects } from "@infra/r2/server"
+import { listAllObjects } from "@infra/assets/server"
 import { AdminMiddleware } from "@/middleware"
 import { deleteObjectsSchema, listPrefixSchema } from "./types"
 

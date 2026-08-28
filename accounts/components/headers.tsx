@@ -38,7 +38,7 @@ export const Headers = () => {
                 >
                     <div className="flex items-center gap-5">
                         <Link to="/" className="text-base font-black">
-                            Infraccount
+                            Account
                         </Link>
                         <nav className="hidden items-center gap-3 md:flex">
                             {listNavItems.map(({ label, to }, idx) => {

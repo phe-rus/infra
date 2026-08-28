@@ -17,7 +17,7 @@ import {
     getUserUsageBytes,
     listAllObjects,
     cdnPath,
-} from "@infra/r2/server"
+} from "@infra/assets/server"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { AdminMiddleware, SessionMiddleware } from "@/middleware"

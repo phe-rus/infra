@@ -11,20 +11,21 @@ Thanks for taking the time to contribute. This document covers how to set up the
 ## Project setup
 
 ```bash
-bun install                              # installs every workspace package
-cp infra/.env.example infra/.env.local   # infra's secrets, see comments in the file
-cp www/.env.example www/.env.local       # www's config (points at infra's URL)
-bun run dev                              # starts infra (:3000) and www (:3001) together
+bun install                                  # installs every workspace package
+cp infra/.env.example infra/.env.local       # infra's secrets, see comments in the file
+cp accounts/.env.example accounts/.env.local # accounts's config (points at infra's URL)
+cp www/.env.example www/.env.local           # www's config (points at accounts's URL)
+bun run dev                                  # starts infra (:3000), accounts (:3001), www (:3002)
 ```
 
 Whenever you edit an `.env`/`.env.local` file, re-run `bun run type-gen` and fully restart the dev server. Vite's own file-watcher restart isn't enough for Cloudflare Worker bindings/secrets to pick up the change.
 
-See [Getting Started](https://phe-rus.github.io/infra/#/getting-started) for prerequisites (a Cloudflare account, a Resend API key, optionally a PawaPay sandbox token).
+Prerequisites: a Cloudflare account and a [Resend](https://resend.com) API key (for transactional email). See `infra/.env.example` for the full list of values you need to fill in.
 
 ## Workflow
 
 ```bash
-bun run dev         # local dev, both apps
+bun run dev         # local dev, every app
 bun run build        # production build, every package
 bun run typecheck    # tsc --noEmit, every package
 bun run test          # vitest, every package that has tests
@@ -50,10 +51,10 @@ This repo uses [Conventional Commits](https://www.conventionalcommits.org/): a l
 
 ```
 feat: add passkey support to the sign-in flow
-fix: correct refund eligibility check against PawaPay's API
-refactor: consolidate payout and refund dialogs into one component
+fix: correct session redirect after impersonation ends
+refactor: consolidate the console's create/edit forms into one component
 chore: bump turbo to v2.10.11
-docs: fix broken link in the OAuth provider guide
+docs: fix broken link in infra/CLAUDE.md
 ```
 
 Keep the summary in the imperative mood ("add", not "added" or "adds"), and keep it to one line unless the change genuinely needs more explanation in the body.
@@ -62,7 +63,7 @@ Keep the summary in the imperative mood ("add", not "added" or "adds"), and keep
 
 - Keep a pull request focused on one change. A bug fix and an unrelated refactor are two pull requests, not one.
 - Describe what changed and why, not just what. If the change fixes a bug, describe the failure case.
-- Update `CLAUDE.md`/`infra/CLAUDE.md` in the same pull request if your change alters something they document (a route's behavior, a new plugin, a changed convention). Stale architecture docs are worse than none.
+- Update `CLAUDE.md`/`infra/CLAUDE.md`/`accounts/CLAUDE.md` in the same pull request if your change alters something they document (a route's behavior, a new plugin, a changed convention). Stale architecture docs are worse than none.
 - Add or update tests where it makes sense. There's no enforced coverage threshold, but a bug fix without a regression test is easy to reintroduce.
 
 ## Reporting a bug

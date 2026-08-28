@@ -127,7 +127,7 @@ export const useUpdateProfile = () =>
 
             if (value.avatar) {
                 const { data, error } =
-                    await authClient.r2.uploadAvatar(value.avatar)
+                    await authClient.assets.uploadAvatar(value.avatar)
                 if (error)
                     throw new Error(
                         error.message ?? "Could not upload avatar"

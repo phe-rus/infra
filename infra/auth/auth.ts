@@ -8,6 +8,7 @@ import { passkey } from "@better-auth/passkey"
 import { password } from "./config/password"
 import { env } from "cloudflare:workers"
 import { emailHooks } from "./emails"
+import { assets } from "@infra/assets"
 import { dbContext } from "@/db"
 import {
     admin,
@@ -79,7 +80,7 @@ export const auth = betterAuth({
         max: 100,
         storage: "secondary-storage",
         customRules: Object.fromEntries(
-            ["/r2/*", "/cdn/**"].map((path) => [
+            ["/assets/*"].map((path) => [
                 path,
                 { window: 60, max: 100 },
             ])
@@ -120,6 +121,7 @@ export const auth = betterAuth({
     },
     plugins: [
         admin(),
+        assets({ binding: env.R2, isAdmin: isAdminTier }),
         listUserAccounts({ isAdmin: isAdminTier }),
         twoFactor({
             issuer: env.VITE_APPNAME.toLowerCase().trim(),

@@ -1,8 +1,6 @@
 # infra
 
-📖 **[Documentation](https://phe-rus.github.io/infra/)**
-
-This is the auth engine: the real `betterAuth()` instance (all plugins, D1/KV/R2), the admin dashboard, and only the admin/owner-facing pages (`/setup`, admin `/sign-in`, `/forgot-password`). It's one package inside the `infra` monorepo, see the [root README](../README.md) for how it fits together with `www` (Infraccount, the end-user-facing app) and the shared packages.
+This is the auth engine: the real `betterAuth()` instance (all plugins, D1/KV/R2), the admin dashboard, and only the admin/owner-facing pages (`/setup`, admin `/sign-in`, `/forgot-password`). It's one package inside the `infra` monorepo, see the [root README](../README.md) for how it fits together with `accounts` (the end-user-facing app), `www` (the public marketing site), and the shared packages.
 
 Infra is a centralized, self-hosted authentication server. It runs on your own Cloudflare account and is meant to be the thing every application you build points at to authenticate its users, instead of paying a per-user bill to Auth0, Clerk, Firebase Auth, or Supabase Auth.
 
@@ -13,9 +11,8 @@ Infra is open source, published by Pherus. Pherus uses it, but Infra is not Pher
 - **Self-hosted.** Runs entirely on your own Cloudflare account: Workers, D1, KV, and R2. Your users, your database, your uptime.
 - **Centralized.** One Infra instance can serve every application you build (web, mobile, internal tools, APIs) instead of each app wiring up its own auth.
 - **Built on solid, standard primitives.** Email and password, passkeys, and two-factor auth work out of the box, powered by better-auth.
-- **A real OAuth 2.1 / OIDC provider**, not just its own proprietary sessions. Any application that speaks OAuth can register as a client and use Infra to sign users in, with a hosted login and consent screen (served by **Infraccount**, `www/`, infra's own companion app), a standard authorization-code + PKCE flow, and JWT-based access tokens.
-- **A real admin console, not just a database.** A dashboard is included for managing every account on the instance, registering and managing OAuth applications, browsing object storage, and reviewing payments, so running it day to day doesn't mean writing SQL by hand.
-- **Mobile-money payments**, via PawaPay: deposits, payouts, and refunds, with a receipt page for every transaction.
+- **A real OAuth 2.1 / OIDC provider**, not just its own proprietary sessions. Any application that speaks OAuth can register as a client and use Infra to sign users in, with a hosted login and consent screen (served by `accounts/`, infra's own companion app), a standard authorization-code + PKCE flow, and JWT-based access tokens.
+- **A real admin console, not just a database.** A dashboard is included for managing every account on the instance, registering and managing OAuth applications, and browsing object storage, so running it day to day doesn't mean writing SQL by hand.
 
 ## Approach
 
@@ -27,9 +24,9 @@ Most self-hosted auth servers assume you have a server: something always running
 
 Under the hood, Infra is built on better-auth, so sign-in flows (email and password, passkeys, two-factor) are handled by a library already trusted across the JS ecosystem rather than reimplemented from scratch, and the OAuth 2.1/OIDC provider layer is `@better-auth/oauth-provider`, a real spec-compliant implementation rather than a bespoke identity model.
 
-One place Infra deliberately differs from more minimal auth toolkits: it does not hand user management back to your own application code. Infra owns accounts, roles, sessions, OAuth clients, and payments directly, and ships a dashboard to manage all of it, because most people running their own auth server don't want to also build the admin tooling for it.
+One place Infra deliberately differs from more minimal auth toolkits: it does not hand user management back to your own application code. Infra owns accounts, roles, sessions, and OAuth clients directly, and ships a dashboard to manage all of it, because most people running their own auth server don't want to also build the admin tooling for it. Infra is deliberately just the auth/identity layer, though, the same split as Firebase Auth vs. Firebase's own billing: it doesn't own payments, and an app that needs them wires its own integration.
 
-Data lives in Cloudflare D1 (accounts, sessions, OAuth clients, payments), KV (rate limiting, session/config caching), and R2 (object storage, avatars and general files), all provisioned as part of your own Cloudflare account when you deploy. You should not need to query any of them directly; the dashboard and the auth API are the intended interface.
+Data lives in Cloudflare D1 (accounts, sessions, OAuth clients), KV (rate limiting, session/config caching), and R2 (object storage, avatars and general files), all provisioned as part of your own Cloudflare account when you deploy. You should not need to query any of them directly; the dashboard and the auth API are the intended interface.
 
 ## Status
 
@@ -37,9 +34,8 @@ Working today:
 
 - First-run setup (create the owner account) at `/setup`.
 - Full user management: roles, bans, sessions, password resets, 2FA visibility and admin-side disable.
-- A real OAuth 2.1 / OIDC provider: application registration, authorization-code + PKCE, JWT access tokens, managed from the **Console** page. The hosted login, create-account, and consent pages users see mid-flow are served by **Infraccount** (`www/`), not this app, see the root README for why.
-- Object storage (**Storage** page): per-user avatar and file uploads to R2, with a public CDN endpoint and an admin browser.
-- Mobile-money payments via PawaPay (**Billing** page for admins; the self-service deposit/history page for end users now lives in Infraccount): deposits, payouts, refunds, wallet balances, and a receipt page per transaction. Sandbox only for now, production PawaPay credentials aren't wired up yet.
+- A real OAuth 2.1 / OIDC provider: application registration, authorization-code + PKCE, JWT access tokens, managed from the **Console** page. The hosted login, create-account, and consent pages users see mid-flow are served by `accounts/`, not this app, see the root README for why.
+- Object storage (**Storage** page): an admin browser over R2, with a public CDN endpoint.
 
 Not built yet: a **Logs** page exists as a placeholder in the dashboard's navigation with no functionality behind it. There is no self-service API keys feature; it existed at one point and was removed as a deliberate scope decision.
 
@@ -50,13 +46,11 @@ This app is one package in a Turborepo monorepo, from the **repo root**:
 ```bash
 bun install                              # installs every workspace package
 cp infra/.env.example infra/.env.local   # fill in real secrets, see comments in the file
-bun run dev                              # starts both infra (:3000) and www/Infraccount (:3001)
+bun run dev                              # starts infra (:3000), accounts (:3001), www (:3002)
 bun run build                            # production build, every package
 bun run --cwd infra deploy               # build and deploy this app to your Cloudflare account
 ```
 
-You need both `infra` and `www` running locally even if you're only working on the auth engine. Sign-in, create-account, and consent are pages `infra` redirects to, not pages it renders itself. See the [root README](../README.md) for `www`'s own env setup.
+You need `infra` and `accounts` both running locally even if you're only working on the auth engine. Sign-in, create-account, and consent are pages `infra` redirects to, not pages it renders itself. See the [root README](../README.md) for `accounts`'s own env setup.
 
-See the [Getting Started](https://phe-rus.github.io/infra/#/getting-started) guide for prerequisites and first-run setup, or the full [docs site](https://phe-rus.github.io/infra/) for architecture, the OAuth provider, and payments.
-
-The first time you visit a fresh instance, you'll be walked through a short setup flow to create the owner account. Everything else, sign-in methods, access control, OAuth clients, payments configuration, is either fixed in code or configured through `.env.local`/`wrangler.jsonc` rather than a settings page, by design: this project favors sensible defaults you can change in code over a large "editable after setup" surface.
+The first time you visit a fresh instance, you'll be walked through a short setup flow to create the owner account. Everything else, sign-in methods, access control, OAuth clients, is either fixed in code or configured through `.env.local`/`wrangler.jsonc` rather than a settings page, by design: this project favors sensible defaults you can change in code over a large "editable after setup" surface.

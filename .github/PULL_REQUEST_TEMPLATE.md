@@ -9,8 +9,9 @@ What problem this solves, or what motivated it. Link an issue if there is one (`
 ## Where
 
 - [ ] `infra` (auth engine / admin dashboard)
-- [ ] `www` (Infraccount, the end-user app)
-- [ ] `@infra/r2` (object storage plugin)
+- [ ] `accounts` (the end-user app)
+- [ ] `www` (public marketing site)
+- [ ] `@infra/assets` (object storage plugin)
 - [ ] `@infra/ui` (shared UI kit)
 - [ ] Docs
 - [ ] Other: <!-- describe -->

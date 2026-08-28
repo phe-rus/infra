@@ -1,0 +1,6 @@
+# https://www.robotstxt.org/robotstxt.html
+# The public-facing pages (sign-in, create-account, ...) are fine to index;
+# everything past them requires a session, so a crawler can't reach real
+# account data regardless.
+User-agent: *
+Allow: /
