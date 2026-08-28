@@ -79,12 +79,13 @@ export const auth = betterAuth({
         window: 60,
         max: 100,
         storage: "secondary-storage",
-        customRules: Object.fromEntries(
-            ["/assets/*"].map((path) => [
-                path,
-                { window: 60, max: 100 },
-            ])
-        ),
+        customRules: {
+            "/assets/*": { window: 60, max: 100 },
+            "/get-session": { window: 60, max: 60 },
+            "/sign-out": { window: 60, max: 20 },
+            "/update-user": { window: 60, max: 15 },
+            "/delete-user": { window: 60, max: 5 },
+        },
         customStorage: createRateLimitStorage(env.RL, []),
     },
     secondaryStorage: createSecondaryStorage(env.CACHE),

@@ -9,7 +9,7 @@ export const getStats = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async () => {
         const headers = getRequestHeaders()
-        const cutoff = new Date(Date.now() - ACTIVE_WINDOW_MS).toISOString()
+        const cutoff = Date.now() - ACTIVE_WINDOW_MS
         const [{ total: totalUsers }, { total: monthlyActiveUsers }] =
             await Promise.all([
                 auth.api.listUsers({ headers, query: { limit: 1 } }),
