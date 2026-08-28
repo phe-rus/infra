@@ -138,10 +138,10 @@ export const auth = betterAuth({
             disableSettingJwtHeader: true
         }),
         oauthProvider({
-            loginPage: `${env.WWW_URL}/sign-in`,
-            consentPage: `${env.WWW_URL}/consent`,
+            loginPage: `${env.ACCOUNTS_URL}/sign-in`,
+            consentPage: `${env.ACCOUNTS_URL}/consent`,
             signUp: {
-                page: `${env.WWW_URL}/create-account`,
+                page: `${env.ACCOUNTS_URL}/create-account`,
             },
             storeClientSecret: "hashed",
             allowDynamicClientRegistration: false,

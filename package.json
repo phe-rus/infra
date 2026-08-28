@@ -5,6 +5,7 @@
     "type": "module",
     "workspaces": [
         "infra",
+        "accounts",
         "www",
         "plugins/*",
         "shared/*"

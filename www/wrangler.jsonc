@@ -1,6 +1,6 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "account",
+    "name": "www",
     "compatibility_date": "2026-08-08",
     "compatibility_flags": ["nodejs_compat"],
     "main": "src/server.ts",
@@ -15,7 +15,7 @@
     "routes": [
         {
             "custom_domain": true,
-            "pattern": "account.pherus.org"
+            "pattern": "pherus.org"
         }
     ]
 }
