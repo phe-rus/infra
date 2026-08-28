@@ -13,7 +13,9 @@ export const useLogout = () => {
 
     return useMutation({
         mutationFn: async () => {
-            return await authClient.signOut()
+            const { error } = await authClient.signOut()
+            if (error)
+                throw new Error(error.message ?? "Could not sign out")
         },
         onSuccess: async () => {
             t.success("Successfully", {

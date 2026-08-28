@@ -10,7 +10,7 @@ import path from "node:path"
 
 const config = defineConfig({
     server: {
-        cors: true
+        cors: false,
     },
     resolve: {
         tsconfigPaths: true,
