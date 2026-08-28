@@ -7,7 +7,14 @@ export function isAdminTier(role: string): boolean {
 }
 
 async function markUserActive(userId: string, ctx: {
-    context: { internalAdapter: { updateUser: (id: string, data: Record<string, unknown>) => Promise<unknown> } }
+    context: {
+        internalAdapter: {
+            updateUser: (
+                id: string,
+                data: Record<string, unknown>
+            ) => Promise<unknown>
+        }
+    }
 }) {
     await ctx.context.internalAdapter.updateUser(userId, {
         lastActiveAt: new Date(),
