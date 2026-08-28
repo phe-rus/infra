@@ -1,12 +1,12 @@
+import tailwind from "@infra/ui/globals.css?url"
+import { ThemeProvider } from "@infra/ui/theme"
+import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
 import {
     HeadContent,
     Outlet,
     Scripts,
     createRootRoute,
 } from "@tanstack/react-router"
-import tailwind from "@infra/ui/globals.css?url"
-import { ThemeProvider } from "@infra/ui/theme"
-import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
 
 export const Route = createRootRoute({
     head: () => ({
@@ -16,7 +16,8 @@ export const Route = createRootRoute({
             },
             {
                 name: "viewport",
-                content: "width=device-width, initial-scale=1",
+                content:
+                    "width=device-width, initial-scale=1",
             },
             {
                 title: "Pherus",
@@ -26,7 +27,7 @@ export const Route = createRootRoute({
             {
                 rel: "stylesheet",
                 href: tailwind,
-            },
+            }
         ],
     }),
     shellComponent: RootDocument,

@@ -1,7 +1,7 @@
-import type { ComponentPropsWithoutRef, PropsWithChildren } from "react"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import type { ComponentPropsWithoutRef, PropsWithChildren } from "react"
 import { cn } from "../../lib/utils"
 
 type ComposeViewportProps = PropsWithChildren<{
@@ -26,7 +26,7 @@ function Window({ className, children, ...props }: WindowProps) {
     return (
         <body
             className={cn(
-                "relative min-h-dvh min-w-full border bg-background",
+                "fixed h-svh min-w-full border bg-background",
                 "overflow-x-hidden selection:bg-olive-500/15",
                 "typeset wrap-anywhere duration-200",
                 "flex flex-col",
@@ -34,7 +34,12 @@ function Window({ className, children, ...props }: WindowProps) {
             )}
             {...props}
         >
-            {children}
+            <main className={cn(
+                "flex-1 min-h-svh overflow-auto",
+                'no-scrollbar'
+            )}>
+                {children}
+            </main>
         </body>
     )
 }
