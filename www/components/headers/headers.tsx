@@ -5,8 +5,8 @@ import { Link, useLocation } from "@tanstack/react-router"
 import { AnimatePresence } from "motion/react"
 import { useMemo, useState } from "react"
 import { config, isNavGroup } from "./config"
-import { MegaMenu } from "./views/mega-menu"
-import { MobileNav } from "./views/mobile-nav"
+import { MegaMenu } from "./mega-menu"
+import { MobileNav } from "./mobile-nav"
 
 export const Headers = () => {
     const location = useLocation()

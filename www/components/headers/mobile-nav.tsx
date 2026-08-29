@@ -1,7 +1,7 @@
 import { cn } from "@infra/ui/lib/utils"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { Link } from "@tanstack/react-router"
-import { config, isNavGroup } from "../config"
+import { config, isNavGroup } from "./config"
 
 type MobileNavProps = {
     open: boolean

@@ -1,7 +1,7 @@
 import { cn } from "@infra/ui/lib/utils"
 import { Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
-import type { NavSection } from "../config"
+import type { NavSection } from "./config"
 
 export function MegaMenu({
     sections,
