@@ -1,54 +1,86 @@
-export const config = [
+export interface NavLeaf {
+    label: string
+    description: string
+    to: string
+}
+
+export interface NavSection {
+    label: string
+    items: NavLeaf[]
+}
+
+export interface NavLink {
+    label: string
+    to: string
+}
+
+export interface NavGroup {
+    label: string
+    items: NavSection[]
+}
+
+export type NavItem = NavLink | NavGroup
+
+export function isNavGroup(item: NavItem): item is NavGroup {
+    return "items" in item
+}
+
+export const config: NavItem[] = [
     {
-        label: 'Overview',
-        to: '/'
+        label: "Overview",
+        to: "/",
     },
     {
-        label: 'Resources',
+        label: "Resources",
         items: [
             {
-                label: 'Platforms & Services',
+                label: "Platforms & Services",
                 items: [
                     {
-                        label: 'Infra',
-                        description: 'Centralized authentication infrastructure',
-                        to: '/r/infra'
+                        label: "Infra",
+                        description:
+                            "Centralized authentication infrastructure",
+                        to: "/r/infra",
                     },
                     {
-                        label: 'Accounts',
-                        description: 'Centralized user accounts',
-                        to: '/r/accounts'
-                    }
-                ]
+                        label: "Accounts",
+                        description:
+                            "Centralized user accounts",
+                        to: "/r/accounts",
+                    },
+                ],
             },
             {
-                label: 'Organizations',
+                label: "Organizations",
                 items: [
                     {
-                        label: 'Pherus health',
-                        description: 'Holistic health care services',
-                        to: '/r/pherus-health'
+                        label: "Pherus health",
+                        description:
+                            "Holistic health care services",
+                        to: "/r/pherus-health",
                     },
                     {
-                        label: 'Pherus space & robotics',
-                        description: 'Space exploration and robotics development',
-                        to: '/r/pherus-space'
+                        label: "Pherus space & robotics",
+                        description:
+                            "Space exploration and robotics development",
+                        to: "/r/pherus-space",
                     },
                     {
-                        label: 'Transspace',
-                        description: 'Queer-led resource platform',
-                        to: '/r/transspace'
-                    }
-                ]
-            }
-        ]
+                        label: "Transspace",
+                        description:
+                            "Queer-led resource platform",
+                        to: "/r/transspace",
+                    },
+                ],
+            },
+        ],
     },
     {
-        label: 'FAQ',
-        to: '/faq'
+        label: "FAQ",
+        to: "/faq",
     },
     {
-        label: 'Blog',
-        to: '/blog'
-    }
+        label: "Blog",
+        to: "/blog",
+    },
 ]

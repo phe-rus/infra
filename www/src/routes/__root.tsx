@@ -27,7 +27,7 @@ export const Route = createRootRoute({
             {
                 rel: "stylesheet",
                 href: tailwind,
-            }
+            },
         ],
     }),
     shellComponent: RootDocument,
