@@ -1,7 +1,7 @@
 import { ViewController } from '@infra/ui/widgets/view-controller'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_workspace/faq/')({
+export const Route = createFileRoute('/_workspace/r/$slug')({
   component: RouteComponent,
 })
 

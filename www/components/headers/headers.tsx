@@ -1,12 +1,13 @@
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
-import { IconMenu3 } from "@tabler/icons-react"
-import { Link, useLocation } from "@tanstack/react-router"
+import { IconMenu3, IconNotes } from "@tabler/icons-react"
+import { useLocation } from "@tanstack/react-router"
 import { AnimatePresence } from "motion/react"
 import { useMemo, useState } from "react"
 import { config, isNavGroup } from "./config"
-import { MegaMenu } from "./mega-menu"
-import { MobileNav } from "./mobile-nav"
+import { MegaMenu } from "./views/mega-menu"
+import { MobileNav } from "./views/mobile-nav"
+import { NavTrigger } from "./views/nav-trigger"
 
 export const Headers = () => {
     const location = useLocation()
@@ -46,95 +47,44 @@ export const Headers = () => {
                 <div className="flex items-center gap-5">
                     <h3 className="text-sm">Pherus</h3>
                     <nav className="hidden items-center gap-3 md:flex">
-                        {config.map((item, idx) => {
-                            if (isNavGroup(item)) {
-                                const active =
-                                    hoveredLabel ===
-                                    item.label
-                                return (
-                                    <div
-                                        key={idx}
-                                        onMouseEnter={() =>
-                                            setHoveredLabel(
-                                                item.label
-                                            )
-                                        }
-                                        className="relative"
-                                    >
-                                        <article
-                                            className={cn(
-                                                "group flex flex-col items-center gap-1",
-                                                "select-none transition-colors",
-                                                "cursor-pointer"
-                                            )}
-                                        >
-                                            <span
-                                                className={cn(
-                                                    "text-xs transition-colors",
-                                                    active &&
-                                                        "text-primary"
-                                                )}
-                                            >
-                                                {item.label}
-                                            </span>
-                                            <span
-                                                className={cn(
-                                                    "absolute -bottom-2.75 h-px w-full scale-x-0 bg-primary transition-transform duration-300 group-hover:scale-x-100",
-                                                    active &&
-                                                        "scale-x-100"
-                                                )}
-                                            />
-                                        </article>
-                                    </div>
-                                )
-                            }
-
-                            const active = isActive(item.to)
-
-                            return (
-                                <div
+                        {config.map((item, idx) =>
+                            isNavGroup(item) ? (
+                                <NavTrigger
                                     key={idx}
-                                    className="relative"
-                                >
-                                    <article
-                                        className={cn(
-                                            "group flex flex-col items-center gap-1",
-                                            "select-none transition-colors",
-                                            "cursor-pointer"
-                                        )}
-                                    >
-                                        <Link
-                                            to={item.to}
-                                            onMouseEnter={() =>
-                                                setHoveredLabel(
-                                                    null
-                                                )
-                                            }
-                                            className={cn(
-                                                "text-xs transition-colors",
-                                                active &&
-                                                    "text-primary"
-                                            )}
-                                        >
-                                            {item.label}
-                                        </Link>
-                                        <span
-                                            className={cn(
-                                                "absolute -bottom-2.75 h-px w-full scale-x-0 bg-primary transition-transform duration-300 group-hover:scale-x-100",
-                                                active &&
-                                                    "scale-x-100"
-                                            )}
-                                        />
-                                    </article>
-                                </div>
+                                    label={item.label}
+                                    active={
+                                        hoveredLabel ===
+                                        item.label
+                                    }
+                                    onMouseEnter={() =>
+                                        setHoveredLabel(
+                                            item.label
+                                        )
+                                    }
+                                />
+                            ) : (
+                                <NavTrigger
+                                    key={idx}
+                                    label={item.label}
+                                    to={item.to}
+                                    active={isActive(item.to)}
+                                    onMouseEnter={() =>
+                                        setHoveredLabel(null)
+                                    }
+                                />
                             )
-                        })}
+                        )}
                     </nav>
                 </div>
 
                 <nav className="flex items-center gap-3">
-                    <Button variant="destructive" size="xs">
-                        Logout
+                    <Button
+                        variant="secondary"
+                        size="xs"
+                        className="rounded-full"
+                    >
+                        <IconNotes />
+                        Documentation
                     </Button>
                     <Button
                         size="icon-xs"

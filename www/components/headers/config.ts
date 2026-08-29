@@ -19,6 +19,13 @@ export interface NavGroup {
     items: NavSection[]
 }
 
+export type NavTriggerProps = {
+    label: string
+    to?: string
+    active: boolean
+    onMouseEnter: () => void
+}
+
 export type NavItem = NavLink | NavGroup
 
 export function isNavGroup(item: NavItem): item is NavGroup {

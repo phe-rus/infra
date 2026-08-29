@@ -1,7 +1,7 @@
 import { cn } from "@infra/ui/lib/utils"
 import { Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
-import type { NavSection } from "./config"
+import type { NavSection } from "../config"
 
 export function MegaMenu({
     sections,
@@ -14,9 +14,12 @@ export function MegaMenu({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute inset-x-0 top-full border-b border-border/35 bg-popover shadow-lg backdrop-blur"
+            className={cn(
+                "absolute inset-x-0 top-full border-b border-border/35",
+                'bg-background shadow-lg backdrop-blur'
+            )}
         >
-            <div className="flex flex-wrap gap-8 px-5 py-8">
+            <div className="container flex flex-wrap gap-8 px-5 py-20">
                 {sections.map((section) => (
                     <div
                         key={section.label}
@@ -31,8 +34,9 @@ export function MegaMenu({
                                     key={leaf.to}
                                     to={leaf.to}
                                     className={cn(
-                                        "flex flex-col gap-0.5 rounded-none px-2 py-1.5",
-                                        "hover:bg-muted transition-colors"
+                                        "flex flex-col gap-0.5 rounded-2xl px-3 py-1.5",
+                                        "hover:bg-muted transition-colors",
+                                        'bg-card/35'
                                     )}
                                     activeProps={{
                                         className: "bg-muted",
