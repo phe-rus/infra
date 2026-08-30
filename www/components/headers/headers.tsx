@@ -89,7 +89,7 @@ export const Headers = () => {
                     <Button
                         size="icon-xs"
                         variant="secondary"
-                        className="flex md:hidden"
+                        className="flex md:hidden rounded-full"
                         onClick={() =>
                             setMobileOpen((prev) => !prev)
                         }

@@ -16,58 +16,64 @@ export function MobileNav({
 
     return (
         <DialogWidget
+            swipeDirection='left'
             open={open}
             onOpenChange={onOpenChange}
             title="Quick navigation"
             description="Quick navigation between pages"
         >
-            <nav className="flex flex-col gap-4">
+            <nav className="flex flex-col">
                 {config.map((item, idx) => {
                     if (isNavGroup(item)) {
                         return (
                             <div
                                 key={idx}
-                                className="flex flex-col gap-3"
+                                className="flex flex-col mb-1"
                             >
-                                <span className="text-xs font-medium text-muted-foreground">
+                                <span className="text-base font-medium text-muted-foreground">
                                     {item.label}
                                 </span>
-                                {item.items.map((section) => (
-                                    <div
-                                        key={section.label}
-                                        className="flex flex-col gap-1 pl-3"
-                                    >
-                                        <span className="text-xs text-muted-foreground/70">
-                                            {section.label}
-                                        </span>
-                                        {section.items.map(
-                                            (leaf) => (
-                                                <Link
-                                                    key={
-                                                        leaf.to
-                                                    }
-                                                    to={
-                                                        leaf.to
-                                                    }
-                                                    onClick={
-                                                        close
-                                                    }
-                                                    className={cn(
-                                                        "text-sm py-1 transition-colors"
-                                                    )}
-                                                    activeProps={{
-                                                        className:
-                                                            "text-primary!",
-                                                    }}
-                                                >
-                                                    {
-                                                        leaf.label
-                                                    }
-                                                </Link>
-                                            )
-                                        )}
-                                    </div>
-                                ))}
+                                <div className='flex flex-col'>
+                                    {item.items.map((section, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex flex-col gap-1 pl-3"
+                                        >
+                                            <span className={cn(
+                                                "text-sm text-muted-foreground/70 pb-1",
+                                                index === 0 ? "pt-2" : "pt-5"
+                                            )}>
+                                                {section.label}
+                                            </span>
+                                            {section.items.map(
+                                                (leaf) => (
+                                                    <Link
+                                                        key={
+                                                            leaf.to
+                                                        }
+                                                        to={
+                                                            leaf.to
+                                                        }
+                                                        onClick={
+                                                            close
+                                                        }
+                                                        className={cn(
+                                                            "text-sm transition-colors"
+                                                        )}
+                                                        activeProps={{
+                                                            className:
+                                                                "text-primary!",
+                                                        }}
+                                                    >
+                                                        {
+                                                            leaf.label
+                                                        }
+                                                    </Link>
+                                                )
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )
                     }
@@ -78,7 +84,7 @@ export function MobileNav({
                             to={item.to}
                             onClick={close}
                             className={cn(
-                                "text-lg transition-colors"
+                                "text-base transition-colors"
                             )}
                             activeProps={{
                                 className: "text-primary!",
