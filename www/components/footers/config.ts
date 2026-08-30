@@ -10,10 +10,10 @@ export interface FooterGroup {
     items: FooterLink[]
 }
 
-const resources = headerConfig.find((item) => item.label === "Resources")
-const divisionGroups =
-    resources && isNavGroup(resources)
-        ? resources.items.map((section) => ({
+const resourcesNav = headerConfig.find((item) => item.label === "Resources")
+const resourceGroups =
+    resourcesNav && isNavGroup(resourcesNav)
+        ? resourcesNav.items.map((section) => ({
               label: section.label,
               items: section.items.map((leaf) => ({ label: leaf.label, to: leaf.to })),
           }))
@@ -31,7 +31,7 @@ export const config: FooterGroup[] = [
             { label: "FAQ", to: "/faq" },
         ],
     },
-    ...divisionGroups,
+    ...resourceGroups,
     {
         label: "Legal",
         items: [

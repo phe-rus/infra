@@ -9,7 +9,7 @@ export const Footers = () => {
                 'container flex flex-col gap-5 w-full md:max-w-4xl',
                 'py-30'
             )}>
-                <div className='flex items-center'>
+                <div className='flex items-center w-full'>
                     <h1>Pherus</h1>
                 </div>
                 <span className='h-px w-full bg-primary/5' />

@@ -1,7 +1,7 @@
+import { Menu03Icon, Note01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Menu03Icon, Note01Icon } from "@hugeicons/core-free-icons"
 import { useLocation } from "@tanstack/react-router"
 import { AnimatePresence } from "motion/react"
 import { useMemo, useState } from "react"
@@ -34,8 +34,8 @@ export const Headers = () => {
     return (
         <header
             className={cn(
-                "sticky top-0 border-b backdrop-blur",
-                "z-55 border-border/15"
+                "sticky top-0 border-b backdrop-blur-2xl",
+                "bg-background z-55 border-border/15"
             )}
             onMouseLeave={() => setHoveredLabel(null)}
         >

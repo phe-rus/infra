@@ -7,6 +7,7 @@ import {
     Scripts,
     createRootRoute,
 } from "@tanstack/react-router"
+import { seo } from "@/lib/seo"
 
 export const Route = createRootRoute({
     head: () => ({
@@ -19,9 +20,12 @@ export const Route = createRootRoute({
                 content:
                     "width=device-width, initial-scale=1",
             },
-            {
+            { name: "robots", content: "index, follow" },
+            ...seo({
                 title: "Pherus",
-            },
+                description:
+                    "Pherus is a research and innovation company built on Open Knowledge: understand the problem first, then share what was learned.",
+            }),
         ],
         links: [
             {

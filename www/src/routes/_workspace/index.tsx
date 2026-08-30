@@ -12,10 +12,10 @@ export const Route = createFileRoute("/_workspace/")({
 })
 
 function RouteComponent() {
-    const divisions = useMemo(() => {
-        const resources = config.find((item) => item.label === "Resources")
-        if (!resources || !isNavGroup(resources)) return []
-        return resources.items.flatMap((section) =>
+    const resources = useMemo(() => {
+        const resourcesGroup = config.find((item) => item.label === "Resources")
+        if (!resourcesGroup || !isNavGroup(resourcesGroup)) return []
+        return resourcesGroup.items.flatMap((section) =>
             section.items.map((leaf) => ({
                 label: leaf.label,
                 slug: leaf.to.replace("/r/", ""),
@@ -72,7 +72,7 @@ function RouteComponent() {
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                        {divisions.map((item) => (
+                        {resources.map((item) => (
                             <Link
                                 key={item.slug}
                                 to="/r/$slug"
@@ -123,8 +123,8 @@ function RouteComponent() {
                             Most of what we learn gets shared
                             openly, ideas, research, and most
                             of the code included. It's the
-                            same approach behind every
-                            division here.
+                            same approach behind everything
+                            here.
                         </p>
                     </div>
 
