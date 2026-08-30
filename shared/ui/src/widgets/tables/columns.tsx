@@ -4,7 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { Checkbox } from "../../components/checkbox"
 import { Button } from "../../components/button"
-import { DropdownMenu, DropdownMenuTrigger } from "../../components/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../../components/dropdown-menu"
 import type { DataTableColumnDef } from "./data-table"
 
 type RowActionsMenuProps = PropsWithChildren
@@ -36,11 +36,15 @@ export function selectColumn<TData extends RowData>(): DataTableColumnDef<TData>
 
 export function RowActionsMenu({ children }: RowActionsMenuProps) {
     return (
-        <DropdownMenuTrigger>
-            <Button type="button" variant="ghost" size="icon-xs" aria-label="Row actions">
-                <HugeiconsIcon icon={MoreVerticalIcon} className="size-4" />
-            </Button>
-            <DropdownMenu aria-label="Row actions">{children}</DropdownMenu>
-        </DropdownMenuTrigger>
+        <DropdownMenu>
+            <DropdownMenuTrigger
+                render={
+                    <Button type="button" variant="ghost" size="icon-xs" aria-label="Row actions">
+                        <HugeiconsIcon icon={MoreVerticalIcon} className="size-4" />
+                    </Button>
+                }
+            />
+            <DropdownMenuContent aria-label="Row actions">{children}</DropdownMenuContent>
+        </DropdownMenu>
     )
 }

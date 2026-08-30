@@ -364,43 +364,45 @@ export function DataTable<TData extends RowData>({
 
             <Table aria-label={ariaLabel} className="divide-none!">
                 <TableHeader>
-                    {table.getHeaderGroups().flatMap((headerGroup) => {
-                        return headerGroup.headers.map((header) => (
-                            <TableHead key={header.id}>
-                                {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                                    <div
-                                        className="flex w-fit cursor-pointer items-center gap-1 text-muted-foreground hover:text-foreground"
-                                        onClick={header.column.getToggleSortingHandler()}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                        <div className="flex flex-col">
-                                            <HugeiconsIcon
-                                                icon={ChevronUpIcon}
-                                                className={cn(
-                                                    "size-3 opacity-20",
-                                                    header.column.getIsSorted() === "asc" &&
-                                                    "opacity-100"
-                                                )}
-                                            />
-                                            <HugeiconsIcon
-                                                icon={ChevronDownIcon}
-                                                className={cn(
-                                                    "-mt-1.5 size-3 opacity-20",
-                                                    header.column.getIsSorted() === "desc" &&
-                                                    "opacity-100"
-                                                )}
-                                            />
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <TableHead key={header.id}>
+                                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                                        <div
+                                            className="flex w-fit cursor-pointer items-center gap-1 text-muted-foreground hover:text-foreground"
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                            <div className="flex flex-col">
+                                                <HugeiconsIcon
+                                                    icon={ChevronUpIcon}
+                                                    className={cn(
+                                                        "size-3 opacity-20",
+                                                        header.column.getIsSorted() === "asc" &&
+                                                        "opacity-100"
+                                                    )}
+                                                />
+                                                <HugeiconsIcon
+                                                    icon={ChevronDownIcon}
+                                                    className={cn(
+                                                        "-mt-1.5 size-3 opacity-20",
+                                                        header.column.getIsSorted() === "desc" &&
+                                                        "opacity-100"
+                                                    )}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    flexRender(header.column.columnDef.header, header.getContext())
-                                )}
-                            </TableHead>
-                        ))
-                    })}
+                                    ) : (
+                                        flexRender(header.column.columnDef.header, header.getContext())
+                                    )}
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    ))}
                 </TableHeader>
                 <TableBody>
                     {rows.length ? (
