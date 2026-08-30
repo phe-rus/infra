@@ -8,7 +8,7 @@ import { passkey } from "@better-auth/passkey"
 import { password } from "./config/password"
 import { env } from "cloudflare:workers"
 import { emailHooks } from "./emails"
-import { assets } from "@infra/assets"
+import { assets } from "../../shared/assets/src"
 import { dbContext } from "@/db"
 import {
     admin,

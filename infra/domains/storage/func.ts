@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 import { env } from "cloudflare:workers"
-import { listAllObjects } from "@infra/assets/server"
+import { listAllObjects } from "../../../shared/assets/src/server"
 import { AdminMiddleware } from "@/middleware"
 import { deleteObjectsSchema, listPrefixSchema } from "./types"
 
@@ -41,8 +41,8 @@ export const deleteObjects = createServerFn({ method: "POST" })
         }
         const targetKeys = data.prefix
             ? (await listAllObjects(env.R2, data.prefix)).map(
-                  (obj) => obj.key
-              )
+                (obj) => obj.key
+            )
             : (data.keys ?? [])
         for (let i = 0; i < targetKeys.length; i += 1000) {
             await env.R2.delete(targetKeys.slice(i, i + 1000))

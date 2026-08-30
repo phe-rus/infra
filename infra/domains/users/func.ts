@@ -17,7 +17,7 @@ import {
     getUserUsageBytes,
     listAllObjects,
     cdnPath,
-} from "@infra/assets/server"
+} from "../../../shared/assets/src/server"
 import { auth } from "@/auth"
 import { forwardAuthHeaders } from "@/lib/forward-headers"
 import { AdminMiddleware, SessionMiddleware } from "@/middleware"
@@ -48,7 +48,10 @@ export const listUsers = createServerFn({ method: "GET" })
         return { users, total }
     })
 
-export type ListedUser = UserWithRole & { twoFactorEnabled?: boolean }
+export type ListedUser = UserWithRole & {
+    bio: string | null
+    twoFactorEnabled?: boolean
+}
 export const getUserDetail = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
@@ -96,7 +99,7 @@ export const createUser = createServerFn({ method: "POST" })
                     headers,
                     body: { email: data.email },
                 })
-                .catch(() => {})
+                .catch(() => { })
         }
 
         return user
@@ -339,8 +342,8 @@ export const uploadOwnAvatar = createServerFn({ method: "POST" })
         const finalBytes =
             ext === "svg"
                 ? new TextEncoder().encode(
-                      await sanitizeSvg(new TextDecoder().decode(bytes))
-                  )
+                    await sanitizeSvg(new TextDecoder().decode(bytes))
+                )
                 : bytes
 
         if (!sessions) throw new Error("Not authenticated")
