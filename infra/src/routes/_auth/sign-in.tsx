@@ -1,5 +1,6 @@
-import { signInSchema, useSignIn } from "@/domains/auth"
+import { signInSchema, useResendVerificationEmail, useSignIn } from "@/domains/auth"
 import { FieldGroup } from "@infra/ui/components/field"
+import { t } from "@infra/ui/components/sonner"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { createFileRoute, Link, redirect } from "@tanstack/react-router"
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/_auth/sign-in")({
 
 function RouteComponent() {
     const { mutateAsync: signIn } = useSignIn()
+    const { mutateAsync: resendVerificationEmail } = useResendVerificationEmail()
     const defaultValues: z.input<typeof signInSchema> = {
         email: "",
         password: "",
@@ -39,9 +41,10 @@ function RouteComponent() {
             onBlur: signInSchema,
         },
         onSubmit: async ({ value }) => {
+            setUnverifiedEmail(null)
             const search = window.location.search
             const oauthQuery = search.length > 1 ? search.slice(1) : undefined
-            await signIn(
+            const result = await signIn(
                 {
                     data: {
                         email: value.email,
@@ -56,6 +59,9 @@ function RouteComponent() {
                     },
                 }
             )
+            if (result.code === "EMAIL_NOT_VERIFIED") {
+                setUnverifiedEmail(value.email)
+            }
         },
     })
 
@@ -121,6 +127,27 @@ function RouteComponent() {
 
                     <form.submit label="Sign in" />
                 </form.AppForm>
+
+                {unverifiedEmail && (
+                    <div className="flex flex-col gap-2 rounded-md border border-border/35 p-3">
+                        <p className="text-sm text-muted-foreground">
+                            This account's email isn't verified yet.
+                        </p>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={isResending}
+                            onClick={() =>
+                                void resendVerificationEmail({
+                                    data: { email: unverifiedEmail },
+                                })
+                            }
+                        >
+                            {isResending ? "Sending…" : "Resend verification email"}
+                        </Button>
+                    </div>
+                )}
             </form>
         </ViewController>
     )

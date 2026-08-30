@@ -3,6 +3,7 @@ import { useRouter } from "@tanstack/react-router"
 import {
     completeSetup,
     requestPasswordReset,
+    resendVerificationEmail,
     resetPassword,
     signIn,
     signOut,
@@ -72,6 +73,12 @@ export const useCompleteSetup = () => {
                 t.error("Setup failed", { description: data.error })
                 return
             }
+            if (data.needsVerification) {
+                t.success("Account created", {
+                    description: "Check your email to verify the account before signing in.",
+                })
+                return
+            }
             t.success("Account created", {
                 description: "Signed in as the first admin account.",
             })
@@ -89,6 +96,14 @@ export const useCompleteSetup = () => {
         },
     })
 }
+
+export const useResendVerificationEmail = () =>
+    useAppMutation({
+        mutationFn: resendVerificationEmail,
+        successMessage: "Verification email sent",
+        successDescription: "Check your inbox for the new link.",
+        errorMessage: "Could not send verification email",
+    })
 
 export const useRequestPasswordReset = () =>
     useAppMutation({

@@ -55,13 +55,16 @@ export const signIn = createServerFn({ method: "POST" })
                 returnHeaders: true,
             })
             forwardAuthHeaders(ctx.headers)
-            const redirectUri = (
-                ctx.response as { redirect_uri?: string } | undefined
-            )?.redirect_uri
-            return { error: null, redirectUri: redirectUri ?? null }
+            const redirectUri = ctx.response?.redirect
+            return {
+                error: null,
+                code: null,
+                redirectUri: redirectUri ?? null
+            }
         } catch (error) {
             if (error instanceof APIError) {
-                return { error: error.message, redirectUri: null }
+                const code = (error.body as { code?: string } | undefined)?.code
+                return { error: error.message, code: code ?? null, redirectUri: null }
             }
             throw error
         }
@@ -122,6 +125,26 @@ export const completeSetup = createServerFn({ method: "POST" })
                 returnHeaders: true,
             })
             forwardAuthHeaders(ctx.headers)
+            const response = ctx.response as { token?: string | null } | undefined
+            return { error: null, needsVerification: !response?.token }
+        } catch (error) {
+            if (error instanceof APIError) {
+                return { error: error.message, needsVerification: false }
+            }
+            throw error
+        }
+    })
+
+export const resendVerificationEmail = createServerFn({ method: "POST" })
+    .validator(({ email }: { email: string }) => ({ email }))
+    .handler(async ({ data }) => {
+        try {
+            await auth.api.sendVerificationEmail({
+                body: {
+                    email: data.email,
+                    callbackURL: getServerURL(),
+                },
+            })
             return { error: null }
         } catch (error) {
             if (error instanceof APIError) return { error: error.message }

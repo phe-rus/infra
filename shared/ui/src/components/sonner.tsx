@@ -9,6 +9,7 @@ import {
     TriangleAlertIcon,
 } from "@hugeicons/core-free-icons"
 import { format } from "date-fns"
+import type { ComponentPropsWithoutRef } from "react"
 
 import { cn } from "../lib/utils"
 import { Button } from "./button"
@@ -240,7 +241,11 @@ export function ToasterProvider(props: ToastPrimitive.Provider.Props) {
     )
 }
 
-type ToastOptions = { description?: string; duration?: number }
+type ToastOptions = {
+    description?: string
+    duration?: number
+    actionProps?: ComponentPropsWithoutRef<"button">
+}
 type ToastArgs = [title: string, options?: ToastOptions]
 function add(
     type: string | undefined,
@@ -252,6 +257,7 @@ function add(
         type,
         description: options?.description,
         timeout: options?.duration,
+        actionProps: options?.actionProps,
         data: { createdAt: Date.now() },
     })
 }
