@@ -38,6 +38,13 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
                 rel: "stylesheet",
                 href: tailwind,
             },
+            { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+            { rel: "icon", type: "image/png", href: "/favicon.png" },
+            { rel: "apple-touch-icon", href: "/favicon.svg" },
+            { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
+            { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
+            { rel: "preconnect", href: "https://fonts.googleapis.com" },
+            { rel: "preconnect", href: "https://fonts.gstatic.com" }
         ],
     }),
     beforeLoad: async ({ context }) => {

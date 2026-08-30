@@ -230,24 +230,37 @@ export const resources: Resource[] = [
         tagline: "Queer people helping queer people through shared knowledge and experience.",
         body: [
             {
-                p: "Transspace started from a personal problem: navigating a transition in Uganda, with reliable information about healthcare, safe spaces, and legal support scattered across private conversations no newcomer could find.",
+                p: "A community-driven platform built to help LGBTQIA+ people discover trusted resources, opportunities, knowledge, and support through the experiences of other queer people.",
+            },
+            {
+                p: "The idea came from personal experience. While navigating a transition in Uganda, reliable information about healthcare providers, safe spaces, legal support, employment, education, and housing was surprisingly hard to find. Much of it existed, but scattered across word of mouth, private conversations, Google searches, Reddit, social media, and small community networks.",
+            },
+            {
+                p: "Transspace exists to bring that knowledge together and make it easier for people to discover, contribute to, and learn from.",
             },
             { h2: "Q2Q, queer-to-queer" },
             {
-                p: "Knowledge shared directly between people who've navigated the same situation, rather than routed through institutions or centralized authorities deciding what's useful.",
+                p: "Queer people helping other queer people through shared knowledge, opportunities, recommendations, and practical experience. Rather than relying entirely on institutions or centralized authorities to determine what's useful, Transspace gives communities a way to share what they've personally learned and help others navigate similar situations.",
             },
             { h2: "What people can discover" },
             {
                 ul: [
-                    "Healthcare and transition support",
-                    "Friendly spaces, businesses and venues",
-                    "Jobs and mentorship",
-                    "Legal and education support",
-                    "Mutual aid",
+                    "Healthcare & transition: providers, gender-affirming care, hormones, mental health, HIV services",
+                    "Friendly spaces: businesses, community centers, housing, venues identified as welcoming",
+                    "Jobs & opportunity: employment, freelance work, mentorship, internships, networks",
+                    "Skills: development, design, trades, cooking, entrepreneurship, finance",
+                    "Legal & education: lawyers, advocacy, scholarships, immigration guidance, housing help",
+                    "Mutual aid: financial assistance, volunteering, crowdfunding, peer support",
+                    "Queer businesses: discover and support queer-owned businesses and creators",
+                    "Firsthand knowledge: from people who've already navigated what you're facing now",
                 ],
             },
+            { h2: "Local knowledge, global reach" },
             {
-                p: "Launching second, right behind Seer, with categories chosen by asking people directly what they'd searched for and failed to find, not by guessing at a taxonomy in advance.",
+                p: "Someone in Uganda might share information about a healthcare provider that helps another person in Uganda. Someone in Kenya might contribute knowledge about a service that benefits someone across the border. Its value grows from the knowledge people contribute to it.",
+            },
+            {
+                p: "Launching second, right behind Seer. Categories were chosen by asking people directly what they'd searched for and failed to find, not by guessing at a taxonomy in advance.",
             },
         ],
     },

@@ -1,3 +1,4 @@
+import { organizationJsonLd, seo } from "@/lib/seo"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
@@ -7,7 +8,6 @@ import {
     Scripts,
     createRootRoute,
 } from "@tanstack/react-router"
-import { organizationJsonLd, seo } from "@/lib/seo"
 
 export const Route = createRootRoute({
     head: () => {
@@ -35,6 +35,16 @@ export const Route = createRootRoute({
                     rel: "stylesheet",
                     href: tailwind,
                 },
+                { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+                { rel: "apple-touch-icon", href: "/favicon.svg" },
+                { rel: "manifest", href: "/site.webmanifest" },
+
+                { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
+                { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
+
+                { rel: "preconnect", href: "https://fonts.googleapis.com" },
+                { rel: "preconnect", href: "https://fonts.gstatic.com" },
+
                 ...links,
             ],
             scripts: [
