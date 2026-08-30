@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import { desc, eq } from "drizzle-orm"
 import { APIError } from "better-auth/api"
+import { waitUntil } from "cloudflare:workers"
 import { auth } from "@/auth"
 import { logManagementEvent } from "@/lib/analytics"
 import { db } from "@/db"
@@ -174,11 +175,13 @@ export const setAppActive = createServerFn({ method: "POST" })
             .update(oauthClient)
             .set({ disabled: !data.active })
             .where(eq(oauthClient.clientId, data.clientId))
-        logManagementEvent({
-            action: data.active ? "console.enable-app" : "console.disable-app",
-            actorId: sessions.user.id,
-            targetId: data.clientId,
-        })
+        waitUntil(
+            logManagementEvent({
+                action: data.active ? "console.enable-app" : "console.disable-app",
+                actorId: sessions.user.id,
+                targetId: data.clientId,
+            })
+        )
         return { success: true }
     })
 
@@ -217,11 +220,13 @@ export const rotateApp = createServerFn({ method: "POST" })
                     updatedAt: new Date(),
                 })
                 .where(eq(oauthClient.clientId, data.clientId))
-            logManagementEvent({
-                action: "console.rotate-app",
-                actorId: sessions.user.id,
-                targetId: data.clientId,
-            })
+            waitUntil(
+                logManagementEvent({
+                    action: "console.rotate-app",
+                    actorId: sessions.user.id,
+                    targetId: data.clientId,
+                })
+            )
             return { clientSecret }
         }
     )
@@ -242,11 +247,13 @@ export const removeApp = createServerFn({ method: "POST" })
             await db
                 .delete(oauthClient)
                 .where(eq(oauthClient.clientId, data.clientId))
-            logManagementEvent({
-                action: "console.remove-app",
-                actorId: sessions.user.id,
-                targetId: data.clientId,
-            })
+            waitUntil(
+                logManagementEvent({
+                    action: "console.remove-app",
+                    actorId: sessions.user.id,
+                    targetId: data.clientId,
+                })
+            )
             return { success: true }
         }
     )

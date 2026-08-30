@@ -1,9 +1,12 @@
 import { recentEventsOptions, useRecentEvents } from "@/domains/stats"
+import type { RecentEventsData } from "@/domains/stats"
 import { Badge } from "@infra/ui/components/badge"
 import { formatUtc } from "@infra/ui/lib/date"
-import { ContentView } from "@infra/ui/widgets/content-view"
+import type { DataTableColumnDef } from "@infra/ui/widgets/tables"
+import { DataTable } from "@infra/ui/widgets/tables"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { createFileRoute } from "@tanstack/react-router"
+import { useMemo } from "react"
 
 export const Route = createFileRoute("/_workspace/logs/")({
     loader: async ({ context: { q } }) => {
@@ -12,8 +15,61 @@ export const Route = createFileRoute("/_workspace/logs/")({
     component: RouteComponent,
 })
 
+type Event = RecentEventsData["events"][number]
+
 function RouteComponent() {
     const { data } = useRecentEvents()
+
+    const columns = useMemo(
+        (): DataTableColumnDef<Event>[] => [
+            {
+                accessorKey: "category",
+                header: "Category",
+                cell: ({ row }) => (
+                    <Badge variant={row.original.category === "auth" ? "secondary" : "outline"}>
+                        {row.original.category}
+                    </Badge>
+                ),
+            },
+            { accessorKey: "event", header: "Event" },
+            {
+                accessorKey: "outcome",
+                header: "Outcome",
+                cell: ({ row }) => {
+                    const { outcome } = row.original
+                    if (!outcome) return <span className="text-muted-foreground">-</span>
+                    return (
+                        <Badge variant={outcome === "success" ? "default" : "outline"}>
+                            {outcome}
+                        </Badge>
+                    )
+                },
+            },
+            { accessorKey: "actor", header: "Actor" },
+            {
+                accessorKey: "target",
+                header: "Target",
+                cell: ({ row }) =>
+                    row.original.target || <span className="text-muted-foreground">-</span>,
+            },
+            { accessorKey: "ip", header: "IP" },
+            {
+                accessorKey: "country",
+                header: "Location",
+                cell: ({ row }) => {
+                    const { country, city, region } = row.original
+                    if (!country) return <span className="text-muted-foreground">-</span>
+                    return [city, region, country].filter(Boolean).join(", ")
+                },
+            },
+            {
+                accessorKey: "timestamp",
+                header: "Time",
+                cell: ({ row }) => formatUtc(row.original.timestamp, "PPp"),
+            },
+        ],
+        []
+    )
 
     return (
         <ViewController
@@ -24,66 +80,13 @@ function RouteComponent() {
                 />
             }
         >
-            <ContentView.Section>
-                <ContentView.H1>Auth events</ContentView.H1>
-                <ContentView variant="elevated">
-                    {data.authEvents.length === 0 ? (
-                        <ContentView.Row className="p-3 text-sm text-muted-foreground">
-                            No auth events yet.
-                        </ContentView.Row>
-                    ) : (
-                        data.authEvents.map((event, idx) => (
-                            <ContentView.Row key={idx} className="justify-between p-3">
-                                <div className="flex items-center gap-2">
-                                    <Badge variant="secondary">{event.path}</Badge>
-                                    <Badge
-                                        variant={
-                                            event.outcome === "success" ? "default" : "outline"
-                                        }
-                                    >
-                                        {event.outcome}
-                                    </Badge>
-                                    {event.country && (
-                                        <span className="text-xs text-muted-foreground">
-                                            {event.country}
-                                            {event.region ? `, ${event.region}` : ""}
-                                        </span>
-                                    )}
-                                </div>
-                                <span className="text-xs text-muted-foreground">
-                                    {formatUtc(event.timestamp, "PPp")}
-                                </span>
-                            </ContentView.Row>
-                        ))
-                    )}
-                </ContentView>
-            </ContentView.Section>
-
-            <ContentView.Section>
-                <ContentView.H1>Management events</ContentView.H1>
-                <ContentView variant="elevated">
-                    {data.managementEvents.length === 0 ? (
-                        <ContentView.Row className="p-3 text-sm text-muted-foreground">
-                            No management events yet.
-                        </ContentView.Row>
-                    ) : (
-                        data.managementEvents.map((event, idx) => (
-                            <ContentView.Row key={idx} className="justify-between p-3">
-                                <div className="flex items-center gap-2">
-                                    <Badge variant="secondary">{event.action}</Badge>
-                                    <span className="text-xs text-muted-foreground">
-                                        by {event.actorId}
-                                        {event.targetId ? ` → ${event.targetId}` : ""}
-                                    </span>
-                                </div>
-                                <span className="text-xs text-muted-foreground">
-                                    {formatUtc(event.timestamp, "PPp")}
-                                </span>
-                            </ContentView.Row>
-                        ))
-                    )}
-                </ContentView>
-            </ContentView.Section>
+            <DataTable
+                aria-label="Events"
+                columns={columns}
+                data={data.events}
+                getRowId={(row) => `${row.timestamp}-${row.category}-${row.event}-${row.actor}`}
+                emptyMessage="No events yet."
+            />
         </ViewController>
     )
 }

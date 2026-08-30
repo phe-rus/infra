@@ -7,7 +7,7 @@ import { betterAuth } from "better-auth/minimal"
 import { createAuthMiddleware } from "better-auth/api"
 import { passkey } from "@better-auth/passkey"
 import { password } from "./config/password"
-import { env } from "cloudflare:workers"
+import { env, waitUntil } from "cloudflare:workers"
 import { emailHooks } from "./emails"
 import { assets } from "../../shared/assets/src"
 import { logAuthEvent, logManagementEvent } from "@/lib/analytics"
@@ -33,6 +33,9 @@ const MANAGEMENT_ACTIONS_BY_PATH: Record<string, string> = {
     "/admin/ban-user": "user.ban",
     "/admin/unban-user": "user.unban",
     "/admin/impersonate-user": "user.impersonate",
+    "/admin/set-user-password": "user.set-password",
+    "/admin/revoke-user-session": "user.revoke-session",
+    "/admin/revoke-user-sessions": "user.revoke-sessions",
     "/admin/oauth2/create-client": "console.create-app",
     "/admin/oauth2/update-client": "console.update-app",
 }
@@ -124,6 +127,9 @@ export const auth = betterAuth({
             generateId: "uuid",
             joins: true,
         },
+        backgroundTasks: {
+            handler: waitUntil,
+        },
     },
     secondaryStorage: createSecondaryStorage(env.CACHE),
     databaseHooks: databaseHooks,
@@ -134,6 +140,16 @@ export const auth = betterAuth({
     },
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
+            const cf = ctx.request?.cf as
+                | { country?: string; city?: string; region?: string }
+                | undefined
+            const geo = {
+                ip: ctx.request?.headers.get("cf-connecting-ip") ?? undefined,
+                country: cf?.country,
+                city: cf?.city,
+                region: cf?.region,
+            }
+
             const isAuthEvent =
                 ctx.path.startsWith("/sign-in") ||
                 ctx.path.startsWith("/sign-up") ||
@@ -142,15 +158,23 @@ export const auth = betterAuth({
                 ctx.path.startsWith("/reset-password") ||
                 ctx.path.startsWith("/forget-password")
             if (isAuthEvent) {
-                const cf = ctx.request?.cf as
-                    | { country?: string; region?: string }
+                const body = ctx.body as Record<string, unknown> | undefined
+                const returned = ctx.context.returned as
+                    | {
+                        token?: string;
+                        user?: {
+                            email?: string
+                        }
+                    }
                     | undefined
-                logAuthEvent({
-                    path: ctx.path,
-                    outcome: ctx.context.newSession ? "success" : "unknown",
-                    country: cf?.country,
-                    region: cf?.region,
-                })
+                ctx.context.runInBackground(
+                    logAuthEvent({
+                        ...geo,
+                        path: ctx.path,
+                        outcome: returned?.token ? "success" : "failure",
+                        email: returned?.user?.email ?? (body?.email as string | undefined),
+                    })
+                )
                 return
             }
 
@@ -169,7 +193,9 @@ export const auth = betterAuth({
                 (body?.client_id as string | undefined) ??
                 returned?.client_id
 
-            logManagementEvent({ action, actorId, targetId })
+            ctx.context.runInBackground(
+                logManagementEvent({ ...geo, action, actorId, targetId })
+            )
         }),
     },
     plugins: [

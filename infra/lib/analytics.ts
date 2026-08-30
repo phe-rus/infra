@@ -1,30 +1,56 @@
 import { env } from "cloudflare:workers"
 
-type AuthOutcome = "success" | "unknown"
+type AuthOutcome = "success" | "failure"
 
-export function logAuthEvent(input: {
+type GeoInput = {
+    ip?: string
+    country?: string
+    city?: string
+    region?: string
+}
+
+export async function logAuthEvent(input: GeoInput & {
     path: string
     outcome: AuthOutcome
-    country?: string
-    region?: string
+    email?: string
 }) {
     try {
         env.EA.writeDataPoint({
-            blobs: [input.path, input.outcome, input.country ?? "", input.region ?? ""],
+            blobs: [
+                "auth",
+                input.path,
+                input.outcome,
+                input.email ?? "",
+                "",
+                input.ip ?? "",
+                input.country ?? "",
+                input.city ?? "",
+                input.region ?? "",
+            ],
             doubles: [1],
             indexes: [input.path],
         })
     } catch {}
 }
 
-export function logManagementEvent(input: {
+export async function logManagementEvent(input: GeoInput & {
     action: string
     actorId: string
     targetId?: string
 }) {
     try {
-        env.EM.writeDataPoint({
-            blobs: [input.action, input.actorId, input.targetId ?? ""],
+        env.EA.writeDataPoint({
+            blobs: [
+                "management",
+                input.action,
+                "",
+                input.actorId,
+                input.targetId ?? "",
+                input.ip ?? "",
+                input.country ?? "",
+                input.city ?? "",
+                input.region ?? "",
+            ],
             doubles: [1],
             indexes: [input.action],
         })

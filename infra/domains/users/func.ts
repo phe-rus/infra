@@ -4,7 +4,8 @@ import type {
     SessionWithImpersonatedBy,
     UserWithRole,
 } from "better-auth/plugins/admin"
-import { env } from "cloudflare:workers"
+import { env, waitUntil } from "cloudflare:workers"
+import { logManagementEvent } from "@/lib/analytics"
 import {
     MAX_FILE_BYTES,
     MAX_USER_QUOTA_BYTES,
@@ -203,7 +204,7 @@ export const setUserPassword = createServerFn({ method: "POST" })
 export const disableUserTwoFactor = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
-    .handler(async ({ data }): Promise<{ success: true }> => {
+    .handler(async ({ data, context: { sessions } }): Promise<{ success: true }> => {
         const ctx = await auth.$context
         await ctx.adapter.update({
             model: "user",
@@ -214,6 +215,13 @@ export const disableUserTwoFactor = createServerFn({ method: "POST" })
             model: "twoFactor",
             where: [{ field: "userId", value: data.userId }],
         })
+        waitUntil(
+            logManagementEvent({
+                action: "user.disable-two-factor",
+                actorId: sessions.user.id,
+                targetId: data.userId,
+            })
+        )
         return { success: true }
     })
 

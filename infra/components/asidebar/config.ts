@@ -37,7 +37,6 @@ export const config = [
                 Icon: Settings01Icon,
             },
             {
-                isDev: true,
                 label: "Metrics",
                 path: "/settings/metrics",
                 Icon: Comet01Icon,

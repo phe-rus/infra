@@ -28,33 +28,26 @@ async function queryAnalytics<T>(sql: string): Promise<T[]> {
     return json.data
 }
 
-type AuthEventRow = {
+type RecentEventRow = {
     timestamp: string
-    path: string
+    category: string
+    event: string
     outcome: string
+    actor: string
+    target: string
+    ip: string
     country: string
+    city: string
     region: string
-}
-
-type ManagementEventRow = {
-    timestamp: string
-    action: string
-    actorId: string
-    targetId: string
 }
 
 export const getRecentEvents = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async () => {
-        const [authEvents, managementEvents] = await Promise.all([
-            queryAnalytics<AuthEventRow>(
-                `SELECT timestamp, blob1 AS path, blob2 AS outcome, blob3 AS country, blob4 AS region FROM auth ORDER BY timestamp DESC LIMIT 50 FORMAT JSON`
-            ),
-            queryAnalytics<ManagementEventRow>(
-                `SELECT timestamp, blob1 AS action, blob2 AS actorId, blob3 AS targetId FROM management ORDER BY timestamp DESC LIMIT 50 FORMAT JSON`
-            ),
-        ])
-        return { authEvents, managementEvents }
+        const events = await queryAnalytics<RecentEventRow>(
+            `SELECT timestamp, blob1 AS category, blob2 AS event, blob3 AS outcome, blob4 AS actor, blob5 AS target, blob6 AS ip, blob7 AS country, blob8 AS city, blob9 AS region FROM auth ORDER BY timestamp DESC LIMIT 100 FORMAT JSON`
+        )
+        return { events }
     })
 
 export type RecentEventsData = Awaited<ReturnType<typeof getRecentEvents>>
@@ -62,15 +55,22 @@ export type RecentEventsData = Awaited<ReturnType<typeof getRecentEvents>>
 export const getEventMetrics = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async () => {
-        const [authByPath, managementByAction] = await Promise.all([
-            queryAnalytics<{ path: string; count: number }>(
-                `SELECT blob1 AS path, count() AS count FROM auth WHERE timestamp > NOW() - INTERVAL '7' DAY GROUP BY path ORDER BY count DESC FORMAT JSON`
-            ),
-            queryAnalytics<{ action: string; count: number }>(
-                `SELECT blob1 AS action, count() AS count FROM management WHERE timestamp > NOW() - INTERVAL '7' DAY GROUP BY action ORDER BY count DESC FORMAT JSON`
-            ),
-        ])
-        return { authByPath, managementByAction }
+        const [authByPath, managementByAction, authDaily, managementDaily] =
+            await Promise.all([
+                queryAnalytics<{ path: string; count: number }>(
+                    `SELECT blob2 AS path, count() AS count FROM auth WHERE blob1 = 'auth' AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY path ORDER BY count DESC FORMAT JSON`
+                ),
+                queryAnalytics<{ action: string; count: number }>(
+                    `SELECT blob2 AS action, count() AS count FROM auth WHERE blob1 = 'management' AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY action ORDER BY count DESC FORMAT JSON`
+                ),
+                queryAnalytics<{ day: string; outcome: string; count: number }>(
+                    `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, blob3 AS outcome, count() AS count FROM auth WHERE blob1 = 'auth' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY day, outcome ORDER BY day ASC FORMAT JSON`
+                ),
+                queryAnalytics<{ day: string; count: number }>(
+                    `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, count() AS count FROM auth WHERE blob1 = 'management' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY day ORDER BY day ASC FORMAT JSON`
+                ),
+            ])
+        return { authByPath, managementByAction, authDaily, managementDaily }
     })
 
 export type EventMetricsData = Awaited<ReturnType<typeof getEventMetrics>>

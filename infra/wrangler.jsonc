@@ -22,10 +22,6 @@
         {
             "binding": "EA",
             "dataset": "auth"
-        },
-        {
-            "binding": "EM",
-            "dataset": "management"
         }
     ],
     "d1_databases": [
