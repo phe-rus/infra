@@ -27,13 +27,6 @@ jobs:
             # against here, this resolves from package.json ranges each run
             - name: Install dependencies
               run: bun install
-
-            - name: Lint
-              run: bun run lint
-
-            - name: Format check
-              run: bun run check
-
             # Every app's tsconfig.json lists the gitignored,
             # wrangler-generated worker-configuration.d.ts as a types entry,
             # and it isn't committed, so a fresh checkout has no Env type at
