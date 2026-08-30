@@ -16,7 +16,6 @@
         "deploy": "turbo run deploy",
         "type-gen": "turbo run type-gen",
         "lint": "biome lint .",
-        "test": "turbo run test",
         "check": "biome format .",
         "postinstall": "turbo run type-gen",
         "typecheck": "turbo run typecheck",

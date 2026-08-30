@@ -1,9 +1,5 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
-import type {
-    SessionWithImpersonatedBy,
-    UserWithRole,
-} from "better-auth/plugins/admin"
 import { env, waitUntil } from "cloudflare:workers"
 import { logManagementEvent } from "@/lib/analytics"
 import {
@@ -31,9 +27,13 @@ import {
     updateUserDetailsSchema,
     userIdSchema,
 } from "./types"
+import type { SessionWithImpersonatedBy, UserWithRole } from "better-auth/plugins/admin"
 
 export type UserSession = SessionWithImpersonatedBy
-
+export type ListedUser = UserWithRole & {
+    bio?: string
+    twoFactorEnabled?: boolean
+}
 export const listUsers = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async () => {
@@ -49,10 +49,6 @@ export const listUsers = createServerFn({ method: "GET" })
         return { users, total }
     })
 
-export type ListedUser = UserWithRole & {
-    bio: string | null
-    twoFactorEnabled?: boolean
-}
 export const getUserDetail = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(userIdSchema)

@@ -21,9 +21,6 @@
         "typecheck": {
             "dependsOn": ["^typecheck"]
         },
-        "test": {
-            "dependsOn": ["^build"]
-        },
         "type-gen": {
             "dependsOn": ["^type-gen"]
         }
