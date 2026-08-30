@@ -118,6 +118,9 @@ export const auth = betterAuth({
         disableColors: false,
         level: "warn",
         log: (level, message, ...args) => {
+            env.KU.writeDataPoint({
+
+            })
             console.log(`[${level}] ${message}`, ...args)
         },
     },

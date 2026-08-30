@@ -43,7 +43,7 @@ function Window({ className, children, after, ...props }: WindowProps) {
             {...props}
         >
             <main className={cn(
-                "flex-1 min-h-svh overflow-auto",
+                "flex flex-col flex-1 min-h-svh overflow-auto",
                 'no-scrollbar'
             )}>
                 {children}

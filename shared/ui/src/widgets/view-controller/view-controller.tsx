@@ -18,7 +18,11 @@ const titleSizes = {
     compact: "text-3xl",
 } as const
 
-export function ViewController({ heading, className, children }: ViewControllerProps) {
+export function ViewController({
+    heading,
+    className,
+    children
+}: ViewControllerProps) {
     return (
         <article
             className={cn(

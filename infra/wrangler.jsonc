@@ -18,6 +18,16 @@
             "pattern": "infra.pherus.org"
         }
     ],
+    "analytics_engine_datasets": [
+        {
+            "binding": "KU",
+            "dataset": "users"
+        },
+        {
+            "binding": "KL",
+            "dataset": "locations"
+        }
+    ],
     "d1_databases": [
         {
             "binding": "D1",
