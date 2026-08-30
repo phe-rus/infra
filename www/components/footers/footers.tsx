@@ -13,7 +13,7 @@ export const Footers = () => {
                     <h1>Pherus</h1>
                 </div>
                 <span className='h-px w-full bg-primary/5' />
-                <div className='columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-5'>
+                <div className='relative columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-5'>
                     {config.map((group, inx) => (
                         <div key={inx} className="flex flex-col break-inside-avoid gap-2 mb-5">
                             <h3>{group.label}</h3>

@@ -33,8 +33,8 @@ export const Headers = () => {
     return (
         <header
             className={cn(
-                "sticky top-0 border-b bg-background",
-                "z-55 border-border/35"
+                "sticky top-0 border-b backdrop-blur",
+                "z-55 border-border/15"
             )}
             onMouseLeave={() => setHoveredLabel(null)}
         >

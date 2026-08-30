@@ -31,7 +31,7 @@ function RouteComponent() {
                 </p>
             </section>
 
-            <div className="bg-amber-300/5">
+            <div>
                 <section
                     className={cn(
                         "container flex flex-col py-30 w-full",
@@ -197,10 +197,12 @@ function RouteComponent() {
                 <section className="flex flex-col gap-5 py-20 min-w-full">
                     <div className="container flex flex-col md:max-w-4xl">
                         <h1>
-                            Join hundreds of other organizations
-                            who've found the answer to "build vs.
-                            buy."
+                            Hear from others
                         </h1>
+                        <p className="max-w-md">
+                            Join hundreds of other organizations who've found
+                            the answer to "build vs. buy."
+                        </p>
                     </div>
 
                     <section className="overflow-hidden!">
@@ -278,20 +280,27 @@ function RouteComponent() {
                                         key={idx}
                                         className={cn(
                                             "flex flex-col min-w-sm max-w-sm",
-                                            "cursor-pointer",
-                                            idx === 0 &&
-                                            "md:ml-10"
+                                            "cursor-pointer gap-10"
                                         )}
                                     >
                                         <div>
                                             <h2 className='text-2xl'>{`"${item.message}"`}</h2>
-                                            <p>{item.attribution}</p>
+                                            <div className="flex items-center gap-2">
+                                                <img
+                                                    src={"/favicon.svg"}
+                                                    alt="Pherus logo"
+                                                    className="size-4.5"
+                                                />
+                                                <p>{item.attribution}</p>
+                                            </div>
                                         </div>
-                                        <img
-                                            src={"/favicon.svg"}
-                                            alt="Pherus logo"
-                                            className="size-4.5"
-                                        />
+
+                                        <div className='pt-10'>
+                                            <Link to='/' className="flex text-sm items-center gap-2">
+                                                Read more
+                                                <IconArrowRight className='size-3.5' />
+                                            </Link>
+                                        </div>
                                     </article>
                                 )
                             })}
