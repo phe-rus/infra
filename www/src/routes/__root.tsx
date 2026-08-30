@@ -7,33 +7,44 @@ import {
     Scripts,
     createRootRoute,
 } from "@tanstack/react-router"
-import { seo } from "@/lib/seo"
+import { organizationJsonLd, seo } from "@/lib/seo"
 
 export const Route = createRootRoute({
-    head: () => ({
-        meta: [
-            {
-                charSet: "utf-8",
-            },
-            {
-                name: "viewport",
-                content:
-                    "width=device-width, initial-scale=1",
-            },
-            { name: "robots", content: "index, follow" },
-            ...seo({
-                title: "Pherus",
-                description:
-                    "Pherus is a research and innovation company built on Open Knowledge: understand the problem first, then share what was learned.",
-            }),
-        ],
-        links: [
-            {
-                rel: "stylesheet",
-                href: tailwind,
-            },
-        ],
-    }),
+    head: () => {
+        const { meta, links } = seo({
+            title: "Pherus",
+            description:
+                "Pherus is a research and innovation company built on Open Knowledge: understand the problem first, then share what was learned.",
+        })
+
+        return {
+            meta: [
+                {
+                    charSet: "utf-8",
+                },
+                {
+                    name: "viewport",
+                    content:
+                        "width=device-width, initial-scale=1",
+                },
+                { name: "robots", content: "index, follow" },
+                ...meta,
+            ],
+            links: [
+                {
+                    rel: "stylesheet",
+                    href: tailwind,
+                },
+                ...links,
+            ],
+            scripts: [
+                {
+                    type: "application/ld+json",
+                    children: JSON.stringify(organizationJsonLd()),
+                },
+            ],
+        }
+    },
     shellComponent: RootDocument,
 })
 

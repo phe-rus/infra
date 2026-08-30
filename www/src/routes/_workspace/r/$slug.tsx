@@ -7,12 +7,11 @@ import { createFileRoute } from '@tanstack/react-router'
 export const Route = createFileRoute('/_workspace/r/$slug')({
   head: ({ params }) => {
     const resource = resources.find((item) => item.slug === params.slug)
-    return {
-      meta: seo({
-        title: resource?.label ?? 'Not found',
-        description: resource?.tagline,
-      }),
-    }
+    return seo({
+      title: resource?.label ?? 'Not found',
+      description: resource?.tagline,
+      path: `/r/${params.slug}`,
+    })
   },
   component: RouteComponent,
 })

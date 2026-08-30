@@ -258,10 +258,18 @@ export const resources: Resource[] = [
         tagline: "A living archive of the world's cultures, starting in Africa.",
         body: [
             {
-                p: "Culture leaders get a direct way to connect with people who want to experience their culture firsthand, alongside a route to funded donations.",
+                p: "Most of what makes a culture worth understanding never gets written down properly, or gets written down once, by an outsider, and treated as the definitive account. The people who actually hold that knowledge rarely get a direct line to the people who want to learn it, or a way to benefit from sharing it.",
+            },
+            { h2: "The idea" },
+            {
+                p: "Culture leaders get a direct way to connect with people who want to experience their culture firsthand, alongside a route to funded donations, rather than routing everything through institutions that weren't built for this.",
+            },
+            { h2: "Why start in Africa" },
+            {
+                p: "Because it's one of the deepest, least-documented wells of this kind of knowledge on the planet. Expanding worldwide from there, including microcultures, communities that built something of their own more recently, not just ancient tradition.",
             },
             {
-                p: "Starting in Africa, expanding worldwide, including microcultures, communities that built something of their own more recently, not just ancient tradition. Still in planning, no real page built yet beyond this one.",
+                p: "No real page exists yet beyond this one. The mechanics of how contribution and funding actually work are still being designed.",
             },
         ],
     },
@@ -272,13 +280,26 @@ export const resources: Resource[] = [
         tagline: "A holistic healthcare platform built around the whole person.",
         body: [
             {
-                p: "Getting healthcare can be surprisingly difficult even when it exists nearby. The problem usually isn't that care doesn't exist, it's navigating which kind of care, from whom, and staying on top of it afterward.",
+                p: "Today, getting healthcare can be surprisingly difficult. You may have a health problem but not know which kind of professional you need. You may find a doctor but not know whether they understand your particular needs. For many people, especially those living where healthcare resources are limited, the problem isn't that healthcare doesn't exist. The problem is navigating it.",
+            },
+            { h2: "The journey" },
+            {
+                p: "Someone begins with a health concern. Pherus health helps them understand what kind of care may be appropriate and where to get it, connect with the relevant professional, access what they need, keep their information organized, and continue managing their care afterward. The journey doesn't end when the appointment ends.",
+            },
+            { h2: "Holistic, on purpose" },
+            {
+                p: "A person's health is influenced by many things: physical health, mental wellbeing, medications, access, environment, lifestyle, finances, and social circumstances. Healthcare should account for that reality instead of reducing people to a single diagnosis.",
+            },
+            { h2: "Built for underserved communities" },
+            {
+                p: "This isn't a Western healthcare product put online. It's built around the realities of the people actually using it: affordability, local providers, local pharmacies and laboratories, and the practical realities of receiving care in Uganda and across Africa, expanding from there.",
+            },
+            { h2: "Trust and privacy" },
+            {
+                p: "Healthcare is deeply personal. Privacy and trust are fundamental parts of the product, not features added later. People should have control over their health information and understand who can access it and why.",
             },
             {
-                p: "Built around the whole person rather than a single illness, and built for underserved communities first, affordability and local providers as the starting point, not an afterthought bolted onto a model designed somewhere else.",
-            },
-            {
-                p: "Early. The specifics of how people actually move through it are still being worked out, deliberately not published here yet.",
+                p: "Early stage, no live product yet. The specific systems behind each part of the journey are still being built.",
             },
         ],
     },
@@ -289,10 +310,14 @@ export const resources: Resource[] = [
         tagline: "One small compute core, docked into whichever shell you need.",
         body: [
             {
-                p: "One brain, many bodies: a single compute core that supplies the processing, storage, and memory, while whatever it's docked into, a phone shell, a TV, a laptop, supplies the battery and the display.",
+                p: "Most people own three or four devices that each duplicate the same processor, storage, and memory, and each go idle most of the day. That's a lot of redundant compute, a lot of redundant cost, and a lot of e-waste, for the same person's same workload split across separate boxes.",
+            },
+            { h2: "One brain, many bodies" },
+            {
+                p: "A single compute core supplies the processing, storage, and memory. Whatever it's docked into, a phone shell, a TV, a laptop, supplies the battery and the display. One identity, one set of files, one thing to upgrade, carried between whichever shell you're using that day.",
             },
             {
-                p: "An idea on paper right now, not a spec sheet. The operating system and ecosystem strategy are still being worked out.",
+                p: "An idea on paper right now, not a spec sheet. The operating system and the ecosystem strategy behind it are still being worked out.",
             },
         ],
     },
@@ -303,10 +328,10 @@ export const resources: Resource[] = [
         tagline: "Shelter, food, and dignity, treated as engineering problems worth solving.",
         body: [
             {
-                p: "The same rigor Pherus applies everywhere else, pointed at homelessness and hunger rather than left to charity alone.",
+                p: "Homelessness and hunger are usually treated as problems for charity to absorb rather than problems worth real engineering attention, the same rigor a company would put into a product. That gap is the whole premise here.",
             },
             {
-                p: "Honestly the least defined resource on this site. What it actually builds and how it reaches people is still an open question, worth real thought before this page gets built out further, not something to paper over with vague language.",
+                p: "Honestly the least defined resource on this site. What it actually builds and how it reaches people is still an open question, worth real thought before this page gets built out further, not something to paper over with vague language just to fill space.",
             },
         ],
     },
@@ -317,10 +342,14 @@ export const resources: Resource[] = [
         tagline: "Vehicles designed to be lived in, not just launched.",
         body: [
             {
-                p: "Most rockets look the way they do because of physics, not imagination. Exploring what becomes possible when the vehicle is designed to be lived in, alongside robotics work in the same effort.",
+                p: "Most rockets and space vehicles look the way they do because of physics and manufacturing constraints, not because anyone designed them around the people who'd actually spend time inside. Exploration has mostly optimized for getting somewhere, not for being somewhere.",
+            },
+            { h2: "The bet" },
+            {
+                p: "What becomes possible when a vehicle is designed to be lived in from the start, alongside robotics work in the same effort, rather than treating habitability as an afterthought bolted onto a launch vehicle.",
             },
             {
-                p: "The furthest-out resource on this site, treated honestly as long-term vision rather than a near-term build.",
+                p: "The furthest-out resource on this site, treated honestly as long-term vision rather than a near-term build. Nothing here is a promised timeline.",
             },
         ],
     },
@@ -331,10 +360,14 @@ export const resources: Resource[] = [
         tagline: "Every public repository, gathered into one structure.",
         body: [
             {
-                p: "A GitHub-shaped home for Pherus's own code, and for outside developers and businesses who want the same thing: one place, not scattered repositories with no shared structure.",
+                p: "Public code, even from the same company or the same person, tends to scatter across accounts and platforms with no shared structure holding it together, which makes it harder to discover, harder to trust, and harder to build on.",
+            },
+            { h2: "One home for the code" },
+            {
+                p: "A GitHub-shaped home for Pherus's own repositories, and for outside developers and businesses who want the same discipline applied to theirs, open to anyone building alongside Pherus, not just Pherus's own engineers.",
             },
             {
-                p: "Public repositories, gathered into one structure, open to anyone building alongside Pherus, not just Pherus's own engineers.",
+                p: "Still early. What differentiates it from just another Git host is still being worked out.",
             },
         ],
     },
@@ -345,10 +378,14 @@ export const resources: Resource[] = [
         tagline: "Storage in your own Cloudflare account, you own the data and the bill.",
         body: [
             {
-                p: "Storage like a better Google Drive, except the data never sits on Pherus's own infrastructure.",
+                p: "Cloud storage almost always bundles two things together that don't need to be bundled: the interface you use, and the infrastructure your data actually lives on. That bundling is where most of the markup comes from, and where most of the trust problem comes from too.",
+            },
+            { h2: "Unbundling it" },
+            {
+                p: "Storage like a better Google Drive, except the data never sits on Pherus's own infrastructure. You connect your own Cloudflare account, Pherus only hosts the interface and the apps on top of it, self-service rather than a managed contract, for individuals and companies alike.",
             },
             {
-                p: "You connect your own Cloudflare account, Pherus only hosts the web interface and the apps, which keeps it cheap by design, for individuals and companies alike, self-service rather than a managed contract.",
+                p: "Early. The specific mechanics of account connection and billing are still being designed.",
             },
         ],
     },
@@ -359,10 +396,14 @@ export const resources: Resource[] = [
         tagline: "Permaculture-structured food sharing, aid and income together.",
         body: [
             {
-                p: "Aid and income from the same system instead of competing with each other, helping people grow, share, and sometimes earn from what they grow.",
+                p: "Food aid and food income are almost always treated as separate systems in competition with each other, charity on one side, commerce on the other, when the people actually growing and sharing food don't experience that split at all.",
+            },
+            { h2: "One system, not two" },
+            {
+                p: "Permaculture principles applied to food sharing at a community scale, structured so aid and income come from the same system instead of competing with each other, helping people grow, share, and sometimes earn from what they grow.",
             },
             {
-                p: "Permaculture principles applied to food sharing at a community scale, still early, still mostly a set of principles rather than a running system.",
+                p: "Still early, still mostly a set of principles rather than a running system. The specific mechanics haven't been locked down yet.",
             },
         ],
     },

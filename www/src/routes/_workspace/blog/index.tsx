@@ -6,12 +6,12 @@ import { ViewController } from "@infra/ui/widgets/view-controller"
 import { createFileRoute, Link } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_workspace/blog/")({
-    head: () => ({
-        meta: seo({
+    head: () =>
+        seo({
             title: "Blog",
             description: "Research notes from every resource, published as we learn it.",
+            path: "/blog",
         }),
-    }),
     component: RouteComponent,
 })
 

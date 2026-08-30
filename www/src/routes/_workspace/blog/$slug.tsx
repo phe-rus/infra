@@ -9,13 +9,13 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 export const Route = createFileRoute("/_workspace/blog/$slug")({
     head: ({ params }) => {
         const post = posts.find((item) => item.slug === params.slug)
-        return {
-            meta: seo({
-                title: post?.title ?? "Post not found",
-                description: post?.excerpt,
-                type: "article",
-            }),
-        }
+        return seo({
+            title: post?.title ?? "Post not found",
+            description: post?.excerpt,
+            type: "article",
+            path: `/blog/${params.slug}`,
+            publishedTime: post ? `${post.date}T00:00:00Z` : undefined,
+        })
     },
     component: RouteComponent,
 })

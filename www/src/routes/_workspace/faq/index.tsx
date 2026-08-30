@@ -6,12 +6,12 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 
 export const Route = createFileRoute('/_workspace/faq/')({
-  head: () => ({
-    meta: seo({
+  head: () =>
+    seo({
       title: 'FAQ',
       description: 'Straight answers about what Pherus actually is, and isn\'t, yet.',
+      path: '/faq',
     }),
-  }),
   component: RouteComponent,
 })
 
