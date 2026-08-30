@@ -4,11 +4,13 @@ import { createTrustedOrigins } from "./core/trusted-origins"
 import { oauthProvider } from "@better-auth/oauth-provider"
 import { listUserAccounts } from "./core/admin-accounts"
 import { betterAuth } from "better-auth/minimal"
+import { createAuthMiddleware } from "better-auth/api"
 import { passkey } from "@better-auth/passkey"
 import { password } from "./config/password"
 import { env } from "cloudflare:workers"
 import { emailHooks } from "./emails"
 import { assets } from "../../shared/assets/src"
+import { logAuthEvent, logManagementEvent } from "@/lib/analytics"
 import { dbContext } from "@/db"
 import {
     admin,
@@ -23,6 +25,18 @@ import {
 } from "./core/storage"
 
 const isProduction = env.NODE_ENV === "production"
+
+const MANAGEMENT_ACTIONS_BY_PATH: Record<string, string> = {
+    "/admin/create-user": "user.create",
+    "/admin/remove-user": "user.remove",
+    "/admin/set-role": "user.set-role",
+    "/admin/ban-user": "user.ban",
+    "/admin/unban-user": "user.unban",
+    "/admin/impersonate-user": "user.impersonate",
+    "/admin/oauth2/create-client": "console.create-app",
+    "/admin/oauth2/update-client": "console.update-app",
+}
+
 export const auth = betterAuth({
     baseURL: env.BETTER_AUTH_URL,
     appName: env.VITE_APPNAME,
@@ -89,8 +103,6 @@ export const auth = betterAuth({
         },
         customStorage: createRateLimitStorage(env.RL, []),
     },
-    secondaryStorage: createSecondaryStorage(env.CACHE),
-    databaseHooks,
     advanced: {
         cookiePrefix: env.VITE_APPNAME.toLowerCase().trim(),
         useSecureCookies: isProduction,
@@ -113,21 +125,62 @@ export const auth = betterAuth({
             joins: true,
         },
     },
+    secondaryStorage: createSecondaryStorage(env.CACHE),
+    databaseHooks: databaseHooks,
     logger: {
         disabled: false,
         disableColors: false,
         level: "warn",
-        log: (level, message, ...args) => {
-            env.KU.writeDataPoint({
+    },
+    hooks: {
+        after: createAuthMiddleware(async (ctx) => {
+            const isAuthEvent =
+                ctx.path.startsWith("/sign-in") ||
+                ctx.path.startsWith("/sign-up") ||
+                ctx.path === "/sign-out" ||
+                ctx.path.startsWith("/two-factor") ||
+                ctx.path.startsWith("/reset-password") ||
+                ctx.path.startsWith("/forget-password")
+            if (isAuthEvent) {
+                const cf = ctx.request?.cf as
+                    | { country?: string; region?: string }
+                    | undefined
+                logAuthEvent({
+                    path: ctx.path,
+                    outcome: ctx.context.newSession ? "success" : "unknown",
+                    country: cf?.country,
+                    region: cf?.region,
+                })
+                return
+            }
 
-            })
-            console.log(`[${level}] ${message}`, ...args)
-        },
+            const action = MANAGEMENT_ACTIONS_BY_PATH[ctx.path]
+            if (!action) return
+
+            const actorId = ctx.context.session?.user.id
+            if (!actorId) return
+
+            const body = ctx.body as Record<string, unknown> | undefined
+            const returned = ctx.context.returned as
+                | { client_id?: string }
+                | undefined
+            const targetId =
+                (body?.userId as string | undefined) ??
+                (body?.client_id as string | undefined) ??
+                returned?.client_id
+
+            logManagementEvent({ action, actorId, targetId })
+        }),
     },
     plugins: [
         admin(),
-        assets({ binding: env.R2, isAdmin: isAdminTier }),
-        listUserAccounts({ isAdmin: isAdminTier }),
+        assets({
+            binding: env.R2,
+            isAdmin: isAdminTier
+        }),
+        listUserAccounts({
+            isAdmin: isAdminTier
+        }),
         twoFactor({
             issuer: env.VITE_APPNAME.toLowerCase().trim(),
             backupCodeOptions: {
@@ -145,10 +198,10 @@ export const auth = betterAuth({
             disableSettingJwtHeader: true
         }),
         oauthProvider({
-            loginPage: `${env.ACCOUNTS_URL}/sign-in`,
-            consentPage: `${env.ACCOUNTS_URL}/consent`,
+            loginPage: `${env.WWW_URL}/sign-in`,
+            consentPage: `${env.WWW_URL}/consent`,
             signUp: {
-                page: `${env.ACCOUNTS_URL}/create-account`,
+                page: `${env.WWW_URL}/create-account`,
             },
             storeClientSecret: "hashed",
             allowDynamicClientRegistration: false,

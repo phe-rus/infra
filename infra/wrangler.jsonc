@@ -20,12 +20,12 @@
     ],
     "analytics_engine_datasets": [
         {
-            "binding": "KU",
-            "dataset": "users"
+            "binding": "EA",
+            "dataset": "auth"
         },
         {
-            "binding": "KL",
-            "dataset": "locations"
+            "binding": "EM",
+            "dataset": "management"
         }
     ],
     "d1_databases": [

@@ -68,7 +68,10 @@ export const getUserDetail = createServerFn({ method: "GET" })
                 query: { userId: data.userId },
             }),
         ])
-        return { user: user as ListedUser, sessions, accounts }
+        return {
+            user: user as ListedUser,
+            sessions, accounts
+        }
     })
 
 export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { desc, eq } from "drizzle-orm"
 import { APIError } from "better-auth/api"
 import { auth } from "@/auth"
+import { logManagementEvent } from "@/lib/analytics"
 import { db } from "@/db"
 import { oauthClient } from "@/schemas/auth"
 import { AdminMiddleware } from "@/middleware"
@@ -15,7 +16,6 @@ import {
 } from "./types"
 
 type OAuthClientRow = typeof oauthClient.$inferSelect
-
 function toAppDetail(row: OAuthClientRow, callerId: string) {
     return {
         id: row.id,
@@ -44,7 +44,6 @@ function toAppDetail(row: OAuthClientRow, callerId: string) {
 }
 
 export type ListedApp = ReturnType<typeof toAppDetail>
-
 function withClientMetadataError(error: unknown): never {
     if (
         error instanceof APIError &&
@@ -60,9 +59,7 @@ function withClientMetadataError(error: unknown): never {
     throw error
 }
 
-const SECRET_CHARS =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
+const SECRET_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 function generateSecret(length: number): string {
     const bytes = new Uint8Array(length)
     crypto.getRandomValues(bytes)
@@ -96,7 +93,6 @@ export const listApps = createServerFn({ method: "GET" })
     })
 
 export type AppListData = Awaited<ReturnType<typeof listApps>>
-
 export const findApp = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .validator(appIdSchema)
@@ -173,11 +169,16 @@ export const updateApp = createServerFn({ method: "POST" })
 export const setAppActive = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(setAppActiveSchema)
-    .handler(async ({ data }): Promise<{ success: true }> => {
+    .handler(async ({ data, context: { sessions } }): Promise<{ success: true }> => {
         await db
             .update(oauthClient)
             .set({ disabled: !data.active })
             .where(eq(oauthClient.clientId, data.clientId))
+        logManagementEvent({
+            action: data.active ? "console.enable-app" : "console.disable-app",
+            actorId: sessions.user.id,
+            targetId: data.clientId,
+        })
         return { success: true }
     })
 
@@ -216,6 +217,11 @@ export const rotateApp = createServerFn({ method: "POST" })
                     updatedAt: new Date(),
                 })
                 .where(eq(oauthClient.clientId, data.clientId))
+            logManagementEvent({
+                action: "console.rotate-app",
+                actorId: sessions.user.id,
+                targetId: data.clientId,
+            })
             return { clientSecret }
         }
     )
@@ -236,6 +242,11 @@ export const removeApp = createServerFn({ method: "POST" })
             await db
                 .delete(oauthClient)
                 .where(eq(oauthClient.clientId, data.clientId))
+            logManagementEvent({
+                action: "console.remove-app",
+                actorId: sessions.user.id,
+                targetId: data.clientId,
+            })
             return { success: true }
         }
     )
