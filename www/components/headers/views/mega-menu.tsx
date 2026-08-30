@@ -19,35 +19,37 @@ export function MegaMenu({
                 'bg-background shadow-lg backdrop-blur'
             )}
         >
-            <div className="container flex flex-wrap gap-8 px-5 py-20">
+            <div className="container columns-3 gap-8 px-5 py-20">
                 {sections.map((section) => (
                     <div
                         key={section.label}
-                        className="flex flex-col gap-3"
+                        className={cn(
+                            "break-inside-avoid flex flex-col gap-3",
+                            'mb-5'
+                        )}
                     >
                         <h2 className="text-xs font-medium text-muted-foreground">
                             {section.label}
                         </h2>
-                        <div className="flex flex-col gap-0.5">
+                        <div className="flex flex-col gap-1">
                             {section.items.map((leaf) => (
                                 <Link
                                     key={leaf.to}
                                     to={leaf.to}
                                     className={cn(
-                                        "flex flex-col gap-0.5 rounded-2xl px-3 py-1.5",
-                                        "hover:bg-muted transition-colors",
-                                        'bg-card/35'
+                                        "flex items-center gap-1 overflow-hidden",
+                                        "group transition-colors"
                                     )}
-                                    activeProps={{
-                                        className: "bg-muted",
-                                    }}
                                 >
-                                    <span className="text-sm font-medium text-foreground">
-                                        {leaf.label}
-                                    </span>
-                                    <span className="max-w-xs text-xs text-muted-foreground">
-                                        {leaf.description}
-                                    </span>
+                                    <span className={cn('h-10 w-px bg-olive-500', 'hidden group-hover:block group-focus:block')} />
+                                    <div className='flex flex-col gap-0.5'>
+                                        <span className="text-sm font-medium text-foreground">
+                                            {leaf.label}
+                                        </span>
+                                        <span className="max-w-xs text-xs text-muted-foreground">
+                                            {leaf.description}
+                                        </span>
+                                    </div>
                                 </Link>
                             ))}
                         </div>

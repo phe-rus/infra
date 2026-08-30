@@ -2,6 +2,7 @@ export interface NavLeaf {
     label: string
     description: string
     to: string
+    tag: "active" | "in development" | "in planning"
 }
 
 export interface NavSection {
@@ -48,35 +49,104 @@ export const config: NavItem[] = [
                         description:
                             "Centralized authentication infrastructure",
                         to: "/r/infra",
+                        tag: "active",
                     },
                     {
                         label: "Accounts",
                         description:
                             "Centralized user accounts",
                         to: "/r/accounts",
+                        tag: "active",
+                    },
+                    {
+                        label: "Pherus developers",
+                        description:
+                            "Every public repository, gathered into one structure",
+                        to: "/r/pherus-developers",
+                        tag: "in planning",
+                    },
+                    {
+                        label: "Pherus assets",
+                        description:
+                            "Storage in your own Cloudflare account, you own the data and the bill",
+                        to: "/r/pherus-assets",
+                        tag: "in planning",
                     },
                 ],
             },
             {
-                label: "Organizations",
+                label: "Products",
+                items: [
+                    {
+                        label: "Seer",
+                        description:
+                            "Cosmetics built in the open, ingredient research and DIY formulas published alongside the products",
+                        to: "/r/seer",
+                        tag: "in development",
+                    },
+                    {
+                        label: "Pherus basic",
+                        description:
+                            "One small compute core, docked into whichever shell you need",
+                        to: "/r/pherus-basic",
+                        tag: "in planning",
+                    },
+                ],
+            },
+            {
+                label: "Community & Knowledge",
+                items: [
+                    {
+                        label: "Transspace",
+                        description:
+                            "Queer people helping queer people through shared knowledge and experience",
+                        to: "/r/transspace",
+                        tag: "in development",
+                    },
+                    {
+                        label: "Pherus scholar",
+                        description:
+                            "A living archive of the world's cultures, starting in Africa",
+                        to: "/r/pherus-scholar",
+                        tag: "in planning",
+                    },
+                ],
+            },
+            {
+                label: "Health & Home",
                 items: [
                     {
                         label: "Pherus health",
                         description:
-                            "Holistic health care services",
+                            "A holistic healthcare platform built around the whole person",
                         to: "/r/pherus-health",
+                        tag: "in planning",
                     },
+                    {
+                        label: "Pherus homes",
+                        description:
+                            "Shelter, food, and dignity, treated as engineering problems worth solving",
+                        to: "/r/pherus-homes",
+                        tag: "in planning",
+                    },
+                ],
+            },
+            {
+                label: "Frontier",
+                items: [
                     {
                         label: "Pherus space & robotics",
                         description:
-                            "Space exploration and robotics development",
+                            "Vehicles designed to be lived in, not just launched",
                         to: "/r/pherus-space",
+                        tag: "in planning",
                     },
                     {
-                        label: "Transspace",
+                        label: "Pherus agriculture",
                         description:
-                            "Queer-led resource platform",
-                        to: "/r/transspace",
+                            "Permaculture-structured food sharing, aid and income together",
+                        to: "/r/pherus-agriculture",
+                        tag: "in planning",
                     },
                 ],
             },

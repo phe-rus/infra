@@ -1,14 +1,38 @@
+import { config, isNavGroup } from "@/components/headers/config"
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { useMemo } from "react"
 
 export const Route = createFileRoute("/_workspace/")({
     component: RouteComponent,
 })
 
 function RouteComponent() {
+    const divisions = useMemo(() => {
+        const resources = config.find((item) => item.label === "Resources")
+        if (!resources || !isNavGroup(resources)) return []
+        return resources.items.flatMap((section) =>
+            section.items.map((leaf) => ({
+                label: leaf.label,
+                slug: leaf.to.replace("/r/", ""),
+                tag: leaf.tag,
+            }))
+        )
+    }, [])
+
+    const communityLinks = useMemo(
+        () => [
+            { label: "Discussions", description: "Ask questions, share ideas, and help others." },
+            { label: "GitHub", description: "Join one of our GitHub organizations." },
+            { label: "Bug reporting", description: "See an issue? Let us know." },
+        ],
+        []
+    )
+
     return (
         <article className="flex flex-col">
             <section
@@ -48,113 +72,36 @@ function RouteComponent() {
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                        {[
-                            {
-                                label: "Infra",
-                                img: "/favicon.svg",
-                                status: "active",
-                                description:
-                                    "Unified authentication platform",
-                            },
-                            {
-                                label: "Accounts",
-                                img: "/favicon.svg",
-                                status: "active",
-                                description:
-                                    "Unified user management plaform",
-                            },
-                            {
-                                label: "Seer",
-                                img: "/favicon.svg",
-                                status: "in development",
-                                description:
-                                    "Cosmetics built in the open, ingredient research and DIY formulas published alongside the products.",
-                            },
-                            {
-                                label: "Transspace",
-                                img: "/favicon.svg",
-                                status: "in development",
-                                description:
-                                    "Queer people helping queer people through shared knowledge and experience.",
-                            },
-                            {
-                                label: "Pherus scholar",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "A living archive of the world's cultures, starting in Africa.",
-                            },
-                            {
-                                label: "Pherus health",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "A holistic healthcare platform built around the whole person.",
-                            },
-                            {
-                                label: "Pherus basic",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "One small compute core, docked into whichever shell you need.",
-                            },
-                            {
-                                label: "Pherus homes",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "Shelter, food, and dignity, treated as engineering problems worth solving.",
-                            },
-                            {
-                                label: "Pherus space & robotics",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "Vehicles designed to be lived in, not just launched.",
-                            },
-                            {
-                                label: "Pherus developers",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "Every public repository, gathered into one structure.",
-                            },
-                            {
-                                label: "Pherus assets",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "Storage in your own Cloudflare account. You own the data and the bill.",
-                            },
-                            {
-                                label: "Pherus agriculture",
-                                img: "/favicon.svg",
-                                status: "planning",
-                                description:
-                                    "Permaculture-structured food sharing, aid and income together.",
-                            },
-                        ].map((items, index) => {
-                            return (
-                                <article
-                                    key={index}
-                                    className={cn(
-                                        "relative flex items-center px-3",
-                                        "bg-input rounded-2xl shadow",
-                                        "hover:shadow-md gap-1 py-2",
-                                        "cursor-pointer"
-                                    )}
-                                >
-                                    <img
-                                        src={items.img}
-                                        alt={items.label}
-                                        className="size-4.5"
-                                    />
-                                    <h2 className="text-xs">
-                                        {items.label}
-                                    </h2>
-                                </article>
-                            )
-                        })}
+                        {divisions.map((item) => (
+                            <Link
+                                key={item.slug}
+                                to="/r/$slug"
+                                params={{ slug: item.slug }}
+                                className={cn(
+                                    "relative flex items-center px-3",
+                                    "bg-accent/35 hover:bg-accent/65 rounded-2xl shadow",
+                                    "hover:shadow-md gap-2 py-2",
+                                    "cursor-pointer"
+                                )}
+                            >
+                                <img
+                                    src="/favicon.svg"
+                                    alt={item.label}
+                                    className="size-4.5"
+                                />
+                                <h2 className="text-xs">
+                                    {item.label}
+                                </h2>
+                                <div className="absolute -top-4 right-5">
+                                    <Badge
+                                        variant='secondary'
+                                        className="text-[4px]! h-fit!"
+                                    >
+                                        {item.tag}
+                                    </Badge>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 </section>
             </div>
@@ -182,7 +129,8 @@ function RouteComponent() {
                     </div>
 
                     <Link
-                        to="/"
+                        to="/blog/$slug"
+                        params={{ slug: "why-this-blog-exists" }}
                         className={cn(
                             "flex items-center gap-2 hover:underline",
                             "text-sm decoration-wavy"
@@ -195,118 +143,33 @@ function RouteComponent() {
             </div>
 
             <div className="bg-taupe-400/5">
-                <section className="flex flex-col gap-5 py-20 min-w-full">
-                    <div className="container flex flex-col md:max-w-4xl">
-                        <h1>
-                            Hear from others
-                        </h1>
-                        <p className="max-w-md">
-                            Join hundreds of other organizations who've found
-                            the answer to "build vs. buy."
-                        </p>
-                    </div>
-
-                    <section className="overflow-hidden!">
-                        <div
-                            className={cn(
-                                "flex flex-row items-center min-w-full",
-                                "overflow-x-auto md:overscroll-contain gap-5",
-                                'container no-scrollbar'
-                            )}
-                        >
-                            {[
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                                {
-                                    message: "Utilizing Payload enabled us to implement our digital postcards tool quickly and easily, engaging thousands of K-12 students.",
-                                    attribution: "Heather Nelson, Director, Blue Origin",
-                                },
-                            ].map((item, idx) => {
-                                return (
-                                    <article
-                                        key={idx}
-                                        className={cn(
-                                            "flex flex-col min-w-sm max-w-sm",
-                                            "cursor-pointer gap-10"
-                                        )}
-                                    >
-                                        <div>
-                                            <h2 className='text-2xl'>{`"${item.message}"`}</h2>
-                                            <div className="flex items-center gap-2">
-                                                <img
-                                                    src={"/favicon.svg"}
-                                                    alt="Pherus logo"
-                                                    className="size-4.5"
-                                                />
-                                                <p>{item.attribution}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className='pt-10'>
-                                            <Link to='/' className="flex text-sm items-center gap-2">
-                                                Read more
-                                                <HugeiconsIcon icon={ArrowRight01Icon} className='size-3.5' />
-                                            </Link>
-                                        </div>
-                                    </article>
-                                )
-                            })}
+                <section
+                    className={cn(
+                        "container flex flex-col py-30 w-full",
+                        "md:max-w-4xl gap-5"
+                    )}
+                >
+                    <blockquote className="text-2xl font-medium md:max-w-2xl">
+                        "We do not gather people for titles, status, or
+                        recognition. We are drawn to those who ask
+                        questions, seek understanding, and build without
+                        waiting for permission."
+                    </blockquote>
+                    <div className="flex items-center gap-3">
+                        <img
+                            src="/favicon.svg"
+                            alt="Pherus logo"
+                            className="size-8 rounded-full"
+                        />
+                        <div>
+                            <p className="text-sm font-medium">
+                                Tiabah La niina
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                CEO & Founder, Pherus
+                            </p>
                         </div>
-                    </section>
+                    </div>
                 </section>
             </div>
 
@@ -353,17 +216,16 @@ function RouteComponent() {
                 <div
                     className={cn(
                         "container absolute right-0 left-0 bottom-0",
-                        "w-full"
+                        "w-full overflow-hidden"
                     )}
                 >
-                    <video
-                        src={
-                            "https://www.gstatic.com/marketing-cms/65/90/187a660941b497fe2d7d782f7ef4/headphone-bot-desktop-xl-2x-av1.mp4"
-                        }
-                        autoPlay
-                        muted
-                        loop
-                        className="h-fit! w-45! mx-auto!"
+                    <img
+                        src="/avatar/red.jpg"
+                        alt="pherus"
+                        className={cn(
+                            "h-32! w-62! mx-auto! rounded-b-none",
+                            'rounded-t-full'
+                        )}
                     />
                 </div>
             </section>
@@ -388,52 +250,28 @@ function RouteComponent() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {[
-                            {
-                                label: "Discussions",
-                                to: "/discussions",
-                                img: "/favicon.svg",
-                                description:
-                                    "Ask questions, share ideas, and help others.",
-                            },
-                            {
-                                label: "GitHub",
-                                to: "/github",
-                                img: "/favicon.svg",
-                                description:
-                                    "Join one of our GitHub organizations.",
-                            },
-                            {
-                                label: "Bug reporting",
-                                to: "/bug-reporting",
-                                img: "/favicon.svg",
-                                description:
-                                    "See an issue? Let us know.",
-                            },
-                        ].map((item, idx) => {
-                            return (
-                                <article
-                                    key={idx}
-                                    className={cn(
-                                        "flex flex-col p-3 rounded-2xl shadow",
-                                        "hover:shadow-md gap-1 cursor-pointer",
-                                        "gap-3 border border-border/35 bg-input"
-                                    )}
-                                >
-                                    <img
-                                        src={item.img}
-                                        alt={item.label}
-                                        className="size-12 rounded-full"
-                                    />
-                                    <div className="flex flex-col">
-                                        <h2>{item.label}</h2>
-                                        <p className="text-xs">
-                                            {item.description}
-                                        </p>
-                                    </div>
-                                </article>
-                            )
-                        })}
+                        {communityLinks.map((item, idx) => (
+                            <article
+                                key={idx}
+                                className={cn(
+                                    "flex flex-col p-3 rounded-2xl shadow",
+                                    "hover:shadow-md gap-1 cursor-pointer",
+                                    "gap-3 border border-border/35 bg-input"
+                                )}
+                            >
+                                <img
+                                    src="/favicon.svg"
+                                    alt={item.label}
+                                    className="size-12 rounded-full"
+                                />
+                                <div className="flex flex-col">
+                                    <h2>{item.label}</h2>
+                                    <p className="text-xs">
+                                        {item.description}
+                                    </p>
+                                </div>
+                            </article>
+                        ))}
                     </div>
                 </section>
             </div>

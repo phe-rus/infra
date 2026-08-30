@@ -18,11 +18,20 @@ export const Footers = () => {
                         <div key={inx} className="flex flex-col break-inside-avoid gap-2 mb-5">
                             <h3>{group.label}</h3>
                             <div className="flex flex-col">
-                                {group.items.map((item, index) => (
-                                    <Link key={index} to={item.to}>
-                                        {item.label}
-                                    </Link>
-                                ))}
+                                {group.items.map((item, index) =>
+                                    item.to ? (
+                                        <Link key={index} to={item.to}>
+                                            {item.label}
+                                        </Link>
+                                    ) : (
+                                        <span
+                                            key={index}
+                                            className="text-muted-foreground"
+                                        >
+                                            {item.label}
+                                        </span>
+                                    )
+                                )}
                             </div>
                         </div>
                     ))}
