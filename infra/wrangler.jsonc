@@ -22,7 +22,7 @@
         {
             "binding": "D1",
             "database_name": "infra-authentication",
-            "database_id": "d2b4d713-1806-4f29-99cb-6f3c9fb9d02d",
+            "database_id": "aa6bc375-4dd4-4ac0-a7b9-922aed3f3f7c",
             "migrations_dir": "./.migrations",
             "migrations_pattern": ".migrations/**/*.sql"
         }
