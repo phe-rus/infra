@@ -71,7 +71,14 @@ function RootDocument() {
             <head>
                 <HeadContent />
             </head>
-            <ComposeViewport.Window>
+            <ComposeViewport.Window
+                after={
+                    <>
+                        <ComposeViewport.Devtools />
+                        <Scripts />
+                    </>
+                }
+            >
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
@@ -82,8 +89,6 @@ function RootDocument() {
                     <Outlet />
                     <ToasterProvider />
                 </ThemeProvider>
-                <ComposeViewport.Devtools />
-                <Scripts />
             </ComposeViewport.Window>
         </ComposeViewport>
     )

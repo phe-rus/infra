@@ -1,14 +1,22 @@
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import type { ComponentPropsWithoutRef, PropsWithChildren } from "react"
+import type { ComponentPropsWithoutRef, PropsWithChildren, ReactNode } from "react"
 import { cn } from "../../lib/utils"
 
 type ComposeViewportProps = PropsWithChildren<{
     className?: string
 }>
 
-type WindowProps = ComponentPropsWithoutRef<"body">
+type WindowProps = ComponentPropsWithoutRef<"body"> & {
+    /**
+     * Rendered as direct `<body>` children, after `<main>`, not inside it.
+     * `<Scripts />` (and devtools) belong here — TanStack Router's own docs
+     * say `<Scripts />` "should be placed near the end of the document
+     * body", not nested inside the app's content wrapper.
+     */
+    after?: ReactNode
+}
 
 export function ComposeViewport({ children }: ComposeViewportProps) {
     return (
@@ -22,7 +30,7 @@ export function ComposeViewport({ children }: ComposeViewportProps) {
     )
 }
 
-function Window({ className, children, ...props }: WindowProps) {
+function Window({ className, children, after, ...props }: WindowProps) {
     return (
         <body
             className={cn(
@@ -40,6 +48,7 @@ function Window({ className, children, ...props }: WindowProps) {
             )}>
                 {children}
             </main>
+            {after}
         </body>
     )
 }

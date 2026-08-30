@@ -9,7 +9,6 @@
         "preview": "vite preview --port=3000",
         "deploy": "wrangler deploy",
         "type-gen": "wrangler types",
-        "test": "vitest run",
         "typecheck": "tsc --noEmit",
         "postinstall": "bun run type-gen",
         "auth:gen": "bun x auth@latest generate --config=./auth/auth.ts --output=./schemas/auth.ts --yes",
@@ -65,11 +64,9 @@
         "@vitejs/plugin-react": "^6",
         "babel-plugin-react-compiler": "^1.0.0",
         "drizzle-kit": "^1.0.0-rc.4",
-        "jsdom": "^30",
         "typescript": "^7",
         "web-vitals": "^6.2.0",
         "vite": "^8",
-        "vitest": "^4",
         "wrangler": "^4.126.0"
     }
 }
