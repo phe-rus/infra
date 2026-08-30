@@ -41,7 +41,6 @@ function RouteComponent() {
             onBlur: signInSchema,
         },
         onSubmit: async ({ value }) => {
-            setUnverifiedEmail(null)
             const search = window.location.search
             const oauthQuery = search.length > 1 ? search.slice(1) : undefined
             const result = await signIn(
@@ -60,7 +59,16 @@ function RouteComponent() {
                 }
             )
             if (result.code === "EMAIL_NOT_VERIFIED") {
-                setUnverifiedEmail(value.email)
+                t.error("Email not verified", {
+                    description: "Resend the link and try again.",
+                    actionProps: {
+                        children: "Resend",
+                        onClick: () =>
+                            void resendVerificationEmail({
+                                data: { email: value.email },
+                            }),
+                    },
+                })
             }
         },
     })
@@ -127,27 +135,6 @@ function RouteComponent() {
 
                     <form.submit label="Sign in" />
                 </form.AppForm>
-
-                {unverifiedEmail && (
-                    <div className="flex flex-col gap-2 rounded-md border border-border/35 p-3">
-                        <p className="text-sm text-muted-foreground">
-                            This account's email isn't verified yet.
-                        </p>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={isResending}
-                            onClick={() =>
-                                void resendVerificationEmail({
-                                    data: { email: unverifiedEmail },
-                                })
-                            }
-                        >
-                            {isResending ? "Sending…" : "Resend verification email"}
-                        </Button>
-                    </div>
-                )}
             </form>
         </ViewController>
     )

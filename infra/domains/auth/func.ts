@@ -55,11 +55,11 @@ export const signIn = createServerFn({ method: "POST" })
                 returnHeaders: true,
             })
             forwardAuthHeaders(ctx.headers)
-            const redirectUri = ctx.response?.redirect
+            const redirectUri = ctx.response?.redirect ? (ctx.response.url ?? null) : null
             return {
                 error: null,
                 code: null,
-                redirectUri: redirectUri ?? null
+                redirectUri
             }
         } catch (error) {
             if (error instanceof APIError) {
