@@ -10,6 +10,9 @@ export const getServerURL = () => {
 }
 
 export const getClientURL = () => {
+    if (import.meta.env.VITE_BASE_URL) {
+        return import.meta.env.VITE_BASE_URL
+    }
     if (canUseDOM) {
         const protocol = window.location.protocol
         const domain = window.location.hostname
@@ -17,10 +20,5 @@ export const getClientURL = () => {
 
         return `${protocol}//${domain}${port ? `:${port}` : ''}`
     }
-
-    if (import.meta.env.VITE_BASE_URL) {
-        return import.meta.env.VITE_BASE_URL
-    }
-
     return process.env.VITE_BASE_URL || ''
 }
