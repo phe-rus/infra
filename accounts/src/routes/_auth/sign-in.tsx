@@ -141,7 +141,7 @@ function RouteComponent() {
                 <Button
                     type="button"
                     variant="outline"
-                    isDisabled={passkeyPending}
+                    disabled={passkeyPending}
                     onClick={() => void signInWithPasskey()}
                 >
                     {passkeyPending

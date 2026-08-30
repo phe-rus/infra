@@ -54,15 +54,15 @@ export function CountryProviderFields({
                 <Select
                     id={`${idPrefix}-country`}
                     aria-label="Country"
-                    selectedKey={countryCode}
-                    onSelectionChange={(key) => selectCountry(String(key))}
+                    value={countryCode}
+                    onValueChange={(key) => selectCountry(String(key))}
                 >
                     <SelectTrigger>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         {countries.map((c) => (
-                            <SelectItem key={c.country} id={c.country} textValue={c.name}>
+                            <SelectItem key={c.country} value={c.country} title={c.name}>
                                 <span className="flex items-center gap-2">
                                     <img
                                         src={c.flag}
@@ -82,16 +82,16 @@ export function CountryProviderFields({
                 <Select
                     id={`${idPrefix}-provider`}
                     aria-label="Provider"
-                    selectedKey={providerCode}
-                    onSelectionChange={(key) => setProviderCode(String(key))}
-                    isDisabled={!country?.providers.length}
+                    value={providerCode}
+                    onValueChange={(key) => setProviderCode(String(key))}
+                    disabled={!country?.providers.length}
                 >
                     <SelectTrigger>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         {country?.providers.map((p) => (
-                            <SelectItem key={p.provider} id={p.provider} textValue={p.displayName}>
+                            <SelectItem key={p.provider} value={p.provider} title={p.displayName}>
                                 <span className="flex items-center gap-2">
                                     <img src={p.logo} alt="" className="size-4 object-contain" />
                                     {p.displayName}

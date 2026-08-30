@@ -2,7 +2,8 @@ import { useLogout } from "@/domains/auth"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
-import { IconLoader2, IconMenu3 } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Loading03Icon, Menu03Icon } from "@hugeicons/core-free-icons"
 import { Link } from "@tanstack/react-router"
 import { useMemo, useState } from "react"
 
@@ -64,9 +65,9 @@ export const Headers = () => {
                             variant="destructive"
                             size="xs"
                             onClick={() => void handleLogout()}
-                            isDisabled={isLoggingOut}
+                            disabled={isLoggingOut}
                         >
-                            {isLoggingOut && <IconLoader2 className="animate-spin" />}
+                            {isLoggingOut && <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />}
                             Logout
                         </Button>
                         <Button
@@ -75,7 +76,7 @@ export const Headers = () => {
                             className="flex md:hidden"
                             onClick={() => setOpen((prev) => !prev)}
                         >
-                            <IconMenu3 />
+                            <HugeiconsIcon icon={Menu03Icon} />
                         </Button>
                     </nav>
                 </section>

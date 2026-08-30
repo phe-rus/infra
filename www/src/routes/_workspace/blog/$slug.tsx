@@ -1,7 +1,8 @@
 import { Badge } from "@infra/ui/components/badge"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { Markdown } from "@tanstack/markdown/react"
-import { IconArrowLeft } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { getPostBody, posts } from "@/content/blog"
 
@@ -18,7 +19,7 @@ function RouteComponent() {
         return (
             <ViewController heading={<ViewController.Heading title="Post not found" />}>
                 <Link to="/blog" className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <IconArrowLeft className="size-3.5" />
+                    <HugeiconsIcon icon={ArrowLeft01Icon} className="size-3.5" />
                     Back to blog
                 </Link>
             </ViewController>
@@ -33,7 +34,7 @@ function RouteComponent() {
                         to="/blog"
                         className="flex items-center gap-1 text-sm text-muted-foreground"
                     >
-                        <IconArrowLeft className="size-3.5" />
+                        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-3.5" />
                         Back to blog
                     </Link>
                     <div className="flex items-center gap-2">

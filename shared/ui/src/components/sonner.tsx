@@ -1,12 +1,13 @@
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-    IconAlertTriangle,
-    IconCircleCheck,
-    IconCircleX,
-    IconInfoCircle,
-    IconLoader2,
-    IconX,
-} from "@tabler/icons-react"
+    CancelCircleIcon,
+    Cancel01Icon,
+    CheckmarkCircle02Icon,
+    InformationCircleIcon,
+    Loading03Icon,
+    TriangleAlertIcon,
+} from "@hugeicons/core-free-icons"
 import { format } from "date-fns"
 
 import { cn } from "../lib/utils"
@@ -157,7 +158,7 @@ function ToastClose({
             )}
             {...props}
         >
-            {children ?? <IconX aria-hidden="true" />}
+            {children ?? <HugeiconsIcon icon={Cancel01Icon} aria-hidden="true" />}
         </ToastPrimitive.Close>
     )
 }
@@ -165,16 +166,17 @@ function ToastClose({
 function ToastIcon({ type }: { type: string | undefined }) {
     const cls = cn("size-4.5", type ? TYPE_TEXT[type] : undefined)
     if (type === "success")
-        return <IconCircleCheck className={cls} aria-hidden="true" />
+        return <HugeiconsIcon icon={CheckmarkCircle02Icon} className={cls} aria-hidden="true" />
     if (type === "error")
-        return <IconCircleX className={cls} aria-hidden="true" />
+        return <HugeiconsIcon icon={CancelCircleIcon} className={cls} aria-hidden="true" />
     if (type === "warning")
-        return <IconAlertTriangle className={cls} aria-hidden="true" />
+        return <HugeiconsIcon icon={TriangleAlertIcon} className={cls} aria-hidden="true" />
     if (type === "info")
-        return <IconInfoCircle className={cls} aria-hidden="true" />
+        return <HugeiconsIcon icon={InformationCircleIcon} className={cls} aria-hidden="true" />
     if (type === "loading")
         return (
-            <IconLoader2
+            <HugeiconsIcon
+                icon={Loading03Icon}
                 className="size-4.5 animate-spin text-muted-foreground"
                 aria-hidden="true"
             />

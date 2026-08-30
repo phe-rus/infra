@@ -11,8 +11,8 @@ export function FieldCheckbox({ label }: { label: string }) {
                 id={field.name}
                 name={field.name}
                 aria-label={label}
-                isSelected={field.state.value}
-                onChange={field.handleChange}
+                checked={field.state.value}
+                onCheckedChange={field.handleChange}
             />
             <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
         </Field>

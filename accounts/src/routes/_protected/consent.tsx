@@ -63,7 +63,7 @@ function RouteComponent() {
             <div className="flex gap-2">
                 <Button
                     type="button"
-                    isDisabled={decision !== null}
+                    disabled={decision !== null}
                     onClick={() => void respond(true)}
                 >
                     {decision === "accept" ? "Authorizing…" : "Allow"}
@@ -71,7 +71,7 @@ function RouteComponent() {
                 <Button
                     type="button"
                     variant="outline"
-                    isDisabled={decision !== null}
+                    disabled={decision !== null}
                     onClick={() => void respond(false)}
                 >
                     {decision === "deny" ? "Denying…" : "Deny"}

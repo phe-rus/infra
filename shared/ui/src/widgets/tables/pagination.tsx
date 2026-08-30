@@ -1,10 +1,11 @@
-import type { ReactTable, RowData } from "@tanstack/react-table"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-    IconChevronLeft,
-    IconChevronRight,
-    IconChevronsLeft,
-    IconChevronsRight,
-} from "@tabler/icons-react"
+    ChevronFirstIcon,
+    ChevronLastIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+} from "@hugeicons/core-free-icons"
+import type { ReactTable, RowData } from "@tanstack/react-table"
 import { Button } from "../../components/button"
 import {
     Select,
@@ -38,51 +39,54 @@ export function DataTablePagination<TData extends RowData>({
                     type="button"
                     variant="secondary"
                     size="icon-sm"
-                    isDisabled={!table.getCanPreviousPage()}
+                    disabled={!table.getCanPreviousPage()}
                     onClick={() => table.setPageIndex(0)}
                 >
-                    <IconChevronsLeft />
+                    <HugeiconsIcon icon={ChevronFirstIcon} />
                 </Button>
                 <Button
                     type="button"
                     variant="secondary"
                     size="icon-sm"
-                    isDisabled={!table.getCanPreviousPage()}
+                    disabled={!table.getCanPreviousPage()}
                     onClick={() => table.previousPage()}
                 >
-                    <IconChevronLeft />
+                    <HugeiconsIcon icon={ChevronLeftIcon} />
                 </Button>
                 <Button
                     type="button"
                     variant="secondary"
                     size="icon-sm"
-                    isDisabled={!table.getCanNextPage()}
+                    disabled={!table.getCanNextPage()}
                     onClick={() => table.nextPage()}
                 >
-                    <IconChevronRight />
+                    <HugeiconsIcon icon={ChevronRightIcon} />
                 </Button>
                 <Button
                     type="button"
                     variant="outline"
                     size="icon-sm"
-                    isDisabled={!table.getCanNextPage()}
+                    disabled={!table.getCanNextPage()}
                     onClick={() => table.setPageIndex(pageCount - 1)}
                 >
-                    <IconChevronsRight />
+                    <HugeiconsIcon icon={ChevronLastIcon} />
                 </Button>
             </div>
 
             <Select
                 aria-label="Rows per page"
-                selectedKey={String(pageSize)}
-                onSelectionChange={(key) => table.setPageSize(Number(key))}
+                value={String(pageSize)}
+                onValueChange={(key) => table.setPageSize(Number(key))}
             >
                 <SelectTrigger size="sm" className="w-16">
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                     {pageSizeOptions.map((size) => (
-                        <SelectItem key={size} id={String(size)}>
+                        <SelectItem
+                            key={size}
+                            value={String(size)}
+                        >
                             {size}
                         </SelectItem>
                     ))}

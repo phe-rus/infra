@@ -27,8 +27,8 @@ export function FieldMultiselect({
                         <Checkbox
                             id={`${field.name}-${option.value}`}
                             aria-label={option.label}
-                            isSelected={field.state.value.includes(option.value)}
-                            onChange={(checked) => toggle(option.value, checked)}
+                            checked={field.state.value.includes(option.value)}
+                            onCheckedChange={(checked) => toggle(option.value, checked)}
                         />
                         <label htmlFor={`${field.name}-${option.value}`} className="text-sm">
                             {option.label}

@@ -8,20 +8,21 @@ import {
     Fragment,
 } from "react"
 import type { PropsWithChildren, FC } from "react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-    IconBone,
-    IconChevronLeft,
-    IconChevronRight,
-    IconDownload,
-    IconLogs,
-    IconMessage2,
-    IconMeteorFilled,
-    IconPackage,
-    IconSettings,
-    IconTerminal,
-    IconUpload,
-    IconUser,
-} from "@tabler/icons-react"
+    Activity01Icon,
+    Bone01Icon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    Comet01Icon,
+    Download01Icon,
+    Message02Icon,
+    PackageIcon,
+    Settings01Icon,
+    TerminalIcon,
+    Upload01Icon,
+    UserIcon,
+} from "@hugeicons/core-free-icons"
 import { useIsMobile } from "@infra/ui/lib/use-media-query"
 import { Button } from "@infra/ui/components/button"
 import { Link } from "@tanstack/react-router"
@@ -40,28 +41,28 @@ const navLists = [
     {
         label: "Users",
         path: "/users",
-        Icon: IconUser,
+        Icon: UserIcon,
     },
     {
         label: "Console",
         path: "/console",
-        Icon: IconTerminal,
+        Icon: TerminalIcon,
     },
     {
         label: "Storage",
         path: "/storage",
-        Icon: IconPackage,
+        Icon: PackageIcon,
     },
     {
         label: "Logs",
         path: "/logs",
-        Icon: IconLogs,
+        Icon: Activity01Icon,
     },
     {
         isDev: true,
         label: "Messaging",
         path: "/messaging",
-        Icon: IconMessage2,
+        Icon: Message02Icon,
     },
     {
         label: "System",
@@ -70,19 +71,19 @@ const navLists = [
                 isDev: true,
                 label: "Application",
                 path: "/settings",
-                Icon: IconSettings,
+                Icon: Settings01Icon,
             },
             {
                 isDev: true,
                 label: "Metrics",
                 path: "/settings/metrics",
-                Icon: IconMeteorFilled,
+                Icon: Comet01Icon,
             },
             {
                 isDev: true,
                 label: "Crons",
                 path: "/settings/crons",
-                Icon: IconBone,
+                Icon: Bone01Icon,
             },
         ],
     },
@@ -93,13 +94,13 @@ const navLists = [
                 isDev: true,
                 label: "Export store",
                 path: "/settings/sync#export",
-                Icon: IconDownload,
+                Icon: Download01Icon,
             },
             {
                 isDev: true,
                 label: "Import store",
                 path: "/settings/sync#import",
-                Icon: IconUpload,
+                Icon: Upload01Icon,
             },
         ],
     },
@@ -110,7 +111,7 @@ const navLists = [
                 isDev: true,
                 label: "SQL console",
                 path: "/settings/sql",
-                Icon: IconDownload,
+                Icon: Download01Icon,
             },
         ],
     },
@@ -198,9 +199,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             onClick={() => toggleSidebar()}
                         >
                             {!isExpanded ? (
-                                <IconChevronRight />
+                                <HugeiconsIcon icon={ChevronRightIcon} />
                             ) : (
-                                <IconChevronLeft />
+                                <HugeiconsIcon icon={ChevronLeftIcon} />
                             )}
                         </Button>
                         <section
@@ -257,7 +258,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                         }}
                                                     >
                                                         {props.Icon && (
-                                                            <props.Icon className="size-5" />
+                                                            <HugeiconsIcon icon={props.Icon} className="size-5" />
                                                         )}
                                                         {label}
                                                         {props.isDev && (
@@ -310,7 +311,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                                                                 ),
                                                                         }}
                                                                     >
-                                                                        <i.Icon className="size-5" />
+                                                                        <HugeiconsIcon icon={i.Icon} className="size-5" />
                                                                         {
                                                                             i.label
                                                                         }
@@ -348,7 +349,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     size="sm"
                                     className="w-fit!"
                                     onClick={() => signOut()}
-                                    isDisabled={isPending}
+                                    disabled={isPending}
                                 >
                                     {isPending
                                         ? "Signing out..."
@@ -371,7 +372,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     onClick={() =>
                                         void stopImpersonating()
                                     }
-                                    isDisabled={isStoppingImpersonation}
+                                    disabled={isStoppingImpersonation}
                                 >
                                     {isStoppingImpersonation
                                         ? "Stopping…"

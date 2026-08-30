@@ -1,8 +1,9 @@
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
-    IconFileFilled,
-    IconFolderFilled,
-    IconMinus,
-} from "@tabler/icons-react"
+    File01Icon,
+    Folder01Icon,
+    MinusSignIcon,
+} from "@hugeicons/core-free-icons"
 import { useListObjects, useDeleteObjects } from "@/domains/storage"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
@@ -50,7 +51,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                 "cursor-pointer hover:bg-accent"
                             )}
                         >
-                            <IconFolderFilled className="size-7! shrink-0" />
+                            <HugeiconsIcon icon={Folder01Icon} className="size-7! shrink-0" />
                             <span className="min-w-0 flex-1 truncate text-xs">
                                 {folder.name}
                             </span>
@@ -65,7 +66,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                     })
                                 }}
                             >
-                                <IconMinus />
+                                <HugeiconsIcon icon={MinusSignIcon} />
                             </Button>
                         </article>
                     ))}
@@ -101,7 +102,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                         )}
                                     />
                                 ) : (
-                                    <IconFileFilled className="m-auto size-8" />
+                                    <HugeiconsIcon icon={File01Icon} className="m-auto size-8" />
                                 )}
                             </div>
                             <div className="mb-auto flex flex-col p-1">
@@ -124,7 +125,7 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                     })
                                 }}
                             >
-                                <IconMinus />
+                                <HugeiconsIcon icon={MinusSignIcon} />
                             </Button>
                         </a>
                     ))}

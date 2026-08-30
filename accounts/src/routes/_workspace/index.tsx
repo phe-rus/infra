@@ -12,7 +12,8 @@ import {
     InputGroupAddon,
     InputGroupInput,
 } from "@infra/ui/components/input-group"
-import { IconSearch } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Search01Icon } from "@hugeicons/core-free-icons"
 import { useMemo } from "react"
 import { resolveCdnUrl } from "@/lib/auth-client"
 
@@ -60,7 +61,7 @@ function RouteComponent() {
             <InputGroup className="mx-auto md:max-w-md!">
                 <InputGroupInput placeholder="Search your account" />
                 <InputGroupAddon>
-                    <IconSearch />
+                    <HugeiconsIcon icon={Search01Icon} />
                 </InputGroupAddon>
             </InputGroup>
         </ViewController>

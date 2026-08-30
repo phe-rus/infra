@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { IconCopy } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Copy01Icon } from "@hugeicons/core-free-icons"
 import { formatUtc } from "@infra/ui/lib/date"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
@@ -185,7 +186,7 @@ function RouteComponent() {
                             }
                             aria-label="Copy client ID"
                         >
-                            <IconCopy className="size-3" />
+                            <HugeiconsIcon icon={Copy01Icon} className="size-3" />
                         </button>
                     </div>
                     <div>
@@ -254,7 +255,7 @@ function RouteComponent() {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    isDisabled={isRotating}
+                                    disabled={isRotating}
                                     onClick={() => void handleRotate()}
                                 >
                                     Rotate secret

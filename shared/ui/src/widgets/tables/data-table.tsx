@@ -1,3 +1,18 @@
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+    Cancel01Icon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+    Search01Icon,
+} from "@hugeicons/core-free-icons"
+import type {
+    ColumnDef,
+    ColumnFiltersState,
+    ColumnVisibilityState,
+    RowData,
+    RowSelectionState,
+    SortingState,
+} from "@tanstack/react-table"
 import {
     columnFilteringFeature,
     columnVisibilityFeature,
@@ -21,15 +36,12 @@ import {
     tableFeatures,
     useTable,
 } from "@tanstack/react-table"
-import type {
-    ColumnDef,
-    ColumnFiltersState,
-    ColumnVisibilityState,
-    RowData,
-    RowSelectionState,
-    SortingState,
-} from "@tanstack/react-table"
-import { IconChevronDown, IconChevronUp, IconSearch, IconX } from "@tabler/icons-react"
+import type { ReactNode } from "react"
+import { useMemo, useState } from "react"
+import { Badge } from "../../components/badge"
+import { Button } from "../../components/button"
+import { Checkbox } from "../../components/checkbox"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../../components/input-group"
 import {
     Table,
     TableBody,
@@ -39,21 +51,11 @@ import {
     TableHeader,
     TableRow,
 } from "../../components/table"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../../components/input-group"
-import { Checkbox } from "../../components/checkbox"
-import { Button } from "../../components/button"
-import { Badge } from "../../components/badge"
 import { cn } from "../../lib/utils"
-import { useMemo, useState } from "react"
-import type { ReactNode } from "react"
-import { DataTablePagination } from "./pagination"
 import { FilterRow } from "./filter-row"
+import { DataTablePagination } from "./pagination"
 import { columnIdOf, getColumnLabel, isArrayValuedColumn } from "./utils"
 
-// only the individual filter/sort functions this table actually resolves by
-// name (`filterFn: 'auto'`/`sortFn: 'auto'`, the per-column default) — the
-// full `filterFns`/`sortFns` aggregates are deprecated precisely because
-// registering them opts every built-in function into the bundle
 export const baseTableFeatures = tableFeatures({
     globalFilteringFeature,
     columnFilteringFeature,
@@ -111,7 +113,6 @@ type DataTableProps<TData extends RowData> = {
      * silently regress.
      */
     getRowId: (row: TData) => string
-    /** Accessible name for the table landmark — react-aria's grid requires one. */
     "aria-label": string
     emptyMessage?: ReactNode
     searchPlaceholder?: string
@@ -149,12 +150,6 @@ export function DataTable<TData extends RowData>({
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
     const [columnsOpen, setColumnsOpen] = useState(false)
     const [filtersOpen, setFiltersOpen] = useState(false)
-
-    // A caller's own explicit `filterFn` always wins. Otherwise: a column
-    // marked `meta.filterVariant: 'date'` gets real date-range matching; a
-    // column whose actual data is array-valued gets array-contains matching
-    // — the default `includesString` behavior would otherwise stringify the
-    // whole array and only work by accident for a single-item array.
     const augmentedColumns = useMemo(
         () =>
             columns.map((col) => {
@@ -214,7 +209,7 @@ export function DataTable<TData extends RowData>({
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                     <InputGroupAddon align="inline-start">
-                        <IconSearch />
+                        <HugeiconsIcon icon={Search01Icon} />
                     </InputGroupAddon>
                     <InputGroupAddon align="inline-end">
                         <Button
@@ -235,7 +230,8 @@ export function DataTable<TData extends RowData>({
                                     {hiddenCount}
                                 </Badge>
                             )}
-                            <IconChevronDown
+                            <HugeiconsIcon
+                                icon={ChevronDownIcon}
                                 className={cn(
                                     "transition-transform duration-150",
                                     columnsOpen && "rotate-180"
@@ -260,7 +256,8 @@ export function DataTable<TData extends RowData>({
                                     {activeFilterCount}
                                 </Badge>
                             )}
-                            <IconChevronDown
+                            <HugeiconsIcon
+                                icon={ChevronDownIcon}
                                 className={cn(
                                     "transition-transform duration-150",
                                     filtersOpen && "rotate-180"
@@ -298,8 +295,8 @@ export function DataTable<TData extends RowData>({
                                 >
                                     <Checkbox
                                         aria-label={getColumnLabel(column)}
-                                        isSelected={visible}
-                                        onChange={() => column.toggleVisibility()}
+                                        checked={visible}
+                                        onCheckedChange={() => column.toggleVisibility()}
                                     />
                                     <span className="text-xs">{getColumnLabel(column)}</span>
                                 </div>
@@ -321,7 +318,7 @@ export function DataTable<TData extends RowData>({
                                 onClick={() => setColumnFilters([])}
                                 className="text-muted-foreground hover:text-foreground"
                             >
-                                <IconX className="size-3" />
+                                <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
                                 Clear all
                             </Button>
                         )}
@@ -368,15 +365,8 @@ export function DataTable<TData extends RowData>({
             <Table aria-label={ariaLabel} className="divide-none!">
                 <TableHeader>
                     {table.getHeaderGroups().flatMap((headerGroup) => {
-                        // react-aria's Table throws unless at least one
-                        // Column declares isRowHeader — the first column
-                        // that isn't the bulk-select checkbox is the one
-                        // that actually identifies the row
-                        const rowHeaderId = headerGroup.headers.find(
-                            (h) => h.column.id !== "select"
-                        )?.id
                         return headerGroup.headers.map((header) => (
-                            <TableHead key={header.id} isRowHeader={header.id === rowHeaderId}>
+                            <TableHead key={header.id}>
                                 {header.isPlaceholder ? null : header.column.getCanSort() ? (
                                     <div
                                         className="flex w-fit cursor-pointer items-center gap-1 text-muted-foreground hover:text-foreground"
@@ -387,18 +377,20 @@ export function DataTable<TData extends RowData>({
                                             header.getContext()
                                         )}
                                         <div className="flex flex-col">
-                                            <IconChevronUp
+                                            <HugeiconsIcon
+                                                icon={ChevronUpIcon}
                                                 className={cn(
                                                     "size-3 opacity-20",
                                                     header.column.getIsSorted() === "asc" &&
-                                                        "opacity-100"
+                                                    "opacity-100"
                                                 )}
                                             />
-                                            <IconChevronDown
+                                            <HugeiconsIcon
+                                                icon={ChevronDownIcon}
                                                 className={cn(
                                                     "-mt-1.5 size-3 opacity-20",
                                                     header.column.getIsSorted() === "desc" &&
-                                                        "opacity-100"
+                                                    "opacity-100"
                                                 )}
                                             />
                                         </div>

@@ -78,7 +78,7 @@ const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                     }}
                     footer={
                         <>
-                            <Button type="submit" isDisabled={enableMutation.isPending}>
+                            <Button type="submit" disabled={enableMutation.isPending}>
                                 {enableMutation.isPending ? "Continuing…" : "Continue"}
                             </Button>
                             <DrawerClose render={<Button type="button" variant="outline" />}>
@@ -117,7 +117,7 @@ const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                     }}
                     footer={
                         <>
-                            <Button type="submit" isDisabled={verifyMutation.isPending}>
+                            <Button type="submit" disabled={verifyMutation.isPending}>
                                 {verifyMutation.isPending ? "Verifying…" : "Verify and enable"}
                             </Button>
                             <DrawerClose render={<Button type="button" variant="outline" />}>
@@ -197,7 +197,7 @@ const Disable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                     <Button
                         type="submit"
                         variant="destructive"
-                        isDisabled={disableMutation.isPending}
+                        disabled={disableMutation.isPending}
                     >
                         {disableMutation.isPending ? "Disabling…" : "Disable"}
                     </Button>
@@ -267,7 +267,7 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({ open, onOpenChange }
                     </Button>
                 ) : (
                     <>
-                        <Button type="submit" isDisabled={generateMutation.isPending}>
+                        <Button type="submit" disabled={generateMutation.isPending}>
                             {generateMutation.isPending ? "Generating…" : "Generate codes"}
                         </Button>
                         <DrawerClose render={<Button type="button" variant="outline" />}>

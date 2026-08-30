@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../../../components/avatar"
-import { IconImageInPicture } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Image02Icon } from "@hugeicons/core-free-icons"
 import { Button } from "../../../components/button"
 import { useFieldContext } from "../contexts"
 import { useEffect, useRef, useState } from "react"
@@ -72,7 +73,7 @@ export function FieldAvatar({
                 )}
                 onClick={() => fileInputRef.current?.click()}
             >
-                <IconImageInPicture />
+                <HugeiconsIcon icon={Image02Icon} />
             </Button>
         </div>
     )

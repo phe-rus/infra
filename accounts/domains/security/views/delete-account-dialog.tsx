@@ -49,7 +49,7 @@ export function DeleteAccountDialog({ open, onOpenChange }: ControlledDialogProp
                     <Button
                         type="submit"
                         variant="destructive"
-                        isDisabled={deleteMutation.isPending}
+                        disabled={deleteMutation.isPending}
                     >
                         {deleteMutation.isPending ? "Sending…" : "Send confirmation email"}
                     </Button>

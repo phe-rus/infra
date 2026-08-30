@@ -5,7 +5,8 @@ import { UAParser } from "ua-parser-js"
 import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
 import { cn } from "@infra/ui/lib/utils"
-import { IconLoader2, IconTrash } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Delete02Icon, Loading03Icon } from "@hugeicons/core-free-icons"
 import type { SessionsData } from "@/domains/security"
 import { useRevokeSession } from "@/domains/security"
 
@@ -64,7 +65,7 @@ export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken })
                                     size="icon-xs"
                                     className="rounded-full"
                                     aria-label="Sign out this device"
-                                    isDisabled={
+                                    disabled={
                                         revokeMutation.isPending && revokingToken === session.token
                                     }
                                     onClick={() => {
@@ -73,9 +74,9 @@ export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken })
                                     }}
                                 >
                                     {revokeMutation.isPending && revokingToken === session.token ? (
-                                        <IconLoader2 className="animate-spin" />
+                                        <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />
                                     ) : (
-                                        <IconTrash />
+                                        <HugeiconsIcon icon={Delete02Icon} />
                                     )}
                                 </Button>
                             )}

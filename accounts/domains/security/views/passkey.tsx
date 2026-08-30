@@ -7,7 +7,8 @@ import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
-import { IconLoader2, IconPencil, IconTrash } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Delete02Icon, Loading03Icon, PencilIcon } from "@hugeicons/core-free-icons"
 import { z } from "zod"
 import type { PasskeysData } from "@/domains/security"
 import { useAddPasskey, useUpdatePasskey, useDeletePasskey } from "@/domains/security"
@@ -65,7 +66,7 @@ const Rename: FC<RenameProps> = ({ id, name, children, ...props }) => {
                 }}
                 footer={
                     <>
-                        <Button type="submit" isDisabled={updateMutation.isPending}>
+                        <Button type="submit" disabled={updateMutation.isPending}>
                             {updateMutation.isPending ? "Saving…" : "Save"}
                         </Button>
                         <DrawerClose render={<Button type="button" variant="outline" />}>
@@ -129,7 +130,7 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({ children, ...props }) => {
                 }}
                 footer={
                     <>
-                        <Button type="submit" isDisabled={addMutation.isPending}>
+                        <Button type="submit" disabled={addMutation.isPending}>
                             {addMutation.isPending ? "Waiting for passkey…" : "Continue"}
                         </Button>
                         <DrawerClose render={<Button type="button" variant="outline" />}>
@@ -213,23 +214,23 @@ const List: FC<ListProps> = ({ data }) => {
                             variant="secondary"
                             className="rounded-full"
                         >
-                            <IconPencil />
+                            <HugeiconsIcon icon={PencilIcon} />
                         </Rename>
                         <Button
                             type="button"
                             variant="destructive"
                             size="icon-xs"
                             className="rounded-full"
-                            isDisabled={deleteMutation.isPending && deletingId === passkey.id}
+                            disabled={deleteMutation.isPending && deletingId === passkey.id}
                             onClick={() => {
                                 setDeletingId(passkey.id)
                                 deleteMutation.mutate(passkey.id)
                             }}
                         >
                             {deleteMutation.isPending && deletingId === passkey.id ? (
-                                <IconLoader2 className="animate-spin" />
+                                <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />
                             ) : (
-                                <IconTrash />
+                                <HugeiconsIcon icon={Delete02Icon} />
                             )}
                         </Button>
                     </div>

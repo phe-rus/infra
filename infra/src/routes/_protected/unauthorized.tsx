@@ -23,7 +23,7 @@ function RouteComponent() {
             <Button
                 className="mt-3"
                 onClick={() => signOut()}
-                isDisabled={isPending}
+                disabled={isPending}
             >
                 {isPending ? "Signing out…" : "Sign out"}
             </Button>

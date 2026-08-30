@@ -37,7 +37,7 @@ export const SetUserPassword: FC<SetUserPasswordProps> = ({ userId }) => {
             <Button
                 type="button"
                 variant="outline"
-                isDisabled={newPassword.length < 8}
+                disabled={newPassword.length < 8}
                 onClick={() => void handleSetPassword()}
             >
                 Set password

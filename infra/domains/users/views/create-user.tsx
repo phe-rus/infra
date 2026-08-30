@@ -53,7 +53,7 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
                 <>
                     <Button
                         type="button"
-                        isDisabled={
+                        disabled={
                             !draftName.trim() ||
                             !draftEmail.trim() ||
                             draftPassword.length < 8
@@ -105,8 +105,8 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
                     <Select
                         id="new-user-role"
                         aria-label="Role"
-                        selectedKey={draftRole}
-                        onSelectionChange={(key) =>
+                        value={draftRole}
+                        onValueChange={(key) =>
                             setDraftRole(key as "admin" | "user")
                         }
                     >
@@ -115,7 +115,7 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
                         </SelectTrigger>
                         <SelectContent>
                             {FIXED_ROLE_NAMES.map((role) => (
-                                <SelectItem key={role} id={role}>
+                                <SelectItem key={role} value={role}>
                                     {role}
                                 </SelectItem>
                             ))}

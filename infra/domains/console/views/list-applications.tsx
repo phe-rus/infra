@@ -116,7 +116,7 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     return (
                         <RowActionsMenu>
                             <DropdownMenuItem
-                                onAction={() =>
+                                onSelect={() =>
                                     onSetActive(
                                         app.clientId,
                                         Boolean(app.disabled)
@@ -127,7 +127,7 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                             </DropdownMenuItem>
                             {app.isOwnClient && (
                                 <DropdownMenuItem
-                                    onAction={() => onRotate(app.clientId)}
+                                    onSelect={() => onRotate(app.clientId)}
                                 >
                                     Rotate secret
                                 </DropdownMenuItem>
@@ -137,7 +137,7 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         variant="destructive"
-                                        onAction={() => onRemove(app.clientId)}
+                                        onSelect={() => onRemove(app.clientId)}
                                     >
                                         Remove
                                     </DropdownMenuItem>

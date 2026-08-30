@@ -1,6 +1,7 @@
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
-import { IconMenu3, IconNotes } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Menu03Icon, Note01Icon } from "@hugeicons/core-free-icons"
 import { useLocation } from "@tanstack/react-router"
 import { AnimatePresence } from "motion/react"
 import { useMemo, useState } from "react"
@@ -83,7 +84,7 @@ export const Headers = () => {
                         size="xs"
                         className="rounded-full"
                     >
-                        <IconNotes />
+                        <HugeiconsIcon icon={Note01Icon} />
                         Documentation
                     </Button>
                     <Button
@@ -94,7 +95,7 @@ export const Headers = () => {
                             setMobileOpen((prev) => !prev)
                         }
                     >
-                        <IconMenu3 />
+                        <HugeiconsIcon icon={Menu03Icon} />
                     </Button>
                 </nav>
             </section>

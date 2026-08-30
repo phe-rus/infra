@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { IconInfoCircle } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { InformationCircleIcon } from "@hugeicons/core-free-icons"
 import { cn } from "@infra/ui/lib/utils"
 import { buttonVariants } from "@infra/ui/components/button"
 import { statsOptions, useStats } from "@/domains/stats"
@@ -38,7 +39,7 @@ function RouteComponent() {
         >
             <ContentView variant="elevated">
                 <ContentView.Row className="gap-3 p-3">
-                    <IconInfoCircle />
+                    <HugeiconsIcon icon={InformationCircleIcon} />
                     <ContentView.H2 className="flex items-center gap-1 text-sm">
                         Your code and connections all look good
                         <Link

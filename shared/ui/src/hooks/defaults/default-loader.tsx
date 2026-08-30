@@ -1,4 +1,5 @@
-import { IconLoader2 } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Loading03Icon } from "@hugeicons/core-free-icons"
 import { cn } from "../../lib/utils"
 
 export function DefaultLoader() {
@@ -9,7 +10,7 @@ export function DefaultLoader() {
                 "bg-background"
             )}
         >
-            <IconLoader2 className="size-5! animate-spin duration-500" />
+            <HugeiconsIcon icon={Loading03Icon} className="size-5! animate-spin duration-500" />
         </section>
     )
 }

@@ -5,7 +5,8 @@ import { useAppForm } from "@infra/ui/widgets/blocks"
 import { buttonVariants } from "@infra/ui/components/button"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { cn } from "@infra/ui/lib/utils"
-import { IconArrowLeft } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { useRequestPasswordReset } from "@/domains/auth"
 
 const forgotPasswordSchema = z.object({
@@ -80,7 +81,7 @@ function RouteComponent() {
                         })
                     )}
                 >
-                    <IconArrowLeft />
+                    <HugeiconsIcon icon={ArrowLeft01Icon} />
                     Back to sign in
                 </Link>
             </form>

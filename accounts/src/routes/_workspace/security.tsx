@@ -17,7 +17,8 @@ import {
     DeleteAccountDialog,
 } from "@/domains/security"
 import { Badge } from "@infra/ui/components/badge"
-import { IconKeyFilled } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Key01Icon } from "@hugeicons/core-free-icons"
 
 export const Route = createFileRoute("/_workspace/security")({
     loader: async ({ context }) => {
@@ -50,7 +51,7 @@ function RouteComponent() {
                 <ContentView.Row className="w-full justify-between rounded-md! bg-input/35 px-3 py-2">
                     <div className="flex gap-3">
                         <Button size="icon-sm" variant="secondary" className="rounded-full">
-                            <IconKeyFilled />
+                            <HugeiconsIcon icon={Key01Icon} />
                         </Button>
                         <div className="gap-0!">
                             <h2 className="text-base">Two-factor authentication</h2>
@@ -60,8 +61,8 @@ function RouteComponent() {
                         </div>
                     </div>
                     <Switch
-                        isSelected={isTwoFactorEnabled}
-                        onChange={() => setTwoFactorDialogOpen(true)}
+                        checked={isTwoFactorEnabled}
+                        onCheckedChange={() => setTwoFactorDialogOpen(true)}
                         aria-label="Two-factor authentication"
                     />
                 </ContentView.Row>

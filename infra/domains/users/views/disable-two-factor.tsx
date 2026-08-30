@@ -22,7 +22,7 @@ export const DisableTwoFactor: FC<DisableTwoFactorProps> = ({ viewUser }) => {
             <Button
                 type="button"
                 variant="outline"
-                isDisabled={isPending}
+                disabled={isPending}
                 onClick={() =>
                     void disableTwoFactor({
                         data: { userId: viewUser.user.id },

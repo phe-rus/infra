@@ -18,9 +18,9 @@ export function FieldSwitch({
             <Switch
                 id={field.name}
                 name={field.name}
-                isSelected={field.state.value}
-                onChange={field.handleChange}
-                isDisabled={disabled}
+                checked={field.state.value}
+                onCheckedChange={field.handleChange}
+                disabled={disabled}
             />
             <div className="flex flex-col gap-0.5">
                 <FieldLabel htmlFor={field.name}>{label}</FieldLabel>

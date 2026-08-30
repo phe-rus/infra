@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import type { Column, RowData } from "@tanstack/react-table"
-import { IconX } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Cancel01Icon } from "@hugeicons/core-free-icons"
 import { Button } from "../../components/button"
 import { Checkbox } from "../../components/checkbox"
 import type { DataTableFeatures } from "./data-table"
@@ -92,7 +93,7 @@ export function FilterRow<TData extends RowData>({
                             onClick={() => column.setFilterValue(undefined)}
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            <IconX className="size-3" />
+                            <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
                         </Button>
                     )}
                 </div>
@@ -130,8 +131,8 @@ export function FilterRow<TData extends RowData>({
                             >
                                 <Checkbox
                                     aria-label={value}
-                                    isSelected={active}
-                                    onChange={setActive}
+                                    checked={active}
+                                    onCheckedChange={setActive}
                                 />
                                 <span className="text-xs">{value}</span>
                             </div>
@@ -145,7 +146,7 @@ export function FilterRow<TData extends RowData>({
                             onClick={() => column.setFilterValue(undefined)}
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            <IconX className="size-3" />
+                            <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
                             Clear
                         </Button>
                     )}
@@ -183,7 +184,7 @@ export function FilterRow<TData extends RowData>({
                         onClick={() => column.setFilterValue(undefined)}
                         className="absolute top-1/2 right-1 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
-                        <IconX className="size-3" />
+                        <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
                     </Button>
                 )}
             </div>

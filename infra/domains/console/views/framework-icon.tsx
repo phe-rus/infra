@@ -1,5 +1,6 @@
 import type { Framework } from "@/domains/console"
-import { IconCode } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { SourceCodeIcon } from "@hugeicons/core-free-icons"
 
 // simplified, hand-drawn stand-ins for each framework's mark — not traced
 // from official brand assets, just enough to be visually recognizable in a
@@ -89,6 +90,6 @@ export function FrameworkIcon({
         framework && framework !== "other"
             ? ICONS[framework as Exclude<Framework, "other">]
             : undefined
-    if (!Icon) return <IconCode className={className} />
+    if (!Icon) return <HugeiconsIcon icon={SourceCodeIcon} className={className} />
     return <Icon className={className} />
 }

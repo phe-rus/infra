@@ -11,9 +11,7 @@ const BREAKPOINTS = {
 } as const
 
 type Breakpoint = keyof typeof BREAKPOINTS
-
 type BreakpointQuery = Breakpoint | `max-${Breakpoint}` | `${Breakpoint}:max-${Breakpoint}`
-
 function resolveMin(value: Breakpoint | number): string {
     const px = typeof value === "number" ? value : BREAKPOINTS[value]
     return `(min-width: ${px}px)`
@@ -66,7 +64,7 @@ export function useMediaQuery(query: BreakpointQuery | MediaQueryInput | (string
 
     const subscribe = useCallback(
         (callback: () => void) => {
-            if (typeof window === "undefined") return () => {}
+            if (typeof window === "undefined") return () => { }
             const mql = window.matchMedia(mediaQuery)
             mql.addEventListener("change", callback)
             return () => mql.removeEventListener("change", callback)

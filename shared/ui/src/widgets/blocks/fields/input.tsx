@@ -1,4 +1,5 @@
-import { IconEye, IconEyeOff } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ViewIcon, ViewOffSlashIcon } from "@hugeicons/core-free-icons"
 import {
     InputGroup,
     InputGroupAddon,
@@ -56,7 +57,7 @@ export function FieldInput({ label, icon, type = "text", ...inputProps }: FieldI
                             aria-label={showPassword ? "Hide password" : "Show password"}
                             onClick={() => setShowPassword((prev) => !prev)}
                         >
-                            {showPassword ? <IconEyeOff /> : <IconEye />}
+                            {showPassword ? <HugeiconsIcon icon={ViewOffSlashIcon} /> : <HugeiconsIcon icon={ViewIcon} />}
                         </InputGroupButton>
                     </InputGroupAddon>
                 )}

@@ -87,8 +87,8 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                         <Select
                             id="ban-duration"
                             aria-label="Duration"
-                            selectedKey={banDuration}
-                            onSelectionChange={(key) =>
+                            value={banDuration}
+                            onValueChange={(key) =>
                                 setBanDuration(String(key))
                             }
                         >
@@ -97,7 +97,7 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                             </SelectTrigger>
                             <SelectContent>
                                 {BAN_DURATIONS.map((d) => (
-                                    <SelectItem key={d.id} id={d.id}>
+                                    <SelectItem key={d.id} value={d.id}>
                                         {d.label}
                                     </SelectItem>
                                 ))}

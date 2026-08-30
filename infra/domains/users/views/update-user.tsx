@@ -127,7 +127,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
             <Button
                 type="button"
                 variant="outline"
-                isDisabled={
+                disabled={
                     !editName.trim() ||
                     !editEmail.trim() ||
                     (editName.trim() === viewUser.user.name &&

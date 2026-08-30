@@ -1,6 +1,7 @@
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
-import { IconArrowRight } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { createFileRoute, Link } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_workspace/")({
@@ -188,7 +189,7 @@ function RouteComponent() {
                         )}
                     >
                         Read how we work
-                        <IconArrowRight className="size-4" />
+                        <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
                     </Link>
                 </section>
             </div>
@@ -298,7 +299,7 @@ function RouteComponent() {
                                         <div className='pt-10'>
                                             <Link to='/' className="flex text-sm items-center gap-2">
                                                 Read more
-                                                <IconArrowRight className='size-3.5' />
+                                                <HugeiconsIcon icon={ArrowRight01Icon} className='size-3.5' />
                                             </Link>
                                         </div>
                                     </article>

@@ -5,7 +5,8 @@ import { forgotPasswordSchema, useRequestPasswordReset } from "@/domains/auth"
 import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
 import { buttonVariants } from "@infra/ui/components/button"
-import { IconArrowLeft } from "@tabler/icons-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_auth/forgot-password")({
@@ -76,7 +77,7 @@ function RouteComponent() {
                         })
                     )}
                 >
-                    <IconArrowLeft />
+                    <HugeiconsIcon icon={ArrowLeft01Icon} />
                     Back to sign in
                 </Link>
             </form>

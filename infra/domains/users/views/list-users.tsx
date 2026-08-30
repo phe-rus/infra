@@ -120,7 +120,7 @@ export const ListUsers: FC<ListUsersProps> = ({
                     return (
                         <RowActionsMenu>
                             <DropdownMenuItem
-                                onAction={() => onView(rowUser.id)}
+                                onSelect={() => onView(rowUser.id)}
                             >
                                 View
                             </DropdownMenuItem>
@@ -129,7 +129,7 @@ export const ListUsers: FC<ListUsersProps> = ({
                                 <>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                        onAction={() =>
+                                        onSelect={() =>
                                             onSetRole(
                                                 rowUser.id,
                                                 role === "admin"
@@ -149,7 +149,7 @@ export const ListUsers: FC<ListUsersProps> = ({
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         variant="destructive"
-                                        onAction={() => onRemove(rowUser.id)}
+                                        onSelect={() => onRemove(rowUser.id)}
                                     >
                                         Remove
                                     </DropdownMenuItem>
