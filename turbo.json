@@ -22,7 +22,8 @@
             "dependsOn": ["^typecheck"]
         },
         "type-gen": {
-            "dependsOn": ["^type-gen"]
+            "dependsOn": ["^type-gen"],
+            "inputs": ["$TURBO_DEFAULT$", ".env*"]
         }
     }
 }
