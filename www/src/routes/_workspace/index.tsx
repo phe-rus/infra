@@ -150,10 +150,9 @@ function RouteComponent() {
                     )}
                 >
                     <blockquote className="text-2xl font-medium md:max-w-2xl">
-                        "We do not gather people for titles, status, or
-                        recognition. We are drawn to those who ask
-                        questions, seek understanding, and build without
-                        waiting for permission."
+                        "The people who find their way here tend to share
+                        one thing: they keep pulling at a thread until they
+                        understand where it leads."
                     </blockquote>
                     <div className="flex items-center gap-3">
                         <img
