@@ -8,12 +8,11 @@
         "typecheck": "tsc --noEmit"
     },
     "peerDependencies": {
-        "vite": "^8"
+        "vite": "catalog:tanstack"
     },
     "devDependencies": {
         "@types/node": "^26",
-        "typescript": "7",
-        "vite": "^8"
+        "typescript": "catalog:"
     },
     "exports": {
         ".": "./src/index.ts"

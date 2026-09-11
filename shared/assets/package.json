@@ -16,7 +16,7 @@
     "devDependencies": {
         "@cloudflare/workers-types": "^4",
         "@types/node": "^26",
-        "typescript": "7"
+        "typescript": "catalog:"
     },
     "exports": {
         ".": "./src/index.ts",
