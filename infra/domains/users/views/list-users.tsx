@@ -1,5 +1,9 @@
 import type { ListedUser } from "@/domains/users"
-import { Avatar, AvatarFallback, AvatarImage } from "@infra/ui/components/avatar"
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@infra/ui/components/avatar"
 import { Badge } from "@infra/ui/components/badge"
 import { Button } from "@infra/ui/components/button"
 import {
@@ -21,7 +25,10 @@ export type ListUsersProps = {
     users: ListedUser[]
     currentUserId: string
     onView: (userId: string) => void
-    onSetRole: (userId: string, role: "admin" | "user") => void
+    onSetRole: (
+        userId: string,
+        role: "admin" | "user"
+    ) => void
     onRemove: (userId: string) => void
 }
 
@@ -54,18 +61,28 @@ export const ListUsers: FC<ListUsersProps> = ({
                 },
             },
             {
-                accessorKey: 'image',
+                accessorKey: "image",
                 header: "Avatar",
                 cell: ({ row }) => {
                     return (
-                        <Avatar size='sm' className="size-5.5!">
-                            <AvatarImage src={row.original.image ?? '/avatar/orange.jpg'} />
-                            <AvatarFallback className='text-[7px]!'>
-                                {row.original.name.charAt(0).toUpperCase()}
+                        <Avatar
+                            size="sm"
+                            className="size-5.5!"
+                        >
+                            <AvatarImage
+                                src={
+                                    row.original.image ??
+                                    "/avatar/orange.jpg"
+                                }
+                            />
+                            <AvatarFallback className="text-[7px]!">
+                                {row.original.name
+                                    .charAt(0)
+                                    .toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
                     )
-                }
+                },
             },
             {
                 accessorKey: "name",
@@ -76,30 +93,40 @@ export const ListUsers: FC<ListUsersProps> = ({
                 header: "Email",
             },
             {
-                accessorKey: 'bio',
+                accessorKey: "bio",
                 header: "Bio",
                 cell: ({ row }) => {
                     const bio = row.original.bio
                     return bio ? (
-                        <div className={cn(
-                            "max-w-[32ch] overflow-hidden",
-                            'text-ellipsis whitespace-nowrap'
-                        )}>
+                        <div
+                            className={cn(
+                                "max-w-[32ch] overflow-hidden",
+                                "text-ellipsis whitespace-nowrap"
+                            )}
+                        >
                             {bio}
                         </div>
-                    ) : <span className="text-muted-foreground">-</span>
-                }
+                    ) : (
+                        <span className="text-muted-foreground">
+                            -
+                        </span>
+                    )
+                },
             },
             {
-                accessorKey: 'emailVerified',
+                accessorKey: "emailVerified",
                 header: "Verified",
                 cell: ({ row }) => {
                     return row.original.emailVerified ? (
-                        <span className="text-primary">Yes</span>
+                        <span className="text-primary">
+                            Yes
+                        </span>
                     ) : (
-                        <span className="text-destructive">No</span>
+                        <span className="text-destructive">
+                            No
+                        </span>
                     )
-                }
+                },
             },
             {
                 accessorKey: "role",
@@ -108,8 +135,10 @@ export const ListUsers: FC<ListUsersProps> = ({
                     const role = row.original.role ?? "user"
                     return (
                         <Badge
-                            variant={role === "user" ?
-                                "outline" : "secondary"
+                            variant={
+                                role === "user"
+                                    ? "outline"
+                                    : "secondary"
                             }
                         >
                             {role}
@@ -122,9 +151,13 @@ export const ListUsers: FC<ListUsersProps> = ({
                 header: "Status",
                 cell: ({ row }) =>
                     row.original.banned ? (
-                        <span className="text-destructive">Banned</span>
+                        <span className="text-destructive">
+                            Banned
+                        </span>
                     ) : (
-                        <span className="text-primary">Active</span>
+                        <span className="text-primary">
+                            Active
+                        </span>
                     ),
             },
             {
@@ -140,12 +173,14 @@ export const ListUsers: FC<ListUsersProps> = ({
             {
                 accessorKey: "updatedAt",
                 header: "Updated",
-                cell: ({ row }) => formatUtc(row.original.updatedAt, "PPP"),
+                cell: ({ row }) =>
+                    formatUtc(row.original.updatedAt, "PPP"),
             },
             {
                 accessorKey: "createdAt",
                 header: "Created",
-                cell: ({ row }) => formatUtc(row.original.createdAt, "PPP"),
+                cell: ({ row }) =>
+                    formatUtc(row.original.createdAt, "PPP"),
             },
             {
                 id: "actions",
@@ -156,14 +191,17 @@ export const ListUsers: FC<ListUsersProps> = ({
                 cell: ({ row }) => {
                     const rowUser = row.original
                     const role = rowUser.role ?? "user"
-                    const isSelf = rowUser.id === currentUserId
+                    const isSelf =
+                        rowUser.id === currentUserId
                     const canManageRole = !isSelf
                     const canRemove = !isSelf
 
                     return (
                         <RowActionsMenu>
                             <DropdownMenuItem
-                                onClick={() => onView(rowUser.id)}
+                                onClick={() =>
+                                    onView(rowUser.id)
+                                }
                             >
                                 View
                             </DropdownMenuItem>
@@ -175,7 +213,8 @@ export const ListUsers: FC<ListUsersProps> = ({
                                         onClick={() =>
                                             onSetRole(
                                                 rowUser.id,
-                                                role === "admin"
+                                                role ===
+                                                    "admin"
                                                     ? "user"
                                                     : "admin"
                                             )
@@ -192,7 +231,11 @@ export const ListUsers: FC<ListUsersProps> = ({
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         variant="destructive"
-                                        onClick={() => onRemove(rowUser.id)}
+                                        onClick={() =>
+                                            onRemove(
+                                                rowUser.id
+                                            )
+                                        }
                                     >
                                         Remove
                                     </DropdownMenuItem>
@@ -221,7 +264,10 @@ export const ListUsers: FC<ListUsersProps> = ({
                     size="xs"
                     onClick={() => {
                         selectedRows
-                            .filter((row) => row.id !== currentUserId)
+                            .filter(
+                                (row) =>
+                                    row.id !== currentUserId
+                            )
                             .forEach((row) => {
                                 onRemove(row.id)
                             })

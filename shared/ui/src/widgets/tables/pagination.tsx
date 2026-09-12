@@ -5,7 +5,10 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from "@hugeicons/core-free-icons"
-import type { ReactTable, RowData } from "@tanstack/react-table"
+import type {
+    ReactTable,
+    RowData,
+} from "@tanstack/react-table"
 import { Button } from "../../components/button"
 import {
     Select,
@@ -31,7 +34,8 @@ export function DataTablePagination<TData extends RowData>({
     return (
         <div className="flex items-center gap-4">
             <p className="text-xs text-muted-foreground">
-                Page {pageCount ? pageIndex + 1 : 0} of {pageCount}
+                Page {pageCount ? pageIndex + 1 : 0} of{" "}
+                {pageCount}
             </p>
 
             <div className="flex items-center gap-1">
@@ -67,7 +71,9 @@ export function DataTablePagination<TData extends RowData>({
                     variant="outline"
                     size="icon-sm"
                     disabled={!table.getCanNextPage()}
-                    onClick={() => table.setPageIndex(pageCount - 1)}
+                    onClick={() =>
+                        table.setPageIndex(pageCount - 1)
+                    }
                 >
                     <HugeiconsIcon icon={ChevronLastIcon} />
                 </Button>
@@ -76,7 +82,9 @@ export function DataTablePagination<TData extends RowData>({
             <Select
                 aria-label="Rows per page"
                 value={String(pageSize)}
-                onValueChange={(key) => table.setPageSize(Number(key))}
+                onValueChange={(key) =>
+                    table.setPageSize(Number(key))
+                }
             >
                 <SelectTrigger size="sm" className="w-16">
                     <SelectValue />

@@ -3,11 +3,13 @@ import { authClient } from "@/lib/auth-client"
 
 export const authMiddleware = createMiddleware().server(
     async ({ request, next }) => {
-        const { data: session } = await authClient.getSession({
-            fetchOptions: {
-                headers: request.headers,
-            },
-        })
+        const { data: session } = await authClient.getSession(
+            {
+                fetchOptions: {
+                    headers: request.headers,
+                },
+            }
+        )
         return next({
             context: {
                 session: session,

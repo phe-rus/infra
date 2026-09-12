@@ -16,46 +16,49 @@ export interface RouterAppContext {
     q: QueryClient
 }
 
-export const Route = createRootRouteWithContext<RouterAppContext>()({
-    head: () => ({
-        meta: [
-            {
-                charSet: "utf-8",
-            },
-            {
-                name: "viewport",
-                content: "width=device-width, initial-scale=1",
-            },
-            ...seo({
-                siteName: "Account",
-                title: "Account",
-                description: "Sign in and manage your account.",
-            }),
-        ],
-        links: [
-            {
-                rel: "stylesheet",
-                href: tailwind,
-            },
-            {
-                rel: "icon",
-                href: "/favicon.ico",
-            },
-            {
-                rel: "manifest",
-                href: "/manifest.json",
-            },
-        ],
-    }),
-    beforeLoad: async ({ context: { q } }) => {
-        const session = await q.query({
-            ...currentOptions(),
-            staleTime: 'static'
-        })
-        return { session: session }
-    },
-    shellComponent: RootDocument,
-})
+export const Route =
+    createRootRouteWithContext<RouterAppContext>()({
+        head: () => ({
+            meta: [
+                {
+                    charSet: "utf-8",
+                },
+                {
+                    name: "viewport",
+                    content:
+                        "width=device-width, initial-scale=1",
+                },
+                ...seo({
+                    siteName: "Account",
+                    title: "Account",
+                    description:
+                        "Sign in and manage your account.",
+                }),
+            ],
+            links: [
+                {
+                    rel: "stylesheet",
+                    href: tailwind,
+                },
+                {
+                    rel: "icon",
+                    href: "/favicon.ico",
+                },
+                {
+                    rel: "manifest",
+                    href: "/manifest.json",
+                },
+            ],
+        }),
+        beforeLoad: async ({ context: { q } }) => {
+            const session = await q.query({
+                ...currentOptions(),
+                staleTime: "static",
+            })
+            return { session: session }
+        },
+        shellComponent: RootDocument,
+    })
 
 function RootDocument() {
     return (

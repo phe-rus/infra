@@ -1,9 +1,16 @@
-import { setupSchema, useCompleteSetup, useResendVerificationEmail } from "@/domains/auth"
+import {
+    setupSchema,
+    useCompleteSetup,
+    useResendVerificationEmail,
+} from "@/domains/auth"
 import { Button } from "@infra/ui/components/button"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import {
+    createFileRoute,
+    redirect,
+} from "@tanstack/react-router"
 import { useState } from "react"
 import type { z } from "zod"
 
@@ -12,7 +19,7 @@ export const Route = createFileRoute("/_auth/setup")({
         if (hasAdmin) {
             throw redirect({
                 to: "/sign-in",
-                replace: true
+                replace: true,
             })
         }
     },
@@ -21,9 +28,12 @@ export const Route = createFileRoute("/_auth/setup")({
 
 function RouteComponent() {
     const { mutateAsync: completeSetup } = useCompleteSetup()
-    const { mutateAsync: resendVerificationEmail, isPending: isResending } =
-        useResendVerificationEmail()
-    const [needsVerification, setNeedsVerification] = useState(false)
+    const {
+        mutateAsync: resendVerificationEmail,
+        isPending: isResending,
+    } = useResendVerificationEmail()
+    const [needsVerification, setNeedsVerification] =
+        useState(false)
     const [pendingEmail, setPendingEmail] = useState("")
 
     const form = useAppForm({
@@ -37,7 +47,9 @@ function RouteComponent() {
             onChange: setupSchema,
         },
         onSubmit: async ({ value }) => {
-            const result = await completeSetup({ data: value })
+            const result = await completeSetup({
+                data: value,
+            })
             if (!result.error && result.needsVerification) {
                 setPendingEmail(value.email)
                 setNeedsVerification(true)
@@ -62,10 +74,14 @@ function RouteComponent() {
                     variant="outline"
                     disabled={isResending}
                     onClick={() =>
-                        void resendVerificationEmail({ data: { email: pendingEmail } })
+                        void resendVerificationEmail({
+                            data: { email: pendingEmail },
+                        })
                     }
                 >
-                    {isResending ? "Sending…" : "Resend verification email"}
+                    {isResending
+                        ? "Sending…"
+                        : "Resend verification email"}
                 </Button>
             </ViewController>
         )

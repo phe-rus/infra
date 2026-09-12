@@ -16,16 +16,26 @@ export async function send({
     subject: string
     html: string
 }): Promise<void> {
-    const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${env.RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ from: env.RESEND_FROM_EMAIL, to, subject, html }),
-    })
+    const response = await fetch(
+        "https://api.resend.com/emails",
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${env.RESEND_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                from: env.RESEND_FROM_EMAIL,
+                to,
+                subject,
+                html,
+            }),
+        }
+    )
     if (!response.ok) {
-        const error = (await response.json().catch(() => null)) as {
+        const error = (await response
+            .json()
+            .catch(() => null)) as {
             name?: string
             message?: string
         } | null
@@ -46,7 +56,11 @@ export const emailHooks = {
         await send({
             to: user.email,
             subject: `${env.VITE_APPNAME}: Verify your email`,
-            html: verificationEmailHtml(env.VITE_APPNAME, user.name, url),
+            html: verificationEmailHtml(
+                env.VITE_APPNAME,
+                user.name,
+                url
+            ),
         })
     },
     sendResetPassword: async ({
@@ -59,7 +73,11 @@ export const emailHooks = {
         await send({
             to: user.email,
             subject: `${env.VITE_APPNAME}: Reset your password`,
-            html: resetPasswordEmailHtml(env.VITE_APPNAME, user.name, url),
+            html: resetPasswordEmailHtml(
+                env.VITE_APPNAME,
+                user.name,
+                url
+            ),
         })
     },
     sendDeleteAccountVerification: async ({
@@ -72,7 +90,11 @@ export const emailHooks = {
         await send({
             to: user.email,
             subject: `${env.VITE_APPNAME}: Confirm account deletion`,
-            html: deleteAccountEmailHtml(env.VITE_APPNAME, user.name, url),
+            html: deleteAccountEmailHtml(
+                env.VITE_APPNAME,
+                user.name,
+                url
+            ),
         })
     },
 }

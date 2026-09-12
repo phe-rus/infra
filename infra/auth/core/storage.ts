@@ -1,7 +1,9 @@
 import type { BetterAuthOptions } from "better-auth/types"
 
 type OptionsProps = Partial<BetterAuthOptions>
-type SecondaryStorage = NonNullable<OptionsProps["secondaryStorage"]>
+type SecondaryStorage = NonNullable<
+    OptionsProps["secondaryStorage"]
+>
 
 export function createSecondaryStorage(
     cache: KVNamespace
@@ -37,9 +39,15 @@ export function createSecondaryStorage(
 }
 
 type RateLimitStorage = NonNullable<
-    NonNullable<BetterAuthOptions["rateLimit"]>["customStorage"]
+    NonNullable<
+        BetterAuthOptions["rateLimit"]
+    >["customStorage"]
 >
-type RateLimitData = { key: string; count: number; lastRequest: number }
+type RateLimitData = {
+    key: string
+    count: number
+    lastRequest: number
+}
 
 export function createRateLimitStorage(
     kv: KVNamespace,
@@ -66,7 +74,10 @@ export function createRateLimitStorage(
                     : null
                 : (memoryStore.get(key) ?? null)
 
-            if (!data || now - data.lastRequest > rule.window) {
+            if (
+                !data ||
+                now - data.lastRequest > rule.window
+            ) {
                 data = { key, count: 0, lastRequest: now }
             }
 
@@ -75,7 +86,10 @@ export function createRateLimitStorage(
                     0,
                     data.lastRequest + rule.window - now
                 )
-                return { allowed: false, retryAfter: retryAfter || 1 }
+                return {
+                    allowed: false,
+                    retryAfter: retryAfter || 1,
+                }
             }
 
             data.count += 1

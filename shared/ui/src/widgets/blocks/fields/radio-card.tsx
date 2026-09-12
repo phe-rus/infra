@@ -1,5 +1,9 @@
 import type { ReactNode } from "react"
-import { Field, FieldLabel, FieldDescription } from "../../../components/field"
+import {
+    Field,
+    FieldLabel,
+    FieldDescription,
+} from "../../../components/field"
 import { cn } from "../../../lib/utils"
 import { useFieldContext } from "../contexts"
 
@@ -29,23 +33,35 @@ export function FieldRadioCard({
     return (
         <Field>
             <FieldLabel>{label}</FieldLabel>
-            <div className={cn("grid grid-cols-1 gap-2", columns === 2 && "md:grid-cols-2")}>
+            <div
+                className={cn(
+                    "grid grid-cols-1 gap-2",
+                    columns === 2 && "md:grid-cols-2"
+                )}
+            >
                 {options.map((option) => {
-                    const selected = field.state.value === option.value
-                    const optionDisabled = disabled || option.disabled
+                    const selected =
+                        field.state.value === option.value
+                    const optionDisabled =
+                        disabled || option.disabled
                     return (
                         <button
                             key={option.value}
                             type="button"
                             disabled={optionDisabled}
-                            onClick={() => field.handleChange(option.value)}
+                            onClick={() =>
+                                field.handleChange(
+                                    option.value
+                                )
+                            }
                             aria-pressed={selected}
                             className={cn(
                                 "flex flex-col items-start gap-0.5 rounded-none border p-3 text-left transition-colors",
                                 selected
                                     ? "border-primary bg-primary/5"
                                     : "border-border hover:bg-muted",
-                                optionDisabled && "cursor-not-allowed opacity-50"
+                                optionDisabled &&
+                                    "cursor-not-allowed opacity-50"
                             )}
                         >
                             <span className="flex items-center gap-1.5 text-sm font-medium">
@@ -61,7 +77,11 @@ export function FieldRadioCard({
                     )
                 })}
             </div>
-            {description && <FieldDescription>{description}</FieldDescription>}
+            {description && (
+                <FieldDescription>
+                    {description}
+                </FieldDescription>
+            )}
         </Field>
     )
 }

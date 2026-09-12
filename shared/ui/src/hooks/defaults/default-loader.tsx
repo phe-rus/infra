@@ -10,7 +10,10 @@ export function DefaultLoader() {
                 "bg-background"
             )}
         >
-            <HugeiconsIcon icon={Loading03Icon} className="size-5! animate-spin duration-500" />
+            <HugeiconsIcon
+                icon={Loading03Icon}
+                className="size-5! animate-spin duration-500"
+            />
         </section>
     )
 }

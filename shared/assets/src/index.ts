@@ -9,7 +9,10 @@ import {
     MAX_FILE_BYTES,
     MAX_USER_QUOTA_BYTES,
 } from "./constants"
-import { sniffExtension, isImageExtension } from "./sniff-file-type"
+import {
+    sniffExtension,
+    isImageExtension,
+} from "./sniff-file-type"
 import { sanitizeSvg } from "./sanitize-svg"
 import {
     avatarKey,
@@ -24,7 +27,8 @@ import { cdnPath, cdnUrl } from "./cdn-url"
 export { cdnPath, cdnUrl }
 
 function readUploadedFile(body: unknown): File {
-    const file = (body as Record<string, unknown> | undefined)?.file
+    const file = (body as Record<string, unknown> | undefined)
+        ?.file
     if (!(file instanceof File)) {
         throw new APIError("BAD_REQUEST", {
             message: "No file provided",
@@ -42,13 +46,16 @@ function resolveTargetUserId(
     ctx: {
         body: unknown
         context: {
-            session: { user: { id: string; role?: string | null } }
+            session: {
+                user: { id: string; role?: string | null }
+            }
         }
     },
     isAdmin: (role: string) => boolean
 ): string {
-    const requested = (ctx.body as Record<string, unknown> | undefined)
-        ?.userId
+    const requested = (
+        ctx.body as Record<string, unknown> | undefined
+    )?.userId
     if (
         typeof requested !== "string" ||
         requested.length === 0 ||
@@ -75,7 +82,9 @@ async function sniffAndValidate(file: File) {
     }
     const contentType = ALLOWED_TYPES[ext]
     if (ext === "svg") {
-        const sanitized = await sanitizeSvg(new TextDecoder().decode(bytes))
+        const sanitized = await sanitizeSvg(
+            new TextDecoder().decode(bytes)
+        )
         return {
             ext,
             contentType,
@@ -103,7 +112,9 @@ export function assets(options: AssetsProviderOptions) {
                     method: "POST",
                     use: [sessionMiddleware],
                     metadata: {
-                        allowedMediaTypes: ["multipart/form-data"],
+                        allowedMediaTypes: [
+                            "multipart/form-data",
+                        ],
                     },
                     body: z.object({
                         file: z.instanceof(File),
@@ -111,19 +122,26 @@ export function assets(options: AssetsProviderOptions) {
                     }),
                 },
                 async (ctx) => {
-                    const userId = resolveTargetUserId(ctx, isAdmin)
+                    const userId = resolveTargetUserId(
+                        ctx,
+                        isAdmin
+                    )
                     const file = readUploadedFile(ctx.body)
                     const { ext, contentType, bytes } =
                         await sniffAndValidate(file)
                     if (!isImageExtension(ext)) {
                         throw new APIError("BAD_REQUEST", {
-                            message: "Avatar must be an image",
+                            message:
+                                "Avatar must be an image",
                         })
                     }
 
                     const [usage, existingAvatarObjects] =
                         await Promise.all([
-                            getUserUsageBytes(binding, userId),
+                            getUserUsageBytes(
+                                binding,
+                                userId
+                            ),
                             listAllObjects(
                                 binding,
                                 avatarPrefix(userId)
@@ -135,8 +153,12 @@ export function assets(options: AssetsProviderOptions) {
                             0
                         )
                     const projectedUsage =
-                        usage - existingAvatarSize + bytes.byteLength
-                    if (projectedUsage > MAX_USER_QUOTA_BYTES) {
+                        usage -
+                        existingAvatarSize +
+                        bytes.byteLength
+                    if (
+                        projectedUsage > MAX_USER_QUOTA_BYTES
+                    ) {
                         throw new APIError("BAD_REQUEST", {
                             message: "Storage quota exceeded",
                         })
@@ -166,7 +188,9 @@ export function assets(options: AssetsProviderOptions) {
                     method: "POST",
                     use: [sessionMiddleware],
                     metadata: {
-                        allowedMediaTypes: ["multipart/form-data"],
+                        allowedMediaTypes: [
+                            "multipart/form-data",
+                        ],
                     },
                 },
                 async (ctx) => {
@@ -206,10 +230,17 @@ export function assets(options: AssetsProviderOptions) {
                 {
                     method: "GET",
                     use: [sessionMiddleware],
-                    query: z.object({ prefix: z.string().optional() }),
+                    query: z.object({
+                        prefix: z.string().optional(),
+                    }),
                 },
                 async (ctx) => {
-                    if (!isAdmin(ctx.context.session.user.role ?? "")) {
+                    if (
+                        !isAdmin(
+                            ctx.context.session.user.role ??
+                                ""
+                        )
+                    ) {
                         throw new APIError("FORBIDDEN", {
                             message: "Admin access required",
                         })
@@ -233,11 +264,14 @@ export function assets(options: AssetsProviderOptions) {
                         ),
                         files: result.objects.map((obj) => ({
                             key: obj.key,
-                            name: obj.key.slice(prefix.length),
+                            name: obj.key.slice(
+                                prefix.length
+                            ),
                             size: obj.size,
                             uploadedAt: obj.uploaded,
                             contentType:
-                                obj.httpMetadata?.contentType ?? null,
+                                obj.httpMetadata
+                                    ?.contentType ?? null,
                         })),
                     })
                 }
@@ -253,12 +287,17 @@ export function assets(options: AssetsProviderOptions) {
                     method: "POST",
                     use: [sessionMiddleware],
                     body: z.object({
-                        keys: z.array(z.string().min(1)).optional(),
+                        keys: z
+                            .array(z.string().min(1))
+                            .optional(),
                         prefix: z.string().min(1).optional(),
                     }),
                 },
                 async (ctx) => {
-                    if (!ctx.body.keys?.length && !ctx.body.prefix) {
+                    if (
+                        !ctx.body.keys?.length &&
+                        !ctx.body.prefix
+                    ) {
                         throw new APIError("BAD_REQUEST", {
                             message: "Provide keys or prefix",
                         })
@@ -290,7 +329,8 @@ export function assets(options: AssetsProviderOptions) {
                     if (
                         !callerIsAdmin &&
                         targetKeys.some(
-                            (key) => !key.startsWith(ownPrefix)
+                            (key) =>
+                                !key.startsWith(ownPrefix)
                         )
                     ) {
                         throw new APIError("FORBIDDEN", {
@@ -298,7 +338,11 @@ export function assets(options: AssetsProviderOptions) {
                         })
                     }
 
-                    for (let i = 0; i < targetKeys.length; i += 1000) {
+                    for (
+                        let i = 0;
+                        i < targetKeys.length;
+                        i += 1000
+                    ) {
                         await binding.delete(
                             targetKeys.slice(i, i + 1000)
                         )

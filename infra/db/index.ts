@@ -6,13 +6,13 @@ import { env } from "cloudflare:workers"
 export const db = drizzle(env.D1, {
     relations: {
         ...authSchemas.authRelations,
-    }
+    },
 })
 
 export const dbContext = () => {
     return drizzleAdapter(db, {
-        provider: 'sqlite',
+        provider: "sqlite",
         camelCase: true,
-        schema: authSchemas
+        schema: authSchemas,
     })
 }

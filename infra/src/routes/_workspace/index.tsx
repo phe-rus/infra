@@ -16,8 +16,14 @@ import { ContentView } from "@infra/ui/widgets/content-view"
 export const Route = createFileRoute("/_workspace/")({
     loader: async ({ context: { q } }) => {
         await Promise.all([
-            q.query({ ...statsOptions(), staleTime: 'static' }),
-            q.query({ ...consoleOptions(), staleTime: 'static' }),
+            q.query({
+                ...statsOptions(),
+                staleTime: "static",
+            }),
+            q.query({
+                ...consoleOptions(),
+                staleTime: "static",
+            }),
         ])
     },
     component: RouteComponent,
@@ -39,9 +45,12 @@ function RouteComponent() {
         >
             <ContentView variant="elevated">
                 <ContentView.Row className="gap-3 p-3">
-                    <HugeiconsIcon icon={InformationCircleIcon} />
+                    <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                    />
                     <ContentView.H2 className="flex items-center gap-1 text-sm">
-                        Your code and connections all look good
+                        Your code and connections all look
+                        good
                         <Link
                             to="/logs"
                             className="cursor-pointer hover:underline"
@@ -60,10 +69,15 @@ function RouteComponent() {
                             heading="Monthly active users"
                             p="Last 30 days"
                         >
-                            <h1>{stats.monthlyActiveUsers}</h1>
+                            <h1>
+                                {stats.monthlyActiveUsers}
+                            </h1>
                         </ContentView.Header>
                         <ContentView.Divider />
-                        <ContentView.Header heading="Total users" p="Current">
+                        <ContentView.Header
+                            heading="Total users"
+                            p="Current"
+                        >
                             <h1>{stats.totalUsers}</h1>
                         </ContentView.Header>
                     </ContentView.Row>
@@ -72,11 +86,17 @@ function RouteComponent() {
 
             <ContentView.Section>
                 <ContentView.Row className="justify-between">
-                    <ContentView.H2>Your applications</ContentView.H2>
+                    <ContentView.H2>
+                        Your applications
+                    </ContentView.H2>
                     <Link
                         to="/console/$client_id"
-                        params={{ client_id: CREATE_CLIENT_ID }}
-                        className={cn(buttonVariants({ size: "sm" }))}
+                        params={{
+                            client_id: CREATE_CLIENT_ID,
+                        }}
+                        className={cn(
+                            buttonVariants({ size: "sm" })
+                        )}
                     >
                         Add application
                     </Link>

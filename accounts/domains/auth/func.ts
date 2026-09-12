@@ -7,4 +7,6 @@ export const currentUser = createServerFn()
         return context.session
     })
 
-export type CurrentUserData = Awaited<ReturnType<typeof currentUser>>
+export type CurrentUserData = Awaited<
+    ReturnType<typeof currentUser>
+>

@@ -14,7 +14,11 @@ declare module "@tanstack/react-start" {
 }
 
 export default {
-    async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    async fetch(
+        request: Request,
+        env: Env,
+        ctx: ExecutionContext
+    ) {
         const imageProxy = createImageProxy({
             path: "/_image",
             allowedOrigins: [env.VITE_INFRA_URL],
@@ -28,7 +32,8 @@ export default {
                 // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
                 env: env,
                 waitUntil: ctx.waitUntil.bind(ctx),
-                passThroughOnException: ctx.passThroughOnException.bind(ctx),
+                passThroughOnException:
+                    ctx.passThroughOnException.bind(ctx),
             },
         })
     },

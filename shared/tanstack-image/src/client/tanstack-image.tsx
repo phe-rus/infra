@@ -1,5 +1,8 @@
 import { forwardRef, useState } from "react"
-import type { ComponentPropsWithoutRef, CSSProperties } from "react"
+import type {
+    ComponentPropsWithoutRef,
+    CSSProperties,
+} from "react"
 import { buildSrc, type ImageLoader } from "./loader"
 
 export type TanstackImageProps = Omit<

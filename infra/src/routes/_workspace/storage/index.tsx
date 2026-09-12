@@ -7,7 +7,10 @@ import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/storage/")({
     loader: async ({ context: { q } }) => {
-        await q.query({ ...listOptions(""), staleTime: 'static' })
+        await q.query({
+            ...listOptions(""),
+            staleTime: "static",
+        })
     },
     component: RouteComponent,
 })
@@ -39,13 +42,18 @@ function RouteComponent() {
                     Storage
                 </Button>
                 {segments.map((segment, index) => (
-                    <span key={index} className="flex items-center gap-1">
+                    <span
+                        key={index}
+                        className="flex items-center gap-1"
+                    >
                         <span>/</span>
                         <Button
                             type="button"
                             variant="ghost"
                             size="xs"
-                            onClick={() => setPrefix(crumbPrefix(index))}
+                            onClick={() =>
+                                setPrefix(crumbPrefix(index))
+                            }
                         >
                             {segment}
                         </Button>
@@ -53,7 +61,10 @@ function RouteComponent() {
                 ))}
             </nav>
 
-            <BrowseObjects prefix={prefix} onNavigate={setPrefix} />
+            <BrowseObjects
+                prefix={prefix}
+                onNavigate={setPrefix}
+            />
         </ViewController>
     )
 }

@@ -1,4 +1,8 @@
-import { useQuery, useSuspenseQuery, queryOptions } from "@tanstack/react-query"
+import {
+    useQuery,
+    useSuspenseQuery,
+    queryOptions,
+} from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import {
     banUser,
@@ -30,7 +34,9 @@ function patchUserInCache(
     if (!old) return { users: [], total: 0 }
     return {
         ...old,
-        users: old.users.map((u) => (u.id === userId ? { ...u, ...patch } : u)),
+        users: old.users.map((u) =>
+            u.id === userId ? { ...u, ...patch } : u
+        ),
     }
 }
 
@@ -62,12 +68,17 @@ export const useRemoveUser = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
+            updater: (
+                old: UsersListData | undefined,
+                variables
+            ) =>
                 old
                     ? {
                           ...old,
                           users: old.users.filter(
-                              (u) => u.id !== variables.data.userId
+                              (u) =>
+                                  u.id !==
+                                  variables.data.userId
                           ),
                           total: Math.max(0, old.total - 1),
                       }
@@ -83,12 +94,16 @@ export const useUpdateUserDetails = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
+            updater: (
+                old: UsersListData | undefined,
+                variables
+            ) =>
                 patchUserInCache(old, variables.data.userId, {
                     ...(variables.data.name !== undefined && {
                         name: variables.data.name,
                     }),
-                    ...(variables.data.email !== undefined && {
+                    ...(variables.data.email !==
+                        undefined && {
                         email: variables.data.email,
                     }),
                 }),
@@ -119,7 +134,10 @@ export const useSetUserRole = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
+            updater: (
+                old: UsersListData | undefined,
+                variables
+            ) =>
                 patchUserInCache(old, variables.data.userId, {
                     role: variables.data.role,
                 }),
@@ -141,7 +159,10 @@ export const useDisableUserTwoFactor = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
+            updater: (
+                old: UsersListData | undefined,
+                variables
+            ) =>
                 patchUserInCache(old, variables.data.userId, {
                     twoFactorEnabled: false,
                 }),
@@ -156,8 +177,13 @@ export const useBanUser = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, { banned: true }),
+            updater: (
+                old: UsersListData | undefined,
+                variables
+            ) =>
+                patchUserInCache(old, variables.data.userId, {
+                    banned: true,
+                }),
         },
         successMessage: "User banned",
         errorMessage: "Could not ban user",
@@ -169,8 +195,13 @@ export const useUnbanUser = () =>
         invalidates: [usersOptions().queryKey],
         optimisticUpdate: {
             queryKey: usersOptions().queryKey,
-            updater: (old: UsersListData | undefined, variables) =>
-                patchUserInCache(old, variables.data.userId, { banned: false }),
+            updater: (
+                old: UsersListData | undefined,
+                variables
+            ) =>
+                patchUserInCache(old, variables.data.userId, {
+                    banned: false,
+                }),
         },
         successMessage: "User unbanned",
         errorMessage: "Could not unban user",

@@ -40,7 +40,9 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                 cell: ({ row }) => (
                     <Link
                         to="/console/$client_id"
-                        params={{ client_id: row.original.clientId }}
+                        params={{
+                            client_id: row.original.clientId,
+                        }}
                         className={cn(
                             "rounded bg-accent px-3 py-1 text-xs!",
                             "cursor-pointer"
@@ -53,13 +55,17 @@ export const ListApplications: FC<ListApplicationsProps> = ({
             {
                 accessorKey: "clientId",
                 header: "Client ID",
-                cell: ({ row }) => <span>{row.original.clientId}</span>,
+                cell: ({ row }) => (
+                    <span>{row.original.clientId}</span>
+                ),
             },
             {
                 accessorKey: "name",
                 header: "Application",
                 cell: ({ row }) => (
-                    <span>{row.original.name ?? "Untitled"}</span>
+                    <span>
+                        {row.original.name ?? "Untitled"}
+                    </span>
                 ),
             },
             {
@@ -70,11 +76,18 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                     // (older rows, migrations) even though the type asserts it
                     // does — CLIENT_TYPE_INFO[...] can genuinely be undefined
                     const info = CLIENT_TYPE_INFO[
-                        row.original.applicationType as ClientType
-                    ] as { label: string; description: string } | undefined
+                        row.original
+                            .applicationType as ClientType
+                    ] as
+                        | {
+                              label: string
+                              description: string
+                          }
+                        | undefined
                     return (
                         <Badge variant="outline">
-                            {info?.label ?? row.original.applicationType}
+                            {info?.label ??
+                                row.original.applicationType}
                         </Badge>
                     )
                 },
@@ -84,9 +97,13 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                 header: "Status",
                 cell: ({ row }) =>
                     row.original.disabled ? (
-                        <Badge variant="destructive">Disabled</Badge>
+                        <Badge variant="destructive">
+                            Disabled
+                        </Badge>
                     ) : (
-                        <Badge variant="outline">Active</Badge>
+                        <Badge variant="outline">
+                            Active
+                        </Badge>
                     ),
             },
             {
@@ -94,7 +111,10 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                 header: "Created",
                 cell: ({ row }) =>
                     row.original.createdAt
-                        ? formatUtc(row.original.createdAt, "PPP")
+                        ? formatUtc(
+                              row.original.createdAt,
+                              "PPP"
+                          )
                         : "—",
             },
             {
@@ -102,7 +122,10 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                 header: "Updated",
                 cell: ({ row }) =>
                     row.original.updatedAt
-                        ? formatUtc(row.original.updatedAt, "PPP")
+                        ? formatUtc(
+                              row.original.updatedAt,
+                              "PPP"
+                          )
                         : "—",
             },
             {
@@ -123,11 +146,15 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                                     )
                                 }
                             >
-                                {app.disabled ? "Enable" : "Disable"}
+                                {app.disabled
+                                    ? "Enable"
+                                    : "Disable"}
                             </DropdownMenuItem>
                             {app.isOwnClient && (
                                 <DropdownMenuItem
-                                    onSelect={() => onRotate(app.clientId)}
+                                    onSelect={() =>
+                                        onRotate(app.clientId)
+                                    }
                                 >
                                     Rotate secret
                                 </DropdownMenuItem>
@@ -137,7 +164,11 @@ export const ListApplications: FC<ListApplicationsProps> = ({
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         variant="destructive"
-                                        onSelect={() => onRemove(app.clientId)}
+                                        onSelect={() =>
+                                            onRemove(
+                                                app.clientId
+                                            )
+                                        }
                                     >
                                         Remove
                                     </DropdownMenuItem>

@@ -47,7 +47,7 @@ function Window({
     return (
         <body
             className={cn(
-                "fixed h-svh min-w-full border bg-background",
+                "fixed h-svh w-full min-w-full border bg-background",
                 "overflow-x-hidden selection:bg-olive-500/15",
                 "typeset wrap-anywhere duration-200",
                 "flex flex-col",

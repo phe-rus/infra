@@ -2,20 +2,27 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { useAppMutation } from "@infra/ui/hooks"
 import { authClient } from "@/lib/auth-client"
 import { currentOptions } from "@/domains/auth"
-import { passkeysOptions, sessionsOptions } from "./get-security"
+import {
+    passkeysOptions,
+    sessionsOptions,
+} from "./get-security"
 
-export const usePasskeys = () => useSuspenseQuery(passkeysOptions())
-export const useSessions = () => useSuspenseQuery(sessionsOptions())
+export const usePasskeys = () =>
+    useSuspenseQuery(passkeysOptions())
+export const useSessions = () =>
+    useSuspenseQuery(sessionsOptions())
 
 export const useEnableTwoFactor = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
-            const { data, error } = await authClient.twoFactor.enable({
-                password,
-            })
+            const { data, error } =
+                await authClient.twoFactor.enable({
+                    password,
+                })
             if (error)
                 throw new Error(
-                    error.message ?? "Could not start two-factor setup"
+                    error.message ??
+                        "Could not start two-factor setup"
                 )
             return data
         },
@@ -25,8 +32,14 @@ export const useEnableTwoFactor = () =>
 export const useVerifyTwoFactor = () =>
     useAppMutation({
         mutationFn: async (code: string) => {
-            const { error } = await authClient.twoFactor.verifyTotp({ code })
-            if (error) throw new Error(error.message ?? "Invalid code")
+            const { error } =
+                await authClient.twoFactor.verifyTotp({
+                    code,
+                })
+            if (error)
+                throw new Error(
+                    error.message ?? "Invalid code"
+                )
         },
         invalidates: [currentOptions().queryKey],
         successMessage: "Two-factor authentication enabled",
@@ -36,7 +49,10 @@ export const useVerifyTwoFactor = () =>
 export const useDisableTwoFactor = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
-            const { error } = await authClient.twoFactor.disable({ password })
+            const { error } =
+                await authClient.twoFactor.disable({
+                    password,
+                })
             if (error)
                 throw new Error(
                     error.message ??
@@ -45,17 +61,21 @@ export const useDisableTwoFactor = () =>
         },
         invalidates: [currentOptions().queryKey],
         successMessage: "Two-factor authentication disabled",
-        errorMessage: "Could not disable two-factor authentication",
+        errorMessage:
+            "Could not disable two-factor authentication",
     })
 
 export const useGenerateBackupCodes = () =>
     useAppMutation({
         mutationFn: async (password: string) => {
             const { data, error } =
-                await authClient.twoFactor.generateBackupCodes({ password })
+                await authClient.twoFactor.generateBackupCodes(
+                    { password }
+                )
             if (error)
                 throw new Error(
-                    error.message ?? "Could not generate backup codes"
+                    error.message ??
+                        "Could not generate backup codes"
                 )
             return data
         },
@@ -70,12 +90,15 @@ export const useAddPasskey = () =>
             authenticatorAttachment,
         }: {
             name: string
-            authenticatorAttachment?: "platform" | "cross-platform"
+            authenticatorAttachment?:
+                | "platform"
+                | "cross-platform"
         }) => {
-            const { error } = await authClient.passkey.addPasskey({
-                name,
-                authenticatorAttachment,
-            })
+            const { error } =
+                await authClient.passkey.addPasskey({
+                    name,
+                    authenticatorAttachment,
+                })
             if (error) {
                 // the server excludes every credential this account already has when
                 // starting registration, so the *same* platform authenticator (Touch
@@ -84,13 +107,16 @@ export const useAddPasskey = () =>
                 // genuinely additional passkey needs a different device/security key.
                 if (
                     "code" in error &&
-                    error.code === "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED"
+                    error.code ===
+                        "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED"
                 ) {
                     throw new Error(
                         'This device already has a passkey for your account. To add another, choose "a different device or security key".'
                     )
                 }
-                throw new Error(error.message ?? "Could not add passkey")
+                throw new Error(
+                    error.message ?? "Could not add passkey"
+                )
             }
         },
         invalidates: [passkeysOptions().queryKey],
@@ -100,13 +126,23 @@ export const useAddPasskey = () =>
 
 export const useUpdatePasskey = () =>
     useAppMutation({
-        mutationFn: async ({ id, name }: { id: string; name: string }) => {
-            const { error } = await authClient.passkey.updatePasskey({
-                id,
-                name,
-            })
+        mutationFn: async ({
+            id,
+            name,
+        }: {
+            id: string
+            name: string
+        }) => {
+            const { error } =
+                await authClient.passkey.updatePasskey({
+                    id,
+                    name,
+                })
             if (error)
-                throw new Error(error.message ?? "Could not rename passkey")
+                throw new Error(
+                    error.message ??
+                        "Could not rename passkey"
+                )
         },
         invalidates: [passkeysOptions().queryKey],
         successMessage: "Passkey renamed",
@@ -116,11 +152,15 @@ export const useUpdatePasskey = () =>
 export const useDeletePasskey = () =>
     useAppMutation({
         mutationFn: async (id: string) => {
-            const { error } = await authClient.passkey.deletePasskey({
-                id,
-            })
+            const { error } =
+                await authClient.passkey.deletePasskey({
+                    id,
+                })
             if (error)
-                throw new Error(error.message ?? "Could not remove passkey")
+                throw new Error(
+                    error.message ??
+                        "Could not remove passkey"
+                )
         },
         invalidates: [passkeysOptions().queryKey],
         successMessage: "Passkey removed",
@@ -130,10 +170,13 @@ export const useDeletePasskey = () =>
 export const useRevokeSession = () =>
     useAppMutation({
         mutationFn: async (token: string) => {
-            const { error } = await authClient.revokeSession({ token })
+            const { error } = await authClient.revokeSession({
+                token,
+            })
             if (error)
                 throw new Error(
-                    error.message ?? "Could not sign out that session"
+                    error.message ??
+                        "Could not sign out that session"
                 )
         },
         invalidates: [sessionsOptions().queryKey],

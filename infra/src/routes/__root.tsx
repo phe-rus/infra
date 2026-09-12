@@ -17,53 +17,79 @@ export interface RouterAppContext {
     q: QueryClient
 }
 
-export const Route = createRootRouteWithContext<RouterAppContext>()({
-    head: () => ({
-        meta: [
-            {
-                charSet: "utf-8",
-            },
-            {
-                name: "viewport",
-                content: "width=device-width, initial-scale=1",
-            },
-            ...seo({
-                siteName: "Infra",
-                title: "Infra",
-                description: "Manage your infrastructure with ease.",
-            }),
-        ],
-        links: [
-            {
-                rel: "stylesheet",
-                href: tailwind,
-            },
-            { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-            { rel: "icon", type: "image/png", href: "/favicon.png" },
-            { rel: "apple-touch-icon", href: "/favicon.svg" },
-            { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
-            { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
-            { rel: "preconnect", href: "https://fonts.googleapis.com" },
-            { rel: "preconnect", href: "https://fonts.gstatic.com" }
-        ],
-    }),
-    beforeLoad: async ({ context }) => {
-        const session = await context.q.query({
-            ...meOptions(),
-            staleTime: 'static'
-        })
-        const { hasAdmin } = await context.q.query({
-            ...setupOptions(),
-            staleTime: 'static'
-        })
-        return {
-            session: session,
-            hasAdmin: hasAdmin,
-        }
-    },
-    pendingComponent: DefaultLoader,
-    shellComponent: RootDocument,
-})
+export const Route =
+    createRootRouteWithContext<RouterAppContext>()({
+        head: () => ({
+            meta: [
+                {
+                    charSet: "utf-8",
+                },
+                {
+                    name: "viewport",
+                    content:
+                        "width=device-width, initial-scale=1",
+                },
+                ...seo({
+                    siteName: "Infra",
+                    title: "Infra",
+                    description:
+                        "Manage your infrastructure with ease.",
+                }),
+            ],
+            links: [
+                {
+                    rel: "stylesheet",
+                    href: tailwind,
+                },
+                {
+                    rel: "icon",
+                    type: "image/svg+xml",
+                    href: "/favicon.svg",
+                },
+                {
+                    rel: "icon",
+                    type: "image/png",
+                    href: "/favicon.png",
+                },
+                {
+                    rel: "apple-touch-icon",
+                    href: "/favicon.svg",
+                },
+                {
+                    rel: "dns-prefetch",
+                    href: "https://fonts.googleapis.com",
+                },
+                {
+                    rel: "dns-prefetch",
+                    href: "https://fonts.gstatic.com",
+                },
+                {
+                    rel: "preconnect",
+                    href: "https://fonts.googleapis.com",
+                },
+                {
+                    rel: "preconnect",
+                    href: "https://fonts.gstatic.com",
+                },
+            ],
+        }),
+        beforeLoad: async ({ context }) => {
+            const session = await context.q.query({
+                ...meOptions(),
+                staleTime: "static",
+            })
+            const { hasAdmin } = await context.q.query({
+                ...setupOptions(),
+                staleTime: "static",
+            })
+            return {
+                session: session,
+                hasAdmin: hasAdmin,
+            }
+        },
+        pendingComponent: DefaultLoader,
+        shellComponent: RootDocument,
+    })
 
 function RootDocument() {
     return (

@@ -1,4 +1,8 @@
-import { Field, FieldLabel, FieldDescription } from "../../../components/field"
+import {
+    Field,
+    FieldLabel,
+    FieldDescription,
+} from "../../../components/field"
 import { Switch } from "../../../components/switch"
 import { useFieldContext } from "../contexts"
 
@@ -23,8 +27,14 @@ export function FieldSwitch({
                 disabled={disabled}
             />
             <div className="flex flex-col gap-0.5">
-                <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-                {description && <FieldDescription>{description}</FieldDescription>}
+                <FieldLabel htmlFor={field.name}>
+                    {label}
+                </FieldLabel>
+                {description && (
+                    <FieldDescription>
+                        {description}
+                    </FieldDescription>
+                )}
             </div>
         </Field>
     )

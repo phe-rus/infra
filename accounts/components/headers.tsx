@@ -3,12 +3,18 @@ import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Loading03Icon, Menu03Icon } from "@hugeicons/core-free-icons"
+import {
+    Loading03Icon,
+    Menu03Icon,
+} from "@hugeicons/core-free-icons"
 import { Link } from "@tanstack/react-router"
 import { useMemo, useState } from "react"
 
 export const Headers = () => {
-    const { mutateAsync: handleLogout, isPending: isLoggingOut } = useLogout()
+    const {
+        mutateAsync: handleLogout,
+        isPending: isLoggingOut,
+    } = useLogout()
     const [open, setOpen] = useState(false)
 
     const listNavItems = useMemo(() => {
@@ -30,7 +36,12 @@ export const Headers = () => {
 
     return (
         <>
-            <header className={cn("sticky top-0 border-b bg-background", "z-55 border-border/35")}>
+            <header
+                className={cn(
+                    "sticky top-0 border-b bg-background",
+                    "z-55 border-border/35"
+                )}
+            >
                 <section
                     className={cn(
                         "container flex items-center justify-between",
@@ -38,25 +49,37 @@ export const Headers = () => {
                     )}
                 >
                     <div className="flex items-center gap-5">
-                        <Link to="/" className="text-base font-black">
+                        <Link
+                            to="/"
+                            className="text-base font-black"
+                        >
                             Account
                         </Link>
                         <nav className="hidden items-center gap-3 md:flex">
-                            {listNavItems.map(({ label, to }, idx) => {
-                                return (
-                                    <Link
-                                        key={idx}
-                                        to={to}
-                                        className={cn("text-sm transition-colors")}
-                                        activeProps={{
-                                            className: "text-primary!",
-                                        }}
-                                        activeOptions={{ exact: to === "/" }}
-                                    >
-                                        {label}
-                                    </Link>
-                                )
-                            })}
+                            {listNavItems.map(
+                                ({ label, to }, idx) => {
+                                    return (
+                                        <Link
+                                            key={idx}
+                                            to={to}
+                                            className={cn(
+                                                "text-sm transition-colors"
+                                            )}
+                                            activeProps={{
+                                                className:
+                                                    "text-primary!",
+                                            }}
+                                            activeOptions={{
+                                                exact:
+                                                    to ===
+                                                    "/",
+                                            }}
+                                        >
+                                            {label}
+                                        </Link>
+                                    )
+                                }
+                            )}
                         </nav>
                     </div>
 
@@ -64,19 +87,30 @@ export const Headers = () => {
                         <Button
                             variant="destructive"
                             size="xs"
-                            onClick={() => void handleLogout()}
+                            onClick={() =>
+                                void handleLogout()
+                            }
                             disabled={isLoggingOut}
                         >
-                            {isLoggingOut && <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />}
+                            {isLoggingOut && (
+                                <HugeiconsIcon
+                                    icon={Loading03Icon}
+                                    className="animate-spin"
+                                />
+                            )}
                             Logout
                         </Button>
                         <Button
                             size="icon-xs"
                             variant="secondary"
                             className="flex md:hidden"
-                            onClick={() => setOpen((prev) => !prev)}
+                            onClick={() =>
+                                setOpen((prev) => !prev)
+                            }
                         >
-                            <HugeiconsIcon icon={Menu03Icon} />
+                            <HugeiconsIcon
+                                icon={Menu03Icon}
+                            />
                         </Button>
                     </nav>
                 </section>
@@ -87,28 +121,43 @@ export const Headers = () => {
                 title="Quick navigation"
                 description="Quick navigation between pages"
                 footer={
-                    <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setOpen(false)}
+                    >
                         Close
                     </Button>
                 }
             >
                 <nav className="flex flex-col">
-                    {listNavItems.map(({ label, to }, idx) => {
-                        return (
-                            <Link
-                                key={idx}
-                                to={to}
-                                className={cn("text-lg transition-colors")}
-                                activeProps={{
-                                    className: "text-primary!",
-                                }}
-                                activeOptions={{ exact: to === "/" }}
-                                onClick={() => setOpen((prev) => !prev)}
-                            >
-                                {label}
-                            </Link>
-                        )
-                    })}
+                    {listNavItems.map(
+                        ({ label, to }, idx) => {
+                            return (
+                                <Link
+                                    key={idx}
+                                    to={to}
+                                    className={cn(
+                                        "text-lg transition-colors"
+                                    )}
+                                    activeProps={{
+                                        className:
+                                            "text-primary!",
+                                    }}
+                                    activeOptions={{
+                                        exact: to === "/",
+                                    }}
+                                    onClick={() =>
+                                        setOpen(
+                                            (prev) => !prev
+                                        )
+                                    }
+                                >
+                                    {label}
+                                </Link>
+                            )
+                        }
+                    )}
                 </nav>
             </DialogWidget>
         </>

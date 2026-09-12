@@ -1,6 +1,9 @@
 import { format } from "date-fns"
 
-export function formatUtc(date: Date | string | number, formatStr: string): string {
+export function formatUtc(
+    date: Date | string | number,
+    formatStr: string
+): string {
     const d = new Date(date)
     const utcAsLocal = new Date(
         d.getUTCFullYear(),

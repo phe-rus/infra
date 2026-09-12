@@ -10,10 +10,65 @@
     },
     "home": {
         "thesis": "Nous sommes un collectif d'individus partageant les mêmes idées, animés par la curiosité et le désir d'innover.",
-        "principle": "Du logiciel quand le logiciel est la réponse. De la recherche, de la science ou de l'infrastructure quand ce sont elles la réponse.",
-        "nameLine": "Le nom vient de Pherusa, celle qui porte : Pherus existe pour porter les idées jusqu'à la réalité, et le savoir vers l'avant.",
+        "principle": "Laissez-nous vous montrer nos rêves et nos idées les plus folles. Voyez maintenant le monde à travers nos yeux.",
         "showcaseCta": "Voir en action",
-        "moreCta": "L'écosystème complet"
+        "moreCta": "L'écosystème complet",
+        "workHeading": "De plus près",
+        "whatAndwhomWeWorkWith": {
+            "headline": "Les outils que nous utilisons pour tous nos développements, recherches et travaux",
+            "list": [
+                {
+                    "label": "Tanstack",
+                    "favicon": "https://camo.githubusercontent.com/1963af0998a93e94a251922ce63104eaf317196f614bea4c97df519df5132603/68747470733a2f2f7777772e636c6f7564666c6172652e636f6d2f66617669636f6e2e69636f",
+                    "url": "https://tanstack.com"
+                },
+                {
+                    "label": "Github",
+                    "favicon": "https://github.githubassets.com/favicons/favicon.svg",
+                    "url": "https://github.com"
+                },
+                {
+                    "label": "Vercel",
+                    "favicon": "https://vercel.com/favicon.ico",
+                    "url": "https://vercel.com"
+                },
+                {
+                    "label": "Cloudflare",
+                    "favicon": "https://www.cloudflare.com/favicon.ico",
+                    "url": "https://www.cloudflare.com"
+                },
+                {
+                    "label": "OpenAI",
+                    "favicon": "https://openai.com/favicon.ico",
+                    "url": "https://openai.com"
+                },
+                {
+                    "label": "Google",
+                    "favicon": "https://google.com/favicon.ico",
+                    "url": "https://google.com"
+                },
+                {
+                    "label": "Replicate",
+                    "favicon": "https://d31rfu1d3w8e4q.cloudfront.net/static/favicon.121ea3afd763.ico",
+                    "url": "https://replicate.com"
+                },
+                {
+                    "label": "LlamaIndex",
+                    "favicon": "https://www.llamaindex.ai/favicon.ico",
+                    "url": "https://www.llamaindex.ai"
+                },
+                {
+                    "label": "SupaBase",
+                    "favicon": "https://supabase.com/favicon/favicon.ico",
+                    "url": "https://supabase.com"
+                },
+                {
+                    "label": "Drizzle",
+                    "favicon": "https://orm.drizzle.team/favicon.ico",
+                    "url": "https://orm.drizzle.team"
+                }
+            ]
+        }
     },
     "showcase": {
         "title": "Vitrine",
@@ -37,6 +92,13 @@
     },
     "ecosystem": {
         "title": "Écosystème",
-        "intro": "Ce ne sont pas des produits sans lien les uns avec les autres dans une place de marché d'applications. Ce sont différentes expressions des mêmes intérêts d'une seule organisation."
+        "intro": "Ce ne sont pas des produits sans lien les uns avec les autres dans une place de marché d'applications. Ce sont différentes expressions des mêmes intérêts d'une seule organisation.",
+        "hint": "Sélectionnez une initiative pour voir son lien avec Pherus."
+    },
+    "common": {
+        "menuOpen": "Menu",
+        "menuClose": "Fermer le menu",
+        "earlier": "Plus tôt",
+        "later": "Plus tard"
     }
 }

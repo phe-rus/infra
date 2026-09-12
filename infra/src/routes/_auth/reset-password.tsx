@@ -8,10 +8,12 @@ import {
 } from "@/domains/auth"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
-export const Route = createFileRoute("/_auth/reset-password")({
-    validateSearch: resetPasswordSearchSchema,
-    component: RouteComponent,
-})
+export const Route = createFileRoute("/_auth/reset-password")(
+    {
+        validateSearch: resetPasswordSearchSchema,
+        component: RouteComponent,
+    }
+)
 
 function RouteComponent() {
     const { token, error } = Route.useSearch()
@@ -38,7 +40,11 @@ function RouteComponent() {
             heading={
                 <ViewController.Heading
                     size="compact"
-                    title={invalid ? "Link expired" : "Set a new password"}
+                    title={
+                        invalid
+                            ? "Link expired"
+                            : "Set a new password"
+                    }
                     description={
                         invalid
                             ? "This password reset link is invalid or has expired — request a new one."

@@ -7,7 +7,11 @@ import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { formatUtc } from "@infra/ui/lib/date"
 import { resolveCdnUrl } from "@/lib/auth-client"
-import { currentOptions, profileSchema, useUpdateProfile } from "@/domains/auth"
+import {
+    currentOptions,
+    profileSchema,
+    useUpdateProfile,
+} from "@/domains/auth"
 import type { ProfileFormValues } from "@/domains/auth"
 
 export const Route = createFileRoute("/_workspace/profile")({
@@ -40,7 +44,10 @@ function RouteComponent() {
             onBlur: profileSchema,
         },
         onSubmit: async ({ value }) => {
-            await handleUpdate({ value, original: defaultValue })
+            await handleUpdate({
+                value,
+                original: defaultValue,
+            })
             form.reset()
         },
     })
@@ -70,7 +77,9 @@ function RouteComponent() {
                             children={(field) => (
                                 <field.avatar
                                     label={user?.name ?? ""}
-                                    existingImage={resolveCdnUrl(user?.image)}
+                                    existingImage={resolveCdnUrl(
+                                        user?.image
+                                    )}
                                 />
                             )}
                         />
@@ -87,14 +96,20 @@ function RouteComponent() {
                                 <form.AppField
                                     name="name"
                                     children={(field) => (
-                                        <field.input label="Name" placeholder="Your name" />
+                                        <field.input
+                                            label="Name"
+                                            placeholder="Your name"
+                                        />
                                     )}
                                 />
 
                                 <form.AppField
                                     name="bio"
                                     children={(field) => (
-                                        <field.textarea label="Bio" placeholder="A short bio" />
+                                        <field.textarea
+                                            label="Bio"
+                                            placeholder="A short bio"
+                                        />
                                     )}
                                 />
                             </ContentView.Section>
@@ -111,43 +126,73 @@ function RouteComponent() {
                                 <div className="grid grid-cols-2 gap-2 truncate">
                                     {vals.email && (
                                         <div>
-                                            <h3 className="text-sm">Email</h3>
-                                            <p className="text-sm">{vals.email}</p>
+                                            <h3 className="text-sm">
+                                                Email
+                                            </h3>
+                                            <p className="text-sm">
+                                                {vals.email}
+                                            </p>
                                         </div>
                                     )}
 
                                     {vals.role && (
                                         <div>
-                                            <h3 className="text-sm">Role</h3>
-                                            <p className="text-sm">{vals.role}</p>
+                                            <h3 className="text-sm">
+                                                Role
+                                            </h3>
+                                            <p className="text-sm">
+                                                {vals.role}
+                                            </p>
                                         </div>
                                     )}
 
                                     {vals.createdAt && (
                                         <div>
-                                            <h3 className="text-sm">Created At</h3>
-                                            <p className="text-sm">{vals.createdAt}</p>
+                                            <h3 className="text-sm">
+                                                Created At
+                                            </h3>
+                                            <p className="text-sm">
+                                                {
+                                                    vals.createdAt
+                                                }
+                                            </p>
                                         </div>
                                     )}
 
                                     {vals.updatedAt && (
                                         <div>
-                                            <h3 className="text-sm">Updated At</h3>
-                                            <p className="text-sm">{vals.updatedAt}</p>
+                                            <h3 className="text-sm">
+                                                Updated At
+                                            </h3>
+                                            <p className="text-sm">
+                                                {
+                                                    vals.updatedAt
+                                                }
+                                            </p>
                                         </div>
                                     )}
 
                                     {vals.emailVerified && (
                                         <div>
-                                            <h3 className="text-sm">Email Verified</h3>
-                                            <p className="text-sm">{vals.emailVerified}</p>
+                                            <h3 className="text-sm">
+                                                Email Verified
+                                            </h3>
+                                            <p className="text-sm">
+                                                {
+                                                    vals.emailVerified
+                                                }
+                                            </p>
                                         </div>
                                     )}
 
                                     {vals.id && (
                                         <div>
-                                            <h3 className="text-sm">ID</h3>
-                                            <p className="text-sm">{vals.id}</p>
+                                            <h3 className="text-sm">
+                                                ID
+                                            </h3>
+                                            <p className="text-sm">
+                                                {vals.id}
+                                            </p>
                                         </div>
                                     )}
                                 </div>

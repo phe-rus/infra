@@ -15,10 +15,22 @@ import type { UserDetail } from "@/domains/users"
 import { formatUtc } from "@infra/ui/lib/date"
 
 const BAN_DURATIONS = [
-    { id: "permanent", label: "Permanent", seconds: undefined },
+    {
+        id: "permanent",
+        label: "Permanent",
+        seconds: undefined,
+    },
     { id: "86400", label: "1 day", seconds: 60 * 60 * 24 },
-    { id: "604800", label: "7 days", seconds: 60 * 60 * 24 * 7 },
-    { id: "2592000", label: "30 days", seconds: 60 * 60 * 24 * 30 },
+    {
+        id: "604800",
+        label: "7 days",
+        seconds: 60 * 60 * 24 * 7,
+    },
+    {
+        id: "2592000",
+        label: "30 days",
+        seconds: 60 * 60 * 24 * 30,
+    },
 ] as const
 
 export type BanUserProps = {
@@ -29,10 +41,13 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
     const { mutateAsync: banUser } = useBanUser()
     const { mutateAsync: unbanUser } = useUnbanUser()
     const [banReason, setBanReason] = useState("")
-    const [banDuration, setBanDuration] = useState<string>("permanent")
+    const [banDuration, setBanDuration] =
+        useState<string>("permanent")
 
     async function handleBan() {
-        const duration = BAN_DURATIONS.find((d) => d.id === banDuration)
+        const duration = BAN_DURATIONS.find(
+            (d) => d.id === banDuration
+        )
         await banUser({
             data: {
                 userId: viewUser.user.id,
@@ -64,7 +79,9 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                         variant="outline"
                         onClick={() =>
                             void unbanUser({
-                                data: { userId: viewUser.user.id },
+                                data: {
+                                    userId: viewUser.user.id,
+                                },
                             })
                         }
                     >
@@ -74,16 +91,22 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
             ) : (
                 <>
                     <Field>
-                        <FieldLabel htmlFor="ban-reason">Reason</FieldLabel>
+                        <FieldLabel htmlFor="ban-reason">
+                            Reason
+                        </FieldLabel>
                         <Input
                             id="ban-reason"
                             value={banReason}
-                            onChange={(e) => setBanReason(e.target.value)}
+                            onChange={(e) =>
+                                setBanReason(e.target.value)
+                            }
                             placeholder="Optional"
                         />
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor="ban-duration">Duration</FieldLabel>
+                        <FieldLabel htmlFor="ban-duration">
+                            Duration
+                        </FieldLabel>
                         <Select
                             id="ban-duration"
                             aria-label="Duration"
@@ -97,7 +120,10 @@ export const BanUser: FC<BanUserProps> = ({ viewUser }) => {
                             </SelectTrigger>
                             <SelectContent>
                                 {BAN_DURATIONS.map((d) => (
-                                    <SelectItem key={d.id} value={d.id}>
+                                    <SelectItem
+                                        key={d.id}
+                                        value={d.id}
+                                    >
                                         {d.label}
                                     </SelectItem>
                                 ))}

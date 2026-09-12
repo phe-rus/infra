@@ -6,7 +6,10 @@ import { Button } from "@infra/ui/components/button"
 import { Badge } from "@infra/ui/components/badge"
 import { cn } from "@infra/ui/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Delete02Icon, Loading03Icon } from "@hugeicons/core-free-icons"
+import {
+    Delete02Icon,
+    Loading03Icon,
+} from "@hugeicons/core-free-icons"
 import type { SessionsData } from "@/domains/security"
 import { useRevokeSession } from "@/domains/security"
 
@@ -15,14 +18,23 @@ type SessionListProps = {
     currentSessionToken: string | undefined
 }
 
-const describeDevice = (userAgent: string | null | undefined) => {
-    const { browser, os } = new UAParser(userAgent ?? "").getResult()
+const describeDevice = (
+    userAgent: string | null | undefined
+) => {
+    const { browser, os } = new UAParser(
+        userAgent ?? ""
+    ).getResult()
     return `${browser.name ?? "A browser"} on ${os.name ?? "an unknown OS"}`
 }
 
-export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken }) => {
+export const SessionList: FC<SessionListProps> = ({
+    data,
+    currentSessionToken,
+}) => {
     const revokeMutation = useRevokeSession()
-    const [revokingToken, setRevokingToken] = useState<string | null>(null)
+    const [revokingToken, setRevokingToken] = useState<
+        string | null
+    >(null)
 
     return (
         <div className="flex flex-col gap-3">
@@ -33,7 +45,8 @@ export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken })
                         new Date(a.createdAt).getTime()
                 )
                 .map((session) => {
-                    const isCurrent = session.token === currentSessionToken
+                    const isCurrent =
+                        session.token === currentSessionToken
                     return (
                         <div
                             key={session.id}
@@ -45,17 +58,29 @@ export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken })
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
                                     <p className="text-sm font-bold">
-                                        {describeDevice(session.userAgent)}
+                                        {describeDevice(
+                                            session.userAgent
+                                        )}
                                     </p>
                                     {isCurrent && (
-                                        <Badge variant="secondary" className="rounded-full">
+                                        <Badge
+                                            variant="secondary"
+                                            className="rounded-full"
+                                        >
                                             This device
                                         </Badge>
                                     )}
                                 </div>
                                 <p className="text-xs text-muted-foreground">
-                                    {session.ipAddress ?? "Unknown location"} · Signed in{" "}
-                                    {formatUtc(String(session.createdAt), "PPP")}
+                                    {session.ipAddress ??
+                                        "Unknown location"}{" "}
+                                    · Signed in{" "}
+                                    {formatUtc(
+                                        String(
+                                            session.createdAt
+                                        ),
+                                        "PPP"
+                                    )}
                                 </p>
                             </div>
                             {!isCurrent && (
@@ -66,17 +91,34 @@ export const SessionList: FC<SessionListProps> = ({ data, currentSessionToken })
                                     className="rounded-full"
                                     aria-label="Sign out this device"
                                     disabled={
-                                        revokeMutation.isPending && revokingToken === session.token
+                                        revokeMutation.isPending &&
+                                        revokingToken ===
+                                            session.token
                                     }
                                     onClick={() => {
-                                        setRevokingToken(session.token)
-                                        revokeMutation.mutate(session.token)
+                                        setRevokingToken(
+                                            session.token
+                                        )
+                                        revokeMutation.mutate(
+                                            session.token
+                                        )
                                     }}
                                 >
-                                    {revokeMutation.isPending && revokingToken === session.token ? (
-                                        <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />
+                                    {revokeMutation.isPending &&
+                                    revokingToken ===
+                                        session.token ? (
+                                        <HugeiconsIcon
+                                            icon={
+                                                Loading03Icon
+                                            }
+                                            className="animate-spin"
+                                        />
                                     ) : (
-                                        <HugeiconsIcon icon={Delete02Icon} />
+                                        <HugeiconsIcon
+                                            icon={
+                                                Delete02Icon
+                                            }
+                                        />
                                     )}
                                 </Button>
                             )}

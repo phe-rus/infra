@@ -13,7 +13,9 @@ const forgotPasswordSchema = z.object({
     email: z.email("Enter a valid email"),
 })
 
-export const Route = createFileRoute("/_auth/forgot-password")({
+export const Route = createFileRoute(
+    "/_auth/forgot-password"
+)({
     component: RouteComponent,
 })
 

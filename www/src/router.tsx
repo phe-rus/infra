@@ -15,7 +15,7 @@ export function getRouter() {
         rewrite: {
             input: ({ url }) => deLocalizeUrl(url),
             output: ({ url }) => localizeUrl(url),
-        }
+        },
     })
 
     return router

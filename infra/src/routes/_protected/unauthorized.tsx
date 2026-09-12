@@ -3,7 +3,9 @@ import { useLogout } from "@/domains/auth"
 import { Button } from "@infra/ui/components/button"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
-export const Route = createFileRoute("/_protected/unauthorized")({
+export const Route = createFileRoute(
+    "/_protected/unauthorized"
+)({
     component: RouteComponent,
 })
 

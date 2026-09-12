@@ -26,7 +26,9 @@ import {
 } from "@/domains/console"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
-export const Route = createFileRoute("/_workspace/console/$client_id/")({
+export const Route = createFileRoute(
+    "/_workspace/console/$client_id/"
+)({
     validateSearch: appDetailSearchSchema,
     component: RouteComponent,
 })
@@ -41,15 +43,17 @@ function RouteComponent() {
 
     const { mutateAsync: createApp } = useCreateApp()
     const { mutateAsync: updateApp } = useUpdateApp()
-    const { mutateAsync: rotateApp, isPending: isRotating } = useRotateApp()
+    const { mutateAsync: rotateApp, isPending: isRotating } =
+        useRotateApp()
     const { mutateAsync: removeApp } = useRemoveApp()
     const { mutateAsync: setActive } = useSetAppActive()
 
-    const [revealedSecret, setRevealedSecret] = useState<string | null>(
-        secret ?? null
-    )
+    const [revealedSecret, setRevealedSecret] = useState<
+        string | null
+    >(secret ?? null)
     useEffect(() => {
-        if (secret) void navigate({ search: {}, replace: true })
+        if (secret)
+            void navigate({ search: {}, replace: true })
     }, [secret, navigate])
 
     const form = useAppForm({
@@ -63,19 +67,22 @@ function RouteComponent() {
                     ?.split(",")
                     .map((u) => u.trim())
                     .filter(Boolean) ?? []
-            const postLogoutRedirectUris = value.post_logout_redirect_uris
-                ?.split(",")
-                .map((u) => u.trim())
-                .filter(Boolean)
+            const postLogoutRedirectUris =
+                value.post_logout_redirect_uris
+                    ?.split(",")
+                    .map((u) => u.trim())
+                    .filter(Boolean)
 
             if (isCreate) {
                 const result = await createApp({
                     data: {
                         client_name: value.client_name,
-                        client_uri: value.client_uri || undefined,
+                        client_uri:
+                            value.client_uri || undefined,
                         logo_uri: value.logo_uri || undefined,
                         framework: value.framework,
-                        application_type: value.application_type,
+                        application_type:
+                            value.application_type,
                         token_endpoint_auth_method:
                             value.token_endpoint_auth_method,
                         redirect_uris: redirectUris,
@@ -87,7 +94,8 @@ function RouteComponent() {
                         grant_types: value.grant_types,
                         require_pkce: value.require_pkce,
                         skip_consent: value.skip_consent,
-                        enable_end_session: value.enable_end_session,
+                        enable_end_session:
+                            value.enable_end_session,
                     },
                 }).catch(() => null)
                 if (!result) return
@@ -95,7 +103,10 @@ function RouteComponent() {
                 void navigate({
                     to: "/console/$client_id",
                     params: { client_id: result.clientId },
-                    search: { secret: result.clientSecret ?? undefined },
+                    search: {
+                        secret:
+                            result.clientSecret ?? undefined,
+                    },
                     replace: true,
                 })
                 return
@@ -115,9 +126,9 @@ function RouteComponent() {
                 return
             }
 
-            await updateApp({ data: { clientId, ...changed } }).catch(
-                () => null
-            )
+            await updateApp({
+                data: { clientId, ...changed },
+            }).catch(() => null)
         },
     })
 
@@ -139,7 +150,11 @@ function RouteComponent() {
         <ViewController
             heading={
                 <ViewController.Heading
-                    title={isCreate ? "Create application" : "Edit application"}
+                    title={
+                        isCreate
+                            ? "Create application"
+                            : "Edit application"
+                    }
                     description={
                         isCreate
                             ? "Register a new OAuth 2.1 client."
@@ -151,8 +166,9 @@ function RouteComponent() {
             {snippet && (
                 <section className="flex flex-col gap-2 rounded-lg border p-4">
                     <p className="text-xs text-muted-foreground">
-                        The client secret is only shown once — copy it now, it
-                        can't be retrieved again.
+                        The client secret is only shown once —
+                        copy it now, it can't be retrieved
+                        again.
                     </p>
                     <pre className="rounded bg-muted p-3 text-xs break-all whitespace-pre-wrap">
                         {snippet}
@@ -162,7 +178,9 @@ function RouteComponent() {
                         variant="outline"
                         className="w-fit"
                         onClick={() =>
-                            void navigator.clipboard.writeText(snippet)
+                            void navigator.clipboard.writeText(
+                                snippet
+                            )
                         }
                     >
                         Copy infraConfig
@@ -186,28 +204,41 @@ function RouteComponent() {
                             }
                             aria-label="Copy client ID"
                         >
-                            <HugeiconsIcon icon={Copy01Icon} className="size-3" />
+                            <HugeiconsIcon
+                                icon={Copy01Icon}
+                                className="size-3"
+                            />
                         </button>
                     </div>
                     <div>
                         Created{" "}
                         {application.createdAt
-                            ? formatUtc(application.createdAt, "PPPp")
+                            ? formatUtc(
+                                  application.createdAt,
+                                  "PPPp"
+                              )
                             : "—"}
                     </div>
                     <div>
                         Updated{" "}
                         {application.updatedAt
-                            ? formatUtc(application.updatedAt, "PPPp")
+                            ? formatUtc(
+                                  application.updatedAt,
+                                  "PPPp"
+                              )
                             : "—"}
                     </div>
                     <Badge
                         variant={
-                            application.disabled ? "destructive" : "outline"
+                            application.disabled
+                                ? "destructive"
+                                : "outline"
                         }
                         className="w-fit"
                     >
-                        {application.disabled ? "Disabled" : "Active"}
+                        {application.disabled
+                            ? "Disabled"
+                            : "Active"}
                     </Badge>
                 </section>
             )}
@@ -222,9 +253,16 @@ function RouteComponent() {
                 className="flex flex-col gap-5"
             >
                 <form.AppForm>
-                    <ApplicationFormFields form={form} isCreate={isCreate} />
+                    <ApplicationFormFields
+                        form={form}
+                        isCreate={isCreate}
+                    />
                     <form.submit
-                        label={isCreate ? "Create application" : "Save changes"}
+                        label={
+                            isCreate
+                                ? "Create application"
+                                : "Save changes"
+                        }
                     />
                 </form.AppForm>
             </form>
@@ -233,7 +271,9 @@ function RouteComponent() {
                 <>
                     <Separator />
                     <section className="flex flex-col gap-2">
-                        <h3 className="text-sm font-medium">Admin actions</h3>
+                        <h3 className="text-sm font-medium">
+                            Admin actions
+                        </h3>
                         <div className="flex flex-wrap gap-2">
                             <Button
                                 type="button"
@@ -249,14 +289,18 @@ function RouteComponent() {
                                     })
                                 }
                             >
-                                {application.disabled ? "Enable" : "Disable"}
+                                {application.disabled
+                                    ? "Enable"
+                                    : "Disable"}
                             </Button>
                             {application.isOwnClient && (
                                 <Button
                                     type="button"
                                     variant="outline"
                                     disabled={isRotating}
-                                    onClick={() => void handleRotate()}
+                                    onClick={() =>
+                                        void handleRotate()
+                                    }
                                 >
                                     Rotate secret
                                 </Button>
@@ -265,7 +309,9 @@ function RouteComponent() {
                                 <Button
                                     type="button"
                                     variant="destructive"
-                                    onClick={() => void handleRemove()}
+                                    onClick={() =>
+                                        void handleRemove()
+                                    }
                                 >
                                     Remove application
                                 </Button>

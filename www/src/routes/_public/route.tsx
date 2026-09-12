@@ -1,4 +1,3 @@
-import { Nav } from "@/components/nav"
 import {
     createFileRoute,
     Outlet,
@@ -9,10 +8,5 @@ export const Route = createFileRoute("/_public")({
 })
 
 function RouteComponent() {
-    return (
-        <>
-            <Nav />
-            <Outlet />
-        </>
-    )
+    return <Outlet />
 }

@@ -16,17 +16,27 @@
 // can use this relative path directly as an <img src>; a cross-origin one
 // (accounts) needs cdnUrl below to prefix it with whichever host it knows
 // infra is actually reachable at.
-export function cdnPath(key: string, version: number): string {
+export function cdnPath(
+    key: string,
+    version: number
+): string {
     return `/api/cdn/${key}?v=${version}`
 }
 
 // path is assumed relative (as cdnPath always returns) unless it's already
 // absolute — guards a cross-origin consumer (accounts) against
 // double-prefixing a path that was for some reason already stored absolute
-export function withOrigin(origin: string, path: string): string {
+export function withOrigin(
+    origin: string,
+    path: string
+): string {
     return path.startsWith("http") ? path : `${origin}${path}`
 }
 
-export function cdnUrl(origin: string, key: string, version: number): string {
+export function cdnUrl(
+    origin: string,
+    key: string,
+    version: number
+): string {
     return withOrigin(origin, cdnPath(key, version))
 }

@@ -1,15 +1,21 @@
-import { defineConfig } from 'drizzle-kit'
-import path from 'node:path'
+import { defineConfig } from "drizzle-kit"
+import path from "node:path"
 import fs from "node:fs"
-import 'dotenv/config'
+import "dotenv/config"
 
 const localConfig = () => {
     try {
         const basePath = path.resolve(".wrangler")
         const dbFile = fs
-            .readdirSync(basePath, { encoding: "utf-8", recursive: true })
+            .readdirSync(basePath, {
+                encoding: "utf-8",
+                recursive: true,
+            })
             .find((f) => f.endsWith(".sqlite"))
-        if (!dbFile) throw new Error(`.sqlite file not found in ${basePath}`)
+        if (!dbFile)
+            throw new Error(
+                `.sqlite file not found in ${basePath}`
+            )
         return path.resolve(basePath, dbFile)
     } catch (err) {
         console.log(`Error  ${err}`)
@@ -17,11 +23,11 @@ const localConfig = () => {
 }
 
 export default defineConfig({
-    out: './.migrations',
-    schema: './schemas/**/*.ts',
-    driver: 'd1-http',
+    out: "./.migrations",
+    schema: "./schemas/**/*.ts",
+    driver: "d1-http",
     dialect: "sqlite",
     dbCredentials: {
-        url: localConfig() ?? ""
+        url: localConfig() ?? "",
     },
 })

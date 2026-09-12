@@ -15,13 +15,17 @@ export const useLogout = () => {
         mutationFn: async () => {
             const { error } = await authClient.signOut()
             if (error)
-                throw new Error(error.message ?? "Could not sign out")
+                throw new Error(
+                    error.message ?? "Could not sign out"
+                )
         },
         onSuccess: async () => {
             t.success("Successfully", {
                 description: "Logout successfully!",
             })
-            await queryClient.invalidateQueries(currentOptions())
+            await queryClient.invalidateQueries(
+                currentOptions()
+            )
             await router.navigate({
                 to: "/",
                 replace: true,
@@ -39,13 +43,15 @@ export const useLogout = () => {
 export const useRequestPasswordReset = () =>
     useMutation({
         mutationFn: async (email: string) => {
-            const { error } = await authClient.requestPasswordReset({
-                email,
-                redirectTo: `${window.location.origin}/reset-password`,
-            })
+            const { error } =
+                await authClient.requestPasswordReset({
+                    email,
+                    redirectTo: `${window.location.origin}/reset-password`,
+                })
             if (error)
                 throw new Error(
-                    error.message ?? "Could not send reset email"
+                    error.message ??
+                        "Could not send reset email"
                 )
         },
         onSuccess: () => {
@@ -74,15 +80,20 @@ export const useResetPassword = () => {
             })
             if (error)
                 throw new Error(
-                    error.message ?? "Could not reset password"
+                    error.message ??
+                        "Could not reset password"
                 )
         },
         onSuccess: () => {
             t.success("Password reset", {
-                description: "Sign in with your new password.",
+                description:
+                    "Sign in with your new password.",
             })
             setTimeout(() => {
-                router.navigate({ to: "/sign-in", replace: true })
+                router.navigate({
+                    to: "/sign-in",
+                    replace: true,
+                })
             }, 50)
         },
         onError: (error) => {
@@ -102,7 +113,8 @@ export const useDeleteAccount = () =>
             })
             if (error)
                 throw new Error(
-                    error.message ?? "Could not start account deletion"
+                    error.message ??
+                        "Could not start account deletion"
                 )
         },
         successMessage: "Check your email",
@@ -118,21 +130,29 @@ type UpdateProfileInput = {
 
 export const useUpdateProfile = () =>
     useAppMutation({
-        mutationFn: async ({ value, original }: UpdateProfileInput) => {
+        mutationFn: async ({
+            value,
+            original,
+        }: UpdateProfileInput) => {
             const changes: {
                 name?: string
                 bio?: string
                 image?: string
             } = {}
-            if (value.name !== original.name) changes.name = value.name
-            if (value.bio !== original.bio) changes.bio = value.bio
+            if (value.name !== original.name)
+                changes.name = value.name
+            if (value.bio !== original.bio)
+                changes.bio = value.bio
 
             if (value.avatar) {
                 const { data, error } =
-                    await authClient.assets.uploadAvatar(value.avatar)
+                    await authClient.assets.uploadAvatar(
+                        value.avatar
+                    )
                 if (error)
                     throw new Error(
-                        error.message ?? "Could not upload avatar"
+                        error.message ??
+                            "Could not upload avatar"
                     )
                 if (data.url) changes.image = data.url
             }

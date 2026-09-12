@@ -16,9 +16,15 @@ type FieldTextareaProps = {
     "id" | "name" | "value" | "onChange" | "onBlur"
 >
 
-export function FieldTextarea({ label, icon, ...props }: FieldTextareaProps) {
+export function FieldTextarea({
+    label,
+    icon,
+    ...props
+}: FieldTextareaProps) {
     const field = useFieldContext<string>()
-    const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+    const isInvalid =
+        field.state.meta.isTouched &&
+        !field.state.meta.isValid
 
     return (
         <FieldWrapper
@@ -30,7 +36,9 @@ export function FieldTextarea({ label, icon, ...props }: FieldTextareaProps) {
             <InputGroup>
                 {icon && (
                     <InputGroupAddon align="block-start">
-                        <InputGroupText>{icon}</InputGroupText>
+                        <InputGroupText>
+                            {icon}
+                        </InputGroupText>
                     </InputGroupAddon>
                 )}
                 <InputGroupTextarea
@@ -38,7 +46,9 @@ export function FieldTextarea({ label, icon, ...props }: FieldTextareaProps) {
                     name={field.name}
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) =>
+                        field.handleChange(e.target.value)
+                    }
                     aria-invalid={isInvalid}
                     {...props}
                 />

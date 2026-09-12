@@ -1,5 +1,9 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "../../../components/input-otp"
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from "../../../components/input-otp"
 import { useFieldContext } from "../contexts"
 import { FieldWrapper } from "./wrapper"
 
@@ -9,9 +13,15 @@ type FieldOtpProps = {
     onComplete?: (value: string) => void
 }
 
-export function FieldOtp({ label, maxLength = 6, onComplete }: FieldOtpProps) {
+export function FieldOtp({
+    label,
+    maxLength = 6,
+    onComplete,
+}: FieldOtpProps) {
     const field = useFieldContext<string>()
-    const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+    const isInvalid =
+        field.state.meta.isTouched &&
+        !field.state.meta.isValid
 
     return (
         <FieldWrapper
@@ -27,14 +37,22 @@ export function FieldOtp({ label, maxLength = 6, onComplete }: FieldOtpProps) {
                 pattern={REGEXP_ONLY_DIGITS}
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={(value) => field.handleChange(value)}
+                onChange={(value) =>
+                    field.handleChange(value)
+                }
                 onComplete={onComplete}
                 aria-invalid={isInvalid}
             >
                 <InputOTPGroup>
-                    {Array.from({ length: maxLength }, (_, index) => (
-                        <InputOTPSlot key={index} index={index} />
-                    ))}
+                    {Array.from(
+                        { length: maxLength },
+                        (_, index) => (
+                            <InputOTPSlot
+                                key={index}
+                                index={index}
+                            />
+                        )
+                    )}
                 </InputOTPGroup>
             </InputOTP>
         </FieldWrapper>

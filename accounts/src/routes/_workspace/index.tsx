@@ -22,7 +22,9 @@ export const Route = createFileRoute("/_workspace/")({
 })
 
 function RouteComponent() {
-    const { data: session } = useSuspenseQuery(currentOptions())
+    const { data: session } = useSuspenseQuery(
+        currentOptions()
+    )
 
     const user = useMemo(() => {
         if (!session?.user) return null
@@ -42,7 +44,9 @@ function RouteComponent() {
             heading={
                 <>
                     <Avatar className="mx-auto! size-55! flex-none">
-                        <AvatarImage src={resolveCdnUrl(user?.image)} />
+                        <AvatarImage
+                            src={resolveCdnUrl(user?.image)}
+                        />
                         <AvatarFallback>
                             {user?.shortHand}
                         </AvatarFallback>

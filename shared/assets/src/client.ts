@@ -21,18 +21,32 @@ export const assetsClient = () => {
                     uploadAvatar: async (
                         file: File,
                         options?: { userId?: string },
-                        fetchOptions?: Parameters<typeof $fetch>[1]
+                        fetchOptions?: Parameters<
+                            typeof $fetch
+                        >[1]
                     ) => {
                         const formData = new FormData()
                         formData.append("file", file)
-                        if (options?.userId) formData.append("userId", options.userId)
-                        return $fetch<{ url: string }>("/assets/avatar", {
-                            method: "POST",
-                            body: formData,
-                            ...fetchOptions,
-                        })
+                        if (options?.userId)
+                            formData.append(
+                                "userId",
+                                options.userId
+                            )
+                        return $fetch<{ url: string }>(
+                            "/assets/avatar",
+                            {
+                                method: "POST",
+                                body: formData,
+                                ...fetchOptions,
+                            }
+                        )
                     },
-                    uploadFile: async (file: File, fetchOptions?: Parameters<typeof $fetch>[1]) => {
+                    uploadFile: async (
+                        file: File,
+                        fetchOptions?: Parameters<
+                            typeof $fetch
+                        >[1]
+                    ) => {
                         const formData = new FormData()
                         formData.append("file", file)
                         return $fetch("/assets/upload", {

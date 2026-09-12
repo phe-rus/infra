@@ -14,7 +14,10 @@ import { ViewController } from "@infra/ui/widgets/view-controller"
 
 export const Route = createFileRoute("/_workspace/console/")({
     loader: async ({ context: { q } }) => {
-        await q.query({ ...consoleOptions(), staleTime: 'static' })
+        await q.query({
+            ...consoleOptions(),
+            staleTime: "static",
+        })
     },
     component: RouteComponent,
 })
@@ -34,8 +37,12 @@ function RouteComponent() {
                     action={
                         <Link
                             to="/console/$client_id"
-                            params={{ client_id: CREATE_CLIENT_ID }}
-                            className={cn(buttonVariants({ size: "sm" }))}
+                            params={{
+                                client_id: CREATE_CLIENT_ID,
+                            }}
+                            className={cn(
+                                buttonVariants({ size: "sm" })
+                            )}
                         >
                             Add application
                         </Link>
@@ -46,10 +53,16 @@ function RouteComponent() {
             <ListApplications
                 applications={data.applications}
                 onSetActive={(clientId, active) =>
-                    void setAppActive({ data: { clientId, active } })
+                    void setAppActive({
+                        data: { clientId, active },
+                    })
                 }
-                onRotate={(clientId) => void rotateApp({ data: { clientId } })}
-                onRemove={(clientId) => void removeApp({ data: { clientId } })}
+                onRotate={(clientId) =>
+                    void rotateApp({ data: { clientId } })
+                }
+                onRemove={(clientId) =>
+                    void removeApp({ data: { clientId } })
+                }
             />
         </ViewController>
     )

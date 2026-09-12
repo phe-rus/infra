@@ -1,5 +1,8 @@
 import type { ErrorComponentProps } from "@tanstack/react-router"
-import { Button, buttonVariants } from "../../components/button"
+import {
+    Button,
+    buttonVariants,
+} from "../../components/button"
 import {
     ErrorComponent,
     Link,
@@ -8,7 +11,9 @@ import {
 } from "@tanstack/react-router"
 import { cn } from "../../lib/utils"
 
-export function DefaultBoundary({ error }: ErrorComponentProps) {
+export function DefaultBoundary({
+    error,
+}: ErrorComponentProps) {
     const router = useRouter()
     const isRoot = useLocation({
         select: (location) => location.pathname === "/",

@@ -7,7 +7,9 @@ const toHex = (buffer: ArrayBuffer) =>
         .join("")
 
 const fromHex = (hex: string) => {
-    const out = new Uint8Array(new ArrayBuffer(hex.length / 2))
+    const out = new Uint8Array(
+        new ArrayBuffer(hex.length / 2)
+    )
     out.set(hex.match(/.{2}/g)!.map((b) => parseInt(b, 16)))
     return out
 }
@@ -41,7 +43,10 @@ const verifyPassword = async (data: {
     hash: string
 }) => {
     const [saltHex, hashHex] = data.hash.split(":")
-    const derived = await derive(data.password, fromHex(saltHex))
+    const derived = await derive(
+        data.password,
+        fromHex(saltHex)
+    )
     const expected = fromHex(hashHex)
     const actual = new Uint8Array(derived)
     if (actual.length !== expected.length) return false
@@ -50,7 +55,9 @@ const verifyPassword = async (data: {
         diff |= actual[i] ^ expected[i]
     return diff === 0
 }
-type TPassword = NonNullable<BetterAuthOptions["emailAndPassword"]>
+type TPassword = NonNullable<
+    BetterAuthOptions["emailAndPassword"]
+>
 export const password = {
     hash: hashPassword,
     verify: verifyPassword,

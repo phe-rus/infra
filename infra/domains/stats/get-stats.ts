@@ -1,5 +1,9 @@
 import { queryOptions } from "@tanstack/react-query"
-import { getEventMetrics, getRecentEvents, getStats } from "./func"
+import {
+    getEventMetrics,
+    getRecentEvents,
+    getStats,
+} from "./func"
 
 export const statsOptions = () =>
     queryOptions({

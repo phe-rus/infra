@@ -6,16 +6,19 @@ export function isAdminTier(role: string): boolean {
     return role === "admin"
 }
 
-async function markUserActive(userId: string, ctx: {
-    context: {
-        internalAdapter: {
-            updateUser: (
-                id: string,
-                data: Record<string, unknown>
-            ) => Promise<unknown>
+async function markUserActive(
+    userId: string,
+    ctx: {
+        context: {
+            internalAdapter: {
+                updateUser: (
+                    id: string,
+                    data: Record<string, unknown>
+                ) => Promise<unknown>
+            }
         }
     }
-}) {
+) {
     await ctx.context.internalAdapter.updateUser(userId, {
         lastActiveAt: new Date(),
     })
@@ -31,7 +34,9 @@ export const databaseHooks = {
                     }
                 }
                 const adapter = ctx.context.adapter
-                const count = await adapter.count({ model: "user" })
+                const count = await adapter.count({
+                    model: "user",
+                })
                 return {
                     data: {
                         ...user,

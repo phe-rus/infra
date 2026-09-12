@@ -4,7 +4,10 @@ import {
     Folder01Icon,
     MinusSignIcon,
 } from "@hugeicons/core-free-icons"
-import { useListObjects, useDeleteObjects } from "@/domains/storage"
+import {
+    useListObjects,
+    useDeleteObjects,
+} from "@/domains/storage"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
 import { TanstackImage } from "@infra/tanstack-image"
@@ -17,7 +20,8 @@ export type BrowseObjectsProps = {
 
 const formatBytes = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    if (bytes < 1024 * 1024)
+        return `${(bytes / 1024).toFixed(1)} KB`
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
@@ -31,10 +35,21 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
     const { mutate: deleteObjects } = useDeleteObjects()
 
     if (isLoading)
-        return <p className="text-xs text-muted-foreground">Loading…</p>
+        return (
+            <p className="text-xs text-muted-foreground">
+                Loading…
+            </p>
+        )
     if (!data) return null
-    if (data.folders.length === 0 && data.files.length === 0) {
-        return <p className="text-xs text-muted-foreground">Empty.</p>
+    if (
+        data.folders.length === 0 &&
+        data.files.length === 0
+    ) {
+        return (
+            <p className="text-xs text-muted-foreground">
+                Empty.
+            </p>
+        )
     }
 
     return (
@@ -44,14 +59,19 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                     {data.folders.map((folder) => (
                         <article
                             key={folder.key}
-                            onClick={() => onNavigate(folder.key)}
+                            onClick={() =>
+                                onNavigate(folder.key)
+                            }
                             className={cn(
                                 "flex min-w-0 items-center gap-2 overflow-hidden",
                                 "col-span-1 bg-card px-2 py-2 border! border-border/35!",
                                 "cursor-pointer hover:bg-accent"
                             )}
                         >
-                            <HugeiconsIcon icon={Folder01Icon} className="size-7! shrink-0" />
+                            <HugeiconsIcon
+                                icon={Folder01Icon}
+                                className="size-7! shrink-0"
+                            />
                             <span className="min-w-0 flex-1 truncate text-xs">
                                 {folder.name}
                             </span>
@@ -62,11 +82,15 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     deleteObjects({
-                                        data: { prefix: folder.key },
+                                        data: {
+                                            prefix: folder.key,
+                                        },
                                     })
                                 }}
                             >
-                                <HugeiconsIcon icon={MinusSignIcon} />
+                                <HugeiconsIcon
+                                    icon={MinusSignIcon}
+                                />
                             </Button>
                         </article>
                     ))}
@@ -81,7 +105,9 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                             href={cdnUrl(file.key)}
                             target="_blank"
                             rel="noreferrer"
-                            className={cn("relative flex flex-col")}
+                            className={cn(
+                                "relative flex flex-col"
+                            )}
                         >
                             <div
                                 className={cn(
@@ -91,7 +117,9 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                     "border-dashed"
                                 )}
                             >
-                                {file.contentType?.startsWith("image/") ? (
+                                {file.contentType?.startsWith(
+                                    "image/"
+                                ) ? (
                                     <TanstackImage
                                         src={cdnUrl(file.key)}
                                         alt={file.name}
@@ -102,7 +130,10 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                         )}
                                     />
                                 ) : (
-                                    <HugeiconsIcon icon={File01Icon} className="m-auto size-8" />
+                                    <HugeiconsIcon
+                                        icon={File01Icon}
+                                        className="m-auto size-8"
+                                    />
                                 )}
                             </div>
                             <div className="mb-auto flex flex-col p-1">
@@ -121,11 +152,15 @@ export const BrowseObjects: FC<BrowseObjectsProps> = ({
                                     e.preventDefault()
                                     e.stopPropagation()
                                     deleteObjects({
-                                        data: { keys: [file.key] },
+                                        data: {
+                                            keys: [file.key],
+                                        },
                                     })
                                 }}
                             >
-                                <HugeiconsIcon icon={MinusSignIcon} />
+                                <HugeiconsIcon
+                                    icon={MinusSignIcon}
+                                />
                             </Button>
                         </a>
                     ))}

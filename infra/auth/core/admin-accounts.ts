@@ -24,7 +24,12 @@ export const listUserAccounts = ({
                     query: z.object({ userId: z.string() }),
                 },
                 async (ctx) => {
-                    if (!isAdmin(ctx.context.session.user.role ?? "")) {
+                    if (
+                        !isAdmin(
+                            ctx.context.session.user.role ??
+                                ""
+                        )
+                    ) {
                         throw new APIError("FORBIDDEN", {
                             message: "Admin access required",
                         })
@@ -53,7 +58,9 @@ export const listUserAccounts = ({
                                 userId,
                                 createdAt,
                                 updatedAt,
-                                scopes: scope ? scope.split(" ") : [],
+                                scopes: scope
+                                    ? scope.split(" ")
+                                    : [],
                             })
                         ),
                     })

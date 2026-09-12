@@ -2,8 +2,8 @@ import { createMiddleware } from "@tanstack/react-start"
 import { redirect } from "@tanstack/react-router"
 import { auth } from "@/auth"
 
-export const AdminMiddleware = createMiddleware()
-    .server(async ({ next, request }) => {
+export const AdminMiddleware = createMiddleware().server(
+    async ({ next, request }) => {
         const sessions = await auth.api.getSession({
             headers: request.headers,
         })
@@ -21,7 +21,8 @@ export const AdminMiddleware = createMiddleware()
         }
         return next({
             context: {
-                sessions: sessions
-            }
+                sessions: sessions,
+            },
         })
-    })
+    }
+)

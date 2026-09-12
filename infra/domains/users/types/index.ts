@@ -1,6 +1,8 @@
 import { z } from "zod"
 
-export const userIdSchema = z.object({ userId: z.string().min(1) })
+export const userIdSchema = z.object({
+    userId: z.string().min(1),
+})
 
 export const createUserSchema = z.object({
     name: z.string().min(1),
@@ -20,9 +22,14 @@ export const updateUserDetailsSchema = z
         name: z.string().min(1).optional(),
         email: z.email().optional(),
     })
-    .refine((data) => data.name !== undefined || data.email !== undefined, {
-        message: "Nothing to update",
-    })
+    .refine(
+        (data) =>
+            data.name !== undefined ||
+            data.email !== undefined,
+        {
+            message: "Nothing to update",
+        }
+    )
 
 export const banUserSchema = z.object({
     userId: z.string().min(1),

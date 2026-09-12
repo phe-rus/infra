@@ -6,7 +6,10 @@ export const Route = createFileRoute("/api/cdn/$")({
         handlers: {
             GET: async ({ request }) => {
                 const url = new URL(request.url)
-                const key = url.pathname.replace(/^\/api\/cdn\//, "")
+                const key = url.pathname.replace(
+                    /^\/api\/cdn\//,
+                    ""
+                )
                 const object = await env.R2.get(key)
                 if (!object) {
                     return new Response(null, { status: 404 })
@@ -15,7 +18,8 @@ export const Route = createFileRoute("/api/cdn/$")({
                     status: 200,
                     headers: {
                         "Content-Type":
-                            object.httpMetadata?.contentType ??
+                            object.httpMetadata
+                                ?.contentType ??
                             "application/octet-stream",
                         ...(object.httpEtag
                             ? { ETag: object.httpEtag }

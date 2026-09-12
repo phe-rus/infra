@@ -1,7 +1,15 @@
-import { focusManager, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import {
+    focusManager,
+    QueryCache,
+    QueryClient,
+    QueryClientProvider,
+} from "@tanstack/react-query"
 import { useState } from "react"
 import type { PropsWithChildren } from "react"
-import { t, ToasterProvider } from "@infra/ui/components/sonner"
+import {
+    t,
+    ToasterProvider,
+} from "@infra/ui/components/sonner"
 
 if (typeof window !== "undefined") {
     focusManager.setEventListener((setFocused) => {
@@ -21,8 +29,14 @@ export const queryContext = () => {
             queries: {
                 staleTime: 60_000,
                 retry: (count, error) => {
-                    const status = (error as { status?: number })?.status
-                    return status !== 401 && status !== 403 && count < 2
+                    const status = (
+                        error as { status?: number }
+                    )?.status
+                    return (
+                        status !== 401 &&
+                        status !== 403 &&
+                        count < 2
+                    )
                 },
             },
         },
@@ -46,7 +60,10 @@ export function getContext(): QueryClient {
     return queryContext()
 }
 
-export const QueryProvider = ({ children, query }: TRProviderProps) => {
+export const QueryProvider = ({
+    children,
+    query,
+}: TRProviderProps) => {
     const [client] = useState(() => query)
     return (
         <QueryClientProvider client={client}>

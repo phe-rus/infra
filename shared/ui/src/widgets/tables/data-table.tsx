@@ -41,7 +41,11 @@ import { useMemo, useState } from "react"
 import { Badge } from "../../components/badge"
 import { Button } from "../../components/button"
 import { Checkbox } from "../../components/checkbox"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../../components/input-group"
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupInput,
+} from "../../components/input-group"
 import {
     Table,
     TableBody,
@@ -54,7 +58,11 @@ import {
 import { cn } from "../../lib/utils"
 import { FilterRow } from "./filter-row"
 import { DataTablePagination } from "./pagination"
-import { columnIdOf, getColumnLabel, isArrayValuedColumn } from "./utils"
+import {
+    columnIdOf,
+    getColumnLabel,
+    isArrayValuedColumn,
+} from "./utils"
 
 export const baseTableFeatures = tableFeatures({
     globalFilteringFeature,
@@ -94,11 +102,12 @@ export type DataTableColumnMeta = {
     filterVariant?: "date"
 }
 
-export type DataTableColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<
-    DataTableFeatures,
-    TData,
-    TValue
-> & { meta?: DataTableColumnMeta }
+export type DataTableColumnDef<
+    TData extends RowData,
+    TValue = unknown,
+> = ColumnDef<DataTableFeatures, TData, TValue> & {
+    meta?: DataTableColumnMeta
+}
 
 type DataTableProps<TData extends RowData> = {
     data: TData[]
@@ -116,7 +125,10 @@ type DataTableProps<TData extends RowData> = {
     "aria-label": string
     emptyMessage?: ReactNode
     searchPlaceholder?: string
-    bulkActions?: (selectedRows: TData[], clearSelection: () => void) => ReactNode
+    bulkActions?: (
+        selectedRows: TData[],
+        clearSelection: () => void
+    ) => ReactNode
     /** Set false to render just the table. Default true. */
     pagination?: boolean
     pageSizeOptions?: number[]
@@ -145,9 +157,12 @@ export function DataTable<TData extends RowData>({
 }: DataTableProps<TData>) {
     const [globalFilter, setGlobalFilter] = useState("")
     const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>({})
-    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const [columnFilters, setColumnFilters] =
+        useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] =
+        useState<ColumnVisibilityState>({})
+    const [rowSelection, setRowSelection] =
+        useState<RowSelectionState>({})
     const [columnsOpen, setColumnsOpen] = useState(false)
     const [filtersOpen, setFiltersOpen] = useState(false)
     const augmentedColumns = useMemo(
@@ -157,10 +172,16 @@ export function DataTable<TData extends RowData>({
                 const colId = columnIdOf(col)
                 if (!colId) return col
                 if (col.meta?.filterVariant === "date") {
-                    return { ...col, filterFn: filterFn_inDateRange }
+                    return {
+                        ...col,
+                        filterFn: filterFn_inDateRange,
+                    }
                 }
                 if (isArrayValuedColumn(data, colId)) {
-                    return { ...col, filterFn: filterFn_arrIncludesSome }
+                    return {
+                        ...col,
+                        filterFn: filterFn_arrIncludesSome,
+                    }
                 }
                 return col
             }),
@@ -173,7 +194,13 @@ export function DataTable<TData extends RowData>({
         columns: augmentedColumns,
         getRowId,
         enableRowSelection: true,
-        state: { globalFilter, sorting, columnFilters, columnVisibility, rowSelection },
+        state: {
+            globalFilter,
+            sorting,
+            columnFilters,
+            columnVisibility,
+            rowSelection,
+        },
         onGlobalFilterChange: setGlobalFilter,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -182,17 +209,29 @@ export function DataTable<TData extends RowData>({
         globalFilterFn: "auto",
     })
 
-    const toggleableColumns = table.getAllColumns().filter((c) => c.getCanHide())
-    const hiddenCount = toggleableColumns.filter((c) => !c.getIsVisible()).length
+    const toggleableColumns = table
+        .getAllColumns()
+        .filter((c) => c.getCanHide())
+    const hiddenCount = toggleableColumns.filter(
+        (c) => !c.getIsVisible()
+    ).length
 
     const skip = ["select", "actions"]
     const filterableColumns = table
         .getAllColumns()
-        .filter((c) => c.getCanFilter() && !skip.includes(c.id) && c.accessorFn !== undefined)
+        .filter(
+            (c) =>
+                c.getCanFilter() &&
+                !skip.includes(c.id) &&
+                c.accessorFn !== undefined
+        )
 
     const activeFilterCount = columnFilters.length
-    const selectedCount = Object.values(rowSelection).filter(Boolean).length
-    const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original)
+    const selectedCount =
+        Object.values(rowSelection).filter(Boolean).length
+    const selectedRows = table
+        .getSelectedRowModel()
+        .rows.map((r) => r.original)
     const clearSelection = () => setRowSelection({})
 
     const rows = table.getRowModel().rows
@@ -206,7 +245,9 @@ export function DataTable<TData extends RowData>({
                         placeholder={searchPlaceholder}
                         autoComplete="off"
                         value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        onChange={(e) =>
+                            setGlobalFilter(e.target.value)
+                        }
                     />
                     <InputGroupAddon align="inline-start">
                         <HugeiconsIcon icon={Search01Icon} />
@@ -215,7 +256,11 @@ export function DataTable<TData extends RowData>({
                         <Button
                             type="button"
                             size="xs"
-                            variant={columnsOpen ? "default" : "secondary"}
+                            variant={
+                                columnsOpen
+                                    ? "default"
+                                    : "secondary"
+                            }
                             onClick={() => {
                                 setColumnsOpen((o) => !o)
                                 setFiltersOpen(false)
@@ -234,14 +279,20 @@ export function DataTable<TData extends RowData>({
                                 icon={ChevronDownIcon}
                                 className={cn(
                                     "transition-transform duration-150",
-                                    columnsOpen && "rotate-180"
+                                    columnsOpen &&
+                                        "rotate-180"
                                 )}
                             />
                         </Button>
                         <Button
                             type="button"
                             size="xs"
-                            variant={activeFilterCount > 0 || filtersOpen ? "default" : "secondary"}
+                            variant={
+                                activeFilterCount > 0 ||
+                                filtersOpen
+                                    ? "default"
+                                    : "secondary"
+                            }
                             onClick={() => {
                                 setFiltersOpen((o) => !o)
                                 setColumnsOpen(false)
@@ -260,7 +311,8 @@ export function DataTable<TData extends RowData>({
                                 icon={ChevronDownIcon}
                                 className={cn(
                                     "transition-transform duration-150",
-                                    filtersOpen && "rotate-180"
+                                    filtersOpen &&
+                                        "rotate-180"
                                 )}
                             />
                         </Button>
@@ -277,7 +329,9 @@ export function DataTable<TData extends RowData>({
                                 type="button"
                                 variant="ghost"
                                 size="xs"
-                                onClick={() => table.resetColumnVisibility()}
+                                onClick={() =>
+                                    table.resetColumnVisibility()
+                                }
                                 className="text-muted-foreground hover:text-foreground"
                             >
                                 Show all
@@ -286,19 +340,30 @@ export function DataTable<TData extends RowData>({
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
                         {toggleableColumns.map((column) => {
-                            const visible = column.getIsVisible()
+                            const visible =
+                                column.getIsVisible()
                             return (
                                 <div
                                     key={column.id}
                                     className="flex cursor-pointer items-center gap-2"
-                                    onClick={() => column.toggleVisibility()}
+                                    onClick={() =>
+                                        column.toggleVisibility()
+                                    }
                                 >
                                     <Checkbox
-                                        aria-label={getColumnLabel(column)}
+                                        aria-label={getColumnLabel(
+                                            column
+                                        )}
                                         checked={visible}
-                                        onCheckedChange={() => column.toggleVisibility()}
+                                        onCheckedChange={() =>
+                                            column.toggleVisibility()
+                                        }
                                     />
-                                    <span className="text-xs">{getColumnLabel(column)}</span>
+                                    <span className="text-xs">
+                                        {getColumnLabel(
+                                            column
+                                        )}
+                                    </span>
                                 </div>
                             )
                         })}
@@ -315,31 +380,48 @@ export function DataTable<TData extends RowData>({
                                 type="button"
                                 variant="ghost"
                                 size="xs"
-                                onClick={() => setColumnFilters([])}
+                                onClick={() =>
+                                    setColumnFilters([])
+                                }
                                 className="text-muted-foreground hover:text-foreground"
                             >
-                                <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
+                                <HugeiconsIcon
+                                    icon={Cancel01Icon}
+                                    className="size-3"
+                                />
                                 Clear all
                             </Button>
                         )}
                     </div>
                     {filterableColumns.length === 0 ? (
-                        <p className="text-xs text-muted-foreground/60">No filterable columns.</p>
+                        <p className="text-xs text-muted-foreground/60">
+                            No filterable columns.
+                        </p>
                     ) : (
                         <div className="flex flex-col gap-3">
-                            {filterableColumns.map((column) => (
-                                <FilterRow
-                                    key={column.id}
-                                    column={column}
-                                    data={data}
-                                    skip={skip}
-                                    isArrayColumn={isArrayValuedColumn(data, column.id)}
-                                    isDateColumn={
-                                        (column.columnDef as { meta?: DataTableColumnMeta }).meta
-                                            ?.filterVariant === "date"
-                                    }
-                                />
-                            ))}
+                            {filterableColumns.map(
+                                (column) => (
+                                    <FilterRow
+                                        key={column.id}
+                                        column={column}
+                                        data={data}
+                                        skip={skip}
+                                        isArrayColumn={isArrayValuedColumn(
+                                            data,
+                                            column.id
+                                        )}
+                                        isDateColumn={
+                                            (
+                                                column.columnDef as {
+                                                    meta?: DataTableColumnMeta
+                                                }
+                                            ).meta
+                                                ?.filterVariant ===
+                                            "date"
+                                        }
+                                    />
+                                )
+                            )}
                         </div>
                     )}
                 </div>
@@ -347,9 +429,14 @@ export function DataTable<TData extends RowData>({
 
             {bulkActions && selectedCount > 0 && (
                 <div className="flex items-center gap-3 border border-dashed border-primary/30 bg-primary/5 px-4 py-2">
-                    <span className="text-xs font-medium">{selectedCount} selected</span>
+                    <span className="text-xs font-medium">
+                        {selectedCount} selected
+                    </span>
                     <div className="h-4 w-px bg-input/40" />
-                    {bulkActions(selectedRows, clearSelection)}
+                    {bulkActions(
+                        selectedRows,
+                        clearSelection
+                    )}
                     <Button
                         type="button"
                         variant="ghost"
@@ -362,79 +449,131 @@ export function DataTable<TData extends RowData>({
                 </div>
             )}
 
-            <Table aria-label={ariaLabel} className="divide-none!">
+            <Table
+                aria-label={ariaLabel}
+                className="divide-none!"
+            >
                 <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id}>
-                                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                                        <div
-                                            className="flex w-fit cursor-pointer items-center gap-1 text-muted-foreground hover:text-foreground"
-                                            onClick={header.column.getToggleSortingHandler()}
+                    {table
+                        .getHeaderGroups()
+                        .map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(
+                                    (header) => (
+                                        <TableHead
+                                            key={header.id}
                                         >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
+                                            {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                                                <div
+                                                    className="flex w-fit cursor-pointer items-center gap-1 text-muted-foreground hover:text-foreground"
+                                                    onClick={header.column.getToggleSortingHandler()}
+                                                >
+                                                    {flexRender(
+                                                        header
+                                                            .column
+                                                            .columnDef
+                                                            .header,
+                                                        header.getContext()
+                                                    )}
+                                                    <div className="flex flex-col">
+                                                        <HugeiconsIcon
+                                                            icon={
+                                                                ChevronUpIcon
+                                                            }
+                                                            className={cn(
+                                                                "size-3 opacity-20",
+                                                                header.column.getIsSorted() ===
+                                                                    "asc" &&
+                                                                    "opacity-100"
+                                                            )}
+                                                        />
+                                                        <HugeiconsIcon
+                                                            icon={
+                                                                ChevronDownIcon
+                                                            }
+                                                            className={cn(
+                                                                "-mt-1.5 size-3 opacity-20",
+                                                                header.column.getIsSorted() ===
+                                                                    "desc" &&
+                                                                    "opacity-100"
+                                                            )}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                flexRender(
+                                                    header
+                                                        .column
+                                                        .columnDef
+                                                        .header,
+                                                    header.getContext()
+                                                )
                                             )}
-                                            <div className="flex flex-col">
-                                                <HugeiconsIcon
-                                                    icon={ChevronUpIcon}
-                                                    className={cn(
-                                                        "size-3 opacity-20",
-                                                        header.column.getIsSorted() === "asc" &&
-                                                        "opacity-100"
-                                                    )}
-                                                />
-                                                <HugeiconsIcon
-                                                    icon={ChevronDownIcon}
-                                                    className={cn(
-                                                        "-mt-1.5 size-3 opacity-20",
-                                                        header.column.getIsSorted() === "desc" &&
-                                                        "opacity-100"
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        flexRender(header.column.columnDef.header, header.getContext())
-                                    )}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
+                                        </TableHead>
+                                    )
+                                )}
+                            </TableRow>
+                        ))}
                 </TableHeader>
                 <TableBody>
                     {rows.length ? (
                         rows.map((row) => (
                             <TableRow
                                 key={row.id}
-                                data-state={row.getIsSelected() ? "selected" : undefined}
+                                data-state={
+                                    row.getIsSelected()
+                                        ? "selected"
+                                        : undefined
+                                }
                                 onClick={() => {
-                                    if (!onSelectedRowsChange) return
+                                    if (!onSelectedRowsChange)
+                                        return
                                     row.toggleSelected()
-                                    onSelectedRowsChange(selectedRows)
+                                    onSelectedRowsChange(
+                                        selectedRows
+                                    )
                                 }}
                             >
-                                {row.getAllCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
+                                {row
+                                    .getAllCells()
+                                    .map((cell) => (
+                                        <TableCell
+                                            key={cell.id}
+                                        >
+                                            {flexRender(
+                                                cell.column
+                                                    .columnDef
+                                                    .cell,
+                                                cell.getContext()
+                                            )}
+                                        </TableCell>
+                                    ))}
                             </TableRow>
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columnCount} className="h-24 text-center">
+                            <TableCell
+                                colSpan={columnCount}
+                                className="h-24 text-center"
+                            >
                                 {emptyMessage}
                             </TableCell>
                         </TableRow>
                     )}
                 </TableBody>
-                {footer && <TableFooter>{footer(columnCount)}</TableFooter>}
+                {footer && (
+                    <TableFooter>
+                        {footer(columnCount)}
+                    </TableFooter>
+                )}
             </Table>
 
-            {pagination && <DataTablePagination table={table} pageSizeOptions={pageSizeOptions} />}
+            {pagination && (
+                <DataTablePagination
+                    table={table}
+                    pageSizeOptions={pageSizeOptions}
+                />
+            )}
         </div>
     )
 }

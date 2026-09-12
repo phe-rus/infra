@@ -9,11 +9,13 @@ type GeoInput = {
     region?: string
 }
 
-export async function logAuthEvent(input: GeoInput & {
-    path: string
-    outcome: AuthOutcome
-    email?: string
-}) {
+export async function logAuthEvent(
+    input: GeoInput & {
+        path: string
+        outcome: AuthOutcome
+        email?: string
+    }
+) {
     try {
         env.EA.writeDataPoint({
             blobs: [
@@ -33,11 +35,13 @@ export async function logAuthEvent(input: GeoInput & {
     } catch {}
 }
 
-export async function logManagementEvent(input: GeoInput & {
-    action: string
-    actorId: string
-    targetId?: string
-}) {
+export async function logManagementEvent(
+    input: GeoInput & {
+        action: string
+        actorId: string
+        targetId?: string
+    }
+) {
     try {
         env.EA.writeDataPoint({
             blobs: [

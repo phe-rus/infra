@@ -14,7 +14,9 @@ export function FieldCheckbox({ label }: { label: string }) {
                 checked={field.state.value}
                 onCheckedChange={field.handleChange}
             />
-            <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+            <FieldLabel htmlFor={field.name}>
+                {label}
+            </FieldLabel>
         </Field>
     )
 }

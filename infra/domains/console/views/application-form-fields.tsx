@@ -1,6 +1,9 @@
 import { useEffect } from "react"
 import { FieldGroup } from "@infra/ui/components/field"
-import { useSelector, withForm } from "@infra/ui/widgets/blocks"
+import {
+    useSelector,
+    withForm,
+} from "@infra/ui/widgets/blocks"
 import { FrameworkIcon } from "@/domains/console/views/framework-icon"
 import {
     CLIENT_TYPE_INFO,
@@ -49,14 +52,20 @@ export const ApplicationFormFields = withForm({
             form.store,
             (state) => state.values.application_type
         )
-        const confidentialityLocked = applicationType !== "web"
+        const confidentialityLocked =
+            applicationType !== "web"
 
         useEffect(() => {
             if (
                 confidentialityLocked &&
-                form.getFieldValue("token_endpoint_auth_method") !== "none"
+                form.getFieldValue(
+                    "token_endpoint_auth_method"
+                ) !== "none"
             ) {
-                form.setFieldValue("token_endpoint_auth_method", "none")
+                form.setFieldValue(
+                    "token_endpoint_auth_method",
+                    "none"
+                )
             }
         }, [confidentialityLocked, form])
 
@@ -103,7 +112,9 @@ export const ApplicationFormFields = withForm({
                                 (f) => f !== "other"
                             ).map((framework) => ({
                                 value: framework,
-                                label: FRAMEWORK_LABELS[framework],
+                                label: FRAMEWORK_LABELS[
+                                    framework
+                                ],
                                 icon: (
                                     <FrameworkIcon
                                         framework={framework}
@@ -127,10 +138,14 @@ export const ApplicationFormFields = withForm({
                                     ? "You can't change this later."
                                     : "This can't be edited after creation."
                             }
-                            options={CLIENT_TYPES.map((clientType) => ({
-                                value: clientType,
-                                ...CLIENT_TYPE_INFO[clientType],
-                            }))}
+                            options={CLIENT_TYPES.map(
+                                (clientType) => ({
+                                    value: clientType,
+                                    ...CLIENT_TYPE_INFO[
+                                        clientType
+                                    ],
+                                })
+                            )}
                         />
                     )}
                 />
@@ -151,7 +166,9 @@ export const ApplicationFormFields = withForm({
                             options={TOKEN_ENDPOINT_AUTH_METHODS.map(
                                 (method) => ({
                                     value: method,
-                                    ...TOKEN_ENDPOINT_AUTH_METHOD_INFO[method],
+                                    ...TOKEN_ENDPOINT_AUTH_METHOD_INFO[
+                                        method
+                                    ],
                                     disabled:
                                         confidentialityLocked &&
                                         method !== "none",

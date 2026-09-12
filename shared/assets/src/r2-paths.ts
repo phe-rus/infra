@@ -15,19 +15,26 @@ export function avatarKey(
     return `${avatarPrefix(userId)}avatar.${ext}`
 }
 
-export function fileKey(userId: string, filename: string): string {
+export function fileKey(
+    userId: string,
+    filename: string
+): string {
     return `${filesPrefix(userId)}${sanitizeFilename(filename)}`
 }
 
 export function sanitizeFilename(name: string): string {
-    const cleaned = name.replace(/[/\\]/g, "").replace(/^\.+/, "")
+    const cleaned = name
+        .replace(/[/\\]/g, "")
+        .replace(/^\.+/, "")
     return cleaned.slice(-200) || "file"
 }
 
 export function stripExtension(name: string): string {
     const withoutSlashes = sanitizeFilename(name)
     const dot = withoutSlashes.lastIndexOf(".")
-    return dot > 0 ? withoutSlashes.slice(0, dot) : withoutSlashes
+    return dot > 0
+        ? withoutSlashes.slice(0, dot)
+        : withoutSlashes
 }
 
 export async function listAllObjects(

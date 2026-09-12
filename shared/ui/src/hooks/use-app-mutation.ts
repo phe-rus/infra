@@ -1,5 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import type { QueryKey, UseMutationOptions } from "@tanstack/react-query"
+import {
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query"
+import type {
+    QueryKey,
+    UseMutationOptions,
+} from "@tanstack/react-query"
 import { t } from "@infra/ui/components/sonner"
 
 type OptimisticUpdate<TOptimisticData, TVariables> = {
@@ -12,29 +18,47 @@ type OptimisticUpdate<TOptimisticData, TVariables> = {
 }
 
 type MutationContext<TOptimisticData> =
-    | { previous: TOptimisticData | undefined; next: TOptimisticData }
+    | {
+          previous: TOptimisticData | undefined
+          next: TOptimisticData
+      }
     | undefined
 
-type AppMutationOptions<TData, TVariables, TOptimisticData> = Omit<
-    UseMutationOptions<
-        TData,
-        Error,
-        TVariables,
-        MutationContext<TOptimisticData>
-    >,
-    "onSuccess" | "onError" | "onMutate" | "onSettled"
-> & {
-    /** Query keys to invalidate once the mutation settles, win or lose. */
-    invalidates?: QueryKey[]
-    optimisticUpdate?: OptimisticUpdate<TOptimisticData, TVariables>
-    successMessage?: string | ((data: TData, variables: TVariables) => string)
-    successDescription?:
-        | string
-        | ((data: TData, variables: TVariables) => string | undefined)
-    errorMessage?: string
-    onSuccess?: (data: TData, variables: TVariables) => void
-    onError?: (error: Error, variables: TVariables) => void
-}
+type AppMutationOptions<TData, TVariables, TOptimisticData> =
+    Omit<
+        UseMutationOptions<
+            TData,
+            Error,
+            TVariables,
+            MutationContext<TOptimisticData>
+        >,
+        "onSuccess" | "onError" | "onMutate" | "onSettled"
+    > & {
+        /** Query keys to invalidate once the mutation settles, win or lose. */
+        invalidates?: QueryKey[]
+        optimisticUpdate?: OptimisticUpdate<
+            TOptimisticData,
+            TVariables
+        >
+        successMessage?:
+            | string
+            | ((data: TData, variables: TVariables) => string)
+        successDescription?:
+            | string
+            | ((
+                  data: TData,
+                  variables: TVariables
+              ) => string | undefined)
+        errorMessage?: string
+        onSuccess?: (
+            data: TData,
+            variables: TVariables
+        ) => void
+        onError?: (
+            error: Error,
+            variables: TVariables
+        ) => void
+    }
 
 // every domain mutation hook in both infra and www builds on this instead
 // of calling useMutation directly; optimisticUpdate's rollback only
@@ -66,7 +90,8 @@ export function useAppMutation<
             if (!optimisticUpdate) return undefined
             const { queryKey, updater } = optimisticUpdate
             await q.cancelQueries({ queryKey })
-            const previous = q.getQueryData<TOptimisticData>(queryKey)
+            const previous =
+                q.getQueryData<TOptimisticData>(queryKey)
             const next = updater(previous, variables)
             q.setQueryData<TOptimisticData>(queryKey, next)
             return { previous, next }
@@ -79,8 +104,12 @@ export function useAppMutation<
                         : successMessage,
                     {
                         description:
-                            typeof successDescription === "function"
-                                ? successDescription(data, variables)
+                            typeof successDescription ===
+                            "function"
+                                ? successDescription(
+                                      data,
+                                      variables
+                                  )
                                 : successDescription,
                     }
                 )
@@ -89,12 +118,17 @@ export function useAppMutation<
         },
         onError: (error, variables, context) => {
             if (optimisticUpdate && context) {
-                const current = q.getQueryData(optimisticUpdate.queryKey)
+                const current = q.getQueryData(
+                    optimisticUpdate.queryKey
+                )
                 // only roll back if nothing else has written to this key
                 // since our optimistic value landed, otherwise this would
                 // silently discard a concurrent mutation's newer change
                 if (current === context.next) {
-                    q.setQueryData(optimisticUpdate.queryKey, context.previous)
+                    q.setQueryData(
+                        optimisticUpdate.queryKey,
+                        context.previous
+                    )
                 }
             }
             t.error(errorMessage ?? "Something went wrong", {

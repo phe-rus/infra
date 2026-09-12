@@ -1,5 +1,9 @@
 import { useState } from "react"
-import type { ComponentProps, FC, PropsWithChildren } from "react"
+import type {
+    ComponentProps,
+    FC,
+    PropsWithChildren,
+} from "react"
 import { formatUtc } from "@infra/ui/lib/date"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { DrawerClose } from "@infra/ui/components/drawer"
@@ -8,18 +12,33 @@ import { useAppForm } from "@infra/ui/widgets/blocks"
 import { Button } from "@infra/ui/components/button"
 import { cn } from "@infra/ui/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Delete02Icon, Loading03Icon, PencilIcon } from "@hugeicons/core-free-icons"
+import {
+    Delete02Icon,
+    Loading03Icon,
+    PencilIcon,
+} from "@hugeicons/core-free-icons"
 import { z } from "zod"
 import type { PasskeysData } from "@/domains/security"
-import { useAddPasskey, useUpdatePasskey, useDeletePasskey } from "@/domains/security"
+import {
+    useAddPasskey,
+    useUpdatePasskey,
+    useDeletePasskey,
+} from "@/domains/security"
 
-type TriggerProps = Omit<ComponentProps<typeof Button>, "children" | "onClick">
+type TriggerProps = Omit<
+    ComponentProps<typeof Button>,
+    "children" | "onClick"
+>
 
 type ListProps = {
     data: PasskeysData
 }
 
-type RenameProps = PropsWithChildren<{ id: string; name: string }> & TriggerProps
+type RenameProps = PropsWithChildren<{
+    id: string
+    name: string
+}> &
+    TriggerProps
 
 const passkeyNameSchema = z.object({
     name: z.string().min(1, "Give this passkey a name"),
@@ -27,10 +46,18 @@ const passkeyNameSchema = z.object({
 
 const addPasskeySchema = z.object({
     name: z.string().min(1, "Give this passkey a name"),
-    authenticatorAttachment: z.enum(["platform", "cross-platform"]),
+    authenticatorAttachment: z.enum([
+        "platform",
+        "cross-platform",
+    ]),
 })
 
-const Rename: FC<RenameProps> = ({ id, name, children, ...props }) => {
+const Rename: FC<RenameProps> = ({
+    id,
+    name,
+    children,
+    ...props
+}) => {
     const [open, setOpen] = useState(false)
     const updateMutation = useUpdatePasskey()
 
@@ -51,7 +78,11 @@ const Rename: FC<RenameProps> = ({ id, name, children, ...props }) => {
 
     return (
         <>
-            <Button type="button" onClick={() => setOpen(true)} {...props}>
+            <Button
+                type="button"
+                onClick={() => setOpen(true)}
+                {...props}
+            >
                 {children}
             </Button>
 
@@ -66,10 +97,24 @@ const Rename: FC<RenameProps> = ({ id, name, children, ...props }) => {
                 }}
                 footer={
                     <>
-                        <Button type="submit" disabled={updateMutation.isPending}>
-                            {updateMutation.isPending ? "Saving…" : "Save"}
+                        <Button
+                            type="submit"
+                            disabled={
+                                updateMutation.isPending
+                            }
+                        >
+                            {updateMutation.isPending
+                                ? "Saving…"
+                                : "Save"}
                         </Button>
-                        <DrawerClose render={<Button type="button" variant="outline" />}>
+                        <DrawerClose
+                            render={
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                />
+                            }
+                        >
                             Cancel
                         </DrawerClose>
                     </>
@@ -80,7 +125,10 @@ const Rename: FC<RenameProps> = ({ id, name, children, ...props }) => {
                         <form.AppField
                             name="name"
                             children={(field) => (
-                                <field.input label="Name" placeholder="e.g. MacBook Touch ID" />
+                                <field.input
+                                    label="Name"
+                                    placeholder="e.g. MacBook Touch ID"
+                                />
                             )}
                         />
                     </FieldGroup>
@@ -90,19 +138,27 @@ const Rename: FC<RenameProps> = ({ id, name, children, ...props }) => {
     )
 }
 
-const Add: FC<PropsWithChildren<TriggerProps>> = ({ children, ...props }) => {
+const Add: FC<PropsWithChildren<TriggerProps>> = ({
+    children,
+    ...props
+}) => {
     const [open, setOpen] = useState(false)
     const addMutation = useAddPasskey()
 
     const form = useAppForm({
         // widens the literal "platform" to the schema's union type
-        defaultValues: { name: "", authenticatorAttachment: "platform" } as z.input<
-            typeof addPasskeySchema
-        >,
+        defaultValues: {
+            name: "",
+            authenticatorAttachment: "platform",
+        } as z.input<typeof addPasskeySchema>,
         validators: { onChange: addPasskeySchema },
         onSubmit: async ({ value }) => {
             await addMutation.mutateAsync(
-                { name: value.name, authenticatorAttachment: value.authenticatorAttachment },
+                {
+                    name: value.name,
+                    authenticatorAttachment:
+                        value.authenticatorAttachment,
+                },
                 {
                     onSuccess: () => {
                         setOpen(false)
@@ -115,7 +171,11 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({ children, ...props }) => {
 
     return (
         <>
-            <Button type="button" onClick={() => setOpen(true)} {...props}>
+            <Button
+                type="button"
+                onClick={() => setOpen(true)}
+                {...props}
+            >
                 {children}
             </Button>
 
@@ -130,10 +190,22 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({ children, ...props }) => {
                 }}
                 footer={
                     <>
-                        <Button type="submit" disabled={addMutation.isPending}>
-                            {addMutation.isPending ? "Waiting for passkey…" : "Continue"}
+                        <Button
+                            type="submit"
+                            disabled={addMutation.isPending}
+                        >
+                            {addMutation.isPending
+                                ? "Waiting for passkey…"
+                                : "Continue"}
                         </Button>
-                        <DrawerClose render={<Button type="button" variant="outline" />}>
+                        <DrawerClose
+                            render={
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                />
+                            }
+                        >
                             Cancel
                         </DrawerClose>
                     </>
@@ -144,7 +216,10 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({ children, ...props }) => {
                         <form.AppField
                             name="name"
                             children={(field) => (
-                                <field.input label="Name" placeholder="e.g. MacBook Touch ID" />
+                                <field.input
+                                    label="Name"
+                                    placeholder="e.g. MacBook Touch ID"
+                                />
                             )}
                         />
                         <form.AppField
@@ -178,10 +253,16 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({ children, ...props }) => {
 
 const List: FC<ListProps> = ({ data }) => {
     const deleteMutation = useDeletePasskey()
-    const [deletingId, setDeletingId] = useState<string | null>(null)
+    const [deletingId, setDeletingId] = useState<
+        string | null
+    >(null)
 
     if (data.length === 0) {
-        return <p className="text-sm text-muted-foreground">No passkeys yet</p>
+        return (
+            <p className="text-sm text-muted-foreground">
+                No passkeys yet
+            </p>
+        )
     }
 
     return (
@@ -193,49 +274,70 @@ const List: FC<ListProps> = ({ data }) => {
                         new Date(a.createdAt).getTime()
                 )
                 .map((passkey) => (
-                <div
-                    key={passkey.id}
-                    className={cn(
-                        "flex items-center justify-between gap-3",
-                        "rounded-md bg-accent p-3"
-                    )}
-                >
-                    <div className="flex flex-col">
-                        <p className="text-sm font-bold">{passkey.name || "Passkey"}</p>
-                        <p className="text-xs text-muted-foreground">
-                            Added {formatUtc(String(passkey.createdAt), "PPP")}
-                        </p>
+                    <div
+                        key={passkey.id}
+                        className={cn(
+                            "flex items-center justify-between gap-3",
+                            "rounded-md bg-accent p-3"
+                        )}
+                    >
+                        <div className="flex flex-col">
+                            <p className="text-sm font-bold">
+                                {passkey.name || "Passkey"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                Added{" "}
+                                {formatUtc(
+                                    String(passkey.createdAt),
+                                    "PPP"
+                                )}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Rename
+                                id={passkey.id}
+                                name={
+                                    passkey.name || "Passkey"
+                                }
+                                size="icon-xs"
+                                variant="secondary"
+                                className="rounded-full"
+                            >
+                                <HugeiconsIcon
+                                    icon={PencilIcon}
+                                />
+                            </Rename>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon-xs"
+                                className="rounded-full"
+                                disabled={
+                                    deleteMutation.isPending &&
+                                    deletingId === passkey.id
+                                }
+                                onClick={() => {
+                                    setDeletingId(passkey.id)
+                                    deleteMutation.mutate(
+                                        passkey.id
+                                    )
+                                }}
+                            >
+                                {deleteMutation.isPending &&
+                                deletingId === passkey.id ? (
+                                    <HugeiconsIcon
+                                        icon={Loading03Icon}
+                                        className="animate-spin"
+                                    />
+                                ) : (
+                                    <HugeiconsIcon
+                                        icon={Delete02Icon}
+                                    />
+                                )}
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Rename
-                            id={passkey.id}
-                            name={passkey.name || "Passkey"}
-                            size="icon-xs"
-                            variant="secondary"
-                            className="rounded-full"
-                        >
-                            <HugeiconsIcon icon={PencilIcon} />
-                        </Rename>
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon-xs"
-                            className="rounded-full"
-                            disabled={deleteMutation.isPending && deletingId === passkey.id}
-                            onClick={() => {
-                                setDeletingId(passkey.id)
-                                deleteMutation.mutate(passkey.id)
-                            }}
-                        >
-                            {deleteMutation.isPending && deletingId === passkey.id ? (
-                                <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />
-                            ) : (
-                                <HugeiconsIcon icon={Delete02Icon} />
-                            )}
-                        </Button>
-                    </div>
-                </div>
-            ))}
+                ))}
         </div>
     )
 }

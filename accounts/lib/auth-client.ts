@@ -15,7 +15,9 @@ export function hosturl(): string {
     if (import.meta.env.VITE_INFRA_URL) {
         return import.meta.env.VITE_INFRA_URL
     }
-    return process.env.VITE_INFRA_URL || "http://localhost:3000"
+    return (
+        process.env.VITE_INFRA_URL || "http://localhost:3000"
+    )
 }
 
 export function resolveCdnUrl(

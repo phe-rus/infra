@@ -102,7 +102,9 @@ type RewriterElement = {
     remove(): unknown
 }
 
-export async function sanitizeSvg(svg: string): Promise<string> {
+export async function sanitizeSvg(
+    svg: string
+): Promise<string> {
     const response = new HTMLRewriter()
         .onDocument({
             comments(comment) {
@@ -112,7 +114,8 @@ export async function sanitizeSvg(svg: string): Promise<string> {
         .on("*", {
             element(elIn) {
                 const el = elIn as unknown as RewriterElement
-                const canonicalTag = CANONICAL_TAGS[el.tagName.toLowerCase()]
+                const canonicalTag =
+                    CANONICAL_TAGS[el.tagName.toLowerCase()]
                 if (!canonicalTag) {
                     el.remove()
                     return
@@ -120,7 +123,11 @@ export async function sanitizeSvg(svg: string): Promise<string> {
                 el.tagName = canonicalTag
 
                 for (const [name] of [...el.attributes]) {
-                    if (!ALLOWED_ATTRIBUTES.has(name.toLowerCase())) {
+                    if (
+                        !ALLOWED_ATTRIBUTES.has(
+                            name.toLowerCase()
+                        )
+                    ) {
                         el.removeAttribute(name)
                     }
                 }
@@ -128,7 +135,10 @@ export async function sanitizeSvg(svg: string): Promise<string> {
         })
         .transform(new Response(svg))
     let html = await response.text()
-    for (const [pattern, replacement] of ATTRIBUTE_CASING_FIXUPS) {
+    for (const [
+        pattern,
+        replacement,
+    ] of ATTRIBUTE_CASING_FIXUPS) {
         html = html.replace(pattern, replacement)
     }
     return html

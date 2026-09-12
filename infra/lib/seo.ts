@@ -6,13 +6,13 @@ type seoProps = {
     keywords?: string[]
 } & {
     type?:
-    | "website"
-    | "article"
-    | "video.other"
-    | "book"
-    | "game"
-    | "article:section"
-    | "article:tag"
+        | "website"
+        | "article"
+        | "video.other"
+        | "book"
+        | "game"
+        | "article:section"
+        | "article:tag"
 }
 export const seo = ({
     siteName = "Infra",
@@ -25,26 +25,52 @@ export const seo = ({
     const tags = [
         { title },
         { name: "robots", content: "noindex, nofollow" },
-        ...(description ? [{ name: "description", content: description }] : []),
-        ...(keywords ? [{ name: "keywords", content: keywords.join(", ") }] : []),
+        ...(description
+            ? [{ name: "description", content: description }]
+            : []),
+        ...(keywords
+            ? [
+                  {
+                      name: "keywords",
+                      content: keywords.join(", "),
+                  },
+              ]
+            : []),
 
         // OG tags
         { name: "og:type", content: type },
         { name: "og:title", content: title },
-        ...(description ? [{ name: "og:description", content: description }] : []),
+        ...(description
+            ? [
+                  {
+                      name: "og:description",
+                      content: description,
+                  },
+              ]
+            : []),
         { name: "og:site_name", content: siteName },
 
         // Twitter card tags
         { name: "twitter:title", content: title },
-        ...(description ? [{ name: "twitter:description", content: description }] : []),
+        ...(description
+            ? [
+                  {
+                      name: "twitter:description",
+                      content: description,
+                  },
+              ]
+            : []),
         { name: "twitter:creator", content: "@la_nniina" },
         { name: "twitter:site", content: "@la_nniina" },
         ...(image
             ? [
-                { name: "twitter:image", content: image },
-                { name: "twitter:card", content: "summary_large_image" },
-                { name: "og:image", content: image },
-            ]
+                  { name: "twitter:image", content: image },
+                  {
+                      name: "twitter:card",
+                      content: "summary_large_image",
+                  },
+                  { name: "og:image", content: image },
+              ]
             : []),
     ]
 

@@ -1,4 +1,8 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router"
+import {
+    createFileRoute,
+    Link,
+    redirect,
+} from "@tanstack/react-router"
 import { useState } from "react"
 import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
@@ -6,17 +10,19 @@ import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { authClient } from "@/lib/auth-client"
 
-export const Route = createFileRoute("/_auth/create-account")({
-    loader: async ({ context: { session } }) => {
-        if (session) {
-            throw redirect({
-                to: "/",
-                replace: true,
-            })
-        }
-    },
-    component: RouteComponent,
-})
+export const Route = createFileRoute("/_auth/create-account")(
+    {
+        loader: async ({ context: { session } }) => {
+            if (session) {
+                throw redirect({
+                    to: "/",
+                    replace: true,
+                })
+            }
+        },
+        component: RouteComponent,
+    }
+)
 
 const createAccountSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -29,7 +35,8 @@ const createAccountSchema = z.object({
 
 function RouteComponent() {
     const [error, setError] = useState<string | null>(null)
-    const [needsVerification, setNeedsVerification] = useState(false)
+    const [needsVerification, setNeedsVerification] =
+        useState(false)
 
     const form = useAppForm({
         defaultValues: {
@@ -51,7 +58,8 @@ function RouteComponent() {
                 })
             if (signUpError) {
                 setError(
-                    signUpError.message ?? "Unable to create account"
+                    signUpError.message ??
+                        "Unable to create account"
                 )
                 return
             }

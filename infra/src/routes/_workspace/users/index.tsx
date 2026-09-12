@@ -4,7 +4,11 @@ import {
     useRemoveUser,
     usersOptions,
 } from "@/domains/users"
-import { ListUsers, CreateUser, GetUserDetail } from "@/domains/users"
+import {
+    ListUsers,
+    CreateUser,
+    GetUserDetail,
+} from "@/domains/users"
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "@infra/ui/components/button"
 import { ViewController } from "@infra/ui/widgets/view-controller"
@@ -12,7 +16,10 @@ import { useState } from "react"
 
 export const Route = createFileRoute("/_workspace/users/")({
     loader: async ({ context: { q } }) => {
-        await q.query({ ...usersOptions(), staleTime: 'static' })
+        await q.query({
+            ...usersOptions(),
+            staleTime: "static",
+        })
     },
     component: RouteComponent,
 })
@@ -26,7 +33,9 @@ function RouteComponent() {
     const { mutateAsync: removeUser } = useRemoveUser()
 
     const [drawerOpen, setDrawerOpen] = useState(false)
-    const [viewUserId, setViewUserId] = useState<string | null>(null)
+    const [viewUserId, setViewUserId] = useState<
+        string | null
+    >(null)
 
     return (
         <ViewController
@@ -38,7 +47,9 @@ function RouteComponent() {
                         <Button
                             size="sm"
                             type="button"
-                            onClick={() => setDrawerOpen(true)}
+                            onClick={() =>
+                                setDrawerOpen(true)
+                            }
                         >
                             Add user
                         </Button>
@@ -51,12 +62,19 @@ function RouteComponent() {
                 currentUserId={currentUserId}
                 onView={setViewUserId}
                 onSetRole={(userId, role) =>
-                    void setUserRole({ data: { userId, role } })
+                    void setUserRole({
+                        data: { userId, role },
+                    })
                 }
-                onRemove={(userId) => void removeUser({ data: { userId } })}
+                onRemove={(userId) =>
+                    void removeUser({ data: { userId } })
+                }
             />
 
-            <CreateUser open={drawerOpen} onOpenChange={setDrawerOpen} />
+            <CreateUser
+                open={drawerOpen}
+                onOpenChange={setDrawerOpen}
+            />
 
             <GetUserDetail
                 userId={viewUserId}

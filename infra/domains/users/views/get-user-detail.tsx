@@ -32,7 +32,8 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
     onClose,
     currentUserId,
 }) => {
-    const { data: viewUser, isLoading } = useUserDetail(userId)
+    const { data: viewUser, isLoading } =
+        useUserDetail(userId)
     const isViewingSelf = userId === currentUserId
     const [tab, setTab] = useState("overview")
 
@@ -44,7 +45,12 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
             description={viewUser?.user.email}
             footer={
                 <DrawerClose
-                    render={<Button type="button" variant="outline" />}
+                    render={
+                        <Button
+                            type="button"
+                            variant="outline"
+                        />
+                    }
                 >
                     Close
                 </DrawerClose>
@@ -58,7 +64,10 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
 
             {viewUser && (
                 <Tabs value={tab} onValueChange={setTab}>
-                    <TabsList variant="line" className="px-0! gap-1!">
+                    <TabsList
+                        variant="line"
+                        className="px-0! gap-1!"
+                    >
                         <TabsTrigger
                             value="overview"
                             className="text-xs! px-0!"
@@ -86,7 +95,8 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                         <section className="flex flex-wrap gap-2">
                             <Badge
                                 variant={
-                                    viewUser.user.role === "user"
+                                    viewUser.user.role ===
+                                    "user"
                                         ? "outline"
                                         : "secondary"
                                 }
@@ -95,7 +105,8 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                             </Badge>
                             <Badge
                                 variant={
-                                    viewUser.user.emailVerified
+                                    viewUser.user
+                                        .emailVerified
                                         ? "outline"
                                         : "secondary"
                                 }
@@ -117,12 +128,14 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                             </Badge>
                             <Badge
                                 variant={
-                                    viewUser.user.twoFactorEnabled
+                                    viewUser.user
+                                        .twoFactorEnabled
                                         ? "outline"
                                         : "secondary"
                                 }
                             >
-                                {viewUser.user.twoFactorEnabled
+                                {viewUser.user
+                                    .twoFactorEnabled
                                     ? "2FA on"
                                     : "2FA off"}
                             </Badge>
@@ -158,16 +171,21 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                         />
 
                         <Separator />
-                        <SetUserPassword userId={viewUser.user.id} />
+                        <SetUserPassword
+                            userId={viewUser.user.id}
+                        />
 
                         {viewUser.user.twoFactorEnabled && (
                             <>
                                 <Separator />
-                                <DisableTwoFactor viewUser={viewUser} />
+                                <DisableTwoFactor
+                                    viewUser={viewUser}
+                                />
                             </>
                         )}
 
-                        {(!isViewingSelf || import.meta.env.DEV) && (
+                        {(!isViewingSelf ||
+                            import.meta.env.DEV) && (
                             <>
                                 <Separator />
                                 <ImpersonateUser
@@ -183,16 +201,21 @@ export const GetUserDetail: FC<GetUserDetailProps> = ({
                     >
                         <UserAccounts viewUser={viewUser} />
 
-                        {(!isViewingSelf || import.meta.env.DEV) && (
+                        {(!isViewingSelf ||
+                            import.meta.env.DEV) && (
                             <>
                                 <Separator />
-                                <BanUser viewUser={viewUser} />
+                                <BanUser
+                                    viewUser={viewUser}
+                                />
                             </>
                         )}
                     </TabsContent>
 
                     <TabsContent value="sessions">
-                        <RevokeUserSessions viewUser={viewUser} />
+                        <RevokeUserSessions
+                            viewUser={viewUser}
+                        />
                     </TabsContent>
                 </Tabs>
             )}

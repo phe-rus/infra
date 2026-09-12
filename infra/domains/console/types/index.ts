@@ -65,7 +65,10 @@ export const GRANT_TYPES = [
 ] as const
 export type GrantType = (typeof GRANT_TYPES)[number]
 
-export const GRANT_TYPE_OPTIONS: { label: string; value: GrantType }[] = [
+export const GRANT_TYPE_OPTIONS: {
+    label: string
+    value: GrantType
+}[] = [
     {
         label: "Authorization code — user login flows",
         value: "authorization_code",
@@ -74,7 +77,10 @@ export const GRANT_TYPE_OPTIONS: { label: string; value: GrantType }[] = [
         label: "Client credentials — machine-to-machine",
         value: "client_credentials",
     },
-    { label: "Refresh token — extend sessions", value: "refresh_token" },
+    {
+        label: "Refresh token — extend sessions",
+        value: "refresh_token",
+    },
 ]
 
 // matches the scopes configured on the oauthProvider plugin (auth/auth.ts)
@@ -86,12 +92,13 @@ export const SCOPES = [
 ] as const
 export type Scope = (typeof SCOPES)[number]
 
-export const SCOPE_OPTIONS: { label: string; value: Scope }[] = SCOPES.map(
-    (s) => ({
-        label: s,
-        value: s,
-    })
-)
+export const SCOPE_OPTIONS: {
+    label: string
+    value: Scope
+}[] = SCOPES.map((s) => ({
+    label: s,
+    value: s,
+}))
 
 export const CREATE_CLIENT_ID = "create-oauth2"
 
@@ -127,7 +134,9 @@ export const FRAMEWORK_LABELS: Record<Framework, string> = {
 // filled in for real
 export const PENDING_REDIRECT_URI = "http://127.0.0.1/pending"
 
-export const appIdSchema = z.object({ clientId: z.string().min(1) })
+export const appIdSchema = z.object({
+    clientId: z.string().min(1),
+})
 
 export const setAppActiveSchema = z.object({
     clientId: z.string().min(1),
@@ -149,7 +158,9 @@ export const appFormSchema = z
         logo_uri: z.string().optional(),
         framework: z.enum(FRAMEWORKS).optional(),
         application_type: z.enum(CLIENT_TYPES),
-        token_endpoint_auth_method: z.enum(TOKEN_ENDPOINT_AUTH_METHODS),
+        token_endpoint_auth_method: z.enum(
+            TOKEN_ENDPOINT_AUTH_METHODS
+        ),
         redirect_uris: z.string().optional(),
         post_logout_redirect_uris: z.string().optional(),
         scope: z.array(z.enum(SCOPES)),
@@ -179,13 +190,18 @@ export const createAppSchema = z.object({
     logo_uri: z.url().optional(),
     framework: z.enum(FRAMEWORKS).optional(),
     application_type: z.enum(CLIENT_TYPES),
-    token_endpoint_auth_method: z.enum(TOKEN_ENDPOINT_AUTH_METHODS),
+    token_endpoint_auth_method: z.enum(
+        TOKEN_ENDPOINT_AUTH_METHODS
+    ),
     // no .min(1) here, unlike updateAppSchema below: the create form lets
     // redirect_uris come through empty on purpose (createApp's own handler
     // falls back to PENDING_REDIRECT_URI when it does), so requiring at
     // least one here would reject the exact input that fallback exists for
     redirect_uris: z.array(SafeUrlSchema).optional(),
-    post_logout_redirect_uris: z.array(SafeUrlSchema).min(1).optional(),
+    post_logout_redirect_uris: z
+        .array(SafeUrlSchema)
+        .min(1)
+        .optional(),
     scope: z.array(z.enum(SCOPES)),
     grant_types: z.array(z.enum(GRANT_TYPES)),
     require_pkce: z.boolean(),
@@ -205,7 +221,10 @@ export const updateAppSchema = z.object({
     logo_uri: z.url().optional(),
     framework: z.enum(FRAMEWORKS).optional(),
     redirect_uris: z.array(SafeUrlSchema).min(1).optional(),
-    post_logout_redirect_uris: z.array(SafeUrlSchema).min(1).optional(),
+    post_logout_redirect_uris: z
+        .array(SafeUrlSchema)
+        .min(1)
+        .optional(),
     scope: z.array(z.enum(SCOPES)).optional(),
     grant_types: z.array(z.enum(GRANT_TYPES)).optional(),
     skip_consent: z.boolean().optional(),

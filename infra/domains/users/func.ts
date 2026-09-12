@@ -1,6 +1,12 @@
-import type { SessionWithImpersonatedBy, UserWithRole } from "better-auth/plugins/admin"
+import type {
+    SessionWithImpersonatedBy,
+    UserWithRole,
+} from "better-auth/plugins/admin"
 import { getRequestHeaders } from "@tanstack/react-start/server"
-import { AdminMiddleware, SessionMiddleware } from "@/middleware"
+import {
+    AdminMiddleware,
+    SessionMiddleware,
+} from "@/middleware"
 import { createServerFn } from "@tanstack/react-start"
 import { env, waitUntil } from "cloudflare:workers"
 import { logManagementEvent } from "@/lib/analytics"
@@ -54,25 +60,34 @@ export const getUserDetail = createServerFn({ method: "GET" })
     .validator(userIdSchema)
     .handler(async ({ data }) => {
         const headers = getRequestHeaders()
-        const [user, { sessions }, { accounts }] = await Promise.all([
-            auth.api.getUser({ headers, query: { id: data.userId } }),
-            auth.api.listUserSessions({
-                headers,
-                body: { userId: data.userId },
-            }),
-            auth.api.adminListAccounts({
-                headers,
-                query: { userId: data.userId },
-            }),
-        ])
+        const [user, { sessions }, { accounts }] =
+            await Promise.all([
+                auth.api.getUser({
+                    headers,
+                    query: { id: data.userId },
+                }),
+                auth.api.listUserSessions({
+                    headers,
+                    body: { userId: data.userId },
+                }),
+                auth.api.adminListAccounts({
+                    headers,
+                    query: { userId: data.userId },
+                }),
+            ])
         return {
             user: user as ListedUser,
-            sessions, accounts
+            sessions,
+            accounts,
         }
     })
 
-export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>
-export type UsersListData = Awaited<ReturnType<typeof listUsers>>
+export type UserDetail = Awaited<
+    ReturnType<typeof getUserDetail>
+>
+export type UsersListData = Awaited<
+    ReturnType<typeof listUsers>
+>
 
 export const createUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
@@ -99,7 +114,7 @@ export const createUser = createServerFn({ method: "POST" })
                     headers,
                     body: { email: data.email },
                 })
-                .catch(() => { })
+                .catch(() => {})
         }
 
         return user
@@ -110,7 +125,9 @@ export const removeUser = createServerFn({ method: "POST" })
     .validator(userIdSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
-            throw new Error("You can't remove your own account")
+            throw new Error(
+                "You can't remove your own account"
+            )
         }
         const headers = getRequestHeaders()
         const { headers: responseHeaders, ...result } =
@@ -148,7 +165,9 @@ export const updateUser = createServerFn({ method: "POST" })
         return user
     })
 
-export const uploadUserImage = createServerFn({ method: "POST" })
+export const uploadUserImage = createServerFn({
+    method: "POST",
+})
     .validator((data: unknown) => data as FormData)
     .handler(async (): Promise<{ url: string }> => {
         throw new Error(
@@ -161,7 +180,9 @@ export const setUserRole = createServerFn({ method: "POST" })
     .validator(setUserRoleSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
-            throw new Error("You can't change your own role here")
+            throw new Error(
+                "You can't change your own role here"
+            )
         }
         const headers = getRequestHeaders()
         const {
@@ -179,7 +200,9 @@ export const setUserRole = createServerFn({ method: "POST" })
         return user
     })
 
-export const setUserPassword = createServerFn({ method: "POST" })
+export const setUserPassword = createServerFn({
+    method: "POST",
+})
     .middleware([AdminMiddleware])
     .validator(setUserPasswordSchema)
     .handler(async ({ data }) => {
@@ -197,29 +220,38 @@ export const setUserPassword = createServerFn({ method: "POST" })
         return result
     })
 
-export const disableUserTwoFactor = createServerFn({ method: "POST" })
+export const disableUserTwoFactor = createServerFn({
+    method: "POST",
+})
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
-    .handler(async ({ data, context: { sessions } }): Promise<{ success: true }> => {
-        const ctx = await auth.$context
-        await ctx.adapter.update({
-            model: "user",
-            where: [{ field: "id", value: data.userId }],
-            update: { twoFactorEnabled: false },
-        })
-        await ctx.adapter.deleteMany({
-            model: "twoFactor",
-            where: [{ field: "userId", value: data.userId }],
-        })
-        waitUntil(
-            logManagementEvent({
-                action: "user.disable-two-factor",
-                actorId: sessions.user.id,
-                targetId: data.userId,
+    .handler(
+        async ({
+            data,
+            context: { sessions },
+        }): Promise<{ success: true }> => {
+            const ctx = await auth.$context
+            await ctx.adapter.update({
+                model: "user",
+                where: [{ field: "id", value: data.userId }],
+                update: { twoFactorEnabled: false },
             })
-        )
-        return { success: true }
-    })
+            await ctx.adapter.deleteMany({
+                model: "twoFactor",
+                where: [
+                    { field: "userId", value: data.userId },
+                ],
+            })
+            waitUntil(
+                logManagementEvent({
+                    action: "user.disable-two-factor",
+                    actorId: sessions.user.id,
+                    targetId: data.userId,
+                })
+            )
+            return { success: true }
+        }
+    )
 
 export const banUser = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
@@ -262,7 +294,9 @@ export const unbanUser = createServerFn({ method: "POST" })
         return user
     })
 
-export const revokeUserSession = createServerFn({ method: "POST" })
+export const revokeUserSession = createServerFn({
+    method: "POST",
+})
     .middleware([AdminMiddleware])
     .validator(revokeUserSessionSchema)
     .handler(async ({ data }) => {
@@ -279,7 +313,9 @@ export const revokeUserSession = createServerFn({ method: "POST" })
         return result
     })
 
-export const revokeUserSessions = createServerFn({ method: "POST" })
+export const revokeUserSessions = createServerFn({
+    method: "POST",
+})
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data }) => {
@@ -296,12 +332,16 @@ export const revokeUserSessions = createServerFn({ method: "POST" })
         return result
     })
 
-export const impersonateUser = createServerFn({ method: "POST" })
+export const impersonateUser = createServerFn({
+    method: "POST",
+})
     .middleware([AdminMiddleware])
     .validator(userIdSchema)
     .handler(async ({ data, context: { sessions } }) => {
         if (data.userId === sessions.user.id) {
-            throw new Error("You can't impersonate your own account")
+            throw new Error(
+                "You can't impersonate your own account"
+            )
         }
         const headers = getRequestHeaders()
         const { headers: responseHeaders } =
@@ -325,63 +365,88 @@ export const stopImpersonating = createServerFn({
     forwardAuthHeaders(responseHeaders)
 })
 
-export const uploadOwnAvatar = createServerFn({ method: "POST" })
+export const uploadOwnAvatar = createServerFn({
+    method: "POST",
+})
     .middleware([SessionMiddleware])
     .validator((data: unknown) => data as FormData)
-    .handler(async ({ data, context: { sessions } }): Promise<{ url: string }> => {
-        const file = data.get("file")
-        if (!(file instanceof File)) {
-            throw new Error("No file provided")
-        }
-        if (file.size > MAX_FILE_BYTES) {
-            throw new Error(`File too large, max ${MAX_FILE_BYTES} bytes`)
-        }
-
-        const bytes = new Uint8Array(await file.arrayBuffer())
-        const ext = sniffExtension(bytes)
-        if (!ext) {
-            throw new Error("Unrecognized or disallowed file type")
-        }
-        if (!isImageExtension(ext)) {
-            throw new Error("Avatar must be an image")
-        }
-        const contentType = ALLOWED_TYPES[ext]
-        const finalBytes =
-            ext === "svg"
-                ? new TextEncoder().encode(
-                    await sanitizeSvg(new TextDecoder().decode(bytes))
+    .handler(
+        async ({
+            data,
+            context: { sessions },
+        }): Promise<{ url: string }> => {
+            const file = data.get("file")
+            if (!(file instanceof File)) {
+                throw new Error("No file provided")
+            }
+            if (file.size > MAX_FILE_BYTES) {
+                throw new Error(
+                    `File too large, max ${MAX_FILE_BYTES} bytes`
                 )
-                : bytes
+            }
 
-        if (!sessions) throw new Error("Not authenticated")
-        const userId = sessions.user.id
-        const [usage, existingAvatarObjects] = await Promise.all([
-            getUserUsageBytes(env.R2, userId),
-            listAllObjects(env.R2, avatarPrefix(userId)),
-        ])
-        const existingAvatarSize = existingAvatarObjects.reduce(
-            (sum, obj) => sum + obj.size,
-            0
-        )
-        const projectedUsage =
-            usage - existingAvatarSize + finalBytes.byteLength
-        if (projectedUsage > MAX_USER_QUOTA_BYTES) {
-            throw new Error("Storage quota exceeded")
+            const bytes = new Uint8Array(
+                await file.arrayBuffer()
+            )
+            const ext = sniffExtension(bytes)
+            if (!ext) {
+                throw new Error(
+                    "Unrecognized or disallowed file type"
+                )
+            }
+            if (!isImageExtension(ext)) {
+                throw new Error("Avatar must be an image")
+            }
+            const contentType = ALLOWED_TYPES[ext]
+            const finalBytes =
+                ext === "svg"
+                    ? new TextEncoder().encode(
+                          await sanitizeSvg(
+                              new TextDecoder().decode(bytes)
+                          )
+                      )
+                    : bytes
+
+            if (!sessions)
+                throw new Error("Not authenticated")
+            const userId = sessions.user.id
+            const [usage, existingAvatarObjects] =
+                await Promise.all([
+                    getUserUsageBytes(env.R2, userId),
+                    listAllObjects(
+                        env.R2,
+                        avatarPrefix(userId)
+                    ),
+                ])
+            const existingAvatarSize =
+                existingAvatarObjects.reduce(
+                    (sum, obj) => sum + obj.size,
+                    0
+                )
+            const projectedUsage =
+                usage -
+                existingAvatarSize +
+                finalBytes.byteLength
+            if (projectedUsage > MAX_USER_QUOTA_BYTES) {
+                throw new Error("Storage quota exceeded")
+            }
+
+            for (const obj of existingAvatarObjects) {
+                await env.R2.delete(obj.key)
+            }
+            const key = avatarKey(userId, ext)
+            await env.R2.put(key, finalBytes, {
+                httpMetadata: { contentType },
+            })
+
+            const path = cdnPath(key, Date.now())
+            const ctx = await auth.$context
+            await ctx.adapter.update({
+                model: "user",
+                where: [{ field: "id", value: userId }],
+                update: { image: path },
+            })
+
+            return { url: path }
         }
-
-        for (const obj of existingAvatarObjects) {
-            await env.R2.delete(obj.key)
-        }
-        const key = avatarKey(userId, ext)
-        await env.R2.put(key, finalBytes, { httpMetadata: { contentType } })
-
-        const path = cdnPath(key, Date.now())
-        const ctx = await auth.$context
-        await ctx.adapter.update({
-            model: "user",
-            where: [{ field: "id", value: userId }],
-            update: { image: path },
-        })
-
-        return { url: path }
-    })
+    )

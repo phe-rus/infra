@@ -1,22 +1,22 @@
 export const COLORS = {
-  light: {
-    bg: "#f4f4f0",
-    card: "#ffffff",
-    border: "#e8e8e3",
-    text: "#0c0c09",
-    muted: "#7c7c67",
-    buttonBg: "#1d1d16",
-    buttonText: "#ffffff",
-  },
-  dark: {
-    bg: "#0c0c09",
-    card: "#1d1d16",
-    border: "#33332a",
-    text: "#fbfbf9",
-    muted: "#abab9c",
-    buttonBg: "#e8e8e3",
-    buttonText: "#0c0c09",
-  },
+    light: {
+        bg: "#f4f4f0",
+        card: "#ffffff",
+        border: "#e8e8e3",
+        text: "#0c0c09",
+        muted: "#7c7c67",
+        buttonBg: "#1d1d16",
+        buttonText: "#ffffff",
+    },
+    dark: {
+        bg: "#0c0c09",
+        card: "#1d1d16",
+        border: "#33332a",
+        text: "#fbfbf9",
+        muted: "#abab9c",
+        buttonBg: "#e8e8e3",
+        buttonText: "#0c0c09",
+    },
 }
 
 const COLOR_SCHEME_HEAD = `<meta charset="utf-8" />
@@ -25,7 +25,7 @@ const COLOR_SCHEME_HEAD = `<meta charset="utf-8" />
     <meta name="supported-color-schemes" content="light dark" />`
 
 function colorStyleBlock(): string {
-  return `<style>
+    return `<style>
       body, .bg { background-color: ${COLORS.light.bg}; }
       .card { background-color: ${COLORS.light.card}; border-color: ${COLORS.light.border} !important; }
       .text { color: ${COLORS.light.text} !important; }
@@ -44,11 +44,11 @@ function colorStyleBlock(): string {
 }
 
 export function layout(
-  appName: string,
-  cardContent: string,
-  footerText: string
+    appName: string,
+    cardContent: string,
+    footerText: string
 ): string {
-  return `<!doctype html>
+    return `<!doctype html>
 <html>
   <head>
     ${COLOR_SCHEME_HEAD}
@@ -84,21 +84,25 @@ export function layout(
 </html>`
 }
 
-export function tableRow(label: string, value: string, valueColor = COLORS.light.text): string {
-  return `<tr>
+export function tableRow(
+    label: string,
+    value: string,
+    valueColor = COLORS.light.text
+): string {
+    return `<tr>
       <td class="muted" style="padding:6px 0;font-size:13px;color:${COLORS.light.muted};">${label}</td>
       <td class="text" align="right" style="padding:6px 0;font-size:13px;color:${valueColor};">${value}</td>
     </tr>`
 }
 
 function baseTemplate(
-  appName: string,
-  heading: string,
-  body: string,
-  ctaLabel: string,
-  ctaUrl: string
+    appName: string,
+    heading: string,
+    body: string,
+    ctaLabel: string,
+    ctaUrl: string
 ): string {
-  const cardContent = `<tr>
+    const cardContent = `<tr>
                     <td style="padding:28px 28px 0 28px;">
                       <h1 class="text" style="margin:0;font-size:18px;line-height:1.4;color:${COLORS.light.text};font-weight:600;">${heading}</h1>
                     </td>
@@ -122,51 +126,51 @@ function baseTemplate(
                     </td>
                   </tr>`
 
-  return layout(
-    appName,
-    cardContent,
-    "If you didn't request this, you can safely ignore this email."
-  )
+    return layout(
+        appName,
+        cardContent,
+        "If you didn't request this, you can safely ignore this email."
+    )
 }
 
 export function verificationEmailHtml(
-  appName: string,
-  name: string,
-  url: string
+    appName: string,
+    name: string,
+    url: string
 ): string {
-  return baseTemplate(
-    appName,
-    "Verify your email",
-    `Hi ${name}, confirm your email address to finish setting up your ${appName} account.`,
-    "Verify email",
-    url
-  )
+    return baseTemplate(
+        appName,
+        "Verify your email",
+        `Hi ${name}, confirm your email address to finish setting up your ${appName} account.`,
+        "Verify email",
+        url
+    )
 }
 
 export function resetPasswordEmailHtml(
-  appName: string,
-  name: string,
-  url: string
+    appName: string,
+    name: string,
+    url: string
 ): string {
-  return baseTemplate(
-    appName,
-    "Reset your password",
-    `Hi ${name}, we received a request to reset your ${appName} password. This link expires in 1 hour.`,
-    "Reset password",
-    url
-  )
+    return baseTemplate(
+        appName,
+        "Reset your password",
+        `Hi ${name}, we received a request to reset your ${appName} password. This link expires in 1 hour.`,
+        "Reset password",
+        url
+    )
 }
 
 export function deleteAccountEmailHtml(
-  appName: string,
-  name: string,
-  url: string
+    appName: string,
+    name: string,
+    url: string
 ): string {
-  return baseTemplate(
-    appName,
-    "Confirm account deletion",
-    `Hi ${name}, confirm you want to permanently delete your ${appName} account. This can't be undone.`,
-    "Delete my account",
-    url
-  )
+    return baseTemplate(
+        appName,
+        "Confirm account deletion",
+        `Hi ${name}, confirm you want to permanently delete your ${appName} account. This can't be undone.`,
+        "Delete my account",
+        url
+    )
 }

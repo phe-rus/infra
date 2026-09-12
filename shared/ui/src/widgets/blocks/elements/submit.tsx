@@ -15,11 +15,28 @@ export function Submit({ label }: { label: string }) {
                 state.isTouched,
             ]}
         >
-            {([isSubmitting, canSubmit, isDirty, isTouched]) => {
-                const isDisabled = isSubmitting || !canSubmit || !isDirty || !isTouched
+            {([
+                isSubmitting,
+                canSubmit,
+                isDirty,
+                isTouched,
+            ]) => {
+                const isDisabled =
+                    isSubmitting ||
+                    !canSubmit ||
+                    !isDirty ||
+                    !isTouched
                 return (
-                    <Button type="submit" disabled={isDisabled}>
-                        {isSubmitting && <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />}
+                    <Button
+                        type="submit"
+                        disabled={isDisabled}
+                    >
+                        {isSubmitting && (
+                            <HugeiconsIcon
+                                icon={Loading03Icon}
+                                className="animate-spin"
+                            />
+                        )}
                         {label}
                     </Button>
                 )

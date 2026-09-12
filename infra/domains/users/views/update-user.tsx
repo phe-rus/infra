@@ -25,22 +25,35 @@ export const UpdateUser: FC<UpdateUserProps> = ({
     currentUserId,
 }) => {
     const isSelf = viewUser.user.id === currentUserId
-    const { mutateAsync: updateUserDetails } = useUpdateUserDetails()
-    const { mutateAsync: uploadUserImage, isPending: isUploadingOther } =
-        useUploadUserImage()
-    const { mutateAsync: uploadOwnAvatar, isPending: isUploadingOwn } =
-        useUploadOwnAvatar()
-    const isUploadingImage = isSelf ? isUploadingOwn : isUploadingOther
+    const { mutateAsync: updateUserDetails } =
+        useUpdateUserDetails()
+    const {
+        mutateAsync: uploadUserImage,
+        isPending: isUploadingOther,
+    } = useUploadUserImage()
+    const {
+        mutateAsync: uploadOwnAvatar,
+        isPending: isUploadingOwn,
+    } = useUploadOwnAvatar()
+    const isUploadingImage = isSelf
+        ? isUploadingOwn
+        : isUploadingOther
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const [editName, setEditName] = useState(viewUser.user.name)
-    const [editEmail, setEditEmail] = useState(viewUser.user.email)
+    const [editName, setEditName] = useState(
+        viewUser.user.name
+    )
+    const [editEmail, setEditEmail] = useState(
+        viewUser.user.email
+    )
 
     useEffect(() => {
         setEditName(viewUser.user.name)
         setEditEmail(viewUser.user.email)
     }, [viewUser.user.name, viewUser.user.email])
 
-    async function handleImageSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    async function handleImageSelected(
+        e: React.ChangeEvent<HTMLInputElement>
+    ) {
         const file = e.target.files?.[0]
         e.target.value = ""
         if (!file) return
@@ -63,7 +76,9 @@ export const UpdateUser: FC<UpdateUserProps> = ({
             data: {
                 userId: viewUser.user.id,
                 ...(name !== viewUser.user.name && { name }),
-                ...(email !== viewUser.user.email && { email }),
+                ...(email !== viewUser.user.email && {
+                    email,
+                }),
             },
         })
     }
@@ -75,18 +90,28 @@ export const UpdateUser: FC<UpdateUserProps> = ({
                 <button
                     type="button"
                     onClick={() =>
-                        isSelf && fileInputRef.current?.click()
+                        isSelf &&
+                        fileInputRef.current?.click()
                     }
                     disabled={isUploadingImage || !isSelf}
-                    className={isSelf ? "cursor-pointer disabled:opacity-50" : ""}
+                    className={
+                        isSelf
+                            ? "cursor-pointer disabled:opacity-50"
+                            : ""
+                    }
                 >
                     <Avatar size="lg">
                         <AvatarImage
-                            src={viewUser.user.image ?? undefined}
+                            src={
+                                viewUser.user.image ??
+                                undefined
+                            }
                             alt={viewUser.user.name}
                         />
                         <AvatarFallback>
-                            {viewUser.user.name.slice(0, 1).toUpperCase()}
+                            {viewUser.user.name
+                                .slice(0, 1)
+                                .toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
                 </button>
@@ -96,7 +121,9 @@ export const UpdateUser: FC<UpdateUserProps> = ({
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => void handleImageSelected(e)}
+                        onChange={(e) =>
+                            void handleImageSelected(e)
+                        }
                     />
                 )}
                 {isSelf && (
@@ -108,20 +135,28 @@ export const UpdateUser: FC<UpdateUserProps> = ({
                 )}
             </div>
             <Field>
-                <FieldLabel htmlFor="edit-user-name">Name</FieldLabel>
+                <FieldLabel htmlFor="edit-user-name">
+                    Name
+                </FieldLabel>
                 <Input
                     id="edit-user-name"
                     value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
+                    onChange={(e) =>
+                        setEditName(e.target.value)
+                    }
                 />
             </Field>
             <Field>
-                <FieldLabel htmlFor="edit-user-email">Email</FieldLabel>
+                <FieldLabel htmlFor="edit-user-email">
+                    Email
+                </FieldLabel>
                 <Input
                     id="edit-user-email"
                     type="email"
                     value={editEmail}
-                    onChange={(e) => setEditEmail(e.target.value)}
+                    onChange={(e) =>
+                        setEditEmail(e.target.value)
+                    }
                 />
             </Field>
             <Button
@@ -131,7 +166,8 @@ export const UpdateUser: FC<UpdateUserProps> = ({
                     !editName.trim() ||
                     !editEmail.trim() ||
                     (editName.trim() === viewUser.user.name &&
-                        editEmail.trim() === viewUser.user.email)
+                        editEmail.trim() ===
+                            viewUser.user.email)
                 }
                 onClick={() => void handleUpdateDetails()}
             >

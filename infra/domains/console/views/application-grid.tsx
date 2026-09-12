@@ -1,5 +1,8 @@
 import type { FC } from "react"
-import { Avatar, AvatarFallback } from "@infra/ui/components/avatar"
+import {
+    Avatar,
+    AvatarFallback,
+} from "@infra/ui/components/avatar"
 import { Link } from "@tanstack/react-router"
 import { cn } from "@infra/ui/lib/utils"
 import { FrameworkIcon } from "@/domains/console/views/framework-icon"
@@ -9,7 +12,9 @@ type ApplicationGridProps = {
     data: AppListData
 }
 
-export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
+export const ApplicationGrid: FC<ApplicationGridProps> = ({
+    data,
+}) => {
     if (data.applications.length === 0) {
         return (
             <p className="text-sm text-muted-foreground">
@@ -40,7 +45,9 @@ export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
                                     className="size-4"
                                 />
                             ) : (
-                                (app.name ?? "?").slice(0, 1).toUpperCase()
+                                (app.name ?? "?")
+                                    .slice(0, 1)
+                                    .toUpperCase()
                             )}
                         </AvatarFallback>
                     </Avatar>
@@ -57,7 +64,9 @@ export const ApplicationGrid: FC<ApplicationGridProps> = ({ data }) => {
                                 •{" "}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                                {app.disabled ? "inactive" : "active"}
+                                {app.disabled
+                                    ? "inactive"
+                                    : "active"}
                             </span>
                         </div>
                     </div>

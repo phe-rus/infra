@@ -1,4 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from "../../../components/avatar"
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "../../../components/avatar"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Image02Icon } from "@hugeicons/core-free-icons"
 import { Button } from "../../../components/button"
@@ -19,7 +23,9 @@ export function FieldAvatar({
 }: FieldAvatarProps) {
     const field = useFieldContext<File | null>()
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const [preview, setPreview] = useState<string | null>(null)
+    const [preview, setPreview] = useState<string | null>(
+        null
+    )
 
     useEffect(() => {
         if (!field.state.value) {
@@ -46,11 +52,19 @@ export function FieldAvatar({
             >
                 <Avatar size="lg" className="size-43!">
                     <AvatarImage
-                        src={preview ?? existingImage ?? undefined}
+                        src={
+                            preview ??
+                            existingImage ??
+                            undefined
+                        }
                         alt={label}
                         className="transition-opacity group-hover:opacity-50"
                     />
-                    <AvatarFallback>{(label.charAt(0) || "?").toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>
+                        {(
+                            label.charAt(0) || "?"
+                        ).toUpperCase()}
+                    </AvatarFallback>
                 </Avatar>
             </button>
             <input

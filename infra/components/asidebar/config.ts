@@ -1,4 +1,15 @@
-import { Activity01Icon, Bone01Icon, Comet01Icon, Download01Icon, Message02Icon, PackageIcon, Settings01Icon, TerminalIcon, Upload01Icon, UserIcon } from "@hugeicons/core-free-icons";
+import {
+    Activity01Icon,
+    Bone01Icon,
+    Comet01Icon,
+    Download01Icon,
+    Message02Icon,
+    PackageIcon,
+    Settings01Icon,
+    TerminalIcon,
+    Upload01Icon,
+    UserIcon,
+} from "@hugeicons/core-free-icons"
 
 export const config = [
     {

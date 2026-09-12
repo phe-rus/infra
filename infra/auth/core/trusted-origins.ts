@@ -8,7 +8,8 @@ export function isTrustedOrigin(
         return trustedOrigins.split(",").some((suffix) => {
             const trusted = suffix.trim()
             return (
-                hostname === trusted || hostname.endsWith(`.${trusted}`)
+                hostname === trusted ||
+                hostname.endsWith(`.${trusted}`)
             )
         })
     } catch {
@@ -30,5 +31,8 @@ export function createTrustedOrigins(
         `https://${suffix}`,
         `https://*.${suffix}`,
     ])
-    return async (): Promise<string[]> => [...patterns, fallbackOrigin]
+    return async (): Promise<string[]> => [
+        ...patterns,
+        fallbackOrigin,
+    ]
 }

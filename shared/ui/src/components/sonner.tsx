@@ -33,7 +33,12 @@ const TYPE_ACTION: Record<string, string> = {
 }
 
 function ToastPortal(props: ToastPrimitive.Portal.Props) {
-    return <ToastPrimitive.Portal data-slot="toast-portal" {...props} />
+    return (
+        <ToastPrimitive.Portal
+            data-slot="toast-portal"
+            {...props}
+        />
+    )
 }
 
 function ToastViewport({
@@ -52,7 +57,10 @@ function ToastViewport({
     )
 }
 
-function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
+function Toast({
+    className,
+    ...props
+}: ToastPrimitive.Root.Props) {
     return (
         <ToastPrimitive.Root
             data-slot="toast"
@@ -102,7 +110,10 @@ function ToastTitle({
     return (
         <ToastPrimitive.Title
             data-slot="toast-title"
-            className={cn("text-xs leading-tight font-bold", className)}
+            className={cn(
+                "text-xs leading-tight font-bold",
+                className
+            )}
             {...props}
         />
     )
@@ -159,21 +170,53 @@ function ToastClose({
             )}
             {...props}
         >
-            {children ?? <HugeiconsIcon icon={Cancel01Icon} aria-hidden="true" />}
+            {children ?? (
+                <HugeiconsIcon
+                    icon={Cancel01Icon}
+                    aria-hidden="true"
+                />
+            )}
         </ToastPrimitive.Close>
     )
 }
 
 function ToastIcon({ type }: { type: string | undefined }) {
-    const cls = cn("size-4.5", type ? TYPE_TEXT[type] : undefined)
+    const cls = cn(
+        "size-4.5",
+        type ? TYPE_TEXT[type] : undefined
+    )
     if (type === "success")
-        return <HugeiconsIcon icon={CheckmarkCircle02Icon} className={cls} aria-hidden="true" />
+        return (
+            <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                className={cls}
+                aria-hidden="true"
+            />
+        )
     if (type === "error")
-        return <HugeiconsIcon icon={CancelCircleIcon} className={cls} aria-hidden="true" />
+        return (
+            <HugeiconsIcon
+                icon={CancelCircleIcon}
+                className={cls}
+                aria-hidden="true"
+            />
+        )
     if (type === "warning")
-        return <HugeiconsIcon icon={TriangleAlertIcon} className={cls} aria-hidden="true" />
+        return (
+            <HugeiconsIcon
+                icon={TriangleAlertIcon}
+                className={cls}
+                aria-hidden="true"
+            />
+        )
     if (type === "info")
-        return <HugeiconsIcon icon={InformationCircleIcon} className={cls} aria-hidden="true" />
+        return (
+            <HugeiconsIcon
+                icon={InformationCircleIcon}
+                className={cls}
+                aria-hidden="true"
+            />
+        )
     if (type === "loading")
         return (
             <HugeiconsIcon
@@ -190,7 +233,9 @@ function ToastList() {
 
     return toasts.map((toastItem) => {
         const createdAt = (
-            toastItem.data as { createdAt?: number } | undefined
+            toastItem.data as
+                | { createdAt?: number }
+                | undefined
         )?.createdAt
         return (
             <Toast key={toastItem.id} toast={toastItem}>
@@ -201,22 +246,31 @@ function ToastList() {
                             <ToastTitle
                                 className={
                                     toastItem.type
-                                        ? TYPE_TEXT[toastItem.type]
+                                        ? TYPE_TEXT[
+                                              toastItem.type
+                                          ]
                                         : undefined
                                 }
                             />
                             {createdAt !== undefined && (
                                 <span className="ml-auto shrink-0 text-[11px] font-normal text-muted-foreground">
-                                    {format(createdAt, "h:mm a")}
+                                    {format(
+                                        createdAt,
+                                        "h:mm a"
+                                    )}
                                 </span>
                             )}
                         </div>
-                        {toastItem.description && <ToastDescription />}
+                        {toastItem.description && (
+                            <ToastDescription />
+                        )}
                         {toastItem.actionProps && (
                             <ToastAction
                                 className={
                                     toastItem.type
-                                        ? TYPE_ACTION[toastItem.type]
+                                        ? TYPE_ACTION[
+                                              toastItem.type
+                                          ]
                                         : undefined
                                 }
                             />
@@ -229,9 +283,14 @@ function ToastList() {
     })
 }
 
-export function ToasterProvider(props: ToastPrimitive.Provider.Props) {
+export function ToasterProvider(
+    props: ToastPrimitive.Provider.Props
+) {
     return (
-        <ToastPrimitive.Provider toastManager={manager} {...props}>
+        <ToastPrimitive.Provider
+            toastManager={manager}
+            {...props}
+        >
             <ToastPortal>
                 <ToastViewport>
                     <ToastList />
@@ -264,9 +323,11 @@ function add(
 export const t = Object.assign(
     (...args: ToastArgs) => add(undefined, ...args),
     {
-        success: (...args: ToastArgs) => add("success", ...args),
+        success: (...args: ToastArgs) =>
+            add("success", ...args),
         error: (...args: ToastArgs) => add("error", ...args),
         info: (...args: ToastArgs) => add("info", ...args),
-        warning: (...args: ToastArgs) => add("warning", ...args),
+        warning: (...args: ToastArgs) =>
+            add("warning", ...args),
     }
 )

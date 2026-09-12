@@ -2,7 +2,11 @@ import { useState } from "react"
 import type { FC } from "react"
 import { DrawerClose } from "@infra/ui/components/drawer"
 import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
-import { Field, FieldGroup, FieldLabel } from "@infra/ui/components/field"
+import {
+    Field,
+    FieldGroup,
+    FieldLabel,
+} from "@infra/ui/components/field"
 import { Input } from "@infra/ui/components/input"
 import { Button } from "@infra/ui/components/button"
 import {
@@ -20,12 +24,17 @@ export type CreateUserProps = {
     onOpenChange: (open: boolean) => void
 }
 
-export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
+export const CreateUser: FC<CreateUserProps> = ({
+    open,
+    onOpenChange,
+}) => {
     const { mutateAsync: createUser } = useCreateUser()
     const [draftName, setDraftName] = useState("")
     const [draftEmail, setDraftEmail] = useState("")
     const [draftPassword, setDraftPassword] = useState("")
-    const [draftRole, setDraftRole] = useState<"admin" | "user">("user")
+    const [draftRole, setDraftRole] = useState<
+        "admin" | "user"
+    >("user")
 
     async function handleAddUser() {
         await createUser({
@@ -63,7 +72,12 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
                         Add user
                     </Button>
                     <DrawerClose
-                        render={<Button type="button" variant="outline" />}
+                        render={
+                            <Button
+                                type="button"
+                                variant="outline"
+                            />
+                        }
                     >
                         Cancel
                     </DrawerClose>
@@ -72,20 +86,28 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
         >
             <FieldGroup className="grid grid-cols-1 gap-3">
                 <Field>
-                    <FieldLabel htmlFor="new-user-name">Name</FieldLabel>
+                    <FieldLabel htmlFor="new-user-name">
+                        Name
+                    </FieldLabel>
                     <Input
                         id="new-user-name"
                         value={draftName}
-                        onChange={(e) => setDraftName(e.target.value)}
+                        onChange={(e) =>
+                            setDraftName(e.target.value)
+                        }
                     />
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor="new-user-email">Email</FieldLabel>
+                    <FieldLabel htmlFor="new-user-email">
+                        Email
+                    </FieldLabel>
                     <Input
                         id="new-user-email"
                         type="email"
                         value={draftEmail}
-                        onChange={(e) => setDraftEmail(e.target.value)}
+                        onChange={(e) =>
+                            setDraftEmail(e.target.value)
+                        }
                     />
                 </Field>
                 <Field>
@@ -97,17 +119,23 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
                         type="password"
                         autoComplete="new-password"
                         value={draftPassword}
-                        onChange={(e) => setDraftPassword(e.target.value)}
+                        onChange={(e) =>
+                            setDraftPassword(e.target.value)
+                        }
                     />
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor="new-user-role">Role</FieldLabel>
+                    <FieldLabel htmlFor="new-user-role">
+                        Role
+                    </FieldLabel>
                     <Select
                         id="new-user-role"
                         aria-label="Role"
                         value={draftRole}
                         onValueChange={(key) =>
-                            setDraftRole(key as "admin" | "user")
+                            setDraftRole(
+                                key as "admin" | "user"
+                            )
                         }
                     >
                         <SelectTrigger>
@@ -115,7 +143,10 @@ export const CreateUser: FC<CreateUserProps> = ({ open, onOpenChange }) => {
                         </SelectTrigger>
                         <SelectContent>
                             {FIXED_ROLE_NAMES.map((role) => (
-                                <SelectItem key={role} value={role}>
+                                <SelectItem
+                                    key={role}
+                                    value={role}
+                                >
                                     {role}
                                 </SelectItem>
                             ))}

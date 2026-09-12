@@ -1,9 +1,17 @@
-import { signInSchema, useResendVerificationEmail, useSignIn } from "@/domains/auth"
+import {
+    signInSchema,
+    useResendVerificationEmail,
+    useSignIn,
+} from "@/domains/auth"
 import { FieldGroup } from "@infra/ui/components/field"
 import { t } from "@infra/ui/components/sonner"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
-import { createFileRoute, Link, redirect } from "@tanstack/react-router"
+import {
+    createFileRoute,
+    Link,
+    redirect,
+} from "@tanstack/react-router"
 import type { z } from "zod"
 
 export const Route = createFileRoute("/_auth/sign-in")({
@@ -11,13 +19,13 @@ export const Route = createFileRoute("/_auth/sign-in")({
         if (!hasAdmin) {
             throw redirect({
                 to: "/setup",
-                replace: true
+                replace: true,
             })
         }
         if (session) {
             throw redirect({
                 to: "/",
-                replace: true
+                replace: true,
             })
         }
     },
@@ -26,7 +34,8 @@ export const Route = createFileRoute("/_auth/sign-in")({
 
 function RouteComponent() {
     const { mutateAsync: signIn } = useSignIn()
-    const { mutateAsync: resendVerificationEmail } = useResendVerificationEmail()
+    const { mutateAsync: resendVerificationEmail } =
+        useResendVerificationEmail()
     const defaultValues: z.input<typeof signInSchema> = {
         email: "",
         password: "",
@@ -42,7 +51,10 @@ function RouteComponent() {
         },
         onSubmit: async ({ value }) => {
             const search = window.location.search
-            const oauthQuery = search.length > 1 ? search.slice(1) : undefined
+            const oauthQuery =
+                search.length > 1
+                    ? search.slice(1)
+                    : undefined
             const result = await signIn(
                 {
                     data: {
@@ -60,7 +72,8 @@ function RouteComponent() {
             )
             if (result.code === "EMAIL_NOT_VERIFIED") {
                 t.error("Email not verified", {
-                    description: "Resend the link and try again.",
+                    description:
+                        "Resend the link and try again.",
                     actionProps: {
                         children: "Resend",
                         onClick: () =>

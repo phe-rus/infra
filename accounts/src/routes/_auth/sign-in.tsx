@@ -1,4 +1,8 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router"
+import {
+    createFileRoute,
+    Link,
+    redirect,
+} from "@tanstack/react-router"
 import { useState } from "react"
 import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
@@ -28,14 +32,18 @@ export const Route = createFileRoute("/_auth/sign-in")({
 
 function continueOrGoHome(data: unknown) {
     const result = data as
-        | { redirect_uri?: string; twoFactorRedirect?: boolean }
+        | {
+              redirect_uri?: string
+              twoFactorRedirect?: boolean
+          }
         | undefined
     if (result?.twoFactorRedirect) return
     window.location.href = result?.redirect_uri ?? "/"
 }
 
 function RouteComponent() {
-    const [passkeyPending, setPasskeyPending] = useState(false)
+    const [passkeyPending, setPasskeyPending] =
+        useState(false)
 
     const form = useAppForm({
         defaultValues: {
@@ -54,7 +62,9 @@ function RouteComponent() {
                     rememberMe: value.rememberMe,
                 })
             if (signInError) {
-                t.error(signInError.message ?? "Unable to sign in")
+                t.error(
+                    signInError.message ?? "Unable to sign in"
+                )
                 return
             }
             continueOrGoHome(data)
@@ -68,7 +78,8 @@ function RouteComponent() {
         setPasskeyPending(false)
         if (passkeyError) {
             t.error(
-                passkeyError.message ?? "Unable to sign in with passkey"
+                passkeyError.message ??
+                    "Unable to sign in with passkey"
             )
             return
         }

@@ -26,12 +26,18 @@ const totpCodeSchema = z.object({
     code: z.string().min(1, "Enter the code"),
 })
 
-const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
+const Enable: FC<ControlledDialogProps> = ({
+    open,
+    onOpenChange,
+}) => {
     const enableMutation = useEnableTwoFactor()
     // this flow never passes `method: "otp"`, so a resolved enrollment is
     // always the "totp" variant carrying totpURI/backupCodes — narrow here
     // rather than at every read site
-    const enrollment = enableMutation.data?.method === "totp" ? enableMutation.data : null
+    const enrollment =
+        enableMutation.data?.method === "totp"
+            ? enableMutation.data
+            : null
 
     const close = () => {
         onOpenChange(false)
@@ -78,10 +84,24 @@ const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                     }}
                     footer={
                         <>
-                            <Button type="submit" disabled={enableMutation.isPending}>
-                                {enableMutation.isPending ? "Continuing…" : "Continue"}
+                            <Button
+                                type="submit"
+                                disabled={
+                                    enableMutation.isPending
+                                }
+                            >
+                                {enableMutation.isPending
+                                    ? "Continuing…"
+                                    : "Continue"}
                             </Button>
-                            <DrawerClose render={<Button type="button" variant="outline" />}>
+                            <DrawerClose
+                                render={
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                    />
+                                }
+                            >
                                 Cancel
                             </DrawerClose>
                         </>
@@ -117,10 +137,24 @@ const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                     }}
                     footer={
                         <>
-                            <Button type="submit" disabled={verifyMutation.isPending}>
-                                {verifyMutation.isPending ? "Verifying…" : "Verify and enable"}
+                            <Button
+                                type="submit"
+                                disabled={
+                                    verifyMutation.isPending
+                                }
+                            >
+                                {verifyMutation.isPending
+                                    ? "Verifying…"
+                                    : "Verify and enable"}
                             </Button>
-                            <DrawerClose render={<Button type="button" variant="outline" />}>
+                            <DrawerClose
+                                render={
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                    />
+                                }
+                            >
                                 Cancel
                             </DrawerClose>
                         </>
@@ -128,21 +162,33 @@ const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                 >
                     <div className="flex flex-col gap-4">
                         <div className="flex justify-center rounded-none bg-white p-4">
-                            <QRCodeSVG value={enrollment.totpURI} size={180} />
+                            <QRCodeSVG
+                                value={enrollment.totpURI}
+                                size={180}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <p className="text-sm font-medium">Backup codes</p>
+                            <p className="text-sm font-medium">
+                                Backup codes
+                            </p>
                             <p className="text-xs text-muted-foreground">
-                                Save these somewhere safe — each one can replace a code from your
-                                app if you lose access to it.
+                                Save these somewhere safe —
+                                each one can replace a code
+                                from your app if you lose
+                                access to it.
                             </p>
                             <div className="grid grid-cols-2 gap-1 font-mono text-xs">
-                                {enrollment.backupCodes.map((code) => (
-                                    <span key={code} className="bg-muted px-2 py-1">
-                                        {code}
-                                    </span>
-                                ))}
+                                {enrollment.backupCodes.map(
+                                    (code) => (
+                                        <span
+                                            key={code}
+                                            className="bg-muted px-2 py-1"
+                                        >
+                                            {code}
+                                        </span>
+                                    )
+                                )}
                             </div>
                         </div>
 
@@ -153,7 +199,9 @@ const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                                     children={(field) => (
                                         <field.otp
                                             label="Code"
-                                            onComplete={() => void codeForm.handleSubmit()}
+                                            onComplete={() =>
+                                                void codeForm.handleSubmit()
+                                            }
                                         />
                                     )}
                                 />
@@ -166,19 +214,25 @@ const Enable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
     )
 }
 
-const Disable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
+const Disable: FC<ControlledDialogProps> = ({
+    open,
+    onOpenChange,
+}) => {
     const disableMutation = useDisableTwoFactor()
 
     const form = useAppForm({
         defaultValues: { password: "" },
         validators: { onChange: passwordSchema },
         onSubmit: async ({ value }) => {
-            await disableMutation.mutateAsync(value.password, {
-                onSuccess: () => {
-                    onOpenChange(false)
-                    form.reset()
-                },
-            })
+            await disableMutation.mutateAsync(
+                value.password,
+                {
+                    onSuccess: () => {
+                        onOpenChange(false)
+                        form.reset()
+                    },
+                }
+            )
         },
     })
 
@@ -199,9 +253,18 @@ const Disable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
                         variant="destructive"
                         disabled={disableMutation.isPending}
                     >
-                        {disableMutation.isPending ? "Disabling…" : "Disable"}
+                        {disableMutation.isPending
+                            ? "Disabling…"
+                            : "Disable"}
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                    <DrawerClose
+                        render={
+                            <Button
+                                type="button"
+                                variant="outline"
+                            />
+                        }
+                    >
                         Cancel
                     </DrawerClose>
                 </>
@@ -226,9 +289,13 @@ const Disable: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
     )
 }
 
-const RegenerateBackupCodes: FC<ControlledDialogProps> = ({ open, onOpenChange }) => {
+const RegenerateBackupCodes: FC<ControlledDialogProps> = ({
+    open,
+    onOpenChange,
+}) => {
     const generateMutation = useGenerateBackupCodes()
-    const backupCodes = generateMutation.data?.backupCodes ?? null
+    const backupCodes =
+        generateMutation.data?.backupCodes ?? null
 
     const close = () => {
         onOpenChange(false)
@@ -267,10 +334,24 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({ open, onOpenChange }
                     </Button>
                 ) : (
                     <>
-                        <Button type="submit" disabled={generateMutation.isPending}>
-                            {generateMutation.isPending ? "Generating…" : "Generate codes"}
+                        <Button
+                            type="submit"
+                            disabled={
+                                generateMutation.isPending
+                            }
+                        >
+                            {generateMutation.isPending
+                                ? "Generating…"
+                                : "Generate codes"}
                         </Button>
-                        <DrawerClose render={<Button type="button" variant="outline" />}>
+                        <DrawerClose
+                            render={
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                />
+                            }
+                        >
                             Cancel
                         </DrawerClose>
                     </>
@@ -296,7 +377,10 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({ open, onOpenChange }
             ) : (
                 <div className="grid grid-cols-2 gap-1 font-mono text-xs">
                     {backupCodes.map((code) => (
-                        <span key={code} className="bg-muted px-2 py-1">
+                        <span
+                            key={code}
+                            className="bg-muted px-2 py-1"
+                        >
                             {code}
                         </span>
                     ))}
@@ -306,4 +390,8 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({ open, onOpenChange }
     )
 }
 
-export const TwoFactor = { Enable, Disable, RegenerateBackupCodes }
+export const TwoFactor = {
+    Enable,
+    Disable,
+    RegenerateBackupCodes,
+}

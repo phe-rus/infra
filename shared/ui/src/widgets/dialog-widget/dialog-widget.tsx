@@ -17,7 +17,9 @@ type DialogWidgetProps = {
     description?: ReactNode
     children: ReactNode
     footer?: ReactNode
-    swipeDirection?: NonNullable<DrawerPrimitive.Root.Props["swipeDirection"]>
+    swipeDirection?: NonNullable<
+        DrawerPrimitive.Root.Props["swipeDirection"]
+    >
     className?: string
     // when given, body + footer are wrapped in a real <form> so a
     // useAppForm submit button in `footer` reaches the fields in
@@ -46,20 +48,35 @@ export function DialogWidget({
 }: DialogWidgetProps) {
     const body = (
         <>
-            <div className="flex flex-col gap-3 overflow-y-auto p-4">{children}</div>
+            <div className="flex flex-col gap-3 overflow-y-auto p-4">
+                {children}
+            </div>
             {footer && <DrawerFooter>{footer}</DrawerFooter>}
         </>
     )
 
     return (
-        <Drawer open={open} onOpenChange={onOpenChange} swipeDirection={swipeDirection}>
-            <DrawerContent className={cn("bg-background", className)}>
+        <Drawer
+            open={open}
+            onOpenChange={onOpenChange}
+            swipeDirection={swipeDirection}
+        >
+            <DrawerContent
+                className={cn("bg-background", className)}
+            >
                 <DrawerHeader>
                     <DrawerTitle>{title}</DrawerTitle>
-                    {description && <DrawerDescription>{description}</DrawerDescription>}
+                    {description && (
+                        <DrawerDescription>
+                            {description}
+                        </DrawerDescription>
+                    )}
                 </DrawerHeader>
                 {onSubmit ? (
-                    <form className="contents" onSubmit={onSubmit}>
+                    <form
+                        className="contents"
+                        onSubmit={onSubmit}
+                    >
                         {body}
                     </form>
                 ) : (

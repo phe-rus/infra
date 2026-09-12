@@ -1,4 +1,7 @@
-import { withEdgeCache, type EdgeCacheContext } from "./edge-cache"
+import {
+    withEdgeCache,
+    type EdgeCacheContext,
+} from "./edge-cache"
 
 export type RemotePattern = {
     protocol?: "http" | "https"
@@ -33,9 +36,13 @@ export type ImageProxyOptions = {
 const DEFAULT_MAX_REDIRECTS = 3
 const DEFAULT_MAX_RESPONSE_BODY = 20_000_000
 const DEFAULT_MIN_CACHE_TTL = 14400
-const DEFAULT_CSP = "default-src 'self'; script-src 'none'; sandbox;"
+const DEFAULT_CSP =
+    "default-src 'self'; script-src 'none'; sandbox;"
 
-function matchesPathname(actual: string, pattern?: string): boolean {
+function matchesPathname(
+    actual: string,
+    pattern?: string
+): boolean {
     if (!pattern) return true
     const starIndex = pattern.indexOf("*")
     if (starIndex === -1) return actual === pattern
@@ -46,9 +53,15 @@ function matchesRemotePattern(
     url: URL,
     pattern: RemotePattern
 ): boolean {
-    if (pattern.protocol && url.protocol !== `${pattern.protocol}:`)
+    if (
+        pattern.protocol &&
+        url.protocol !== `${pattern.protocol}:`
+    )
         return false
-    if (pattern.port !== undefined && url.port !== pattern.port)
+    if (
+        pattern.port !== undefined &&
+        url.port !== pattern.port
+    )
         return false
     const hostname = pattern.hostname.startsWith("*.")
         ? pattern.hostname.slice(2)
@@ -57,8 +70,12 @@ function matchesRemotePattern(
         url.hostname === hostname ||
         url.hostname.endsWith(`.${hostname}`)
     if (!hostMatches) return false
-    if (!matchesPathname(url.pathname, pattern.pathname)) return false
-    if (pattern.search !== undefined && url.search !== pattern.search)
+    if (!matchesPathname(url.pathname, pattern.pathname))
+        return false
+    if (
+        pattern.search !== undefined &&
+        url.search !== pattern.search
+    )
         return false
     return true
 }
@@ -73,7 +90,8 @@ function isAllowedTarget(
         )
     )
         return true
-    if (options.allowedOrigins?.includes(url.origin)) return true
+    if (options.allowedOrigins?.includes(url.origin))
+        return true
     return false
 }
 
@@ -84,8 +102,11 @@ async function fetchWithRedirectCap(
     let current = url
     let hops = 0
     for (;;) {
-        const res = await fetch(current, { redirect: "manual" })
-        const isRedirect = res.status >= 300 && res.status < 400
+        const res = await fetch(current, {
+            redirect: "manual",
+        })
+        const isRedirect =
+            res.status >= 300 && res.status < 400
         if (!isRedirect) return res
         if (hops >= maxRedirects)
             return new Response(null, { status: 400 })
@@ -98,7 +119,9 @@ async function fetchWithRedirectCap(
 
 function exceedsMaxBody(res: Response, max: number): boolean {
     const contentLength = res.headers.get("content-length")
-    return contentLength !== null && Number(contentLength) > max
+    return (
+        contentLength !== null && Number(contentLength) > max
+    )
 }
 
 function withCacheTTL(
@@ -107,13 +130,18 @@ function withCacheTTL(
 ): Response {
     const headers = new Headers(res.headers)
     const existingMaxAge = Number(
-        headers.get("cache-control")?.match(/max-age=(\d+)/)?.[1] ?? 0
+        headers
+            .get("cache-control")
+            ?.match(/max-age=(\d+)/)?.[1] ?? 0
     )
     headers.set(
         "cache-control",
         `public, max-age=${Math.max(minimumCacheTTL, existingMaxAge)}`
     )
-    return new Response(res.body, { status: res.status, headers })
+    return new Response(res.body, {
+        status: res.status,
+        headers,
+    })
 }
 
 // Returns null when SVG content is fetched but not allowed — the caller
@@ -136,7 +164,10 @@ function guardSvg(
         "content-security-policy",
         options.contentSecurityPolicy ?? DEFAULT_CSP
     )
-    return new Response(res.body, { status: res.status, headers })
+    return new Response(res.body, {
+        status: res.status,
+        headers,
+    })
 }
 
 // Returns null for any request this proxy doesn't own, so a caller's own
@@ -147,11 +178,15 @@ export function createImageProxy(options: ImageProxyOptions) {
         ctx: EdgeCacheContext
     ): Promise<Response | null> {
         const url = new URL(request.url)
-        if (request.method !== "GET" || url.pathname !== options.path)
+        if (
+            request.method !== "GET" ||
+            url.pathname !== options.path
+        )
             return null
 
         const target = url.searchParams.get("url")
-        if (!target) return new Response(null, { status: 400 })
+        if (!target)
+            return new Response(null, { status: 400 })
 
         let targetUrl: URL
         try {
@@ -165,11 +200,14 @@ export function createImageProxy(options: ImageProxyOptions) {
 
         return withEdgeCache(request, ctx, async () => {
             const maxRedirects =
-                options.maximumRedirects ?? DEFAULT_MAX_REDIRECTS
+                options.maximumRedirects ??
+                DEFAULT_MAX_REDIRECTS
             const maxBody =
-                options.maximumResponseBody ?? DEFAULT_MAX_RESPONSE_BODY
+                options.maximumResponseBody ??
+                DEFAULT_MAX_RESPONSE_BODY
             const minTTL =
-                options.minimumCacheTTL ?? DEFAULT_MIN_CACHE_TTL
+                options.minimumCacheTTL ??
+                DEFAULT_MIN_CACHE_TTL
 
             const fetched = await fetchWithRedirectCap(
                 targetUrl,

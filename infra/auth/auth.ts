@@ -1,5 +1,8 @@
 import { tanstackStartCookies } from "better-auth/tanstack-start"
-import { databaseHooks, isAdminTier } from "./core/permissions"
+import {
+    databaseHooks,
+    isAdminTier,
+} from "./core/permissions"
 import { createTrustedOrigins } from "./core/trusted-origins"
 import { oauthProvider } from "@better-auth/oauth-provider"
 import { listUserAccounts } from "./core/admin-accounts"
@@ -10,7 +13,10 @@ import { password } from "./config/password"
 import { env, waitUntil } from "cloudflare:workers"
 import { emailHooks } from "./emails"
 import { assets } from "../../shared/assets/src"
-import { logAuthEvent, logManagementEvent } from "@/lib/analytics"
+import {
+    logAuthEvent,
+    logManagementEvent,
+} from "@/lib/analytics"
 import { dbContext } from "@/db"
 import {
     admin,
@@ -63,7 +69,8 @@ export const auth = betterAuth({
     emailVerification: {
         autoSignInAfterVerification: true,
         sendOnSignIn: false,
-        sendVerificationEmail: emailHooks.sendVerificationEmail,
+        sendVerificationEmail:
+            emailHooks.sendVerificationEmail,
     },
     account: {
         accountLinking: {
@@ -75,7 +82,11 @@ export const auth = betterAuth({
     user: {
         additionalFields: {
             bio: { type: "string", required: false },
-            lastActiveAt: { type: "date", required: false, input: false },
+            lastActiveAt: {
+                type: "date",
+                required: false,
+                input: false,
+            },
         },
         deleteUser: {
             enabled: true,
@@ -111,16 +122,21 @@ export const auth = betterAuth({
         useSecureCookies: isProduction,
         crossSubDomainCookies: {
             enabled: true,
-            domain: isProduction ? env.COOKIE_DOMAIN : undefined,
+            domain: isProduction
+                ? env.COOKIE_DOMAIN
+                : undefined,
         },
         defaultCookieAttributes: {
             httpOnly: true,
             secure: isProduction,
-            sameSite: 'Lax',
+            sameSite: "Lax",
         },
         ipAddress: {
             ipv6Subnet: 64,
-            ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for"],
+            ipAddressHeaders: [
+                "cf-connecting-ip",
+                "x-forwarded-for",
+            ],
             disableIpTracking: false,
         },
         database: {
@@ -141,10 +157,17 @@ export const auth = betterAuth({
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
             const cf = ctx.request?.cf as
-                | { country?: string; city?: string; region?: string }
+                | {
+                      country?: string
+                      city?: string
+                      region?: string
+                  }
                 | undefined
             const geo = {
-                ip: ctx.request?.headers.get("cf-connecting-ip") ?? undefined,
+                ip:
+                    ctx.request?.headers.get(
+                        "cf-connecting-ip"
+                    ) ?? undefined,
                 country: cf?.country,
                 city: cf?.city,
                 region: cf?.region,
@@ -158,33 +181,44 @@ export const auth = betterAuth({
                 ctx.path.startsWith("/reset-password") ||
                 ctx.path.startsWith("/forget-password")
             if (isAuthEvent) {
-                const body = ctx.body as Record<string, unknown> | undefined
+                const body = ctx.body as
+                    | Record<string, unknown>
+                    | undefined
                 const returned = ctx.context.returned as
                     | {
-                        token?: string;
-                        user?: {
-                            email?: string
-                        }
-                    }
+                          token?: string
+                          user?: {
+                              email?: string
+                          }
+                      }
                     | undefined
                 ctx.context.runInBackground(
                     logAuthEvent({
                         ...geo,
                         path: ctx.path,
-                        outcome: returned?.token ? "success" : "failure",
-                        email: returned?.user?.email ?? (body?.email as string | undefined),
+                        outcome: returned?.token
+                            ? "success"
+                            : "failure",
+                        email:
+                            returned?.user?.email ??
+                            (body?.email as
+                                | string
+                                | undefined),
                     })
                 )
                 return
             }
 
-            const action = MANAGEMENT_ACTIONS_BY_PATH[ctx.path]
+            const action =
+                MANAGEMENT_ACTIONS_BY_PATH[ctx.path]
             if (!action) return
 
             const actorId = ctx.context.session?.user.id
             if (!actorId) return
 
-            const body = ctx.body as Record<string, unknown> | undefined
+            const body = ctx.body as
+                | Record<string, unknown>
+                | undefined
             const returned = ctx.context.returned as
                 | { client_id?: string }
                 | undefined
@@ -194,7 +228,12 @@ export const auth = betterAuth({
                 returned?.client_id
 
             ctx.context.runInBackground(
-                logManagementEvent({ ...geo, action, actorId, targetId })
+                logManagementEvent({
+                    ...geo,
+                    action,
+                    actorId,
+                    targetId,
+                })
             )
         }),
     },
@@ -202,10 +241,10 @@ export const auth = betterAuth({
         admin(),
         assets({
             binding: env.R2,
-            isAdmin: isAdminTier
+            isAdmin: isAdminTier,
         }),
         listUserAccounts({
-            isAdmin: isAdminTier
+            isAdmin: isAdminTier,
         }),
         twoFactor({
             issuer: env.VITE_APPNAME.toLowerCase().trim(),
@@ -218,10 +257,12 @@ export const auth = betterAuth({
         }),
         passkey({
             rpName: env.VITE_APPNAME.toLowerCase().trim(),
-            rpID: isProduction ? env.COOKIE_DOMAIN : undefined,
+            rpID: isProduction
+                ? env.COOKIE_DOMAIN
+                : undefined,
         }),
         jwt({
-            disableSettingJwtHeader: true
+            disableSettingJwtHeader: true,
         }),
         oauthProvider({
             loginPage: `${env.WWW_URL}/sign-in`,
@@ -232,7 +273,9 @@ export const auth = betterAuth({
             storeClientSecret: "hashed",
             allowDynamicClientRegistration: false,
             clientPrivileges: async ({ user }) => {
-                return isAdminTier((user?.role as string | undefined) ?? "")
+                return isAdminTier(
+                    (user?.role as string | undefined) ?? ""
+                )
             },
             scopes: [
                 "openid",
@@ -249,18 +292,23 @@ export const auth = betterAuth({
             refreshTokenExpiresIn: 60 * 60 * 24 * 30, // 30 days, rotates forward on every use
             codeExpiresIn: 60 * 2, // 2 minutes — exchanged immediately after the redirect
             refreshTokenGracePeriod: 30,
-            cachedTrustedClients: new Set([
-                'seer',
-                'pherus',
-            ]),
-            customUserInfoClaims: async ({ user, scopes, jwt }) => ({
+            cachedTrustedClients: new Set(["seer", "pherus"]),
+            customUserInfoClaims: async ({
+                user,
+                scopes,
+                jwt,
+            }) => ({
                 scopes: scopes,
                 clientId:
-                    typeof jwt.client_id === "string" ? jwt.client_id : null,
+                    typeof jwt.client_id === "string"
+                        ? jwt.client_id
+                        : null,
                 ...user,
             }),
         }),
-        ...(isProduction ? [haveIBeenPwned()] : [openAPI({ path: "docs" })]),
-        tanstackStartCookies()
+        ...(isProduction
+            ? [haveIBeenPwned()]
+            : [openAPI({ path: "docs" })]),
+        tanstackStartCookies(),
     ],
 })

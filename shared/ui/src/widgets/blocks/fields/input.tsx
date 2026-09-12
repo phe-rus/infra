@@ -1,5 +1,8 @@
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ViewIcon, ViewOffSlashIcon } from "@hugeicons/core-free-icons"
+import {
+    ViewIcon,
+    ViewOffSlashIcon,
+} from "@hugeicons/core-free-icons"
 import {
     InputGroup,
     InputGroupAddon,
@@ -20,10 +23,17 @@ type FieldInputProps = {
     "id" | "name" | "value" | "onChange" | "onBlur"
 >
 
-export function FieldInput({ label, icon, type = "text", ...inputProps }: FieldInputProps) {
+export function FieldInput({
+    label,
+    icon,
+    type = "text",
+    ...inputProps
+}: FieldInputProps) {
     const field = useFieldContext<string>()
     const [showPassword, setShowPassword] = useState(false)
-    const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+    const isInvalid =
+        field.state.meta.isTouched &&
+        !field.state.meta.isValid
     const isPassword = type === "password"
 
     return (
@@ -36,16 +46,24 @@ export function FieldInput({ label, icon, type = "text", ...inputProps }: FieldI
             <InputGroup>
                 {icon && (
                     <InputGroupAddon align="inline-start">
-                        <InputGroupText>{icon}</InputGroupText>
+                        <InputGroupText>
+                            {icon}
+                        </InputGroupText>
                     </InputGroupAddon>
                 )}
                 <InputGroupInput
                     id={field.name}
                     name={field.name}
-                    type={isPassword && showPassword ? "text" : type}
+                    type={
+                        isPassword && showPassword
+                            ? "text"
+                            : type
+                    }
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) =>
+                        field.handleChange(e.target.value)
+                    }
                     aria-invalid={isInvalid}
                     {...inputProps}
                 />
@@ -54,10 +72,26 @@ export function FieldInput({ label, icon, type = "text", ...inputProps }: FieldI
                         <InputGroupButton
                             type="button"
                             size="icon-xs"
-                            aria-label={showPassword ? "Hide password" : "Show password"}
-                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={
+                                showPassword
+                                    ? "Hide password"
+                                    : "Show password"
+                            }
+                            onClick={() =>
+                                setShowPassword(
+                                    (prev) => !prev
+                                )
+                            }
                         >
-                            {showPassword ? <HugeiconsIcon icon={ViewOffSlashIcon} /> : <HugeiconsIcon icon={ViewIcon} />}
+                            {showPassword ? (
+                                <HugeiconsIcon
+                                    icon={ViewOffSlashIcon}
+                                />
+                            ) : (
+                                <HugeiconsIcon
+                                    icon={ViewIcon}
+                                />
+                            )}
                         </InputGroupButton>
                     </InputGroupAddon>
                 )}

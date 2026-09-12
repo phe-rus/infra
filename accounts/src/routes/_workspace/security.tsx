@@ -32,11 +32,18 @@ function RouteComponent() {
     const { data } = useSuspenseQuery(currentOptions())
     const { data: passkeys } = usePasskeys()
     const { data: sessions } = useSessions()
-    const isTwoFactorEnabled = Boolean(data?.user.twoFactorEnabled)
+    const isTwoFactorEnabled = Boolean(
+        data?.user.twoFactorEnabled
+    )
 
-    const [twoFactorDialogOpen, setTwoFactorDialogOpen] = useState(false)
-    const [backupCodesDialogOpen, setBackupCodesDialogOpen] = useState(false)
-    const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false)
+    const [twoFactorDialogOpen, setTwoFactorDialogOpen] =
+        useState(false)
+    const [backupCodesDialogOpen, setBackupCodesDialogOpen] =
+        useState(false)
+    const [
+        deleteAccountDialogOpen,
+        setDeleteAccountDialogOpen,
+    ] = useState(false)
 
     return (
         <ViewController
@@ -50,19 +57,29 @@ function RouteComponent() {
             <ContentView.Section className="md:max-w-md">
                 <ContentView.Row className="w-full justify-between rounded-md! bg-input/35 px-3 py-2">
                     <div className="flex gap-3">
-                        <Button size="icon-sm" variant="secondary" className="rounded-full">
+                        <Button
+                            size="icon-sm"
+                            variant="secondary"
+                            className="rounded-full"
+                        >
                             <HugeiconsIcon icon={Key01Icon} />
                         </Button>
                         <div className="gap-0!">
-                            <h2 className="text-base">Two-factor authentication</h2>
+                            <h2 className="text-base">
+                                Two-factor authentication
+                            </h2>
                             <p className="text-xs text-muted-foreground md:max-w-64!">
-                                Require a code from an authenticator app when signing in
+                                Require a code from an
+                                authenticator app when signing
+                                in
                             </p>
                         </div>
                     </div>
                     <Switch
                         checked={isTwoFactorEnabled}
-                        onCheckedChange={() => setTwoFactorDialogOpen(true)}
+                        onCheckedChange={() =>
+                            setTwoFactorDialogOpen(true)
+                        }
                         aria-label="Two-factor authentication"
                     />
                 </ContentView.Row>
@@ -70,7 +87,9 @@ function RouteComponent() {
                     <Badge
                         variant="secondary"
                         className="w-fit cursor-pointer rounded-full"
-                        onClick={() => setBackupCodesDialogOpen(true)}
+                        onClick={() =>
+                            setBackupCodesDialogOpen(true)
+                        }
                     >
                         Backup codes
                     </Badge>
@@ -97,7 +116,11 @@ function RouteComponent() {
                 <ContentView.Header
                     as="h2"
                     heading="Passkeys"
-                    action={<Passkey.Add size="xs">Add</Passkey.Add>}
+                    action={
+                        <Passkey.Add size="xs">
+                            Add
+                        </Passkey.Add>
+                    }
                     p="Sign in without a password, using your device's biometrics or a security key"
                     pClassName="text-sm text-muted-foreground"
                 />
@@ -113,11 +136,18 @@ function RouteComponent() {
                 />
                 {sessions === null ? (
                     <p className="text-sm text-muted-foreground">
-                        For your security, viewing sessions requires a recent sign-in. Sign
-                        out and back in to manage your devices here.
+                        For your security, viewing sessions
+                        requires a recent sign-in. Sign out
+                        and back in to manage your devices
+                        here.
                     </p>
                 ) : (
-                    <SessionList data={sessions} currentSessionToken={data?.session.token} />
+                    <SessionList
+                        data={sessions}
+                        currentSessionToken={
+                            data?.session.token
+                        }
+                    />
                 )}
             </ContentView.Section>
 
@@ -132,7 +162,9 @@ function RouteComponent() {
                     type="button"
                     variant="destructive"
                     className="w-fit"
-                    onClick={() => setDeleteAccountDialogOpen(true)}
+                    onClick={() =>
+                        setDeleteAccountDialogOpen(true)
+                    }
                 >
                     Terminate account permanently
                 </Button>

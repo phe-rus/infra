@@ -21,7 +21,7 @@ const titleSizes = {
 export function ViewController({
     heading,
     className,
-    children
+    children,
 }: ViewControllerProps) {
     return (
         <article
@@ -37,14 +37,23 @@ export function ViewController({
     )
 }
 
-function Heading({ title, description, action, size = "default" }: HeadingProps) {
+function Heading({
+    title,
+    description,
+    action,
+    size = "default",
+}: HeadingProps) {
     return (
         <>
             <div className="flex items-center gap-2">
                 <h1 className={titleSizes[size]}>{title}</h1>
                 {action}
             </div>
-            {description && <p className="text-muted-foreground">{description}</p>}
+            {description && (
+                <p className="text-muted-foreground">
+                    {description}
+                </p>
+            )}
         </>
     )
 }

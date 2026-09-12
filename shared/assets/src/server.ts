@@ -3,8 +3,14 @@ export {
     MAX_USER_QUOTA_BYTES,
     ALLOWED_TYPES,
 } from "./constants"
-export type { AllowedExtension, AllowedImageExtension } from "./constants"
-export { sniffExtension, isImageExtension } from "./sniff-file-type"
+export type {
+    AllowedExtension,
+    AllowedImageExtension,
+} from "./constants"
+export {
+    sniffExtension,
+    isImageExtension,
+} from "./sniff-file-type"
 export { sanitizeSvg } from "./sanitize-svg"
 export {
     avatarPrefix,

@@ -1,4 +1,7 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router"
+import {
+    createFileRoute,
+    useSearch,
+} from "@tanstack/react-router"
 import { useEffect, useState } from "react"
 import { z } from "zod"
 import { Button } from "@infra/ui/components/button"
@@ -15,24 +18,37 @@ export const Route = createFileRoute("/_protected/consent")({
 })
 
 function RouteComponent() {
-    const { client_id } = useSearch({ from: "/_protected/consent" })
-    const [client, setClient] = useState<{ client_name?: string; client_uri?: string } | null>(null)
-    const [decision, setDecision] = useState<"accept" | "deny" | null>(null)
+    const { client_id } = useSearch({
+        from: "/_protected/consent",
+    })
+    const [client, setClient] = useState<{
+        client_name?: string
+        client_uri?: string
+    } | null>(null)
+    const [decision, setDecision] = useState<
+        "accept" | "deny" | null
+    >(null)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         if (!client_id) return
-        void authClient.oauth2.publicClient({ query: { client_id } }).then(({ data }) => {
-            if (data) setClient(data)
-        })
+        void authClient.oauth2
+            .publicClient({ query: { client_id } })
+            .then(({ data }) => {
+                if (data) setClient(data)
+            })
     }, [client_id])
 
     async function respond(accept: boolean) {
         setError(null)
         setDecision(accept ? "accept" : "deny")
-        const { data, error: consentError } = await authClient.oauth2.consent({ accept })
+        const { data, error: consentError } =
+            await authClient.oauth2.consent({ accept })
         if (consentError) {
-            setError(consentError.message ?? "Unable to submit consent")
+            setError(
+                consentError.message ??
+                    "Unable to submit consent"
+            )
             setDecision(null)
             return
         }
@@ -49,16 +65,25 @@ function RouteComponent() {
                     description={
                         <>
                             <span className="text-foreground">
-                                {client?.client_name ?? "An application"}
+                                {client?.client_name ??
+                                    "An application"}
                             </span>{" "}
-                            is requesting access to your account
-                            {client?.client_uri ? ` (${client.client_uri})` : ""}.
+                            is requesting access to your
+                            account
+                            {client?.client_uri
+                                ? ` (${client.client_uri})`
+                                : ""}
+                            .
                         </>
                     }
                 />
             }
         >
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+                <p className="text-sm text-destructive">
+                    {error}
+                </p>
+            )}
 
             <div className="flex gap-2">
                 <Button
@@ -66,7 +91,9 @@ function RouteComponent() {
                     disabled={decision !== null}
                     onClick={() => void respond(true)}
                 >
-                    {decision === "accept" ? "Authorizing…" : "Allow"}
+                    {decision === "accept"
+                        ? "Authorizing…"
+                        : "Allow"}
                 </Button>
                 <Button
                     type="button"
@@ -74,7 +101,9 @@ function RouteComponent() {
                     disabled={decision !== null}
                     onClick={() => void respond(false)}
                 >
-                    {decision === "deny" ? "Denying…" : "Deny"}
+                    {decision === "deny"
+                        ? "Denying…"
+                        : "Deny"}
                 </Button>
             </div>
         </ViewController>

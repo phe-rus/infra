@@ -13,6 +13,7 @@
         "principle": "Let us show you our wildest dreams & imaginations. Now, see the world through our eyes.",
         "showcaseCta": "See it in action",
         "moreCta": "The full ecosystem",
+        "workHeading": "A closer look",
         "whatAndwhomWeWorkWith": {
             "headline": "Tools we use for all our developments, research & works",
             "list": [
@@ -91,6 +92,13 @@
     },
     "ecosystem": {
         "title": "Ecosystem",
-        "intro": "These are not unrelated products in an app marketplace. They are different expressions of the same organization's interests."
+        "intro": "These are not unrelated products in an app marketplace. They are different expressions of the same organization's interests.",
+        "hint": "Select an initiative to see how it connects to Pherus."
+    },
+    "common": {
+        "menuOpen": "Menu",
+        "menuClose": "Close menu",
+        "earlier": "Earlier",
+        "later": "Later"
     }
 }

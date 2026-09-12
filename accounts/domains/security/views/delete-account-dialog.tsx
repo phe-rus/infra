@@ -15,7 +15,10 @@ type ControlledDialogProps = {
     onOpenChange: (open: boolean) => void
 }
 
-export function DeleteAccountDialog({ open, onOpenChange }: ControlledDialogProps) {
+export function DeleteAccountDialog({
+    open,
+    onOpenChange,
+}: ControlledDialogProps) {
     const deleteMutation = useDeleteAccount()
 
     function close() {
@@ -28,7 +31,11 @@ export function DeleteAccountDialog({ open, onOpenChange }: ControlledDialogProp
         defaultValues: { password: "" },
         validators: { onChange: passwordSchema },
         onSubmit: async ({ value }) => {
-            await deleteMutation.mutateAsync(value.password, { onSuccess: close }).catch(() => null)
+            await deleteMutation
+                .mutateAsync(value.password, {
+                    onSuccess: close,
+                })
+                .catch(() => null)
         },
     })
 
@@ -51,9 +58,18 @@ export function DeleteAccountDialog({ open, onOpenChange }: ControlledDialogProp
                         variant="destructive"
                         disabled={deleteMutation.isPending}
                     >
-                        {deleteMutation.isPending ? "Sending…" : "Send confirmation email"}
+                        {deleteMutation.isPending
+                            ? "Sending…"
+                            : "Send confirmation email"}
                     </Button>
-                    <DrawerClose render={<Button type="button" variant="outline" />}>
+                    <DrawerClose
+                        render={
+                            <Button
+                                type="button"
+                                variant="outline"
+                            />
+                        }
+                    >
                         Cancel
                     </DrawerClose>
                 </>

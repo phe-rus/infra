@@ -26,9 +26,11 @@ function toAppDetail(row: OAuthClientRow, callerId: string) {
         icon: row.icon,
         applicationType: row.applicationType,
         disabled: row.disabled,
-        redirectUris: (row.redirectUris as string[] | null) ?? [],
+        redirectUris:
+            (row.redirectUris as string[] | null) ?? [],
         postLogoutRedirectUris:
-            (row.postLogoutRedirectUris as string[] | null) ?? [],
+            (row.postLogoutRedirectUris as string[] | null) ??
+            [],
         grantTypes: (row.grantTypes as string[] | null) ?? [],
         scopes: (row.scopes as string[] | null) ?? [],
         tokenEndpointAuthMethod: row.tokenEndpointAuthMethod,
@@ -36,9 +38,10 @@ function toAppDetail(row: OAuthClientRow, callerId: string) {
         skipConsent: row.skipConsent,
         enableEndSession: row.enableEndSession,
         framework:
-            (row.metadata as { framework?: string } | null)?.framework ??
-            null,
-        isOwnClient: row.userId === null || row.userId === callerId,
+            (row.metadata as { framework?: string } | null)
+                ?.framework ?? null,
+        isOwnClient:
+            row.userId === null || row.userId === callerId,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
     }
@@ -60,23 +63,31 @@ function withClientMetadataError(error: unknown): never {
     throw error
 }
 
-const SECRET_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const SECRET_CHARS =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 function generateSecret(length: number): string {
     const bytes = new Uint8Array(length)
     crypto.getRandomValues(bytes)
-    return Array.from(bytes, (b) => SECRET_CHARS[b % SECRET_CHARS.length]).join(
-        ""
-    )
+    return Array.from(
+        bytes,
+        (b) => SECRET_CHARS[b % SECRET_CHARS.length]
+    ).join("")
 }
 
-async function hashClientSecret(secret: string): Promise<string> {
+async function hashClientSecret(
+    secret: string
+): Promise<string> {
     const digest = await crypto.subtle.digest(
         "SHA-256",
         new TextEncoder().encode(secret)
     )
     let binary = ""
-    for (const b of new Uint8Array(digest)) binary += String.fromCharCode(b)
-    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
+    for (const b of new Uint8Array(digest))
+        binary += String.fromCharCode(b)
+    return btoa(binary)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "")
 }
 
 export const listApps = createServerFn({ method: "GET" })
@@ -112,28 +123,35 @@ export const createApp = createServerFn({ method: "POST" })
     .validator(createAppSchema)
     .handler(async ({ data }) => {
         try {
-            const client = await auth.api.adminCreateOAuthClient({
-                body: {
-                    client_name: data.client_name,
-                    client_uri: data.client_uri,
-                    logo_uri: data.logo_uri,
-                    application_type: data.application_type,
-                    token_endpoint_auth_method:
-                        data.token_endpoint_auth_method,
-                    redirect_uris: data.redirect_uris?.length
-                        ? data.redirect_uris
-                        : [PENDING_REDIRECT_URI],
-                    post_logout_redirect_uris: data.post_logout_redirect_uris,
-                    scope: data.scope.join(" "),
-                    grant_types: data.grant_types,
-                    require_pkce: data.require_pkce,
-                    skip_consent: data.skip_consent,
-                    enable_end_session: data.enable_end_session,
-                    ...(data.framework && {
-                        metadata: { framework: data.framework },
-                    }),
-                },
-            })
+            const client =
+                await auth.api.adminCreateOAuthClient({
+                    body: {
+                        client_name: data.client_name,
+                        client_uri: data.client_uri,
+                        logo_uri: data.logo_uri,
+                        application_type:
+                            data.application_type,
+                        token_endpoint_auth_method:
+                            data.token_endpoint_auth_method,
+                        redirect_uris: data.redirect_uris
+                            ?.length
+                            ? data.redirect_uris
+                            : [PENDING_REDIRECT_URI],
+                        post_logout_redirect_uris:
+                            data.post_logout_redirect_uris,
+                        scope: data.scope.join(" "),
+                        grant_types: data.grant_types,
+                        require_pkce: data.require_pkce,
+                        skip_consent: data.skip_consent,
+                        enable_end_session:
+                            data.enable_end_session,
+                        ...(data.framework && {
+                            metadata: {
+                                framework: data.framework,
+                            },
+                        }),
+                    },
+                })
             return {
                 clientId: client.client_id,
                 clientSecret: client.client_secret ?? null,
@@ -156,8 +174,12 @@ export const updateApp = createServerFn({ method: "POST" })
                     client_id: clientId,
                     update: {
                         ...rest,
-                        ...(scope && { scope: scope.join(" ") }),
-                        ...(framework && { metadata: { framework } }),
+                        ...(scope && {
+                            scope: scope.join(" "),
+                        }),
+                        ...(framework && {
+                            metadata: { framework },
+                        }),
                     },
                 },
             })
@@ -170,20 +192,29 @@ export const updateApp = createServerFn({ method: "POST" })
 export const setAppActive = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(setAppActiveSchema)
-    .handler(async ({ data, context: { sessions } }): Promise<{ success: true }> => {
-        await db
-            .update(oauthClient)
-            .set({ disabled: !data.active })
-            .where(eq(oauthClient.clientId, data.clientId))
-        waitUntil(
-            logManagementEvent({
-                action: data.active ? "console.enable-app" : "console.disable-app",
-                actorId: sessions.user.id,
-                targetId: data.clientId,
-            })
-        )
-        return { success: true }
-    })
+    .handler(
+        async ({
+            data,
+            context: { sessions },
+        }): Promise<{ success: true }> => {
+            await db
+                .update(oauthClient)
+                .set({ disabled: !data.active })
+                .where(
+                    eq(oauthClient.clientId, data.clientId)
+                )
+            waitUntil(
+                logManagementEvent({
+                    action: data.active
+                        ? "console.enable-app"
+                        : "console.disable-app",
+                    actorId: sessions.user.id,
+                    targetId: data.clientId,
+                })
+            )
+            return { success: true }
+        }
+    )
 
 export const rotateApp = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
@@ -201,25 +232,36 @@ export const rotateApp = createServerFn({ method: "POST" })
                     userId: oauthClient.userId,
                 })
                 .from(oauthClient)
-                .where(eq(oauthClient.clientId, data.clientId))
+                .where(
+                    eq(oauthClient.clientId, data.clientId)
+                )
             if (!client) {
                 throw new Error("Application not found")
             }
-            assertOwnsApp(client.userId, sessions.user.id, "rotate its secret")
+            assertOwnsApp(
+                client.userId,
+                sessions.user.id,
+                "rotate its secret"
+            )
             if (
                 !client.clientSecret ||
                 client.tokenEndpointAuthMethod === "none"
             ) {
-                throw new Error("Public clients cannot be rotated")
+                throw new Error(
+                    "Public clients cannot be rotated"
+                )
             }
             const clientSecret = generateSecret(32)
             await db
                 .update(oauthClient)
                 .set({
-                    clientSecret: await hashClientSecret(clientSecret),
+                    clientSecret:
+                        await hashClientSecret(clientSecret),
                     updatedAt: new Date(),
                 })
-                .where(eq(oauthClient.clientId, data.clientId))
+                .where(
+                    eq(oauthClient.clientId, data.clientId)
+                )
             waitUntil(
                 logManagementEvent({
                     action: "console.rotate-app",
@@ -235,18 +277,29 @@ export const removeApp = createServerFn({ method: "POST" })
     .middleware([AdminMiddleware])
     .validator(appIdSchema)
     .handler(
-        async ({ data, context: { sessions } }): Promise<{ success: true }> => {
+        async ({
+            data,
+            context: { sessions },
+        }): Promise<{ success: true }> => {
             const [client] = await db
                 .select({ userId: oauthClient.userId })
                 .from(oauthClient)
-                .where(eq(oauthClient.clientId, data.clientId))
+                .where(
+                    eq(oauthClient.clientId, data.clientId)
+                )
             if (!client) {
                 throw new Error("Application not found")
             }
-            assertOwnsApp(client.userId, sessions.user.id, "remove it")
+            assertOwnsApp(
+                client.userId,
+                sessions.user.id,
+                "remove it"
+            )
             await db
                 .delete(oauthClient)
-                .where(eq(oauthClient.clientId, data.clientId))
+                .where(
+                    eq(oauthClient.clientId, data.clientId)
+                )
             waitUntil(
                 logManagementEvent({
                     action: "console.remove-app",

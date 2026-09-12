@@ -10,7 +10,8 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import type { AppListData } from "./func"
 import { appOptions, consoleOptions } from "./get-console"
 
-export const useConsole = () => useSuspenseQuery(consoleOptions())
+export const useConsole = () =>
+    useSuspenseQuery(consoleOptions())
 
 export const useApp = (clientId: string) =>
     useSuspenseQuery(appOptions(clientId))
@@ -43,9 +44,12 @@ export const useRemoveApp = () =>
             ) =>
                 old
                     ? {
-                          applications: old.applications.filter(
-                              (a) => a.clientId !== variables.data.clientId
-                          ),
+                          applications:
+                              old.applications.filter(
+                                  (a) =>
+                                      a.clientId !==
+                                      variables.data.clientId
+                              ),
                       }
                     : { applications: [] },
         },
@@ -61,14 +65,27 @@ export const useSetAppActive = () =>
             queryKey: consoleOptions().queryKey,
             updater: (
                 old: AppListData | undefined,
-                variables: { data: { clientId: string; active: boolean } }
+                variables: {
+                    data: {
+                        clientId: string
+                        active: boolean
+                    }
+                }
             ) =>
                 old
                     ? {
-                          applications: old.applications.map((a) =>
-                              a.clientId === variables.data.clientId
-                                  ? { ...a, disabled: !variables.data.active }
-                                  : a
+                          applications: old.applications.map(
+                              (a) =>
+                                  a.clientId ===
+                                  variables.data.clientId
+                                      ? {
+                                            ...a,
+                                            disabled:
+                                                !variables
+                                                    .data
+                                                    .active,
+                                        }
+                                      : a
                           ),
                       }
                     : { applications: [] },

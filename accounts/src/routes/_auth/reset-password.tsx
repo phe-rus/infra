@@ -17,10 +17,12 @@ const newPasswordFormSchema = z.object({
         .max(48, "At most 48 characters"),
 })
 
-export const Route = createFileRoute("/_auth/reset-password")({
-    validateSearch: resetPasswordSearchSchema,
-    component: RouteComponent,
-})
+export const Route = createFileRoute("/_auth/reset-password")(
+    {
+        validateSearch: resetPasswordSearchSchema,
+        component: RouteComponent,
+    }
+)
 
 function RouteComponent() {
     const { token, error } = Route.useSearch()
@@ -46,7 +48,9 @@ function RouteComponent() {
                 <ViewController.Heading
                     size="compact"
                     title={
-                        invalid ? "Link expired" : "Set a new password"
+                        invalid
+                            ? "Link expired"
+                            : "Set a new password"
                     }
                     description={
                         invalid

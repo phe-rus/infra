@@ -1,4 +1,8 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import {
+    createFileRoute,
+    Outlet,
+    redirect,
+} from "@tanstack/react-router"
 import { Headers } from "@/components/headers"
 
 export const Route = createFileRoute("/_workspace")({

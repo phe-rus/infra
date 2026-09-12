@@ -1,9 +1,11 @@
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_workspace/settings/")({
-    component: RouteComponent,
-})
+export const Route = createFileRoute("/_workspace/settings/")(
+    {
+        component: RouteComponent,
+    }
+)
 
 function RouteComponent() {
     return (

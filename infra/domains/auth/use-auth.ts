@@ -20,11 +20,14 @@ export const useSignIn = () => {
         mutationFn: signIn,
         onSuccess: (data) => {
             if (data.error) {
-                t.error("Sign in failed", { description: data.error })
+                t.error("Sign in failed", {
+                    description: data.error,
+                })
                 return
             }
             t.success("Signed in", {
-                description: "You have been signed in successfully",
+                description:
+                    "You have been signed in successfully",
                 duration: 2000,
             })
             q.clear()
@@ -39,7 +42,9 @@ export const useSignIn = () => {
             }, 50)
         },
         onError: (error) => {
-            t.error("Sign in failed", { description: error.message })
+            t.error("Sign in failed", {
+                description: error.message,
+            })
         },
     })
 }
@@ -50,13 +55,17 @@ export const useLogout = () => {
     return useAppMutation({
         mutationFn: signOut,
         successMessage: "Signed out",
-        successDescription: "You have been signed out successfully",
+        successDescription:
+            "You have been signed out successfully",
         onSuccess: () => {
             q.invalidateQueries(meOptions())
             q.clear()
             setTimeout(async () => {
                 await router.invalidate()
-                router.navigate({ to: "/sign-in", replace: true })
+                router.navigate({
+                    to: "/sign-in",
+                    replace: true,
+                })
             }, 50)
         },
         errorMessage: "Sign out failed",
@@ -70,17 +79,21 @@ export const useCompleteSetup = () => {
         mutationFn: completeSetup,
         onSuccess: (data) => {
             if (data.error) {
-                t.error("Setup failed", { description: data.error })
+                t.error("Setup failed", {
+                    description: data.error,
+                })
                 return
             }
             if (data.needsVerification) {
                 t.success("Account created", {
-                    description: "Check your email to verify the account before signing in.",
+                    description:
+                        "Check your email to verify the account before signing in.",
                 })
                 return
             }
             t.success("Account created", {
-                description: "Signed in as the first admin account.",
+                description:
+                    "Signed in as the first admin account.",
             })
             q.invalidateQueries(setupOptions())
             setTimeout(() => {
@@ -92,7 +105,9 @@ export const useCompleteSetup = () => {
             }, 50)
         },
         onError: (error) => {
-            t.error("Setup failed", { description: error.message })
+            t.error("Setup failed", {
+                description: error.message,
+            })
         },
     })
 }
@@ -101,7 +116,8 @@ export const useResendVerificationEmail = () =>
     useAppMutation({
         mutationFn: resendVerificationEmail,
         successMessage: "Verification email sent",
-        successDescription: "Check your inbox for the new link.",
+        successDescription:
+            "Check your inbox for the new link.",
         errorMessage: "Could not send verification email",
     })
 
@@ -125,10 +141,14 @@ export const useResetPassword = () => {
                 return
             }
             t.success("Password reset", {
-                description: "Sign in with your new password.",
+                description:
+                    "Sign in with your new password.",
             })
             setTimeout(() => {
-                router.navigate({ to: "/sign-in", replace: true })
+                router.navigate({
+                    to: "/sign-in",
+                    replace: true,
+                })
             }, 50)
         },
         onError: (error) => {

@@ -9,7 +9,9 @@ export type SetUserPasswordProps = {
     userId: string
 }
 
-export const SetUserPassword: FC<SetUserPasswordProps> = ({ userId }) => {
+export const SetUserPassword: FC<SetUserPasswordProps> = ({
+    userId,
+}) => {
     const { mutateAsync: setPassword } = useSetUserPassword()
     const [newPassword, setNewPassword] = useState("")
 
@@ -20,9 +22,14 @@ export const SetUserPassword: FC<SetUserPasswordProps> = ({ userId }) => {
 
     return (
         <section className="flex flex-col gap-2">
-            <h3 className="text-sm font-medium">Set new password</h3>
+            <h3 className="text-sm font-medium">
+                Set new password
+            </h3>
             <Field>
-                <FieldLabel htmlFor="new-password" className="sr-only">
+                <FieldLabel
+                    htmlFor="new-password"
+                    className="sr-only"
+                >
                     New password
                 </FieldLabel>
                 <Input
@@ -30,7 +37,9 @@ export const SetUserPassword: FC<SetUserPasswordProps> = ({ userId }) => {
                     type="password"
                     autoComplete="new-password"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={(e) =>
+                        setNewPassword(e.target.value)
+                    }
                     placeholder="At least 8 characters"
                 />
             </Field>

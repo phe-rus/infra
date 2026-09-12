@@ -10,7 +10,11 @@ const ICONS: Record<
     (props: { className?: string }) => React.JSX.Element
 > = {
     react: ({ className }) => (
-        <svg viewBox="0 0 24 24" className={className} fill="none">
+        <svg
+            viewBox="0 0 24 24"
+            className={className}
+            fill="none"
+        >
             <circle cx="12" cy="12" r="2" fill="#61DAFB" />
             <g stroke="#61DAFB" strokeWidth="1.2">
                 <ellipse cx="12" cy="12" rx="10" ry="4.2" />
@@ -33,7 +37,10 @@ const ICONS: Record<
     ),
     vue: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className}>
-            <path d="M2 3h4.2L12 13l5.8-10H22L12 21 2 3Z" fill="#41B883" />
+            <path
+                d="M2 3h4.2L12 13l5.8-10H22L12 21 2 3Z"
+                fill="#41B883"
+            />
             <path
                 d="M6.2 3H9.8L12 6.8 14.2 3h3.6L12 13 6.2 3Z"
                 fill="#35495E"
@@ -55,12 +62,18 @@ const ICONS: Record<
     next: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className}>
             <circle cx="12" cy="12" r="11" fill="#000" />
-            <path d="M9 8h1.6l5 7V8H17v9h-1.6l-5-7v7H9V8Z" fill="#fff" />
+            <path
+                d="M9 8h1.6l5 7V8H17v9h-1.6l-5-7v7H9V8Z"
+                fill="#fff"
+            />
         </svg>
     ),
     kotlin: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className}>
-            <path d="M3 3h18L12 12l9 9H3l9-9L3 3Z" fill="#7F52FF" />
+            <path
+                d="M3 3h18L12 12l9 9H3l9-9L3 3Z"
+                fill="#7F52FF"
+            />
         </svg>
     ),
     swift: ({ className }) => (
@@ -74,7 +87,10 @@ const ICONS: Record<
     flutter: ({ className }) => (
         <svg viewBox="0 0 24 24" className={className}>
             <path d="M14 2 3 13h6l11-11h-6Z" fill="#02569B" />
-            <path d="M9 13 3 19l3 3 11-11h-6l-2 2Z" fill="#02569B" />
+            <path
+                d="M9 13 3 19l3 3 11-11h-6l-2 2Z"
+                fill="#02569B"
+            />
         </svg>
     ),
 }
@@ -90,6 +106,12 @@ export function FrameworkIcon({
         framework && framework !== "other"
             ? ICONS[framework as Exclude<Framework, "other">]
             : undefined
-    if (!Icon) return <HugeiconsIcon icon={SourceCodeIcon} className={className} />
+    if (!Icon)
+        return (
+            <HugeiconsIcon
+                icon={SourceCodeIcon}
+                className={className}
+            />
+        )
     return <Icon className={className} />
 }

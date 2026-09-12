@@ -1,4 +1,7 @@
-import { recentEventsOptions, useRecentEvents } from "@/domains/stats"
+import {
+    recentEventsOptions,
+    useRecentEvents,
+} from "@/domains/stats"
 import type { RecentEventsData } from "@/domains/stats"
 import { Badge } from "@infra/ui/components/badge"
 import { formatUtc } from "@infra/ui/lib/date"
@@ -10,7 +13,10 @@ import { useMemo } from "react"
 
 export const Route = createFileRoute("/_workspace/logs/")({
     loader: async ({ context: { q } }) => {
-        await q.query({ ...recentEventsOptions(), staleTime: 'static' })
+        await q.query({
+            ...recentEventsOptions(),
+            staleTime: "static",
+        })
     },
     component: RouteComponent,
 })
@@ -26,7 +32,13 @@ function RouteComponent() {
                 accessorKey: "category",
                 header: "Category",
                 cell: ({ row }) => (
-                    <Badge variant={row.original.category === "auth" ? "secondary" : "outline"}>
+                    <Badge
+                        variant={
+                            row.original.category === "auth"
+                                ? "secondary"
+                                : "outline"
+                        }
+                    >
                         {row.original.category}
                     </Badge>
                 ),
@@ -37,9 +49,20 @@ function RouteComponent() {
                 header: "Outcome",
                 cell: ({ row }) => {
                     const { outcome } = row.original
-                    if (!outcome) return <span className="text-muted-foreground">-</span>
+                    if (!outcome)
+                        return (
+                            <span className="text-muted-foreground">
+                                -
+                            </span>
+                        )
                     return (
-                        <Badge variant={outcome === "success" ? "default" : "outline"}>
+                        <Badge
+                            variant={
+                                outcome === "success"
+                                    ? "default"
+                                    : "outline"
+                            }
+                        >
                             {outcome}
                         </Badge>
                     )
@@ -50,22 +73,35 @@ function RouteComponent() {
                 accessorKey: "target",
                 header: "Target",
                 cell: ({ row }) =>
-                    row.original.target || <span className="text-muted-foreground">-</span>,
+                    row.original.target || (
+                        <span className="text-muted-foreground">
+                            -
+                        </span>
+                    ),
             },
             { accessorKey: "ip", header: "IP" },
             {
                 accessorKey: "country",
                 header: "Location",
                 cell: ({ row }) => {
-                    const { country, city, region } = row.original
-                    if (!country) return <span className="text-muted-foreground">-</span>
-                    return [city, region, country].filter(Boolean).join(", ")
+                    const { country, city, region } =
+                        row.original
+                    if (!country)
+                        return (
+                            <span className="text-muted-foreground">
+                                -
+                            </span>
+                        )
+                    return [city, region, country]
+                        .filter(Boolean)
+                        .join(", ")
                 },
             },
             {
                 accessorKey: "timestamp",
                 header: "Time",
-                cell: ({ row }) => formatUtc(row.original.timestamp, "PPp"),
+                cell: ({ row }) =>
+                    formatUtc(row.original.timestamp, "PPp"),
             },
         ],
         []
@@ -84,7 +120,9 @@ function RouteComponent() {
                 aria-label="Events"
                 columns={columns}
                 data={data.events}
-                getRowId={(row) => `${row.timestamp}-${row.category}-${row.event}-${row.actor}`}
+                getRowId={(row) =>
+                    `${row.timestamp}-${row.category}-${row.event}-${row.actor}`
+                }
                 emptyMessage="No events yet."
             />
         </ViewController>

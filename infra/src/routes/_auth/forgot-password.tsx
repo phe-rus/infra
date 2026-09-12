@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
-import { forgotPasswordSchema, useRequestPasswordReset } from "@/domains/auth"
+import {
+    forgotPasswordSchema,
+    useRequestPasswordReset,
+} from "@/domains/auth"
 import { cn } from "@infra/ui/lib/utils"
 import type { z } from "zod"
 import { buttonVariants } from "@infra/ui/components/button"
@@ -9,7 +12,9 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 
-export const Route = createFileRoute("/_auth/forgot-password")({
+export const Route = createFileRoute(
+    "/_auth/forgot-password"
+)({
     component: RouteComponent,
 })
 
@@ -18,10 +23,14 @@ function RouteComponent() {
         useRequestPasswordReset()
 
     const form = useAppForm({
-        defaultValues: { email: "" } as z.input<typeof forgotPasswordSchema>,
+        defaultValues: { email: "" } as z.input<
+            typeof forgotPasswordSchema
+        >,
         validators: { onChange: forgotPasswordSchema },
         onSubmit: async ({ value }) => {
-            await requestPasswordReset({ data: { email: value.email } })
+            await requestPasswordReset({
+                data: { email: value.email },
+            })
         },
     })
 

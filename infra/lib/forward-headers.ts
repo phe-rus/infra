@@ -1,6 +1,8 @@
 import { setResponseHeader } from "@tanstack/react-start/server"
 
-export function forwardAuthHeaders(headers: Headers | undefined) {
+export function forwardAuthHeaders(
+    headers: Headers | undefined
+) {
     if (!headers) return
     for (const [name, value] of headers.entries()) {
         if (name.toLowerCase() === "set-cookie") continue

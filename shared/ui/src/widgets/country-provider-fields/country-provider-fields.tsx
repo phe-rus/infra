@@ -50,19 +50,27 @@ export function CountryProviderFields({
     return (
         <>
             <Field>
-                <FieldLabel htmlFor={`${idPrefix}-country`}>Country</FieldLabel>
+                <FieldLabel htmlFor={`${idPrefix}-country`}>
+                    Country
+                </FieldLabel>
                 <Select
                     id={`${idPrefix}-country`}
                     aria-label="Country"
                     value={countryCode}
-                    onValueChange={(key) => selectCountry(String(key))}
+                    onValueChange={(key) =>
+                        selectCountry(String(key))
+                    }
                 >
                     <SelectTrigger>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         {countries.map((c) => (
-                            <SelectItem key={c.country} value={c.country} title={c.name}>
+                            <SelectItem
+                                key={c.country}
+                                value={c.country}
+                                title={c.name}
+                            >
                                 <span className="flex items-center gap-2">
                                     <img
                                         src={c.flag}
@@ -78,12 +86,16 @@ export function CountryProviderFields({
             </Field>
 
             <Field>
-                <FieldLabel htmlFor={`${idPrefix}-provider`}>Provider</FieldLabel>
+                <FieldLabel htmlFor={`${idPrefix}-provider`}>
+                    Provider
+                </FieldLabel>
                 <Select
                     id={`${idPrefix}-provider`}
                     aria-label="Provider"
                     value={providerCode}
-                    onValueChange={(key) => setProviderCode(String(key))}
+                    onValueChange={(key) =>
+                        setProviderCode(String(key))
+                    }
                     disabled={!country?.providers.length}
                 >
                     <SelectTrigger>
@@ -91,9 +103,17 @@ export function CountryProviderFields({
                     </SelectTrigger>
                     <SelectContent>
                         {country?.providers.map((p) => (
-                            <SelectItem key={p.provider} value={p.provider} title={p.displayName}>
+                            <SelectItem
+                                key={p.provider}
+                                value={p.provider}
+                                title={p.displayName}
+                            >
                                 <span className="flex items-center gap-2">
-                                    <img src={p.logo} alt="" className="size-4 object-contain" />
+                                    <img
+                                        src={p.logo}
+                                        alt=""
+                                        className="size-4 object-contain"
+                                    />
                                     {p.displayName}
                                 </span>
                             </SelectItem>
@@ -103,12 +123,20 @@ export function CountryProviderFields({
             </Field>
 
             <Field className={phoneClassName}>
-                <FieldLabel htmlFor={`${idPrefix}-phone`}>Phone number</FieldLabel>
+                <FieldLabel htmlFor={`${idPrefix}-phone`}>
+                    Phone number
+                </FieldLabel>
                 <Input
                     id={`${idPrefix}-phone`}
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder={country ? `${country.prefix}…` : undefined}
+                    onChange={(e) =>
+                        setPhoneNumber(e.target.value)
+                    }
+                    placeholder={
+                        country
+                            ? `${country.prefix}…`
+                            : undefined
+                    }
                 />
             </Field>
         </>

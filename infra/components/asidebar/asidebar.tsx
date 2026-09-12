@@ -2,7 +2,7 @@ import { meOptions, useLogout } from "@/domains/auth"
 import { useStopImpersonating } from "@/domains/users"
 import {
     ChevronLeftIcon,
-    ChevronRightIcon
+    ChevronRightIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@infra/ui/components/button"
@@ -27,8 +27,12 @@ type SidebarProps = {
     open: boolean
     setOpen: (open: boolean) => void
 }
-const SidebarContext = createContext<SidebarProps | null>(null)
-export const Dashboard: FC<DashboardProps> = ({ children }) => {
+const SidebarContext = createContext<SidebarProps | null>(
+    null
+)
+export const Dashboard: FC<DashboardProps> = ({
+    children,
+}) => {
     const { isPending, mutateAsync: signOut } = useLogout()
     const { data: session } = useSuspenseQuery(meOptions())
     const {
@@ -75,9 +79,12 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                     <aside
                         ref={ref}
                         onMouseEnter={() => {
-                            if (!open && !isMobile) setIsPeeking(true)
+                            if (!open && !isMobile)
+                                setIsPeeking(true)
                         }}
-                        onMouseLeave={() => setIsPeeking(false)}
+                        onMouseLeave={() =>
+                            setIsPeeking(false)
+                        }
                         className={cn(
                             "fixed h-full shrink-0 border-r bg-muted/15 shadow-md",
                             "border-border/15 inset-y-0 backdrop-blur-3xl z-55",
@@ -87,12 +94,14 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             open
                                 ? "w-72 translate-x-0 z-55 md:relative"
                                 : isPeeking
-                                    ? "w-72 translate-x-0 z-55 md:absolute shadow-2xl"
-                                    : "w-72 -translate-x-full z-10 md:absolute"
+                                  ? "w-72 translate-x-0 z-55 md:absolute shadow-2xl"
+                                  : "w-72 -translate-x-full z-10 md:absolute"
                         )}
                     >
                         <Button
-                            size={open ? "icon-xs" : "icon-sm"}
+                            size={
+                                open ? "icon-xs" : "icon-sm"
+                            }
                             variant="secondary"
                             aria-label={
                                 isExpanded
@@ -110,15 +119,21 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             onClick={() => toggleSidebar()}
                         >
                             {!isExpanded ? (
-                                <HugeiconsIcon icon={ChevronRightIcon} />
+                                <HugeiconsIcon
+                                    icon={ChevronRightIcon}
+                                />
                             ) : (
-                                <HugeiconsIcon icon={ChevronLeftIcon} />
+                                <HugeiconsIcon
+                                    icon={ChevronLeftIcon}
+                                />
                             )}
                         </Button>
                         <section
                             className={cn(
                                 "min-h-svh flex-col gap-5 px-5 py-2",
-                                !isExpanded ? "hidden" : "flex"
+                                !isExpanded
+                                    ? "hidden"
+                                    : "flex"
                             )}
                         >
                             <section className="flex flex-col gap-2">
@@ -134,93 +149,142 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                         <img
                                             src="/favicon.svg"
                                             alt="Infra"
-                                            className='size-4.5 mix-blend-normal rounded-full!'
+                                            className="size-4.5 mix-blend-normal rounded-full!"
                                         />
                                         Infra
                                     </Link>
                                 </nav>
                                 <nav className="flex flex-col">
-                                    {config.map(({ label, items, ...props }, index) => {
-                                        if (!items) {
+                                    {config.map(
+                                        (
+                                            {
+                                                label,
+                                                items,
+                                                ...props
+                                            },
+                                            index
+                                        ) => {
+                                            if (!items) {
+                                                return (
+                                                    <Link
+                                                        key={
+                                                            index
+                                                        }
+                                                        to={
+                                                            props.path
+                                                        }
+                                                        className={cn(
+                                                            "group tracking-tight flex items-center gap-2",
+                                                            "transition-colors duration-150 ease-out",
+                                                            "relative font-light!",
+                                                            props.isDev &&
+                                                                "duration-150 opacity-60"
+                                                        )}
+                                                        activeProps={{
+                                                            className:
+                                                                cn(
+                                                                    "text-current",
+                                                                    props.isDev &&
+                                                                        "opacity-100"
+                                                                ),
+                                                        }}
+                                                    >
+                                                        {props.Icon && (
+                                                            <HugeiconsIcon
+                                                                icon={
+                                                                    props.Icon
+                                                                }
+                                                                className="size-5"
+                                                            />
+                                                        )}
+                                                        {
+                                                            label
+                                                        }
+                                                        {props.isDev && (
+                                                            <span
+                                                                className={cn(
+                                                                    "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
+                                                                    "text-destructive-foreground rounded-2xl",
+                                                                    "px-1 py-0.5"
+                                                                )}
+                                                            >
+                                                                comming
+                                                                soon
+                                                            </span>
+                                                        )}
+                                                    </Link>
+                                                )
+                                            }
                                             return (
-                                                <Link
-                                                    key={index}
-                                                    to={props.path}
-                                                    className={cn(
-                                                        "group tracking-tight flex items-center gap-2",
-                                                        "transition-colors duration-150 ease-out",
-                                                        "relative font-light!",
-                                                        props.isDev &&
-                                                        "duration-150 opacity-60"
-                                                    )}
-                                                    activeProps={{
-                                                        className: cn("text-current", props.isDev && "opacity-100"),
-                                                    }}
+                                                <Fragment
+                                                    key={
+                                                        index
+                                                    }
                                                 >
-                                                    {props.Icon && (
-                                                        <HugeiconsIcon icon={props.Icon} className="size-5" />
-                                                    )}
-                                                    {label}
-                                                    {props.isDev && (
-                                                        <span
-                                                            className={cn(
-                                                                "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
-                                                                "text-destructive-foreground rounded-2xl",
-                                                                "px-1 py-0.5"
-                                                            )}
-                                                        >
-                                                            comming
-                                                            soon
-                                                        </span>
-                                                    )}
-                                                </Link>
+                                                    <h4 className="pt-3 pb-1 text-base font-light">
+                                                        {
+                                                            label
+                                                        }
+                                                    </h4>
+                                                    <nav className="flex flex-col">
+                                                        {items?.map(
+                                                            (
+                                                                i,
+                                                                inx
+                                                            ) => {
+                                                                return (
+                                                                    <Link
+                                                                        key={
+                                                                            inx
+                                                                        }
+                                                                        to={
+                                                                            i.path
+                                                                        }
+                                                                        className={cn(
+                                                                            "group tracking-tight flex items-center gap-2",
+                                                                            "transition-colors duration-150 ease-out",
+                                                                            "relative font-light!",
+                                                                            i.isDev &&
+                                                                                "duration-150 opacity-60"
+                                                                        )}
+                                                                        activeProps={{
+                                                                            className:
+                                                                                cn(
+                                                                                    "text-current",
+                                                                                    i.isDev &&
+                                                                                        "opacity-100"
+                                                                                ),
+                                                                        }}
+                                                                    >
+                                                                        <HugeiconsIcon
+                                                                            icon={
+                                                                                i.Icon
+                                                                            }
+                                                                            className="size-4.5"
+                                                                        />
+                                                                        {
+                                                                            i.label
+                                                                        }
+                                                                        {i.isDev && (
+                                                                            <span
+                                                                                className={cn(
+                                                                                    "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
+                                                                                    "text-destructive-foreground rounded-2xl",
+                                                                                    "px-1 py-0.5"
+                                                                                )}
+                                                                            >
+                                                                                comming
+                                                                                soon
+                                                                            </span>
+                                                                        )}
+                                                                    </Link>
+                                                                )
+                                                            }
+                                                        )}
+                                                    </nav>
+                                                </Fragment>
                                             )
                                         }
-                                        return (
-                                            <Fragment key={index}>
-                                                <h4 className="pt-3 pb-1 text-base font-light">
-                                                    {label}
-                                                </h4>
-                                                <nav className="flex flex-col">
-                                                    {items?.map((i, inx) => {
-                                                        return (
-                                                            <Link
-                                                                key={inx}
-                                                                to={i.path}
-                                                                className={cn(
-                                                                    "group tracking-tight flex items-center gap-2",
-                                                                    "transition-colors duration-150 ease-out",
-                                                                    "relative font-light!", i.isDev && "duration-150 opacity-60"
-                                                                )}
-                                                                activeProps={{
-                                                                    className: cn(
-                                                                        "text-current",
-                                                                        i.isDev && "opacity-100"
-                                                                    ),
-                                                                }}
-                                                            >
-                                                                <HugeiconsIcon icon={i.Icon} className="size-4.5" />
-                                                                {i.label}
-                                                                {i.isDev && (
-                                                                    <span
-                                                                        className={cn(
-                                                                            "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
-                                                                            "text-destructive-foreground rounded-2xl",
-                                                                            "px-1 py-0.5"
-                                                                        )}
-                                                                    >
-                                                                        comming
-                                                                        soon
-                                                                    </span>
-                                                                )}
-                                                            </Link>
-                                                        )
-                                                    }
-                                                    )}
-                                                </nav>
-                                            </Fragment>
-                                        )
-                                    }
                                     )}
                                 </nav>
                             </section>
@@ -234,7 +298,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                 <Button
                                     size="sm"
                                     className="w-fit!"
-                                    variant='destructive'
+                                    variant="destructive"
                                     onClick={() => signOut()}
                                     disabled={isPending}
                                 >
@@ -250,7 +314,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                             <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b bg-destructive/10 px-5 py-2 text-xs text-destructive">
                                 <span>
                                     Impersonating{" "}
-                                    <strong>{session.user.name}</strong>{" "}
+                                    <strong>
+                                        {session.user.name}
+                                    </strong>{" "}
                                     ({session.user.email})
                                 </span>
                                 <Button
@@ -259,7 +325,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                                     onClick={() =>
                                         void stopImpersonating()
                                     }
-                                    disabled={isStoppingImpersonation}
+                                    disabled={
+                                        isStoppingImpersonation
+                                    }
                                 >
                                     {isStoppingImpersonation
                                         ? "Stopping…"

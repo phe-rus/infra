@@ -29,7 +29,9 @@ export type MinifyBuildOptions = {
     stripEnvConditionals?: boolean
 }
 
-export function minifyBuild(options: MinifyBuildOptions = {}): Plugin {
+export function minifyBuild(
+    options: MinifyBuildOptions = {}
+): Plugin {
     const { stripEnvConditionals = true } = options
     let isProd = false
     return {
@@ -45,12 +47,17 @@ export function minifyBuild(options: MinifyBuildOptions = {}): Plugin {
             if (!stripEnvConditionals || !isProd || !importer)
                 return null
 
-            const resolved = await this.resolve(source, importer, {
-                ...resolveOptions,
-                skipSelf: true,
-            })
+            const resolved = await this.resolve(
+                source,
+                importer,
+                {
+                    ...resolveOptions,
+                    skipSelf: true,
+                }
+            )
             if (!resolved || resolved.external) return null
-            if (!resolved.id.includes("node_modules")) return null
+            if (!resolved.id.includes("node_modules"))
+                return null
             if (!/\.[cm]?js$/.test(resolved.id)) return null
 
             let content: string

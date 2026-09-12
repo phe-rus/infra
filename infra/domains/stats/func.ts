@@ -17,12 +17,16 @@ async function queryAnalytics<T>(sql: string): Promise<T[]> {
         `https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/analytics_engine/sql`,
         {
             method: "POST",
-            headers: { Authorization: `Bearer ${env.CF_ANALYTICS_API_TOKEN}` },
+            headers: {
+                Authorization: `Bearer ${env.CF_ANALYTICS_API_TOKEN}`,
+            },
             body: sql,
         }
     )
     if (!res.ok) {
-        throw new Error(`Analytics query failed: ${res.status} ${await res.text()}`)
+        throw new Error(
+            `Analytics query failed: ${res.status} ${await res.text()}`
+        )
     }
     const json = await res.json<AnalyticsQueryResult<T>>()
     return json.data
@@ -41,7 +45,9 @@ type RecentEventRow = {
     region: string
 }
 
-export const getRecentEvents = createServerFn({ method: "GET" })
+export const getRecentEvents = createServerFn({
+    method: "GET",
+})
     .middleware([AdminMiddleware])
     .handler(async () => {
         const events = await queryAnalytics<RecentEventRow>(
@@ -50,49 +56,73 @@ export const getRecentEvents = createServerFn({ method: "GET" })
         return { events }
     })
 
-export type RecentEventsData = Awaited<ReturnType<typeof getRecentEvents>>
+export type RecentEventsData = Awaited<
+    ReturnType<typeof getRecentEvents>
+>
 
-export const getEventMetrics = createServerFn({ method: "GET" })
+export const getEventMetrics = createServerFn({
+    method: "GET",
+})
     .middleware([AdminMiddleware])
     .handler(async () => {
-        const [authByPath, managementByAction, authDaily, managementDaily] =
-            await Promise.all([
-                queryAnalytics<{ path: string; count: number }>(
-                    `SELECT blob2 AS path, count() AS count FROM auth WHERE blob1 = 'auth' AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY path ORDER BY count DESC FORMAT JSON`
-                ),
-                queryAnalytics<{ action: string; count: number }>(
-                    `SELECT blob2 AS action, count() AS count FROM auth WHERE blob1 = 'management' AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY action ORDER BY count DESC FORMAT JSON`
-                ),
-                queryAnalytics<{ day: string; outcome: string; count: number }>(
-                    `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, blob3 AS outcome, count() AS count FROM auth WHERE blob1 = 'auth' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY day, outcome ORDER BY day ASC FORMAT JSON`
-                ),
-                queryAnalytics<{ day: string; count: number }>(
-                    `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, count() AS count FROM auth WHERE blob1 = 'management' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY day ORDER BY day ASC FORMAT JSON`
-                ),
-            ])
-        return { authByPath, managementByAction, authDaily, managementDaily }
+        const [
+            authByPath,
+            managementByAction,
+            authDaily,
+            managementDaily,
+        ] = await Promise.all([
+            queryAnalytics<{ path: string; count: number }>(
+                `SELECT blob2 AS path, count() AS count FROM auth WHERE blob1 = 'auth' AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY path ORDER BY count DESC FORMAT JSON`
+            ),
+            queryAnalytics<{ action: string; count: number }>(
+                `SELECT blob2 AS action, count() AS count FROM auth WHERE blob1 = 'management' AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY action ORDER BY count DESC FORMAT JSON`
+            ),
+            queryAnalytics<{
+                day: string
+                outcome: string
+                count: number
+            }>(
+                `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, blob3 AS outcome, count() AS count FROM auth WHERE blob1 = 'auth' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY day, outcome ORDER BY day ASC FORMAT JSON`
+            ),
+            queryAnalytics<{ day: string; count: number }>(
+                `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, count() AS count FROM auth WHERE blob1 = 'management' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY day ORDER BY day ASC FORMAT JSON`
+            ),
+        ])
+        return {
+            authByPath,
+            managementByAction,
+            authDaily,
+            managementDaily,
+        }
     })
 
-export type EventMetricsData = Awaited<ReturnType<typeof getEventMetrics>>
+export type EventMetricsData = Awaited<
+    ReturnType<typeof getEventMetrics>
+>
 
 export const getStats = createServerFn({ method: "GET" })
     .middleware([AdminMiddleware])
     .handler(async () => {
         const headers = getRequestHeaders()
         const cutoff = Date.now() - ACTIVE_WINDOW_MS
-        const [{ total: totalUsers }, { total: monthlyActiveUsers }] =
-            await Promise.all([
-                auth.api.listUsers({ headers, query: { limit: 1 } }),
-                auth.api.listUsers({
-                    headers,
-                    query: {
-                        limit: 1,
-                        filterField: "lastActiveAt",
-                        filterOperator: "gte",
-                        filterValue: cutoff,
-                    },
-                }),
-            ])
+        const [
+            { total: totalUsers },
+            { total: monthlyActiveUsers },
+        ] = await Promise.all([
+            auth.api.listUsers({
+                headers,
+                query: { limit: 1 },
+            }),
+            auth.api.listUsers({
+                headers,
+                query: {
+                    limit: 1,
+                    filterField: "lastActiveAt",
+                    filterOperator: "gte",
+                    filterValue: cutoff,
+                },
+            }),
+        ])
         return { totalUsers, monthlyActiveUsers }
     })
 

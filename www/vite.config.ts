@@ -28,11 +28,22 @@ const config = defineConfig({
         devtools(),
         tailwindcss(),
         paraglideVitePlugin({
-            project: path.resolve(import.meta.dirname, './project.inlang'),
-            outdir: path.resolve(import.meta.dirname, './src/paraglide'),
-            outputStructure: 'message-modules',
-            cookieName: 'PARAGLIDE_LOCALE',
-            strategy: ['url', 'cookie', 'preferredLanguage', 'baseLocale'],
+            project: path.resolve(
+                import.meta.dirname,
+                "./project.inlang"
+            ),
+            outdir: path.resolve(
+                import.meta.dirname,
+                "./src/paraglide"
+            ),
+            outputStructure: "message-modules",
+            cookieName: "PARAGLIDE_LOCALE",
+            strategy: [
+                "url",
+                "cookie",
+                "preferredLanguage",
+                "baseLocale",
+            ],
             emitTsDeclarations: true,
         }),
         tanstackStart(),
