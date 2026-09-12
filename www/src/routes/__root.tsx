@@ -1,4 +1,5 @@
 import { organizationJsonLd, seo } from "@/lib/seo"
+import ribbon from "@/styles/ribbon.css?url"
 import { getLocale } from "../paraglide/runtime"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
@@ -15,7 +16,7 @@ export const Route = createRootRoute({
         const { meta, links } = seo({
             title: "Pherus",
             description:
-                "Pherus is a research and innovation company built on Open Knowledge: understand the problem first, then share what was learned.",
+                "Pherus is a practical research, sciences, innovation, and technology company: a place for curious ideas to become real things.",
         })
 
         return {
@@ -35,6 +36,10 @@ export const Route = createRootRoute({
                 {
                     rel: "stylesheet",
                     href: tailwind,
+                },
+                {
+                    rel: "stylesheet",
+                    href: ribbon,
                 },
                 {
                     rel: "icon",

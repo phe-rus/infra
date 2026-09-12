@@ -1,9 +1,18 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { Nav } from "@/components/nav"
+import {
+    createFileRoute,
+    Outlet,
+} from "@tanstack/react-router"
 
-export const Route = createFileRoute('/_public')({
-  component: RouteComponent,
+export const Route = createFileRoute("/_public")({
+    component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <Outlet />
+    return (
+        <>
+            <Nav />
+            <Outlet />
+        </>
+    )
 }

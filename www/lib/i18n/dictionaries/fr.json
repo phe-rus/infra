@@ -1,0 +1,42 @@
+{
+    "nav": {
+        "ecosystem": "Écosystème",
+        "showcase": "Vitrine",
+        "about": "À propos",
+        "locale": "Langue"
+    },
+    "footer": {
+        "statement": "Pherus est une entreprise de recherche pratique, de sciences, d'innovation et de technologie : un endroit où les idées curieuses deviennent des choses réelles."
+    },
+    "home": {
+        "thesis": "Nous sommes un collectif d'individus partageant les mêmes idées, animés par la curiosité et le désir d'innover.",
+        "principle": "Du logiciel quand le logiciel est la réponse. De la recherche, de la science ou de l'infrastructure quand ce sont elles la réponse.",
+        "nameLine": "Le nom vient de Pherusa, celle qui porte : Pherus existe pour porter les idées jusqu'à la réalité, et le savoir vers l'avant.",
+        "showcaseCta": "Voir en action",
+        "moreCta": "L'écosystème complet"
+    },
+    "showcase": {
+        "title": "Vitrine",
+        "intro": "Des domaines différents, une seule organisation. Touchez pour en savoir plus.",
+        "close": "Fermer"
+    },
+    "about": {
+        "title": "Pherus",
+        "whyLede": "Pherus existe parce qu'il y a des problèmes intéressants à explorer et des choses utiles à construire.",
+        "historyLabel": "Histoire",
+        "nameLede": "Pherus vient de Pherusa, celle qui porte.",
+        "nameBody": "Porter les idées jusqu'à la réalité. Le savoir vers l'avant.",
+        "notProfitLede": "Le profit n'est pas le but.",
+        "enduringHeading": "Fait pour durer",
+        "enduringBody": "Pensée pour durer au-delà de la personne qui l'a fondée. Des principes protégés, pas hérités.",
+        "flowFounder": "Fondateur",
+        "flowPrinciples": "Principes",
+        "flowFuture": "Futurs gardiens",
+        "honestyLede": "Tout ici n'est pas terminé.",
+        "cta": "Voir ce que cela veut dire concrètement"
+    },
+    "ecosystem": {
+        "title": "Écosystème",
+        "intro": "Ce ne sont pas des produits sans lien les uns avec les autres dans une place de marché d'applications. Ce sont différentes expressions des mêmes intérêts d'une seule organisation."
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "nav": {
+        "ecosystem": "生态系统",
+        "showcase": "作品集",
+        "about": "关于",
+        "locale": "语言"
+    },
+    "footer": {
+        "statement": "Pherus 是一家务实的研究、科学、创新与技术公司,一个让好奇的想法变成真实事物的地方。"
+    },
+    "home": {
+        "thesis": "我们是充满好奇心并致力于创新的同路人组成的集体。",
+        "principle": "如果软件是答案,就用软件。如果研究、科学或基础设施是答案,就用那些。",
+        "nameLine": "这个名字来自 Pherusa,意为承载者:Pherus 的存在,就是为了把想法带入现实,把知识传承下去。",
+        "showcaseCta": "看看实际效果",
+        "moreCta": "完整生态系统"
+    },
+    "showcase": {
+        "title": "作品集",
+        "intro": "不同的领域,同一个组织。点开看看。",
+        "close": "关闭"
+    },
+    "about": {
+        "title": "Pherus",
+        "whyLede": "Pherus 的存在,是因为有值得研究的有趣问题,也有值得打造的有用事物。",
+        "historyLabel": "历史",
+        "nameLede": "Pherus 来自 Pherusa,意为承载者。",
+        "nameBody": "承载想法进入现实。知识向前。",
+        "notProfitLede": "重点不在收入。",
+        "enduringHeading": "为长久而建",
+        "enduringBody": "目标是比创始人本人存在得更久。原则被保护,而不是被继承。",
+        "flowFounder": "创始人",
+        "flowPrinciples": "原则",
+        "flowFuture": "未来的守护者",
+        "honestyLede": "这里并非一切都已完成。",
+        "cta": "看看这具体意味着什么"
+    },
+    "ecosystem": {
+        "title": "生态系统",
+        "intro": "这些并不是应用商店里互不相关的产品,而是同一个组织不同兴趣的体现。"
+    }
+}
