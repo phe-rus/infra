@@ -1,4 +1,5 @@
 import { organizationJsonLd, seo } from "@/lib/seo"
+import { getLocale } from "../paraglide/runtime"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
@@ -35,15 +36,27 @@ export const Route = createRootRoute({
                     rel: "stylesheet",
                     href: tailwind,
                 },
-                { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-                { rel: "apple-touch-icon", href: "/favicon.svg" },
-                { rel: "manifest", href: "/site.webmanifest" },
+                {
+                    rel: "icon",
+                    type: "image/svg+xml",
+                    href: "/favicon.svg",
+                },
+                {
+                    rel: "apple-touch-icon",
+                    href: "/favicon.svg",
+                },
+                {
+                    rel: "manifest",
+                    href: "/site.webmanifest",
+                },
                 ...links,
             ],
             scripts: [
                 {
                     type: "application/ld+json",
-                    children: JSON.stringify(organizationJsonLd()),
+                    children: JSON.stringify(
+                        organizationJsonLd()
+                    ),
                 },
             ],
         }
@@ -53,7 +66,7 @@ export const Route = createRootRoute({
 
 function RootDocument() {
     return (
-        <ComposeViewport>
+        <ComposeViewport lang={getLocale()}>
             <head>
                 <HeadContent />
             </head>

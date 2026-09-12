@@ -1,4 +1,5 @@
 import handler from "@tanstack/react-start/server-entry"
+import { paraglideMiddleware } from "./paraglide/server"
 
 export type RequestContext = {
     env: Env
@@ -13,14 +14,21 @@ declare module "@tanstack/react-start" {
 }
 
 export default {
-    async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-        return handler.fetch(request, {
-            context: {
-                // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
-                env: env,
-                waitUntil: ctx.waitUntil.bind(ctx),
-                passThroughOnException: ctx.passThroughOnException.bind(ctx),
-            },
-        })
+    async fetch(
+        request: Request,
+        env: Env,
+        ctx: ExecutionContext
+    ) {
+        return paraglideMiddleware(request, () =>
+            handler.fetch(request, {
+                context: {
+                    // @ts-expect-error - Cloudflare's Env type doesn't match TanStack Start's context shape
+                    env: env,
+                    waitUntil: ctx.waitUntil.bind(ctx),
+                    passThroughOnException:
+                        ctx.passThroughOnException.bind(ctx),
+                },
+            })
+        )
     },
 }

@@ -21,4 +21,5 @@ todos.json
 # plugin / wrangler types respectively, never hand-edited
 bun.lock
 **/src/routeTree.gen.ts
+**/src/paraglide
 worker-configuration.d.ts

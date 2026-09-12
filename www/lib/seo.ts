@@ -1,3 +1,5 @@
+import { localizeUrl } from "@/src/paraglide/runtime"
+
 const SITE_URL = import.meta.env.VITE_SITE_URL as string
 
 type SeoProps = {
@@ -19,28 +21,67 @@ export const seo = ({
     path = "/",
     publishedTime,
 }: SeoProps) => {
-    const fullTitle = title === "Pherus" ? title : `${title} · Pherus`
-    const absoluteImage = image.startsWith("http") ? image : `${SITE_URL}${image}`
-    const canonicalUrl = `${SITE_URL}${path === "/" ? "" : path}`
+    const fullTitle =
+        title === "Pherus" ? title : `${title} · Pherus`
+    const absoluteImage = image.startsWith("http")
+        ? image
+        : `${SITE_URL}${image}`
+    const rawCanonicalUrl = `${SITE_URL}${path === "/" ? "" : path}`
+    const canonicalUrl = URL.canParse(rawCanonicalUrl)
+        ? localizeUrl(rawCanonicalUrl).toString()
+        : rawCanonicalUrl
 
     const meta = [
         { title: fullTitle },
-        ...(description ? [{ name: "description", content: description }] : []),
-        ...(keywords ? [{ name: "keywords", content: keywords.join(", ") }] : []),
+        ...(description
+            ? [{ name: "description", content: description }]
+            : []),
+        ...(keywords
+            ? [
+                  {
+                      name: "keywords",
+                      content: keywords.join(", "),
+                  },
+              ]
+            : []),
 
         // OG tags
         { name: "og:type", content: type },
         { name: "og:title", content: fullTitle },
-        ...(description ? [{ name: "og:description", content: description }] : []),
+        ...(description
+            ? [
+                  {
+                      name: "og:description",
+                      content: description,
+                  },
+              ]
+            : []),
         { name: "og:site_name", content: "Pherus" },
         { name: "og:image", content: absoluteImage },
         { name: "og:url", content: canonicalUrl },
-        ...(publishedTime ? [{ name: "article:published_time", content: publishedTime }] : []),
+        ...(publishedTime
+            ? [
+                  {
+                      name: "article:published_time",
+                      content: publishedTime,
+                  },
+              ]
+            : []),
 
         // Twitter card tags
-        { name: "twitter:card", content: "summary_large_image" },
+        {
+            name: "twitter:card",
+            content: "summary_large_image",
+        },
         { name: "twitter:title", content: fullTitle },
-        ...(description ? [{ name: "twitter:description", content: description }] : []),
+        ...(description
+            ? [
+                  {
+                      name: "twitter:description",
+                      content: description,
+                  },
+              ]
+            : []),
         { name: "twitter:image", content: absoluteImage },
     ]
 

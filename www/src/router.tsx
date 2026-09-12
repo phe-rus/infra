@@ -1,5 +1,9 @@
-import { createRouter as createTanStackRouter } from "@tanstack/react-router"
 import { NotFound } from "@infra/ui/defaults"
+import { createRouter as createTanStackRouter } from "@tanstack/react-router"
+import {
+    deLocalizeUrl,
+    localizeUrl,
+} from "./paraglide/runtime"
 import { routeTree } from "./routeTree.gen"
 
 export function getRouter() {
@@ -8,6 +12,10 @@ export function getRouter() {
         scrollRestoration: true,
         defaultPreload: "intent",
         defaultNotFoundComponent: () => <NotFound />,
+        rewrite: {
+            input: ({ url }) => deLocalizeUrl(url),
+            output: ({ url }) => localizeUrl(url),
+        }
     })
 
     return router

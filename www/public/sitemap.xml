@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://pherus.org/</loc></url>
+  <url><loc>https://pherus.org/about</loc></url>
+  <url><loc>https://pherus.org/work</loc></url>
   <url><loc>https://pherus.org/faq</loc></url>
   <url><loc>https://pherus.org/blog</loc></url>
   <url><loc>https://pherus.org/blog/why-this-blog-exists</loc></url>

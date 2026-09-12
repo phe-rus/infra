@@ -1,5 +1,3 @@
-import { Footers } from '@/components/footers'
-import { Toolbars } from '@/components/toolbars'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_public')({
@@ -7,11 +5,5 @@ export const Route = createFileRoute('/_public')({
 })
 
 function RouteComponent() {
-  return (
-    <>
-      <Toolbars />
-      <Outlet />
-      <Footers />
-    </>
-  )
+  return <Outlet />
 }

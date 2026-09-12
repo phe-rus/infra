@@ -1,11 +1,16 @@
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import type { ComponentPropsWithoutRef, PropsWithChildren, ReactNode } from "react"
+import type {
+    ComponentPropsWithoutRef,
+    PropsWithChildren,
+    ReactNode,
+} from "react"
 import { cn } from "../../lib/utils"
 
 type ComposeViewportProps = PropsWithChildren<{
     className?: string
+    lang?: string
 }>
 
 type WindowProps = ComponentPropsWithoutRef<"body"> & {
@@ -18,10 +23,13 @@ type WindowProps = ComponentPropsWithoutRef<"body"> & {
     after?: ReactNode
 }
 
-export function ComposeViewport({ children }: ComposeViewportProps) {
+export function ComposeViewport({
+    children,
+    lang = "en",
+}: ComposeViewportProps) {
     return (
         <html
-            lang="en"
+            lang={lang}
             className="antialiased blur-none"
             suppressHydrationWarning
         >
@@ -30,7 +38,12 @@ export function ComposeViewport({ children }: ComposeViewportProps) {
     )
 }
 
-function Window({ className, children, after, ...props }: WindowProps) {
+function Window({
+    className,
+    children,
+    after,
+    ...props
+}: WindowProps) {
     return (
         <body
             className={cn(
@@ -42,10 +55,12 @@ function Window({ className, children, after, ...props }: WindowProps) {
             )}
             {...props}
         >
-            <main className={cn(
-                "flex flex-col flex-1 min-h-svh overflow-auto",
-                'no-scrollbar'
-            )}>
+            <main
+                className={cn(
+                    "flex flex-col flex-1 min-h-svh overflow-auto",
+                    "no-scrollbar"
+                )}
+            >
                 {children}
             </main>
             {after}
