@@ -1,5 +1,6 @@
 import { cn } from "@infra/ui/lib/utils"
 import { Link } from "@tanstack/react-router"
+import { Branding } from "../branding"
 import { config } from "./config"
 
 export const Footers = () => {
@@ -9,9 +10,7 @@ export const Footers = () => {
                 'container flex flex-col gap-5 w-full md:max-w-4xl',
                 'py-30'
             )}>
-                <div className='flex items-center w-full'>
-                    <h1>Pherus</h1>
-                </div>
+                <Branding />
                 <span className='h-px w-full bg-primary/5' />
                 <div className='relative columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-5'>
                     {config.map((group, inx) => (

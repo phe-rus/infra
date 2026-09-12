@@ -1,1 +1,1 @@
-export * from './footers'
+export * from './view'

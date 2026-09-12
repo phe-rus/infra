@@ -4,7 +4,7 @@ import { Badge } from '@infra/ui/components/badge'
 import { ViewController } from '@infra/ui/widgets/view-controller'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_workspace/r/$slug')({
+export const Route = createFileRoute('/_public/r/$slug')({
   head: ({ params }) => {
     const resource = resources.find((item) => item.slug === params.slug)
     return seo({

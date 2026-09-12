@@ -5,12 +5,13 @@ import { cn } from "@infra/ui/lib/utils"
 import { useLocation } from "@tanstack/react-router"
 import { AnimatePresence } from "motion/react"
 import { useMemo, useState } from "react"
+import { Branding } from "../branding"
 import { config, isNavGroup } from "./config"
 import { MegaMenu } from "./views/mega-menu"
 import { MobileNav } from "./views/mobile-nav"
 import { NavTrigger } from "./views/nav-trigger"
 
-export const Headers = () => {
+export const Toolbars = () => {
     const location = useLocation()
     const [hoveredLabel, setHoveredLabel] = useState<
         string | null
@@ -34,19 +35,19 @@ export const Headers = () => {
     return (
         <header
             className={cn(
-                "sticky top-0 border-b backdrop-blur-2xl",
-                "bg-background z-55 border-border/15"
+                "sticky top-0 border-b backdrop-blur-xs",
+                "z-55 border-border/15 bg-muted/5",
             )}
             onMouseLeave={() => setHoveredLabel(null)}
         >
             <section
                 className={cn(
-                    "px-5 flex items-center justify-between",
+                    "container flex items-center justify-between",
                     "h-10 w-full"
                 )}
             >
                 <div className="flex items-center gap-5">
-                    <h3 className="text-sm">Pherus</h3>
+                    <Branding />
                     <nav className="hidden items-center gap-3 md:flex">
                         {config.map((item, idx) =>
                             isNavGroup(item) ? (

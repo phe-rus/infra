@@ -5,7 +5,7 @@ import { ViewController } from '@infra/ui/widgets/view-controller'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 
-export const Route = createFileRoute('/_workspace/faq/')({
+export const Route = createFileRoute('/_public/faq/')({
   head: () =>
     seo({
       title: 'FAQ',

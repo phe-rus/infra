@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/a11y/useValidAnchor: we need link */
 import { cn } from "@infra/ui/lib/utils"
 import { Link } from "@tanstack/react-router"
 import type { NavTriggerProps } from "../config"
@@ -16,26 +17,15 @@ export function NavTrigger({
                     "select-none cursor-pointer transition-colors"
                 )}
             >
-                {to ? (
-                    <Link
-                        to={to}
-                        className={cn(
-                            "text-xs transition-colors",
-                            active && "text-primary"
-                        )}
-                    >
-                        {label}
-                    </Link>
-                ) : (
-                    <span
-                        className={cn(
-                            "text-xs transition-colors",
-                            active && "text-primary"
-                        )}
-                    >
-                        {label}
-                    </span>
-                )}
+                <Link
+                    to={to}
+                    className={cn(
+                        "text-sm transition-colors",
+                        active && "text-primary"
+                    )}
+                >
+                    {label}
+                </Link>
                 <span
                     className={cn(
                         "absolute -bottom-2.75 h-px w-full scale-x-0 bg-primary transition-transform duration-300 group-hover:scale-x-100",

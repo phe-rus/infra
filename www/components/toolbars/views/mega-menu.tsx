@@ -16,7 +16,7 @@ export function MegaMenu({
             transition={{ duration: 0.15, ease: "easeOut" }}
             className={cn(
                 "absolute inset-x-0 top-full border-b border-border/35",
-                'bg-background backdrop-blur-2xl! shadow-lg z-55!'
+                'backdrop-blur-xs! shadow-lg z-55! bg-muted/5'
             )}
         >
             <div className="container columns-3 gap-8 px-5 py-20">

@@ -1,4 +1,4 @@
-import { config as headerConfig, isNavGroup } from "@/components/headers/config"
+import { config as headerConfig, isNavGroup } from "@/components/toolbars/config"
 
 export interface FooterLink {
     label: string
@@ -14,9 +14,9 @@ const resourcesNav = headerConfig.find((item) => item.label === "Resources")
 const resourceGroups =
     resourcesNav && isNavGroup(resourcesNav)
         ? resourcesNav.items.map((section) => ({
-              label: section.label,
-              items: section.items.map((leaf) => ({ label: leaf.label, to: leaf.to })),
-          }))
+            label: section.label,
+            items: section.items.map((leaf) => ({ label: leaf.label, to: leaf.to })),
+        }))
         : []
 
 export const config: FooterGroup[] = [

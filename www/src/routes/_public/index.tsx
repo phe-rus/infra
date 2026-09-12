@@ -1,4 +1,4 @@
-import { config, isNavGroup } from "@/components/headers/config"
+import { config, isNavGroup } from "@/components/toolbars/config"
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Badge } from "@infra/ui/components/badge"
@@ -7,7 +7,7 @@ import { cn } from "@infra/ui/lib/utils"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useMemo } from "react"
 
-export const Route = createFileRoute("/_workspace/")({
+export const Route = createFileRoute("/_public/")({
     component: RouteComponent,
 })
 

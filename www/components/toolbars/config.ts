@@ -40,6 +40,7 @@ export const config: NavItem[] = [
     },
     {
         label: "Resources",
+        to: '/resources',
         items: [
             {
                 label: "Platforms & Services",

@@ -5,7 +5,7 @@ import { cn } from "@infra/ui/lib/utils"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { createFileRoute, Link } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_workspace/blog/")({
+export const Route = createFileRoute("/_public/blog/")({
     head: () =>
         seo({
             title: "Blog",
