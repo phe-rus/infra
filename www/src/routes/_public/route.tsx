@@ -1,3 +1,4 @@
+import { Toolbar } from "@/components/toolbar"
 import {
     createFileRoute,
     Outlet,
@@ -8,5 +9,10 @@ export const Route = createFileRoute("/_public")({
 })
 
 function RouteComponent() {
-    return <Outlet />
+    return (
+        <>
+            <Toolbar />
+            <Outlet />
+        </>
+    )
 }

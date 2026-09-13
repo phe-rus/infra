@@ -1,6 +1,5 @@
 import { organizationJsonLd, seo } from "@/lib/seo"
 import ribbon from "@/styles/ribbon.css?url"
-import { getLocale } from "../paraglide/runtime"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
@@ -10,6 +9,7 @@ import {
     Scripts,
     createRootRoute,
 } from "@tanstack/react-router"
+import { getLocale } from "../paraglide/runtime"
 
 export const Route = createRootRoute({
     head: () => {
