@@ -297,6 +297,20 @@ function RouteComponent() {
                                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 w-full'>
                                     {items?.map((item, i) => (
                                         <motion.a
+                                            initial={{
+                                                opacity: 0,
+                                                y: 20,
+                                            }}
+                                            animate={{
+                                                opacity: 1,
+                                                y: 0,
+                                            }}
+                                            transition={{
+                                                duration: 0.5,
+                                                delay: i * 0.1,
+                                            }}
+                                            whileTap={{ scale: 0.99 }}
+                                            whileHover={{ scale: 1.01 }}
                                             key={i}
                                             href={item.to}
                                             className={cn(
