@@ -3,8 +3,13 @@
     "ui": "tui",
     "tasks": {
         "build": {
-            "dependsOn": ["^build"],
-            "inputs": ["$TURBO_DEFAULT$", ".env*"],
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env*"
+            ],
             "outputs": [
                 ".output/**",
                 "dist/**",
@@ -16,14 +21,23 @@
             "persistent": true
         },
         "deploy": {
-            "dependsOn": ["^deploy"]
+            "dependsOn": [
+                "^deploy"
+            ]
         },
         "typecheck": {
-            "dependsOn": ["^typecheck"]
+            "dependsOn": [
+                "^typecheck"
+            ]
         },
         "type-gen": {
-            "dependsOn": ["^type-gen"],
-            "inputs": ["$TURBO_DEFAULT$", ".env*"]
+            "dependsOn": [
+                "^type-gen"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env*"
+            ]
         }
     }
 }
