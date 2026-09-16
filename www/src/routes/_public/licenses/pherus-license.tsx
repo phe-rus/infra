@@ -1,11 +1,18 @@
 import { m } from "@/paraglide/messages"
 import { reveal } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
     "/_public/licenses/pherus-license"
 )({
+    head: () =>
+        seo({
+            title: m["nav.licenses.pherus-license"](),
+            description: m["licenses.pherus.placeholder"](),
+            path: "/licenses/pherus-license",
+        }),
     component: RouteComponent,
 })
 

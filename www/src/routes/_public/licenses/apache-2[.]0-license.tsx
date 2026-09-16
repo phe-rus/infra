@@ -1,12 +1,19 @@
 import { m } from "@/paraglide/messages"
 import { cn } from "@infra/ui/lib/utils"
 import { reveal } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
     "/_public/licenses/apache-2.0-license"
 )({
+    head: () =>
+        seo({
+            title: m["nav.licenses.apache-2.0-license"](),
+            description: m["licenses.pageDescription"](),
+            path: "/licenses/apache-2.0-license",
+        }),
     component: RouteComponent,
 })
 

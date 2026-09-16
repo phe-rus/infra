@@ -21,11 +21,18 @@ import {
     staggerContainer,
     staggerItem,
 } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 import { useMemo } from "react"
 
 export const Route = createFileRoute("/_public/")({
+    head: () =>
+        seo({
+            title: "Pherus",
+            description: m["overview.hero.description"](),
+            path: "/",
+        }),
     component: RouteComponent,
 })
 

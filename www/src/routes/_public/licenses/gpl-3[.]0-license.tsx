@@ -1,11 +1,18 @@
 import { m } from "@/paraglide/messages"
 import { reveal } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
     "/_public/licenses/gpl-3.0-license"
 )({
+    head: () =>
+        seo({
+            title: m["nav.licenses.gpl-3.0-license"](),
+            description: m["licenses.pageDescription"](),
+            path: "/licenses/gpl-3.0-license",
+        }),
     component: RouteComponent,
 })
 

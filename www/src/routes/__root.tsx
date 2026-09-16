@@ -16,6 +16,7 @@ export const Route = createRootRoute({
             title: "Pherus",
             description:
                 "Pherus is a practical research, sciences, innovation, and technology company: a place for curious ideas to become real things.",
+            canonical: false,
         })
 
         return {

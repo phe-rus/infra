@@ -1,11 +1,18 @@
 import { m } from "@/paraglide/messages"
 import { reveal } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
     "/_public/legal/privacy-policy"
 )({
+    head: () =>
+        seo({
+            title: m["nav.legal.privacy-policy"](),
+            description: m["legal.privacy.overview.body"](),
+            path: "/legal/privacy-policy",
+        }),
     component: RouteComponent,
 })
 

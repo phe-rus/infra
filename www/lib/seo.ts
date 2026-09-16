@@ -10,6 +10,8 @@ type SeoProps = {
     type?: "website" | "article"
     path?: string
     publishedTime?: string
+    /** Set false for the root route's fallback head, which has no real page path of its own — every leaf route provides its own canonical instead. TanStack Router's head merging dedupes `<meta>` by name but not `<link>` tags, so two canonicals would otherwise both render. */
+    canonical?: boolean
 }
 
 export const seo = ({
@@ -20,6 +22,7 @@ export const seo = ({
     type = "website",
     path = "/",
     publishedTime,
+    canonical = true,
 }: SeoProps) => {
     const fullTitle =
         title === "Pherus" ? title : `${title} · Pherus`
@@ -38,11 +41,11 @@ export const seo = ({
             : []),
         ...(keywords
             ? [
-                {
-                    name: "keywords",
-                    content: keywords.join(", "),
-                },
-            ]
+                  {
+                      name: "keywords",
+                      content: keywords.join(", "),
+                  },
+              ]
             : []),
 
         // OG tags
@@ -50,22 +53,22 @@ export const seo = ({
         { name: "og:title", content: fullTitle },
         ...(description
             ? [
-                {
-                    name: "og:description",
-                    content: description,
-                },
-            ]
+                  {
+                      name: "og:description",
+                      content: description,
+                  },
+              ]
             : []),
         { name: "og:site_name", content: "Pherus" },
         { name: "og:image", content: absoluteImage },
         { name: "og:url", content: canonicalUrl },
         ...(publishedTime
             ? [
-                {
-                    name: "article:published_time",
-                    content: publishedTime,
-                },
-            ]
+                  {
+                      name: "article:published_time",
+                      content: publishedTime,
+                  },
+              ]
             : []),
 
         // Twitter card tags
@@ -76,16 +79,18 @@ export const seo = ({
         { name: "twitter:title", content: fullTitle },
         ...(description
             ? [
-                {
-                    name: "twitter:description",
-                    content: description,
-                },
-            ]
+                  {
+                      name: "twitter:description",
+                      content: description,
+                  },
+              ]
             : []),
         { name: "twitter:image", content: absoluteImage },
     ]
 
-    const links = [{ rel: "canonical", href: canonicalUrl }]
+    const links = canonical
+        ? [{ rel: "canonical", href: canonicalUrl }]
+        : []
 
     return { meta, links }
 }

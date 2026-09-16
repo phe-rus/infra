@@ -1,11 +1,18 @@
 import { m } from "@/paraglide/messages"
 import { reveal } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
     "/_public/legal/terms-of-service"
 )({
+    head: () =>
+        seo({
+            title: m["nav.legal.terms-of-service"](),
+            description: m["legal.tos.acceptance.body"](),
+            path: "/legal/terms-of-service",
+        }),
     component: RouteComponent,
 })
 

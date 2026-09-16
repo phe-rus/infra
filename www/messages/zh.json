@@ -216,7 +216,8 @@
             "governingLaw": {
                 "heading": "适用法律",
                 "body": "本声明受 [管辖法域] 的法律管辖。"
-            }
+            },
+            "metaDescription": "Pherus Inc. 的法律声明与运营者信息。"
         }
     },
     "licenses": {
@@ -226,7 +227,8 @@
         "pherus": {
             "placeholder": "Pherus 许可证的实际条款尚未撰写——在提供真实法律文本之前,本页面为占位内容。"
         },
-        "disclaimer": "本许可证以其原始英文文本呈现。翻译仅供参考,不具有法律效力。"
+        "disclaimer": "本许可证以其原始英文文本呈现。翻译仅供参考,不具有法律效力。",
+        "pageDescription": "涵盖 Pherus 开源代码的许可条款。"
     },
     "about": {
         "description": "我们是一群志同道合的人,怀着好奇心以及理解、改进与创新的渴望。",
@@ -266,6 +268,13 @@
         },
         "research": {
             "description": "对各个领域的研究与探索。这里是我们记录发现并与世界分享的地方。"
+        },
+        "detail": {
+            "tags": "标签",
+            "stack": "技术栈",
+            "usedBy": "使用方",
+            "back": "返回展示",
+            "notFound": "未找到相关内容。"
         }
     }
 }

@@ -216,7 +216,8 @@
             "governingLaw": {
                 "heading": "Loi applicable",
                 "body": "Le présent avis est régi par les lois de [juridiction]."
-            }
+            },
+            "metaDescription": "Mentions légales et coordonnées de l'exploitant de Pherus Inc."
         }
     },
     "licenses": {
@@ -226,7 +227,8 @@
         "pherus": {
             "placeholder": "Les conditions réelles de la licence Pherus n'ont pas encore été rédigées — cette page est un espace réservé en attendant qu'un texte juridique réel soit fourni."
         },
-        "disclaimer": "Cette licence est présentée dans son texte original en anglais. Les traductions sont fournies à titre indicatif uniquement et n'ont aucune valeur juridique officielle."
+        "disclaimer": "Cette licence est présentée dans son texte original en anglais. Les traductions sont fournies à titre indicatif uniquement et n'ont aucune valeur juridique officielle.",
+        "pageDescription": "Conditions de licence couvrant le code open source de Pherus."
     },
     "about": {
         "description": "Nous sommes un collectif de personnes animées par les mêmes idées, portées par la curiosité et le désir de comprendre, d'améliorer et d'innover.",
@@ -266,6 +268,13 @@
         },
         "research": {
             "description": "Recherche et exploration dans divers domaines. C'est ici que nous documentons nos découvertes et les partageons avec le monde."
+        },
+        "detail": {
+            "tags": "Étiquettes",
+            "stack": "Pile technique",
+            "usedBy": "Utilisé par",
+            "back": "Retour à la vitrine",
+            "notFound": "Nous n'avons pas trouvé cette page."
         }
     }
 }

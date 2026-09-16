@@ -216,7 +216,8 @@
             "governingLaw": {
                 "heading": "Governing law",
                 "body": "This notice is governed by the laws of [jurisdiction]."
-            }
+            },
+            "metaDescription": "Legal notice and operator details for Pherus Inc."
         }
     },
     "licenses": {
@@ -226,7 +227,8 @@
         "pherus": {
             "placeholder": "The Pherus License's actual terms haven't been written yet — this page is a placeholder until real legal text is supplied."
         },
-        "disclaimer": "This license is shown in its original English text. Translations are provided for convenience only and aren't legally authoritative."
+        "disclaimer": "This license is shown in its original English text. Translations are provided for convenience only and aren't legally authoritative.",
+        "pageDescription": "License terms covering Pherus's open source code."
     },
     "about": {
         "description": "We are a collective of like-minded individuals driven by curiosity and a desire to understand, improve, and innovate.",
@@ -266,6 +268,13 @@
         },
         "research": {
             "description": "Research and exploration into various fields. This is where we document our findings and share them with the world."
+        },
+        "detail": {
+            "tags": "Tags",
+            "stack": "Stack",
+            "usedBy": "Used by",
+            "back": "Back to showcase",
+            "notFound": "We couldn't find that."
         }
     }
 }

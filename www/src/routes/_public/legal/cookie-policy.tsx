@@ -1,11 +1,18 @@
 import { m } from "@/paraglide/messages"
 import { reveal } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
     "/_public/legal/cookie-policy"
 )({
+    head: () =>
+        seo({
+            title: m["nav.legal.cookie-policy"](),
+            description: m["legal.cookies.intro.body"](),
+            path: "/legal/cookie-policy",
+        }),
     component: RouteComponent,
 })
 

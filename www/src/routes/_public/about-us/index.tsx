@@ -13,10 +13,17 @@ import {
     staggerContainer,
     staggerItem,
 } from "@lib/motion"
+import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute("/_public/about-us/")({
+    head: () =>
+        seo({
+            title: m["nav.about-us"](),
+            description: m["about.description"](),
+            path: "/about-us",
+        }),
     component: RouteComponent,
 })
 
