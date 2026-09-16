@@ -1,4 +1,5 @@
 import { m } from "@/paraglide/messages"
+import { cn } from "@infra/ui/lib/utils"
 import { reveal } from "@lib/motion"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
@@ -227,12 +228,30 @@ function RouteComponent() {
                             "nav.licenses.apache-2.0-license"
                         ]()}
                     </motion.h1>
+
+                    <motion.p
+                        {...reveal}
+                        className="text-sm text-muted-foreground"
+                    >
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
+                    </motion.p>
+
+                    <motion.p
+                        {...reveal}
+                        className="text-sm text-muted-foreground"
+                    >
+                        {m["licenses.disclaimer"]()}
+                    </motion.p>
                 </div>
 
                 <div className="mx-auto w-full md:max-w-3xl">
                     <pre
                         data-not-typeset
-                        className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed"
+                        className={cn(
+                            "whitespace-pre-wrap wrap-break-word font-sans",
+                            "leading-relaxed p-0!"
+                        )}
                     >
                         {text}
                     </pre>

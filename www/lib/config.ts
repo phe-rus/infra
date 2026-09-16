@@ -4,7 +4,12 @@ export type Resource = {
     img: string
     /** RSS feed path, only set for resources with a public feed (drives the landing page marquee). */
     feed?: string
-    description?: string
+    /** Paraglide message id for the translated description, resolved at render time (not here — this array is built once at module load). */
+    descriptionKey?:
+        | "showcase.pass.description"
+        | "showcase.health.description"
+        | "showcase.collective.description"
+        | "showcase.research.description"
     tags?: string[]
     stack?: string[]
     catalogs?: string[]
@@ -16,8 +21,7 @@ export const resources: Resource[] = [
         title: "Pass",
         img: "/og.png",
         feed: "/rss/pass",
-        description:
-            "A personal identity system built on the idea of owning your identity. Its a decentralised system that allows you to control your own identity. It is built using modern web technologies and follows open standards.",
+        descriptionKey: "showcase.pass.description",
         tags: ["Identity", "Decentralised", "Open standards"],
         stack: [
             "bun",
@@ -33,8 +37,7 @@ export const resources: Resource[] = [
         title: "Health",
         img: "/og.png",
         feed: "/rss/health",
-        description:
-            "A personal health system built on the idea of owning your health. Its a decentralised system that allows you to control your own health. It is built using modern web technologies and follows open standards.",
+        descriptionKey: "showcase.health.description",
         tags: ["Identity", "Decentralised", "Open standards"],
         stack: [
             "bun",
@@ -49,8 +52,7 @@ export const resources: Resource[] = [
         title: "Collective",
         img: "/og.png",
         feed: "/rss/collective",
-        description:
-            "A system built on the idea of shared ownership. Its a decentralised system that allows you to build and create systems together.",
+        descriptionKey: "showcase.collective.description",
         tags: [
             "Organisation",
             "Decentralised",
@@ -98,8 +100,7 @@ export const resources: Resource[] = [
         slug: "research",
         title: "Research",
         img: "/og.png",
-        description:
-            "Research and exploration into various fields. This is where we document our findings and share them with the world.",
+        descriptionKey: "showcase.research.description",
         tags: ["Research", "Exploration", "Science"],
         stack: [
             "Zettelkasten",

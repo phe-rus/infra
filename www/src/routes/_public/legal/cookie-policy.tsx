@@ -12,16 +12,18 @@ export const Route = createFileRoute(
 function RouteComponent() {
     const cookies = [
         {
-            name: "PARAGLIDE_LOCALE",
+            name: m["legal.cookies.localeCookie.name"](),
             purpose:
-                "Remembers your selected language (English, 中文, or Français) between visits.",
-            duration: "1 year",
+                m["legal.cookies.localeCookie.purpose"](),
+            duration:
+                m["legal.cookies.localeCookie.duration"](),
         },
         {
-            name: "theme (local storage, not a cookie)",
+            name: m["legal.cookies.themeStorage.name"](),
             purpose:
-                "Remembers whether you're using light or dark mode.",
-            duration: "Until cleared by you",
+                m["legal.cookies.themeStorage.purpose"](),
+            duration:
+                m["legal.cookies.themeStorage.duration"](),
         },
     ]
 
@@ -40,22 +42,20 @@ function RouteComponent() {
                         {...reveal}
                         className="text-sm text-muted-foreground"
                     >
-                        Last updated: 2026-09-16
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
                     </motion.p>
                 </div>
 
                 <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
                     <div className="flex flex-col gap-1">
                         <h2 className="text-base font-black">
-                            What we use on pherus.org
+                            {m[
+                                "legal.cookies.intro.heading"
+                            ]()}
                         </h2>
                         <p className="text-sm text-muted-foreground">
-                            pherus.org sets exactly one cookie
-                            and one local storage entry,
-                            listed below. We don't use
-                            advertising cookies, analytics
-                            trackers, or any third-party
-                            tracking scripts on this site.
+                            {m["legal.cookies.intro.body"]()}
                         </p>
                     </div>
 
@@ -72,8 +72,10 @@ function RouteComponent() {
                                     {cookie.purpose}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    Duration:{" "}
-                                    {cookie.duration}
+                                    {m[
+                                        "legal.cookies.durationLabel"
+                                    ]()}
+                                    : {cookie.duration}
                                 </p>
                             </div>
                         ))}
@@ -81,42 +83,40 @@ function RouteComponent() {
 
                     <div className="flex flex-col gap-1">
                         <h2 className="text-base font-black">
-                            Signed-in sessions
+                            {m[
+                                "legal.cookies.sessions.heading"
+                            ]()}
                         </h2>
                         <p className="text-sm text-muted-foreground">
-                            If you sign in to a Pherus account
-                            at account.pherus.org, that
-                            subdomain sets its own session
-                            cookie to keep you signed in. You
-                            can review and revoke your active
-                            sessions at any time from your
-                            account's security settings.
+                            {m[
+                                "legal.cookies.sessions.body"
+                            ]()}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-1">
                         <h2 className="text-base font-black">
-                            Managing cookies
+                            {m[
+                                "legal.cookies.managing.heading"
+                            ]()}
                         </h2>
                         <p className="text-sm text-muted-foreground">
-                            Most browsers let you block or
-                            delete cookies in their settings.
-                            Blocking the locale cookie just
-                            means we can't remember your
-                            language choice between visits —
-                            nothing else on this site depends
-                            on it.
+                            {m[
+                                "legal.cookies.managing.body"
+                            ]()}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-1">
                         <h2 className="text-base font-black">
-                            Changes to this policy
+                            {m[
+                                "legal.cookies.changes.heading"
+                            ]()}
                         </h2>
                         <p className="text-sm text-muted-foreground">
-                            If what we store ever changes,
-                            we'll update this page and the
-                            date above.
+                            {m[
+                                "legal.cookies.changes.body"
+                            ]()}
                         </p>
                     </div>
                 </div>

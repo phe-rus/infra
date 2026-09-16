@@ -1,3 +1,4 @@
+import { m } from "@/paraglide/messages"
 import { cn } from "@infra/ui/lib/utils"
 import { resources } from "@lib/config"
 import {
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/_public/showcase/")({
 function RouteComponent() {
     const showcasing = useMemo(() => {
         return resources.filter(
-            (resource) => resource.description
+            (resource) => resource.descriptionKey
         )
     }, [])
 
@@ -28,19 +29,14 @@ function RouteComponent() {
                         {...reveal}
                         className="font-black"
                     >
-                        A detailed overview into the work we
-                        have accomplished or are currently
-                        working on.
+                        {m["showcase.hero.heading"]()}
                     </motion.h1>
 
                     <motion.p
                         {...reveal}
                         className="md:max-w-md text-base"
                     >
-                        The work we do at Pherus touches many
-                        different fields, from identity and
-                        access management to health and legal
-                        technology.
+                        {m["showcase.hero.description"]()}
                     </motion.p>
                 </div>
 
@@ -50,7 +46,7 @@ function RouteComponent() {
                             {...reveal}
                             className="font-black"
                         >
-                            Showcase
+                            {m["nav.showcase"]()}
                         </motion.h3>
                     </div>
 
@@ -111,7 +107,11 @@ function RouteComponent() {
                                         {item.title}
                                     </h1>
                                     <p className="text-sm!">
-                                        {item.description}
+                                        {item.descriptionKey &&
+                                            m[
+                                                item
+                                                    .descriptionKey
+                                            ]()}
                                     </p>
                                 </div>
                             </motion.article>

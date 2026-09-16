@@ -23,12 +23,17 @@ function RouteComponent() {
 
                     <motion.p
                         {...reveal}
+                        className="text-sm text-muted-foreground"
+                    >
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
+                    </motion.p>
+
+                    <motion.p
+                        {...reveal}
                         className="md:max-w-md text-base"
                     >
-                        The Pherus License's actual terms
-                        haven't been written yet — this page
-                        is a placeholder until real legal text
-                        is supplied.
+                        {m["licenses.pherus.placeholder"]()}
                     </motion.p>
                 </div>
             </section>

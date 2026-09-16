@@ -40,6 +40,13 @@ function RouteComponent() {
                     >
                         {m["nav.licenses.label"]()}
                     </motion.h1>
+
+                    <motion.p
+                        {...reveal}
+                        className="text-sm text-muted-foreground"
+                    >
+                        {m["licenses.index.intro"]()}
+                    </motion.p>
                 </div>
 
                 <div className="mx-auto flex w-full md:max-w-3xl flex-col">

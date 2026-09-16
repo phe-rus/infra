@@ -12,48 +12,48 @@ export const Route = createFileRoute(
 function RouteComponent() {
     const sections = [
         {
-            heading: "1. Acceptance of these terms",
-            body: "By accessing or using pherus.org, account.pherus.org, or any other Pherus product, you agree to these Terms of Service. If you do not agree, do not use our services.",
+            heading: m["legal.tos.acceptance.heading"](),
+            body: m["legal.tos.acceptance.body"](),
         },
         {
-            heading: "2. Our services",
-            body: "Pherus is a practical research, sciences, innovation, and technology company. Our products (including Pass, Health, Collective, Software, Transspace, and others listed on our showcase page) are at various stages of development — some active, some in development, some still in planning — and are provided as described on each product's own page.",
+            heading: m["legal.tos.services.heading"](),
+            body: m["legal.tos.services.body"](),
         },
         {
-            heading: "3. Accounts and security",
-            body: "Some Pherus products require a Pherus account, managed through account.pherus.org. You're responsible for keeping your credentials secure, including any two-factor authentication or passkeys you set up. You can review and manage your active sessions and devices at any time from your account's security settings.",
+            heading: m["legal.tos.accounts.heading"](),
+            body: m["legal.tos.accounts.body"](),
         },
         {
-            heading: "4. Acceptable use",
-            body: "You agree not to use our services to violate any law, infringe anyone's rights, distribute malware, or interfere with the normal operation of our systems.",
+            heading: m["legal.tos.acceptableUse.heading"](),
+            body: m["legal.tos.acceptableUse.body"](),
         },
         {
-            heading: "5. Intellectual property",
-            body: "Where Pherus publishes source code under an open-source license, that code is licensed as described on our Licenses page, not under these Terms. Pherus product names, logos, and branding remain the property of Pherus Inc.",
+            heading: m["legal.tos.ip.heading"](),
+            body: m["legal.tos.ip.body"](),
         },
         {
-            heading: "6. Third-party links and services",
-            body: "Our sites may link to third-party services we don't control. We aren't responsible for the content, policies, or practices of any third party.",
+            heading: m["legal.tos.thirdParty.heading"](),
+            body: m["legal.tos.thirdParty.body"](),
         },
         {
-            heading: "7. Disclaimer of warranties",
-            body: 'Our services are provided "as is" and "as available," without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement.',
+            heading: m["legal.tos.disclaimer.heading"](),
+            body: m["legal.tos.disclaimer.body"](),
         },
         {
-            heading: "8. Limitation of liability",
-            body: "To the fullest extent permitted by law, Pherus Inc. is not liable for any indirect, incidental, special, or consequential damages arising from your use of our services.",
+            heading: m["legal.tos.liability.heading"](),
+            body: m["legal.tos.liability.body"](),
         },
         {
-            heading: "9. Governing law",
-            body: "These Terms are governed by the laws of [jurisdiction], without regard to conflict-of-law principles.",
+            heading: m["legal.tos.governingLaw.heading"](),
+            body: m["legal.tos.governingLaw.body"](),
         },
         {
-            heading: "10. Changes to these terms",
-            body: "We may update these Terms from time to time. We'll update the date below when we do; continued use of our services after a change means you accept the updated Terms.",
+            heading: m["legal.tos.changes.heading"](),
+            body: m["legal.tos.changes.body"](),
         },
         {
-            heading: "11. Contact us",
-            body: "Questions about these Terms can be sent to [contact email].",
+            heading: m["legal.tos.contact.heading"](),
+            body: m["legal.tos.contact.body"](),
         },
     ]
 
@@ -72,7 +72,8 @@ function RouteComponent() {
                         {...reveal}
                         className="text-sm text-muted-foreground"
                     >
-                        Last updated: 2026-09-16
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
                     </motion.p>
                 </div>
 
@@ -92,19 +93,19 @@ function RouteComponent() {
                     ))}
 
                     <p className="text-sm text-muted-foreground">
-                        See also our{" "}
+                        {m["legal.common.seeAlso"]()}{" "}
                         <Link
                             to="/legal/privacy-policy"
                             className="underline"
                         >
-                            Privacy policy
+                            {m["nav.legal.privacy-policy"]()}
                         </Link>{" "}
-                        and{" "}
+                        {m["legal.common.and"]()}{" "}
                         <Link
                             to="/legal/cookie-policy"
                             className="underline"
                         >
-                            Cookie policy
+                            {m["nav.legal.cookie-policy"]()}
                         </Link>
                         .
                     </p>

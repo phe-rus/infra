@@ -39,6 +39,21 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.`
                     >
                         {m["nav.licenses.mit-license"]()}
                     </motion.h1>
+
+                    <motion.p
+                        {...reveal}
+                        className="text-sm text-muted-foreground"
+                    >
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
+                    </motion.p>
+
+                    <motion.p
+                        {...reveal}
+                        className="text-sm text-muted-foreground"
+                    >
+                        {m["licenses.disclaimer"]()}
+                    </motion.p>
                 </div>
 
                 <div className="mx-auto w-full md:max-w-3xl">

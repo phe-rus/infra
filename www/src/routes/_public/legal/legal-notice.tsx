@@ -12,28 +12,24 @@ export const Route = createFileRoute(
 function RouteComponent() {
     const sections = [
         {
-            heading: "Operator",
-            body: "Pherus Inc.\n[registered address]",
+            heading: m["legal.notice.operator.heading"](),
+            body: m["legal.notice.operator.body"](),
         },
         {
-            heading: "Contact",
-            body: "[contact email]",
+            heading: m["legal.notice.contact.heading"](),
+            body: m["legal.notice.contact.body"](),
         },
         {
-            heading: "Registration",
-            body: "[company registration number, if applicable]",
+            heading: m["legal.notice.responsible.heading"](),
+            body: m["legal.notice.responsible.body"](),
         },
         {
-            heading: "Responsible for content",
-            body: "[name of person or role responsible for this site's content]",
+            heading: m["legal.notice.disclaimer.heading"](),
+            body: m["legal.notice.disclaimer.body"](),
         },
         {
-            heading: "Disclaimer",
-            body: "We link to external sites for convenience and take reasonable care in selecting them, but we aren't responsible for their content once you leave pherus.org.",
-        },
-        {
-            heading: "Governing law",
-            body: "This notice is governed by the laws of [jurisdiction].",
+            heading: m["legal.notice.governingLaw.heading"](),
+            body: m["legal.notice.governingLaw.body"](),
         },
     ]
 
@@ -52,7 +48,8 @@ function RouteComponent() {
                         {...reveal}
                         className="text-sm text-muted-foreground"
                     >
-                        Last updated: 2026-09-16
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
                     </motion.p>
                 </div>
 

@@ -12,49 +12,48 @@ export const Route = createFileRoute(
 function RouteComponent() {
     const sections = [
         {
-            heading: "1. Overview",
-            body: "This policy explains what data Pherus Inc. collects across pherus.org and our other products, and how we use it. It doesn't cover third-party sites we link to.",
+            heading: m["legal.privacy.overview.heading"](),
+            body: m["legal.privacy.overview.body"](),
         },
         {
-            heading: "2. This site (pherus.org)",
-            body: "pherus.org itself doesn't have a sign-up form, account system, or data layer — browsing it doesn't create an account or submit any personal data to us. It sets one cookie, to remember your language preference; see our Cookie policy for details.",
+            heading: m["legal.privacy.thisSite.heading"](),
+            body: m["legal.privacy.thisSite.body"](),
         },
         {
-            heading:
-                "3. Pherus accounts (account.pherus.org)",
-            body: "If you create a Pherus account, we collect what's needed to run it: your email address, authentication credentials (handled securely, never stored as plain text), and, if you enable them, two-factor authentication or passkey data. We also keep a record of your active sessions and devices so you can review and revoke them yourself.",
+            heading: m["legal.privacy.accounts.heading"](),
+            body: m["legal.privacy.accounts.body"](),
         },
         {
-            heading: "4. How we use your information",
-            body: "We use account data to operate, secure, and improve our services — for example, to authenticate you, prevent abuse, and let you manage your own sessions. We do not sell your personal data, and we don't run advertising or analytics trackers on our sites.",
+            heading: m["legal.privacy.usage.heading"](),
+            body: m["legal.privacy.usage.body"](),
         },
         {
-            heading: "5. Cookies and local storage",
-            body: "See our Cookie policy for the full list of what we store in your browser and why.",
+            heading: m["legal.privacy.cookies.heading"](),
+            body: m["legal.privacy.cookies.body"](),
         },
         {
-            heading: "6. Where your data is stored",
-            body: "Our infrastructure runs on Cloudflare (Workers, D1, KV, and R2). Data may be processed or stored on Cloudflare's global network as part of operating our services.",
+            heading: m["legal.privacy.storage.heading"](),
+            body: m["legal.privacy.storage.body"](),
         },
         {
-            heading: "7. Data retention",
-            body: "We keep account data for as long as your account is active, and for [retention period] after deletion for security and legal purposes, unless a longer period is required by law.",
+            heading: m["legal.privacy.retention.heading"](),
+            body: m["legal.privacy.retention.body"](),
         },
         {
-            heading: "8. Your rights",
-            body: "Depending on where you live, you may have the right to access, correct, export, or delete your personal data. You can manage most of this yourself from your account's security settings, or contact us using the details below.",
+            heading: m["legal.privacy.rights.heading"](),
+            body: m["legal.privacy.rights.body"](),
         },
         {
-            heading: "9. Children's privacy",
-            body: "Our services aren't directed at children under 13 (or the minimum age in your jurisdiction), and we don't knowingly collect their data.",
+            heading: m["legal.privacy.children.heading"](),
+            body: m["legal.privacy.children.body"](),
         },
         {
-            heading: "10. Changes to this policy",
-            body: "We may update this policy from time to time. We'll update the date below when we do.",
+            heading: m["legal.privacy.changes.heading"](),
+            body: m["legal.privacy.changes.body"](),
         },
         {
-            heading: "11. Contact us",
-            body: "Questions about this policy, or requests about your data, can be sent to [contact email].",
+            heading: m["legal.privacy.contact.heading"](),
+            body: m["legal.privacy.contact.body"](),
         },
     ]
 
@@ -73,7 +72,8 @@ function RouteComponent() {
                         {...reveal}
                         className="text-sm text-muted-foreground"
                     >
-                        Last updated: 2026-09-16
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
                     </motion.p>
                 </div>
 
@@ -93,19 +93,21 @@ function RouteComponent() {
                     ))}
 
                     <p className="text-sm text-muted-foreground">
-                        See also our{" "}
+                        {m["legal.common.seeAlso"]()}{" "}
                         <Link
                             to="/legal/terms-of-service"
                             className="underline"
                         >
-                            Terms of service
+                            {m[
+                                "nav.legal.terms-of-service"
+                            ]()}
                         </Link>{" "}
-                        and{" "}
+                        {m["legal.common.and"]()}{" "}
                         <Link
                             to="/legal/cookie-policy"
                             className="underline"
                         >
-                            Cookie policy
+                            {m["nav.legal.cookie-policy"]()}
                         </Link>
                         .
                     </p>
