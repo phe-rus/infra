@@ -1,0 +1,22 @@
+{
+    "index": {
+        "en": "Open-source licenses covering Pherus code, and the custom Pherus license covering everything else.",
+        "zh": "涵盖 Pherus 代码的开源许可证,以及涵盖其余部分的 Pherus 自定义许可证。",
+        "fr": "Les licences open source qui couvrent le code de Pherus, ainsi que la licence Pherus personnalisée qui couvre le reste."
+    },
+    "pageDescription": {
+        "en": "License terms covering Pherus's open source code.",
+        "zh": "涵盖 Pherus 开源代码的许可条款。",
+        "fr": "Conditions de licence couvrant le code open source de Pherus."
+    },
+    "pherusPlaceholder": {
+        "en": "The Pherus License's actual terms haven't been written yet — this page is a placeholder until real legal text is supplied.",
+        "zh": "Pherus 许可证的实际条款尚未撰写——在提供真实法律文本之前,本页面为占位内容。",
+        "fr": "Les conditions réelles de la licence Pherus n'ont pas encore été rédigées — cette page est un espace réservé en attendant qu'un texte juridique réel soit fourni."
+    },
+    "disclaimer": {
+        "en": "This license is shown in its original English text. Translations are provided for convenience only and aren't legally authoritative.",
+        "zh": "本许可证以其原始英文文本呈现。翻译仅供参考,不具有法律效力。",
+        "fr": "Cette licence est présentée dans son texte original en anglais. Les traductions sont fournies à titre indicatif uniquement et n'ont aucune valeur juridique officielle."
+    }
+}

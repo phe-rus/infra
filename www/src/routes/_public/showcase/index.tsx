@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages"
 import { cn } from "@infra/ui/lib/utils"
-import { resources } from "@lib/config"
+import { showcase } from "@data/showcase"
 import {
     reveal,
     staggerContainer,
@@ -14,16 +14,16 @@ import { useMemo } from "react"
 export const Route = createFileRoute("/_public/showcase/")({
     head: () =>
         seo({
-            title: m["nav.showcase"](),
-            description: m["showcase.hero.description"](),
-            path: "/showcase",
+            title: m[showcase.index.titleKey](),
+            description: m[showcase.index.descriptionKey](),
+            path: showcase.index.path,
         }),
     component: RouteComponent,
 })
 
 function RouteComponent() {
     const showcasing = useMemo(() => {
-        return resources.filter(
+        return showcase.items.filter(
             (resource) => resource.descriptionKey
         )
     }, [])

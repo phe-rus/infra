@@ -1,0 +1,336 @@
+{
+    "intro": {
+        "en": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "What we use on pherus.org"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "pherus.org sets exactly one cookie and one local storage entry, listed below. We don't use advertising cookies, analytics trackers, or any third-party tracking scripts on this site."
+                        }
+                    ]
+                }
+            ]
+        },
+        "zh": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "我们在 pherus.org 上使用的内容"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "pherus.org 只设置了一个 cookie 和一个本地存储条目,详见下表。我们不在本网站上使用广告 cookie、分析跟踪程序或任何第三方跟踪脚本。"
+                        }
+                    ]
+                }
+            ]
+        },
+        "fr": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Ce que nous utilisons sur pherus.org"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "pherus.org dépose exactement un cookie et une entrée de stockage local, répertoriés ci-dessous. Nous n'utilisons aucun cookie publicitaire, aucun traceur analytique, ni aucun script de suivi tiers sur ce site."
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "sections": {
+        "en": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Signed-in sessions"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "If you sign in to a Pherus account at account.pherus.org, that subdomain sets its own session cookie to keep you signed in. You can review and revoke your active sessions at any time from your account's security settings."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Managing cookies"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Most browsers let you block or delete cookies in their settings. Blocking the locale cookie just means we can't remember your language choice between visits — nothing else on this site depends on it."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Changes to this policy"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "If what we store ever changes, we'll update this page and the date above."
+                        }
+                    ]
+                }
+            ]
+        },
+        "zh": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "已登录的会话"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "如果您登录 account.pherus.org 上的 Pherus 账户,该子域名会设置自己的会话 cookie 以保持您的登录状态。您可以随时在账户的安全设置中查看并撤销您的活动会话。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "管理 cookie"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "大多数浏览器都允许您在设置中阻止或删除 cookie。阻止语言 cookie 只是意味着我们无法记住您在两次访问之间的语言选择——本网站的其他功能不依赖于它。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "本政策的变更"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "如果我们存储的内容发生变化,我们会更新本页面及上方的日期。"
+                        }
+                    ]
+                }
+            ]
+        },
+        "fr": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Sessions connectées"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Si vous vous connectez à un compte Pherus sur account.pherus.org, ce sous-domaine dépose son propre cookie de session pour vous garder connecté. Vous pouvez consulter et révoquer vos sessions actives à tout moment depuis les paramètres de sécurité de votre compte."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Gérer les cookies"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "La plupart des navigateurs vous permettent de bloquer ou de supprimer les cookies dans leurs paramètres. Bloquer le cookie de langue signifie simplement que nous ne pouvons plus mémoriser votre choix de langue d'une visite à l'autre — rien d'autre sur ce site n'en dépend."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Modifications de cette politique"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Si ce que nous stockons venait à changer, nous mettrions à jour cette page ainsi que la date ci-dessus."
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "cookies": {
+        "en": [
+            {
+                "name": "PARAGLIDE_LOCALE",
+                "purpose": "Remembers your selected language (English, 中文, or Français) between visits.",
+                "duration": "1 year"
+            },
+            {
+                "name": "theme (local storage, not a cookie)",
+                "purpose": "Remembers whether you're using light or dark mode.",
+                "duration": "Until cleared by you"
+            }
+        ],
+        "zh": [
+            {
+                "name": "PARAGLIDE_LOCALE",
+                "purpose": "记住您选择的语言(英语、中文或法语),以便下次访问时保持。",
+                "duration": "1 年"
+            },
+            {
+                "name": "theme(本地存储,非 cookie)",
+                "purpose": "记住您使用的是浅色模式还是深色模式。",
+                "duration": "直到您手动清除"
+            }
+        ],
+        "fr": [
+            {
+                "name": "PARAGLIDE_LOCALE",
+                "purpose": "Mémorise la langue que vous avez choisie (anglais, 中文 ou français) d'une visite à l'autre.",
+                "duration": "1 an"
+            },
+            {
+                "name": "theme (stockage local, pas un cookie)",
+                "purpose": "Mémorise si vous utilisez le mode clair ou le mode sombre.",
+                "duration": "Jusqu'à ce que vous l'effaciez"
+            }
+        ]
+    },
+    "durationLabel": {
+        "en": "Duration",
+        "zh": "有效期",
+        "fr": "Durée"
+    },
+    "description": {
+        "en": "pherus.org sets exactly one cookie and one local storage entry, listed below. We don't use advertising cookies, analytics trackers, or any third-party tracking scripts on this site.",
+        "zh": "pherus.org 只设置了一个 cookie 和一个本地存储条目,详见下表。我们不在本网站上使用广告 cookie、分析跟踪程序或任何第三方跟踪脚本。",
+        "fr": "pherus.org dépose exactement un cookie et une entrée de stockage local, répertoriés ci-dessous. Nous n'utilisons aucun cookie publicitaire, aucun traceur analytique, ni aucun script de suivi tiers sur ce site."
+    }
+}

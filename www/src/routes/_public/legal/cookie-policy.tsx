@@ -1,4 +1,7 @@
 import { m } from "@/paraglide/messages"
+import { cn } from "@infra/ui/lib/utils"
+import { resolveCookiePolicy } from "@data/legal"
+import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
@@ -7,32 +10,20 @@ import { motion } from "motion/react"
 export const Route = createFileRoute(
     "/_public/legal/cookie-policy"
 )({
-    head: () =>
-        seo({
-            title: m["nav.legal.cookie-policy"](),
-            description: m["legal.cookies.intro.body"](),
-            path: "/legal/cookie-policy",
-        }),
+    head: () => {
+        const page = resolveCookiePolicy()
+
+        return seo({
+            title: page.title,
+            description: page.description,
+            path: page.path,
+        })
+    },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const cookies = [
-        {
-            name: m["legal.cookies.localeCookie.name"](),
-            purpose:
-                m["legal.cookies.localeCookie.purpose"](),
-            duration:
-                m["legal.cookies.localeCookie.duration"](),
-        },
-        {
-            name: m["legal.cookies.themeStorage.name"](),
-            purpose:
-                m["legal.cookies.themeStorage.purpose"](),
-            duration:
-                m["legal.cookies.themeStorage.duration"](),
-        },
-    ]
+    const page = resolveCookiePolicy()
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -42,7 +33,7 @@ function RouteComponent() {
                         {...reveal}
                         className="font-black"
                     >
-                        {m["nav.legal.cookie-policy"]()}
+                        {page.title}
                     </motion.h1>
 
                     <motion.p
@@ -55,19 +46,17 @@ function RouteComponent() {
                 </div>
 
                 <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
-                    <div className="flex flex-col gap-1">
-                        <h2 className="text-base font-black">
-                            {m[
-                                "legal.cookies.intro.heading"
-                            ]()}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                            {m["legal.cookies.intro.body"]()}
-                        </p>
+                    <div
+                        className={cn(
+                            "[&_h2]:text-base [&_h2]:font-black",
+                            "[&_p]:text-sm [&_p]:text-muted-foreground"
+                        )}
+                    >
+                        {renderDoc(page.intro)}
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        {cookies.map((cookie) => (
+                        {page.cookies.map((cookie) => (
                             <div
                                 key={cookie.name}
                                 className="rounded-md border bg-muted p-4"
@@ -79,52 +68,22 @@ function RouteComponent() {
                                     {cookie.purpose}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    {m[
-                                        "legal.cookies.durationLabel"
-                                    ]()}
-                                    : {cookie.duration}
+                                    {page.durationLabel}:{" "}
+                                    {cookie.duration}
                                 </p>
                             </div>
                         ))}
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <h2 className="text-base font-black">
-                            {m[
-                                "legal.cookies.sessions.heading"
-                            ]()}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                            {m[
-                                "legal.cookies.sessions.body"
-                            ]()}
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <h2 className="text-base font-black">
-                            {m[
-                                "legal.cookies.managing.heading"
-                            ]()}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                            {m[
-                                "legal.cookies.managing.body"
-                            ]()}
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <h2 className="text-base font-black">
-                            {m[
-                                "legal.cookies.changes.heading"
-                            ]()}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                            {m[
-                                "legal.cookies.changes.body"
-                            ]()}
-                        </p>
+                    <div
+                        className={cn(
+                            "flex flex-col gap-5",
+                            "[&_h2]:text-base [&_h2]:font-black",
+                            "[&_h2:not(:first-child)]:mt-6",
+                            "[&_p]:text-sm [&_p]:text-muted-foreground"
+                        )}
+                    >
+                        {renderDoc(page.sections)}
                     </div>
                 </div>
             </section>

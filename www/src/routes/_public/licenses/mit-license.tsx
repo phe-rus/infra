@@ -1,4 +1,6 @@
 import { m } from "@/paraglide/messages"
+import { resolveLicense } from "@data/licenses"
+import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
@@ -7,34 +9,20 @@ import { motion } from "motion/react"
 export const Route = createFileRoute(
     "/_public/licenses/mit-license"
 )({
-    head: () =>
-        seo({
-            title: m["nav.licenses.mit-license"](),
-            description: m["licenses.pageDescription"](),
-            path: "/licenses/mit-license",
-        }),
+    head: () => {
+        const license = resolveLicense("mit-license")
+
+        return seo({
+            title: license?.label ?? "MIT license",
+            description: license?.description,
+            path: license?.path ?? "/licenses/mit-license",
+        })
+    },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const text = `MIT License
-
-Copyright (c) 2026 Pherus Inc.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
-following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
-EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-USE OR OTHER DEALINGS IN THE SOFTWARE.`
+    const license = resolveLicense("mit-license")
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -44,32 +32,30 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.`
                         {...reveal}
                         className="font-black"
                     >
-                        {m["nav.licenses.mit-license"]()}
+                        {license?.label}
                     </motion.h1>
 
                     <motion.p
                         {...reveal}
                         className="text-sm text-muted-foreground"
                     >
-                        {m["legal.common.lastUpdated"]()}:
-                        2026-09-16
+                        {m["legal.common.lastUpdated"]()}:{" "}
+                        {license?.lastUpdated}
                     </motion.p>
 
                     <motion.p
                         {...reveal}
                         className="text-sm text-muted-foreground"
                     >
-                        {m["licenses.disclaimer"]()}
+                        {license?.disclaimer}
                     </motion.p>
                 </div>
 
-                <div className="mx-auto w-full md:max-w-3xl">
-                    <pre
-                        data-not-typeset
-                        className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed"
-                    >
-                        {text}
-                    </pre>
+                <div
+                    data-not-typeset
+                    className="mx-auto w-full md:max-w-3xl [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_pre]:font-sans [&_pre]:text-sm [&_pre]:leading-relaxed"
+                >
+                    {license && renderDoc(license.content)}
                 </div>
             </section>
         </article>

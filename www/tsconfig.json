@@ -1,11 +1,13 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
     "include": [
-        "src/*",
         "**/*.ts",
         "**/*.tsx",
+        "./*/**/*.ts",
+        "./*/**/*.tsx",
         "vite.config.ts",
-        "worker-configuration.d.ts"
+        "worker-configuration.d.ts",
+        "vite.config.ts"
     ],
     "compilerOptions": {
         "target": "ES2022",
@@ -18,11 +20,11 @@
         ],
         "paths": {
             "@/*": ["./src/*"],
-            "@lib/*": ["./lib/*"],
-            "@components/*": ["./components/*"]
+            "@*": ["./*"]
         },
         /* Bundler mode */
         "moduleResolution": "bundler",
+        "resolveJsonModule": true,
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
         "noEmit": true,
@@ -34,5 +36,11 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true
-    }
+    },
+    "exclude": [
+        "node_modules",
+        "dist",
+        "*.gen.ts",
+        ".output/**"
+    ]
 }

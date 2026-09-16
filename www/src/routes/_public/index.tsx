@@ -1,12 +1,4 @@
 import { m } from "@/paraglide/messages"
-import {
-    HeartHandshakeIcon,
-    LegalIcon,
-    RainbowIcon,
-    Science,
-    SecurityIcon,
-    SoftwareIcon,
-} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
     Tabs,
@@ -15,7 +7,9 @@ import {
     TabsTrigger,
 } from "@infra/ui/components/tabs"
 import { cn } from "@infra/ui/lib/utils"
-import { resources } from "@lib/config"
+import { home } from "@data/home"
+import { icons } from "@data/icons"
+import { showcase } from "@data/showcase"
 import {
     reveal,
     staggerContainer,
@@ -24,151 +18,21 @@ import {
 import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
-import { useMemo } from "react"
 
 export const Route = createFileRoute("/_public/")({
     head: () =>
         seo({
-            title: "Pherus",
-            description: m["overview.hero.description"](),
-            path: "/",
+            title: home.title,
+            description: m[home.descriptionKey](),
+            path: home.path,
         }),
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const contribution = useMemo(() => {
-        return resources.filter((resource) => resource.feed)
-    }, [])
-
-    const fieldList = [
-        {
-            title: m["overview.fields.identity.title"](),
-            icon: SecurityIcon,
-            items: [
-                "Pherus Pass",
-                "Pherus Account",
-                "Authentication",
-            ],
-            description:
-                m["overview.fields.identity.description"](),
-        },
-        {
-            title: m["overview.fields.health.title"](),
-            icon: HeartHandshakeIcon,
-            items: [
-                "Pherus Health",
-                "Health research",
-                "Care infrastructure",
-            ],
-            description:
-                m["overview.fields.health.description"](),
-        },
-        {
-            title: m["overview.fields.justice.title"](),
-            icon: LegalIcon,
-            items: [
-                "Pleadli",
-                "Legal technology",
-                "Civic systems",
-            ],
-            description:
-                m["overview.fields.justice.description"](),
-        },
-        {
-            title: m["overview.fields.queer.title"](),
-            icon: RainbowIcon,
-            items: [
-                "Pherus Transspace",
-                "Q2Q network",
-                "Community resources",
-            ],
-            description:
-                m["overview.fields.queer.description"](),
-        },
-        {
-            title: m["overview.fields.science.title"](),
-            icon: Science,
-            items: [
-                "Research",
-                "Experiments",
-                "Scientific projects",
-            ],
-            description:
-                m["overview.fields.science.description"](),
-        },
-        {
-            title: m["overview.fields.software.title"](),
-            icon: SoftwareIcon,
-            items: [
-                "Open source",
-                "Developer tools",
-                "Pherus infrastructure",
-            ],
-            description:
-                m["overview.fields.software.description"](),
-        },
-    ]
-
-    const showcasing = [
-        {
-            tab: m["overview.showcase.tabs.projects"](),
-            items: [
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-            ],
-        },
-        {
-            tab: m["overview.showcase.tabs.research"](),
-            items: [
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-            ],
-        },
-        {
-            tab: m["overview.showcase.tabs.redesign"](),
-            items: [
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-            ],
-        },
-    ]
+    const contribution = showcase.items.filter(
+        (resource) => resource.feed
+    )
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -184,7 +48,7 @@ function RouteComponent() {
                         }}
                         className="text-5xl font-black md:text-8xl"
                     >
-                        Pherus
+                        {home.title}
                     </motion.h1>
 
                     <motion.picture
@@ -219,7 +83,7 @@ function RouteComponent() {
                         {...reveal}
                         className="text-base"
                     >
-                        {m["overview.hero.description"]()}
+                        {m[home.descriptionKey]()}
                     </motion.p>
 
                     <motion.span
@@ -253,9 +117,9 @@ function RouteComponent() {
                     variants={staggerContainer}
                     className="mx-auto flex w-full md:max-w-3xl flex-wrap gap-2"
                 >
-                    {fieldList.map(({ title, icon }) => (
+                    {home.fields.map((field) => (
                         <motion.div
-                            key={title}
+                            key={field.titleKey}
                             variants={staggerItem}
                             className={cn(
                                 "group cursor-pointer rounded-md border p-1",
@@ -265,11 +129,11 @@ function RouteComponent() {
                         >
                             <div className="flex items-center gap-2">
                                 <HugeiconsIcon
-                                    icon={icon}
+                                    icon={icons[field.icon]}
                                     className="size-5"
                                 />
                                 <p className="text-xs! font-semibold">
-                                    {title}
+                                    {m[field.titleKey]()}
                                 </p>
                             </div>
                         </motion.div>
@@ -338,29 +202,33 @@ function RouteComponent() {
 
                 <div className="flex flex-col md:max-w-3xl w-full mx-auto">
                     <Tabs
-                        defaultValue={showcasing[0].tab}
+                        defaultValue={
+                            home.showcaseTabs[0].tabKey
+                        }
                         className="flex flex-col gap-5 w-full"
                     >
                         <TabsList
                             variant="line"
                             className="mx-auto gap-5"
                         >
-                            {showcasing?.map(({ tab }, i) => (
-                                <TabsTrigger
-                                    key={i}
-                                    value={tab}
-                                    className="p-0 text-sm"
-                                >
-                                    {tab}
-                                </TabsTrigger>
-                            ))}
+                            {home.showcaseTabs.map(
+                                ({ tabKey }) => (
+                                    <TabsTrigger
+                                        key={tabKey}
+                                        value={tabKey}
+                                        className="p-0 text-sm"
+                                    >
+                                        {m[tabKey]()}
+                                    </TabsTrigger>
+                                )
+                            )}
                         </TabsList>
 
-                        {showcasing?.map(
-                            ({ items, tab }, i) => (
+                        {home.showcaseTabs.map(
+                            ({ items, tabKey }) => (
                                 <TabsContent
-                                    key={i}
-                                    value={tab}
+                                    key={tabKey}
+                                    value={tabKey}
                                     className="w-full gap-5"
                                 >
                                     <motion.div
@@ -374,7 +242,7 @@ function RouteComponent() {
                                         }
                                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 w-full"
                                     >
-                                        {items?.map(
+                                        {items.map(
                                             (item, i) => (
                                                 <motion.a
                                                     variants={

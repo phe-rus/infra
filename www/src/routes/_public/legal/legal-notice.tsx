@@ -1,4 +1,7 @@
 import { m } from "@/paraglide/messages"
+import { cn } from "@infra/ui/lib/utils"
+import { resolveLegalPage } from "@data/legal"
+import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
@@ -7,38 +10,20 @@ import { motion } from "motion/react"
 export const Route = createFileRoute(
     "/_public/legal/legal-notice"
 )({
-    head: () =>
-        seo({
-            title: m["nav.legal.legal-notice"](),
-            description: m["legal.notice.metaDescription"](),
-            path: "/legal/legal-notice",
-        }),
+    head: () => {
+        const page = resolveLegalPage("legal-notice")
+
+        return seo({
+            title: page?.title ?? "Legal notice",
+            description: page?.description,
+            path: page?.path ?? "/legal/legal-notice",
+        })
+    },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const sections = [
-        {
-            heading: m["legal.notice.operator.heading"](),
-            body: m["legal.notice.operator.body"](),
-        },
-        {
-            heading: m["legal.notice.contact.heading"](),
-            body: m["legal.notice.contact.body"](),
-        },
-        {
-            heading: m["legal.notice.responsible.heading"](),
-            body: m["legal.notice.responsible.body"](),
-        },
-        {
-            heading: m["legal.notice.disclaimer.heading"](),
-            body: m["legal.notice.disclaimer.body"](),
-        },
-        {
-            heading: m["legal.notice.governingLaw.heading"](),
-            body: m["legal.notice.governingLaw.body"](),
-        },
-    ]
+    const page = resolveLegalPage("legal-notice")
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -48,7 +33,7 @@ function RouteComponent() {
                         {...reveal}
                         className="font-black"
                     >
-                        {m["nav.legal.legal-notice"]()}
+                        {page?.title}
                     </motion.h1>
 
                     <motion.p
@@ -60,20 +45,15 @@ function RouteComponent() {
                     </motion.p>
                 </div>
 
-                <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
-                    {sections.map((section) => (
-                        <div
-                            key={section.heading}
-                            className="flex flex-col gap-1"
-                        >
-                            <h2 className="text-base font-black">
-                                {section.heading}
-                            </h2>
-                            <p className="whitespace-pre-line text-sm text-muted-foreground">
-                                {section.body}
-                            </p>
-                        </div>
-                    ))}
+                <div
+                    className={cn(
+                        "mx-auto flex w-full md:max-w-3xl flex-col gap-5",
+                        "[&_h2]:text-base [&_h2]:font-black",
+                        "[&_h2:not(:first-child)]:mt-6",
+                        "[&_p]:text-sm [&_p]:text-muted-foreground"
+                    )}
+                >
+                    {page && renderDoc(page.content)}
                 </div>
             </section>
         </article>

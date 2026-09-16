@@ -1,13 +1,10 @@
 import { m } from "@/paraglide/messages"
-import {
-    IdeaIcon,
-    Location01Icon,
-    Mail01Icon,
-    RouteIcon,
-} from "@hugeicons/core-free-icons"
+import { Mail01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@infra/ui/lib/utils"
-import { resources } from "@lib/config"
+import { aboutUs } from "@data/about-us"
+import { icons } from "@data/icons"
+import { showcase } from "@data/showcase"
 import {
     reveal,
     staggerContainer,
@@ -20,35 +17,17 @@ import { motion } from "motion/react"
 export const Route = createFileRoute("/_public/about-us/")({
     head: () =>
         seo({
-            title: m["nav.about-us"](),
-            description: m["about.description"](),
-            path: "/about-us",
+            title: m[aboutUs.titleKey](),
+            description: m[aboutUs.descriptionKey](),
+            path: aboutUs.path,
         }),
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const building = resources.filter(
+    const building = showcase.items.filter(
         (resource) => resource.feed
     )
-
-    const sections = [
-        {
-            icon: IdeaIcon,
-            heading: m["about.whatWeDo.heading"](),
-            body: m["about.whatWeDo.body"](),
-        },
-        {
-            icon: Location01Icon,
-            heading: m["about.whereBased.heading"](),
-            body: m["about.whereBased.body"](),
-        },
-        {
-            icon: RouteIcon,
-            heading: m["about.howWeWork.heading"](),
-            body: m["about.howWeWork.body"](),
-        },
-    ]
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -64,7 +43,7 @@ function RouteComponent() {
                         }}
                         className="font-black"
                     >
-                        {m["nav.about-us"]()}
+                        {m[aboutUs.titleKey]()}
                     </motion.h1>
 
                     <motion.picture
@@ -94,7 +73,7 @@ function RouteComponent() {
                         {...reveal}
                         className="mx-auto max-w-md text-base"
                     >
-                        {m["about.description"]()}
+                        {m[aboutUs.descriptionKey]()}
                     </motion.p>
                 </div>
             </section>
@@ -107,21 +86,21 @@ function RouteComponent() {
                     variants={staggerContainer}
                     className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-8 md:grid-cols-3"
                 >
-                    {sections.map((section) => (
+                    {aboutUs.sections.map((section) => (
                         <motion.div
-                            key={section.heading}
+                            key={section.headingKey}
                             variants={staggerItem}
                             className="flex flex-col gap-2"
                         >
                             <HugeiconsIcon
-                                icon={section.icon}
+                                icon={icons[section.icon]}
                                 className="size-6 text-primary"
                             />
                             <h2 className="text-base font-black">
-                                {section.heading}
+                                {m[section.headingKey]()}
                             </h2>
                             <p className="text-sm text-muted-foreground">
-                                {section.body}
+                                {m[section.bodyKey]()}
                             </p>
                         </motion.div>
                     ))}
@@ -208,10 +187,10 @@ function RouteComponent() {
                 >
                     {m["about.contact.lead"]()}{" "}
                     <a
-                        href="mailto:pherus@pherus.org"
+                        href={`mailto:${aboutUs.contactEmail}`}
                         className="underline"
                     >
-                        pherus@pherus.org
+                        {aboutUs.contactEmail}
                     </a>
                     .
                 </motion.p>

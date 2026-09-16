@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages"
 import { cn } from "@infra/ui/lib/utils"
-import { resources } from "@lib/config"
+import { showcase } from "@data/showcase"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
@@ -10,7 +10,7 @@ export const Route = createFileRoute(
     "/_public/showcase/$slug"
 )({
     head: ({ params }) => {
-        const resource = resources.find(
+        const resource = showcase.items.find(
             (r) => r.slug === params.slug
         )
 
@@ -28,7 +28,9 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
     const { slug } = Route.useParams()
-    const resource = resources.find((r) => r.slug === slug)
+    const resource = showcase.items.find(
+        (r) => r.slug === slug
+    )
 
     if (!resource) {
         return (

@@ -1,4 +1,7 @@
 import { m } from "@/paraglide/messages"
+import { cn } from "@infra/ui/lib/utils"
+import { resolveLegalPage } from "@data/legal"
+import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
@@ -7,62 +10,20 @@ import { motion } from "motion/react"
 export const Route = createFileRoute(
     "/_public/legal/terms-of-service"
 )({
-    head: () =>
-        seo({
-            title: m["nav.legal.terms-of-service"](),
-            description: m["legal.tos.acceptance.body"](),
-            path: "/legal/terms-of-service",
-        }),
+    head: () => {
+        const page = resolveLegalPage("terms-of-service")
+
+        return seo({
+            title: page?.title ?? "Terms of service",
+            description: page?.description,
+            path: page?.path ?? "/legal/terms-of-service",
+        })
+    },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const sections = [
-        {
-            heading: m["legal.tos.acceptance.heading"](),
-            body: m["legal.tos.acceptance.body"](),
-        },
-        {
-            heading: m["legal.tos.services.heading"](),
-            body: m["legal.tos.services.body"](),
-        },
-        {
-            heading: m["legal.tos.accounts.heading"](),
-            body: m["legal.tos.accounts.body"](),
-        },
-        {
-            heading: m["legal.tos.acceptableUse.heading"](),
-            body: m["legal.tos.acceptableUse.body"](),
-        },
-        {
-            heading: m["legal.tos.ip.heading"](),
-            body: m["legal.tos.ip.body"](),
-        },
-        {
-            heading: m["legal.tos.thirdParty.heading"](),
-            body: m["legal.tos.thirdParty.body"](),
-        },
-        {
-            heading: m["legal.tos.disclaimer.heading"](),
-            body: m["legal.tos.disclaimer.body"](),
-        },
-        {
-            heading: m["legal.tos.liability.heading"](),
-            body: m["legal.tos.liability.body"](),
-        },
-        {
-            heading: m["legal.tos.governingLaw.heading"](),
-            body: m["legal.tos.governingLaw.body"](),
-        },
-        {
-            heading: m["legal.tos.changes.heading"](),
-            body: m["legal.tos.changes.body"](),
-        },
-        {
-            heading: m["legal.tos.contact.heading"](),
-            body: m["legal.tos.contact.body"](),
-        },
-    ]
+    const page = resolveLegalPage("terms-of-service")
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -72,7 +33,7 @@ function RouteComponent() {
                         {...reveal}
                         className="font-black"
                     >
-                        {m["nav.legal.terms-of-service"]()}
+                        {page?.title}
                     </motion.h1>
 
                     <motion.p
@@ -84,20 +45,15 @@ function RouteComponent() {
                     </motion.p>
                 </div>
 
-                <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
-                    {sections.map((section) => (
-                        <div
-                            key={section.heading}
-                            className="flex flex-col gap-1"
-                        >
-                            <h2 className="text-base font-black">
-                                {section.heading}
-                            </h2>
-                            <p className="text-sm text-muted-foreground">
-                                {section.body}
-                            </p>
-                        </div>
-                    ))}
+                <div
+                    className={cn(
+                        "mx-auto flex w-full md:max-w-3xl flex-col gap-5",
+                        "[&_h2]:text-base [&_h2]:font-black",
+                        "[&_h2:not(:first-child)]:mt-6",
+                        "[&_p]:text-sm [&_p]:text-muted-foreground"
+                    )}
+                >
+                    {page && renderDoc(page.content)}
 
                     <p className="text-sm text-muted-foreground">
                         {m["legal.common.seeAlso"]()}{" "}

@@ -1,0 +1,717 @@
+{
+    "content": {
+        "en": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "1. Overview"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "This policy explains what data Pherus Inc. collects across pherus.org and our other products, and how we use it. It doesn't cover third-party sites we link to."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "2. This site (pherus.org)"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "pherus.org itself doesn't have a sign-up form, account system, or data layer — browsing it doesn't create an account or submit any personal data to us. It sets one cookie, to remember your language preference; see our Cookie policy for details."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "3. Pherus accounts (account.pherus.org)"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "If you create a Pherus account, we collect what's needed to run it: your email address, authentication credentials (handled securely, never stored as plain text), and, if you enable them, two-factor authentication or passkey data. We also keep a record of your active sessions and devices so you can review and revoke them yourself."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "4. How we use your information"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "We use account data to operate, secure, and improve our services — for example, to authenticate you, prevent abuse, and let you manage your own sessions. We do not sell your personal data, and we don't run advertising or analytics trackers on our sites."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "5. Cookies and local storage"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "See our Cookie policy for the full list of what we store in your browser and why."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "6. Where your data is stored"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Our infrastructure runs on Cloudflare (Workers, D1, KV, and R2). Data may be processed or stored on Cloudflare's global network as part of operating our services."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "7. Data retention"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "We keep account data for as long as your account is active, and for [retention period] after deletion for security and legal purposes, unless a longer period is required by law."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "8. Your rights"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Depending on where you live, you may have the right to access, correct, export, or delete your personal data. You can manage most of this yourself from your account's security settings, or contact us using the details below."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "9. Children's privacy"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Our services aren't directed at children under 13 (or the minimum age in your jurisdiction), and we don't knowingly collect their data."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "10. Changes to this policy"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "We may update this policy from time to time. We'll update the date below when we do."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "11. Contact us"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Questions about this policy, or requests about your data, can be sent to pherus@pherus.org."
+                        }
+                    ]
+                }
+            ]
+        },
+        "zh": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "1. 概述"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "本政策说明了 Pherus Inc. 在 pherus.org 及我们其他产品中收集哪些数据,以及我们如何使用这些数据。本政策不涵盖我们链接到的第三方网站。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "2. 本网站(pherus.org)"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "pherus.org 本身没有注册表单、账户系统或数据层——浏览本网站不会创建账户,也不会向我们提交任何个人数据。它会设置一个 cookie,用于记住您的语言偏好;详情请参见我们的 Cookie 政策。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "3. Pherus 账户(account.pherus.org)"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "如果您创建 Pherus 账户,我们会收集运行该账户所需的信息:您的电子邮箱地址、身份验证凭证(安全处理,绝不以明文存储),以及在您启用的情况下的双重验证或通行密钥数据。我们还会记录您的活动会话和设备,以便您自行查看和撤销。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "4. 我们如何使用您的信息"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "我们使用账户数据来运营、保障安全并改进我们的服务——例如对您进行身份验证、防止滥用,并让您管理自己的会话。我们不会出售您的个人数据,也不会在我们的网站上运行广告或分析跟踪程序。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "5. Cookie 与本地存储"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "请参阅我们的 Cookie 政策,了解我们在您浏览器中存储的全部内容及原因。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "6. 您的数据存储在哪里"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "我们的基础设施运行在 Cloudflare 上(Workers、D1、KV 和 R2)。在运营服务的过程中,数据可能会在 Cloudflare 的全球网络上被处理或存储。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "7. 数据保留"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "只要您的账户处于活跃状态,我们就会保留账户数据;账户删除后,出于安全和法律目的,我们还会保留 [保留期限],除非法律要求更长的保留期限。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "8. 您的权利"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "根据您所在地区的不同,您可能有权访问、更正、导出或删除您的个人数据。您可以在账户的安全设置中自行管理大部分事项,或使用下方的联系方式与我们联系。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "9. 儿童隐私"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "我们的服务并非面向 13 岁以下(或您所在司法辖区规定的最低年龄以下)的儿童,我们也不会故意收集他们的数据。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "10. 本政策的变更"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "我们可能会不时更新本政策。更新时我们会更新下方日期。"
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "11. 联系我们"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "有关本政策的问题,或与您的数据相关的请求,可发送至 pherus@pherus.org。"
+                        }
+                    ]
+                }
+            ]
+        },
+        "fr": {
+            "type": "doc",
+            "content": [
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "1. Aperçu"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Cette politique explique quelles données Pherus Inc. collecte sur pherus.org et nos autres produits, et comment nous les utilisons. Elle ne couvre pas les sites tiers vers lesquels nous renvoyons."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "2. Ce site (pherus.org)"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "pherus.org lui-même n'a ni formulaire d'inscription, ni système de compte, ni couche de données — le parcourir ne crée aucun compte et ne nous transmet aucune donnée personnelle. Il dépose un seul cookie, pour mémoriser votre préférence de langue ; voir notre Politique de cookies pour plus de détails."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "3. Comptes Pherus (account.pherus.org)"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Si vous créez un compte Pherus, nous collectons ce qui est nécessaire à son fonctionnement : votre adresse e-mail, vos identifiants d'authentification (traités de manière sécurisée, jamais stockés en texte clair), et, si vous les activez, vos données d'authentification à deux facteurs ou de passkey. Nous conservons également un historique de vos sessions actives et de vos appareils afin que vous puissiez les consulter et les révoquer vous-même."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "4. Comment nous utilisons vos informations"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Nous utilisons les données de compte pour exploiter, sécuriser et améliorer nos services — par exemple, pour vous authentifier, prévenir les abus et vous permettre de gérer vos propres sessions. Nous ne vendons pas vos données personnelles et n'utilisons aucun traceur publicitaire ou analytique sur nos sites."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "5. Cookies et stockage local"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Consultez notre Politique de cookies pour la liste complète de ce que nous stockons dans votre navigateur et pourquoi."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "6. Où vos données sont stockées"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Notre infrastructure fonctionne sur Cloudflare (Workers, D1, KV et R2). Les données peuvent être traitées ou stockées sur le réseau mondial de Cloudflare dans le cadre de l'exploitation de nos services."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "7. Conservation des données"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Nous conservons les données de compte tant que votre compte est actif, puis pendant [durée de conservation] après suppression, à des fins de sécurité et légales, sauf si une durée plus longue est requise par la loi."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "8. Vos droits"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Selon votre lieu de résidence, vous pouvez avoir le droit d'accéder à vos données personnelles, de les corriger, de les exporter ou de les supprimer. Vous pouvez gérer la plupart de ces actions vous-même depuis les paramètres de sécurité de votre compte, ou nous contacter via les coordonnées ci-dessous."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "9. Confidentialité des mineurs"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Nos services ne s'adressent pas aux enfants de moins de 13 ans (ou l'âge minimum applicable dans votre juridiction), et nous ne collectons pas sciemment leurs données."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "10. Modifications de cette politique"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Nous pouvons mettre à jour cette politique de temps à autre. Nous mettrons à jour la date ci-dessous lorsque nous le ferons."
+                        }
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "attrs": {
+                        "level": 2
+                    },
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "11. Nous contacter"
+                        }
+                    ]
+                },
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Toute question relative à cette politique, ou toute demande concernant vos données, peut être envoyée à pherus@pherus.org."
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "description": {
+        "en": "This policy explains what data Pherus Inc. collects across pherus.org and our other products, and how we use it. It doesn't cover third-party sites we link to.",
+        "zh": "本政策说明了 Pherus Inc. 在 pherus.org 及我们其他产品中收集哪些数据,以及我们如何使用这些数据。本政策不涵盖我们链接到的第三方网站。",
+        "fr": "Cette politique explique quelles données Pherus Inc. collecte sur pherus.org et nos autres produits, et comment nous les utilisons. Elle ne couvre pas les sites tiers vers lesquels nous renvoyons."
+    }
+}
