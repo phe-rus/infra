@@ -1,0 +1,41 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Pherus Pass is the identity layer that every other Pherus product builds on. Instead of each product shipping its own login system, they all register as OAuth clients of one shared identity provider."
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "That identity provider is Infra, live today at infra.pherus.org. It runs a real, spec-compliant OAuth 2.1 and OIDC provider, backed by better-auth, plus an admin dashboard for managing connected applications, users, and roles."
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "The other half is Accounts, at account.pherus.org, the end-user facing side of Pass. It's where people manage their own profile, two-factor authentication, passkeys, and active sessions and devices, all without touching Infra's admin surface directly."
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Signing into one Pherus product signs you into all of them. That's the whole point of Pass: one identity, one account, used everywhere."
+                }
+            ]
+        }
+    ]
+}

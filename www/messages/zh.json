@@ -60,9 +60,9 @@
         "showcase": {
             "heading": "我们工作的展示",
             "tabs": {
-                "projects": "项目",
-                "research": "研究",
-                "redesign": "重新设计"
+                "identity": "身份",
+                "community": "社区",
+                "research": "研究"
             }
         }
     },

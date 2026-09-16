@@ -60,9 +60,9 @@
         "showcase": {
             "heading": "Showcase of our work",
             "tabs": {
-                "projects": "Projects",
-                "research": "Research",
-                "redesign": "Redesign"
+                "identity": "Identity",
+                "community": "Community",
+                "research": "Research"
             }
         }
     },

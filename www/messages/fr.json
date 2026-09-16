@@ -60,9 +60,9 @@
         "showcase": {
             "heading": "Vitrine de notre travail",
             "tabs": {
-                "projects": "Projets",
-                "research": "Recherche",
-                "redesign": "Refonte"
+                "identity": "Identité",
+                "community": "Communauté",
+                "research": "Recherche"
             }
         }
     },

@@ -1,0 +1,23 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Pherus Research is where we document and share what we find as we explore different fields, from identity and health to justice and community technology."
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Not every question turns into a product. Some stay research: notes, experiments, and findings worth putting into the world even before they become something you can use directly."
+                }
+            ]
+        }
+    ]
+}

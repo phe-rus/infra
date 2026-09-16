@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages"
 import { z } from "zod"
-import cookiePolicyContent from "./legal/cookie-policy.json"
+import cookiePolicyContent from "./legal/site-storage.json"
 import legalIndexContent from "./legal/index.json"
 import legalNoticeContent from "./legal/legal-notice.json"
 import privacyPolicyContent from "./legal/privacy-policy.json"

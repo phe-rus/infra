@@ -1,6 +1,7 @@
 import { m } from "@/paraglide/messages"
 import { cn } from "@infra/ui/lib/utils"
-import { showcase } from "@data/showcase"
+import { resolveResource } from "@data/showcase"
+import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
@@ -10,9 +11,7 @@ export const Route = createFileRoute(
     "/_public/showcase/$slug"
 )({
     head: ({ params }) => {
-        const resource = showcase.items.find(
-            (r) => r.slug === params.slug
-        )
+        const resource = resolveResource(params.slug)
 
         return seo({
             title: resource?.title ?? params.slug,
@@ -28,9 +27,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
     const { slug } = Route.useParams()
-    const resource = showcase.items.find(
-        (r) => r.slug === slug
-    )
+    const resource = resolveResource(slug)
 
     if (!resource) {
         return (
@@ -72,12 +69,20 @@ function RouteComponent() {
                         />
                     </div>
 
-                    <motion.h1
-                        {...reveal}
-                        className="font-black"
-                    >
-                        {resource.title}
-                    </motion.h1>
+                    <div className="flex items-center gap-2">
+                        <motion.h1
+                            {...reveal}
+                            className="font-black"
+                        >
+                            {resource.title}
+                        </motion.h1>
+
+                        {resource.status === "active" && (
+                            <span className="rounded-full border border-primary/40 px-2 py-0.5 text-xs font-semibold text-primary">
+                                Live
+                            </span>
+                        )}
+                    </div>
 
                     {resource.descriptionKey && (
                         <motion.p
@@ -86,6 +91,33 @@ function RouteComponent() {
                         >
                             {m[resource.descriptionKey]()}
                         </motion.p>
+                    )}
+
+                    {resource.body && (
+                        <div className="flex flex-col gap-3 [&_p]:text-sm [&_p]:text-muted-foreground">
+                            {renderDoc(resource.body)}
+                        </div>
+                    )}
+
+                    {resource.links && (
+                        <div className="flex flex-col gap-1">
+                            <h2 className="text-sm font-black">
+                                Links
+                            </h2>
+                            <div className="flex flex-col gap-1">
+                                {resource.links.map(
+                                    (link) => (
+                                        <a
+                                            key={link.href}
+                                            href={link.href}
+                                            className="text-sm text-muted-foreground underline w-fit"
+                                        >
+                                            {link.label}
+                                        </a>
+                                    )
+                                )}
+                            </div>
+                        </div>
                     )}
 
                     {resource.tags && (

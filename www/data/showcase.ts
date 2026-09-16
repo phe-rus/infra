@@ -1,6 +1,20 @@
 import { z } from "zod"
 import { defaultHandlers } from "./lib/handler"
 import { messageKey } from "./lib/message-key"
+import type { TiptapDoc } from "./lib/tiptap-doc"
+
+const ResourceLinkSchema = z.object({
+    label: z.string(),
+    href: z.string(),
+})
+
+const HomeCategorySchema = z.enum([
+    "identity",
+    "community",
+    "research",
+])
+
+export type HomeCategory = z.infer<typeof HomeCategorySchema>
 
 const ResourceSchema = z.object({
     slug: z.string(),
@@ -12,6 +26,11 @@ const ResourceSchema = z.object({
     tags: z.array(z.string()).optional(),
     stack: z.array(z.string()).optional(),
     catalogs: z.array(z.string()).optional(),
+    /** Only set once a resource is actually shipped and live, not just announced. */
+    status: z.enum(["active", "in-development"]).optional(),
+    links: z.array(ResourceLinkSchema).optional(),
+    /** Only set for the specific resources highlighted on the home page's tabs. */
+    homeCategory: HomeCategorySchema.optional(),
 })
 
 const ShowcaseSchema = z.object({
@@ -35,7 +54,7 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
         {
             slug: "pass",
             title: "Pass",
-            img: "/og.png",
+            img: "/showcase/pass.svg",
             feed: "/rss/pass",
             descriptionKey: "showcase.pass.description",
             tags: [
@@ -51,11 +70,23 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
                 "TypeScript",
             ],
             catalogs: ["Infra", "Accounts"],
+            status: "active",
+            links: [
+                {
+                    label: "Infra (auth server)",
+                    href: "https://infra.pherus.org",
+                },
+                {
+                    label: "Accounts",
+                    href: "https://account.pherus.org",
+                },
+            ],
+            homeCategory: "identity",
         },
         {
             slug: "health",
             title: "Health",
-            img: "/og.png",
+            img: "/showcase/health.svg",
             feed: "/rss/health",
             descriptionKey: "showcase.health.description",
             tags: [
@@ -74,7 +105,7 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
         {
             slug: "collective",
             title: "Collective",
-            img: "/og.png",
+            img: "/showcase/collective.svg",
             feed: "/rss/collective",
             descriptionKey: "showcase.collective.description",
             tags: [
@@ -89,41 +120,43 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
                 "Tailwind CSS",
                 "TypeScript",
             ],
+            homeCategory: "community",
         },
         {
             slug: "software",
             title: "Software",
-            img: "/og.png",
+            img: "/showcase/software.svg",
             feed: "/rss/software",
         },
         {
             slug: "transspace",
             title: "Transspace",
-            img: "/og.png",
+            img: "/showcase/transspace.svg",
             feed: "/rss/transspace",
+            homeCategory: "community",
         },
         {
             slug: "laniina",
             title: "Laniina",
-            img: "/og.png",
+            img: "/showcase/laniina.svg",
             feed: "/rss/laniina",
         },
         {
             slug: "futa",
             title: "Futa",
-            img: "/og.png",
+            img: "/showcase/futa.svg",
             feed: "/rss/futa",
         },
         {
             slug: "sora",
             title: "Sora",
-            img: "/og.png",
+            img: "/showcase/sora.svg",
             feed: "/rss/sora",
         },
         {
             slug: "research",
             title: "Research",
-            img: "/og.png",
+            img: "/showcase/research.svg",
             descriptionKey: "showcase.research.description",
             tags: ["Research", "Exploration", "Science"],
             stack: [
@@ -131,6 +164,32 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
                 "Roam",
                 "Personal Knowledge Management",
             ],
+            homeCategory: "research",
         },
     ],
 })
+
+const bodies = import.meta.glob<TiptapDoc>(
+    "./showcase/*.json",
+    { import: "default", eager: true }
+)
+
+export function resolveResource(slug: string) {
+    const resource = showcase.items.find(
+        (entry) => entry.slug === slug
+    )
+    if (!resource) return undefined
+
+    return {
+        ...resource,
+        body: bodies[`./showcase/${slug}.json`],
+    }
+}
+
+export function resourcesByHomeCategory(
+    category: HomeCategory
+) {
+    return showcase.items.filter(
+        (entry) => entry.homeCategory === category
+    )
+}

@@ -1,0 +1,23 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Pherus Transspace is about queer life and community: building spaces, resources, and technology that help people find community, knowledge, and support."
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "It's part of a wider Q2Q network, connecting community resources rather than building one single closed platform."
+                }
+            ]
+        }
+    ]
+}

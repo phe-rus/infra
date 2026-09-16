@@ -1,4 +1,5 @@
 import { z } from "zod"
+import type { HomeCategory } from "./showcase"
 import type { IconKey } from "./icons"
 import { defaultHandlers } from "./lib/handler"
 import { messageKey } from "./lib/message-key"
@@ -17,16 +18,13 @@ const FieldSchema = z.object({
     descriptionKey: messageKey,
 })
 
-const ShowcaseTabItemSchema = z.object({
-    title: z.string(),
-    description: z.string(),
-    to: z.string(),
-    img: z.string(),
-})
-
 const ShowcaseTabSchema = z.object({
-    tabKey: messageKey,
-    items: z.array(ShowcaseTabItemSchema),
+    category: z.enum([
+        "identity",
+        "community",
+        "research",
+    ] satisfies HomeCategory[]),
+    titleKey: messageKey,
 })
 
 const HomeSchema = z.object({
@@ -111,61 +109,16 @@ export const home = defaultHandlers(HomeSchema)({
     ],
     showcaseTabs: [
         {
-            tabKey: "overview.showcase.tabs.projects",
-            items: [
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-            ],
+            category: "identity",
+            titleKey: "overview.showcase.tabs.identity",
         },
         {
-            tabKey: "overview.showcase.tabs.research",
-            items: [
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-            ],
+            category: "community",
+            titleKey: "overview.showcase.tabs.community",
         },
         {
-            tabKey: "overview.showcase.tabs.redesign",
-            items: [
-                {
-                    title: "Awwwards Hero",
-                    description:
-                        "Awwwards nomination and a People's Choice Award at Awwwards. The project was built using React, Next.js, and Tailwind CSS.",
-                    to: "/",
-                    img: "/og.png",
-                },
-            ],
+            category: "research",
+            titleKey: "overview.showcase.tabs.research",
         },
     ],
 })

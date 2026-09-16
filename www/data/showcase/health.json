@@ -1,0 +1,32 @@
+{
+    "type": "doc",
+    "content": [
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Pherus Health explores what a personal health system looks like when you actually own your own health data, instead of it living scattered across providers you can't fully access."
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "It's a decentralised approach: your health information stays under your control, built on modern web technologies and open standards rather than a closed proprietary format."
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "This is still early-stage work. The shape of what Health becomes will keep evolving as the research and the technology mature together."
+                }
+            ]
+        }
+    ]
+}

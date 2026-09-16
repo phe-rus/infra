@@ -9,14 +9,17 @@ import {
 import { cn } from "@infra/ui/lib/utils"
 import { home } from "@data/home"
 import { icons } from "@data/icons"
-import { showcase } from "@data/showcase"
+import {
+    resourcesByHomeCategory,
+    showcase,
+} from "@data/showcase"
 import {
     reveal,
     staggerContainer,
     staggerItem,
 } from "@lib/motion"
 import { seo } from "@lib/seo"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute("/_public/")({
@@ -203,7 +206,7 @@ function RouteComponent() {
                 <div className="flex flex-col md:max-w-3xl w-full mx-auto">
                     <Tabs
                         defaultValue={
-                            home.showcaseTabs[0].tabKey
+                            home.showcaseTabs[0].category
                         }
                         className="flex flex-col gap-5 w-full"
                     >
@@ -212,23 +215,23 @@ function RouteComponent() {
                             className="mx-auto gap-5"
                         >
                             {home.showcaseTabs.map(
-                                ({ tabKey }) => (
+                                ({ category, titleKey }) => (
                                     <TabsTrigger
-                                        key={tabKey}
-                                        value={tabKey}
+                                        key={category}
+                                        value={category}
                                         className="p-0 text-sm"
                                     >
-                                        {m[tabKey]()}
+                                        {m[titleKey]()}
                                     </TabsTrigger>
                                 )
                             )}
                         </TabsList>
 
                         {home.showcaseTabs.map(
-                            ({ items, tabKey }) => (
+                            ({ category }) => (
                                 <TabsContent
-                                    key={tabKey}
-                                    value={tabKey}
+                                    key={category}
+                                    value={category}
                                     className="w-full gap-5"
                                 >
                                     <motion.div
@@ -240,11 +243,22 @@ function RouteComponent() {
                                         variants={
                                             staggerContainer
                                         }
-                                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 w-full"
+                                        className="columns-1 md:columns-2 lg:columns-3 gap-2 w-full"
                                     >
-                                        {items.map(
-                                            (item, i) => (
-                                                <motion.a
+                                        {resourcesByHomeCategory(
+                                            category
+                                        ).map((resource) => (
+                                            <Link
+                                                key={
+                                                    resource.slug
+                                                }
+                                                to="/showcase/$slug"
+                                                params={{
+                                                    slug: resource.slug,
+                                                }}
+                                                className="contents"
+                                            >
+                                                <motion.article
                                                     variants={
                                                         staggerItem
                                                     }
@@ -254,37 +268,19 @@ function RouteComponent() {
                                                     whileHover={{
                                                         scale: 1.01,
                                                     }}
-                                                    key={i}
-                                                    href={
-                                                        item.to
-                                                    }
                                                     className={cn(
-                                                        "group bg-muted overflow-hidden",
-                                                        "rounded-sm border cursor-pointer shadow",
-                                                        "hover:-translate-y-1 transition-all duration-500",
-                                                        "hover:shadow-sm"
+                                                        "group flex flex-col overflow-hidden cursor-pointer",
+                                                        "break-inside-avoid! mb-5"
                                                     )}
                                                 >
-                                                    <div className="flex flex-col text-center w-full p-5">
-                                                        <h1 className="text-base!">
-                                                            {
-                                                                item.title
-                                                            }
-                                                        </h1>
-                                                        <p>
-                                                            {
-                                                                item.description
-                                                            }
-                                                        </p>
-                                                    </div>
                                                     <div className="mt-auto relative w-full aspect-video p-px">
-                                                        <div className="relative w-full h-full overflow-hidden rounded-sm">
+                                                        <div className="relative w-full h-full overflow-hidden rounded-none!">
                                                             <img
                                                                 src={
-                                                                    item.img
+                                                                    resource.img
                                                                 }
                                                                 alt={
-                                                                    item.title
+                                                                    resource.title
                                                                 }
                                                                 className={cn(
                                                                     "absolute inset-0 w-full h-full object-cover",
@@ -296,9 +292,23 @@ function RouteComponent() {
                                                             />
                                                         </div>
                                                     </div>
-                                                </motion.a>
-                                            )
-                                        )}
+                                                    <div className="flex flex-col w-full py-1">
+                                                        <h1 className="text-base!">
+                                                            {
+                                                                resource.title
+                                                            }
+                                                        </h1>
+                                                        <p className="text-sm!">
+                                                            {resource.descriptionKey &&
+                                                                m[
+                                                                    resource
+                                                                        .descriptionKey
+                                                                ]()}
+                                                        </p>
+                                                    </div>
+                                                </motion.article>
+                                            </Link>
+                                        ))}
                                     </motion.div>
                                 </TabsContent>
                             )
