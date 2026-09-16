@@ -1,3 +1,4 @@
+import { cn } from "@infra/ui/lib/utils"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
@@ -6,7 +7,6 @@ import type {
     PropsWithChildren,
     ReactNode,
 } from "react"
-import { cn } from "../../lib/utils"
 
 type ComposeViewportProps = PropsWithChildren<{
     className?: string

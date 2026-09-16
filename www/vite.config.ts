@@ -15,7 +15,9 @@ const config = defineConfig({
     resolve: {
         tsconfigPaths: true,
         alias: {
-            "@": path.resolve(import.meta.dirname, "."),
+            "@": path.resolve(import.meta.dirname, "./src"),
+            "@lib": path.resolve(import.meta.dirname, "./lib"),
+            "@components": path.resolve(import.meta.dirname, "./components"),
         },
     },
     plugins: [

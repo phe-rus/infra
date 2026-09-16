@@ -1,4 +1,4 @@
-import { Toolbar } from "@/components/toolbar"
+import { Toolbar } from "@components/toolbar"
 import {
     createFileRoute,
     Outlet,

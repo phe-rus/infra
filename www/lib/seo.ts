@@ -1,4 +1,4 @@
-import { localizeUrl } from "@/src/paraglide/runtime"
+import { localizeUrl } from "@/paraglide/runtime"
 
 const SITE_URL = import.meta.env.VITE_SITE_URL as string
 
@@ -38,11 +38,11 @@ export const seo = ({
             : []),
         ...(keywords
             ? [
-                  {
-                      name: "keywords",
-                      content: keywords.join(", "),
-                  },
-              ]
+                {
+                    name: "keywords",
+                    content: keywords.join(", "),
+                },
+            ]
             : []),
 
         // OG tags
@@ -50,22 +50,22 @@ export const seo = ({
         { name: "og:title", content: fullTitle },
         ...(description
             ? [
-                  {
-                      name: "og:description",
-                      content: description,
-                  },
-              ]
+                {
+                    name: "og:description",
+                    content: description,
+                },
+            ]
             : []),
         { name: "og:site_name", content: "Pherus" },
         { name: "og:image", content: absoluteImage },
         { name: "og:url", content: canonicalUrl },
         ...(publishedTime
             ? [
-                  {
-                      name: "article:published_time",
-                      content: publishedTime,
-                  },
-              ]
+                {
+                    name: "article:published_time",
+                    content: publishedTime,
+                },
+            ]
             : []),
 
         // Twitter card tags
@@ -76,11 +76,11 @@ export const seo = ({
         { name: "twitter:title", content: fullTitle },
         ...(description
             ? [
-                  {
-                      name: "twitter:description",
-                      content: description,
-                  },
-              ]
+                {
+                    name: "twitter:description",
+                    content: description,
+                },
+            ]
             : []),
         { name: "twitter:image", content: absoluteImage },
     ]

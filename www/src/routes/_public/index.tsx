@@ -187,25 +187,25 @@ function RouteComponent() {
 
                     <motion.span
                         {...reveal}
-                        className="mx-auto my-10 block h-18 w-px bg-primary"
+                        className="mx-auto my-10 block h-18 w-px bg-primary/35"
                     />
                 </div>
             </section>
 
             <section className="container flex flex-col gap-5">
-                <div className="mx-auto flex w-full max-w-3xl flex-col">
+                <div className="mx-auto flex w-full md:max-w-3xl flex-col">
                     <motion.h2 {...reveal} className="font-black">
                         Fields of interest
                     </motion.h2>
 
-                    <motion.p {...reveal} className="max-w-md text-base">
+                    <motion.p {...reveal} className="md:max-w-md text-base">
                         Pherus explores a growing range of fields, bringing
                         together research, technology, and practical work
                         wherever curiosity takes us.
                     </motion.p>
                 </div>
 
-                <div className="mx-auto flex w-full max-w-3xl flex-wrap gap-2">
+                <div className="mx-auto flex w-full md:max-w-3xl flex-wrap gap-2">
                     {fieldList.map(({ title, icon }, i) => (
                         <motion.div
                             key={title}
@@ -277,7 +277,7 @@ function RouteComponent() {
             </section>
 
             <section className='container flex flex-col gap-5'>
-                <div className="mx-auto flex w-full max-w-3xl flex-col">
+                <div className="mx-auto flex w-full md:max-w-3xl flex-col">
                     <motion.h2 {...reveal} className="text-center font-black">
                         Showcase of our work's
                     </motion.h2>

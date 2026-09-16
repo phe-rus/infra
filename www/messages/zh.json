@@ -1,3 +1,23 @@
 {
-    "$schema": "https://inlang.com/schema/inlang-message-format"
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "name": "Pherus",
+    "nav": {
+        "home": "主页",
+        "showcase": "展示",
+        "about-us": "关于我们",
+        "legal": {
+            "label": "法律相关",
+            "terms-of-service": "服务条款",
+            "privacy-policy": "隐私政策",
+            "cookie-policy": "Cookie 政策",
+            "legal-notice": "法律声明"
+        },
+        "licenses": {
+            "label": "许可证",
+            "pherus-license": "Pherus 许可证",
+            "mit-license": "MIT 许可证",
+            "apache-2.0-license": "Apache 2.0 许可证",
+            "gpl-3.0-license": "GPL 3.0 许可证"
+        }
+    }
 }

@@ -1,3 +1,23 @@
 {
-    "$schema": "https://inlang.com/schema/inlang-message-format"
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "name": "Pherus",
+    "nav": {
+        "home": "Accueil",
+        "showcase": "Vitrine",
+        "about-us": "À propos de nous",
+        "legal": {
+            "label": "Mentions légales",
+            "terms-of-service": "Conditions d'utilisation",
+            "privacy-policy": "Politique de confidentialité",
+            "cookie-policy": "Politique en matière de cookies",
+            "legal-notice": "Mentions légales"
+        },
+        "licenses": {
+            "label": "Licences",
+            "pherus-license": "Licence Pherus",
+            "mit-license": "Licence MIT",
+            "apache-2.0-license": "Licence Apache 2.0",
+            "gpl-3.0-license": "Licence GPL 3.0"
+        }
+    }
 }

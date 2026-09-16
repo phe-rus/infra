@@ -1,9 +1,9 @@
-import { NotFound } from "@infra/ui/defaults"
-import { createRouter as createTanStackRouter } from "@tanstack/react-router"
 import {
     deLocalizeUrl,
     localizeUrl,
-} from "./paraglide/runtime"
+} from "@/paraglide/runtime"
+import { NotFound } from "@infra/ui/defaults"
+import { createRouter as createTanStackRouter } from "@tanstack/react-router"
 import { routeTree } from "./routeTree.gen"
 
 export function getRouter() {
