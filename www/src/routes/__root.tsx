@@ -13,9 +13,9 @@ import {
 export const Route = createRootRoute({
     head: () => {
         const { meta, links } = seo({
-            title: "Pherus",
+            title: "Pherus - Practical research, sciences, innovation & technology",
             description:
-                "Pherus is a practical research, sciences, innovation, and technology company: a place for curious ideas to become real things.",
+                "Pherus is a practical research company exploring science, technology, and engineering to create innovative solutions that solve real-world problems. We build open technologies, conduct research, and turn ideas into practical tools that improve everyday life.",
             canonical: false,
         })
 
