@@ -11,26 +11,15 @@
         "target": "ES2022",
         "jsx": "react-jsx",
         "module": "ESNext",
-        "lib": [
-            "ES2022",
-            "DOM",
-            "DOM.Iterable"
-        ],
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "types": [
             "vite/client",
             "./worker-configuration.d.ts"
         ],
-        "baseUrl": ".",
         "paths": {
-            "@/*": [
-                "./src/*"
-            ],
-            "@lib/*": [
-                "./lib/*"
-            ],
-            "@components/*": [
-                "./components/*"
-            ]
+            "@/*": ["./src/*"],
+            "@lib/*": ["./lib/*"],
+            "@components/*": ["./components/*"]
         },
         /* Bundler mode */
         "moduleResolution": "bundler",

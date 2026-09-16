@@ -19,5 +19,51 @@
             "apache-2.0-license": "Apache 2.0 许可证",
             "gpl-3.0-license": "GPL 3.0 许可证"
         }
+    },
+    "overview": {
+        "hero": {
+            "heading": "我们是一群志同道合的人",
+            "tagline": "由好奇心与创新驱动。",
+            "description": "让我们向你展示我们最狂野的梦想与想象,带你用我们的眼睛看世界。"
+        },
+        "fields": {
+            "heading": "关注领域",
+            "description": "Pherus 探索着日益广泛的领域,将研究、技术与实际工作结合在一起,追随好奇心所引领的方向。",
+            "identity": {
+                "title": "身份与访问",
+                "description": "探索人们如何在使用的系统之间安全地进行身份识别、访问与切换。"
+            },
+            "health": {
+                "title": "健康与幸福",
+                "description": "构建并探索围绕健康、护理以及更好的信息获取的技术。"
+            },
+            "justice": {
+                "title": "司法与治理",
+                "description": "探索能够让公共机构与司法系统运作得更好的技术与研究。"
+            },
+            "queer": {
+                "title": "酷儿生活与社区",
+                "description": "创建空间、资源与技术,帮助人们找到社区、知识与支持。"
+            },
+            "science": {
+                "title": "科学与研究",
+                "description": "追随问题所引领的方向,从实际实验到更深入的科学探究。"
+            },
+            "software": {
+                "title": "软件与基础设施",
+                "description": "构建支撑更广泛生态系统所需的底层软件、基础设施与工具。"
+            }
+        },
+        "marquee": {
+            "heading": "以下是我们正在打造的一些项目的简单介绍。"
+        },
+        "showcase": {
+            "heading": "我们工作的展示",
+            "tabs": {
+                "projects": "项目",
+                "research": "研究",
+                "redesign": "重新设计"
+            }
+        }
     }
 }

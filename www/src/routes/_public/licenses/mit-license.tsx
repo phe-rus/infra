@@ -1,9 +1,55 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { m } from "@/paraglide/messages"
+import { reveal } from "@lib/motion"
+import { createFileRoute } from "@tanstack/react-router"
+import { motion } from "motion/react"
 
-export const Route = createFileRoute('/_public/licenses/mit-license')({
-  component: RouteComponent,
+export const Route = createFileRoute(
+    "/_public/licenses/mit-license"
+)({
+    component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/_public/licenses/mit-license"!</div>
+    const text = `MIT License
+
+Copyright (c) 2026 Pherus Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.`
+
+    return (
+        <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
+            <section className="container flex flex-col gap-5">
+                <div className="mx-auto flex w-full md:max-w-3xl flex-col">
+                    <motion.h1
+                        {...reveal}
+                        className="font-black"
+                    >
+                        {m["nav.licenses.mit-license"]()}
+                    </motion.h1>
+                </div>
+
+                <div className="mx-auto w-full md:max-w-3xl">
+                    <pre
+                        data-not-typeset
+                        className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed"
+                    >
+                        {text}
+                    </pre>
+                </div>
+            </section>
+        </article>
+    )
 }

@@ -19,5 +19,51 @@
             "apache-2.0-license": "Apache 2.0 license",
             "gpl-3.0-license": "GPL 3.0 license"
         }
+    },
+    "overview": {
+        "hero": {
+            "heading": "We are a collective of like-minded individuals",
+            "tagline": "driven by curiosity & a drive to innovate.",
+            "description": "Let us show you our wildest dreams & imaginations, so you see the world through our eyes."
+        },
+        "fields": {
+            "heading": "Fields of interest",
+            "description": "Pherus explores a growing range of fields, bringing together research, technology, and practical work wherever curiosity takes us.",
+            "identity": {
+                "title": "Identity & access",
+                "description": "Exploring how people can securely identify, access, and move between the systems they use."
+            },
+            "health": {
+                "title": "Health & wellbeing",
+                "description": "Building and exploring technology around health, care, and better access to information."
+            },
+            "justice": {
+                "title": "Justice & governance",
+                "description": "Exploring technology and research that can make public institutions and justice systems work better."
+            },
+            "queer": {
+                "title": "Queer life & community",
+                "description": "Creating spaces, resources, and technology that help people find community, knowledge, and support."
+            },
+            "science": {
+                "title": "Science & research",
+                "description": "Following questions wherever they lead, from practical experiments to deeper scientific inquiry."
+            },
+            "software": {
+                "title": "Software & infrastructure",
+                "description": "Building the underlying software, infrastructure, and tools that make the wider ecosystem possible."
+            }
+        },
+        "marquee": {
+            "heading": "Here's a little more about some of the things we're building."
+        },
+        "showcase": {
+            "heading": "Showcase of our work",
+            "tabs": {
+                "projects": "Projects",
+                "research": "Research",
+                "redesign": "Redesign"
+            }
+        }
     }
 }

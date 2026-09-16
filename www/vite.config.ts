@@ -38,7 +38,7 @@ const config = defineConfig({
                 import.meta.dirname,
                 "./src/paraglide"
             ),
-            outputStructure: "message-modules",
+            outputStructure: "locale-modules",
             cookieName: "PARAGLIDE_LOCALE",
             strategy: [
                 "url",

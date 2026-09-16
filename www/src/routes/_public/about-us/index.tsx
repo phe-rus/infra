@@ -1,21 +1,12 @@
+import { reveal } from '@lib/motion'
 import { createFileRoute } from '@tanstack/react-router'
 import { motion } from 'motion/react'
-import { useMemo } from 'react'
 
 export const Route = createFileRoute('/_public/about-us/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const reveal = useMemo(() => {
-    return {
-      initial: { opacity: 0 },
-      whileInView: { opacity: 1 },
-      viewport: { once: true },
-      transition: { delay: 0.3, duration: 0.7 },
-    }
-  }, [])
-
   return (
     <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
       <section className="container flex flex-col gap-5">

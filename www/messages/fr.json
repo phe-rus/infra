@@ -19,5 +19,51 @@
             "apache-2.0-license": "Licence Apache 2.0",
             "gpl-3.0-license": "Licence GPL 3.0"
         }
+    },
+    "overview": {
+        "hero": {
+            "heading": "Nous sommes un collectif de personnes animées par les mêmes idées",
+            "tagline": "portées par la curiosité et l'envie d'innover.",
+            "description": "Laissez-nous vous montrer nos rêves et notre imagination les plus fous, pour que vous voyiez le monde à travers nos yeux."
+        },
+        "fields": {
+            "heading": "Domaines d'intérêt",
+            "description": "Pherus explore un nombre croissant de domaines, réunissant recherche, technologie et travail concret partout où la curiosité nous mène.",
+            "identity": {
+                "title": "Identité et accès",
+                "description": "Explorer comment les personnes peuvent s'identifier, accéder et se déplacer en toute sécurité entre les systèmes qu'elles utilisent."
+            },
+            "health": {
+                "title": "Santé et bien-être",
+                "description": "Développer et explorer des technologies autour de la santé, des soins et d'un meilleur accès à l'information."
+            },
+            "justice": {
+                "title": "Justice et gouvernance",
+                "description": "Explorer les technologies et la recherche qui peuvent améliorer le fonctionnement des institutions publiques et des systèmes judiciaires."
+            },
+            "queer": {
+                "title": "Vie queer et communauté",
+                "description": "Créer des espaces, des ressources et des technologies qui aident les personnes à trouver communauté, savoir et soutien."
+            },
+            "science": {
+                "title": "Science et recherche",
+                "description": "Suivre les questions où qu'elles mènent, des expériences pratiques aux recherches scientifiques plus approfondies."
+            },
+            "software": {
+                "title": "Logiciels et infrastructure",
+                "description": "Construire les logiciels, l'infrastructure et les outils sous-jacents qui rendent possible l'écosystème plus large."
+            }
+        },
+        "marquee": {
+            "heading": "Voici un peu plus sur certaines des choses que nous construisons."
+        },
+        "showcase": {
+            "heading": "Vitrine de notre travail",
+            "tabs": {
+                "projects": "Projets",
+                "research": "Recherche",
+                "redesign": "Refonte"
+            }
+        }
     }
 }
