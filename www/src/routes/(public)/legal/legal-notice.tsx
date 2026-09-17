@@ -1,5 +1,5 @@
 import { m } from "@/paraglide/messages"
-import { resolveLicense } from "@data/licenses"
+import { resolveLegalPage } from "@data/legal"
 import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
@@ -7,23 +7,22 @@ import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
-    "/_public/licenses/gpl-3.0-license"
+    "/(public)/legal/legal-notice"
 )({
     head: () => {
-        const license = resolveLicense("gpl-3.0-license")
+        const page = resolveLegalPage("legal-notice")
 
         return seo({
-            title: license?.label ?? "GPLv3 license",
-            description: license?.description,
-            path:
-                license?.path ?? "/licenses/gpl-3.0-license",
+            title: page?.title ?? "Legal notice",
+            description: page?.description,
+            path: page?.path ?? "/legal/legal-notice",
         })
     },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const license = resolveLicense("gpl-3.0-license")
+    const page = resolveLegalPage("legal-notice")
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -33,30 +32,20 @@ function RouteComponent() {
                         {...reveal}
                         className="font-black"
                     >
-                        {license?.label}
+                        {page?.title}
                     </motion.h1>
 
                     <motion.p
                         {...reveal}
                         className="text-sm text-muted-foreground"
                     >
-                        {m["legal.common.lastUpdated"]()}:{" "}
-                        {license?.lastUpdated}
-                    </motion.p>
-
-                    <motion.p
-                        {...reveal}
-                        className="text-sm text-muted-foreground"
-                    >
-                        {license?.disclaimer}
+                        {m["legal.common.lastUpdated"]()}:
+                        2026-09-16
                     </motion.p>
                 </div>
 
-                <div
-                    data-not-typeset
-                    className="mx-auto w-full md:max-w-3xl [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_pre]:font-sans [&_pre]:text-sm [&_pre]:leading-relaxed"
-                >
-                    {license && renderDoc(license.content)}
+                <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
+                    {page && renderDoc(page.content)}
                 </div>
             </section>
         </article>

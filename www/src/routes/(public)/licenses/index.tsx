@@ -1,13 +1,13 @@
 import { cn } from "@infra/ui/lib/utils"
-import { resolveLegalIndex } from "@data/legal"
+import { resolveLicensesIndex } from "@data/licenses"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
-export const Route = createFileRoute("/_public/legal/")({
+export const Route = createFileRoute("/(public)/licenses/")({
     head: () => {
-        const index = resolveLegalIndex()
+        const index = resolveLicensesIndex()
 
         return seo({
             title: index.title,
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_public/legal/")({
 
 function RouteComponent() {
     const tickHeights = ["h-4", "h-6", "h-3", "h-5"]
-    const index = resolveLegalIndex()
+    const index = resolveLicensesIndex()
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -42,10 +42,10 @@ function RouteComponent() {
                 </div>
 
                 <div className="mx-auto flex w-full md:max-w-3xl flex-col">
-                    {index.items.map((page, i) => (
+                    {index.items.map((license, i) => (
                         <Link
-                            key={page.slug}
-                            to={page.path}
+                            key={license.slug}
+                            to={license.path}
                             className="group flex items-center gap-3 py-2"
                         >
                             <span
@@ -58,7 +58,7 @@ function RouteComponent() {
                                 )}
                             />
                             <span className="text-base font-semibold">
-                                {page.label}
+                                {license.label}
                             </span>
                         </Link>
                     ))}

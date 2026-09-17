@@ -7,7 +7,7 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
-    "/_public/legal/terms-of-service"
+    "/(public)/legal/terms-of-service"
 )({
     head: () => {
         const page = resolveLegalPage("terms-of-service")

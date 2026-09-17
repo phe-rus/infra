@@ -22,7 +22,7 @@ import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
-export const Route = createFileRoute("/_public/")({
+export const Route = createFileRoute("/(public)/")({
     head: () =>
         seo({
             title: home.title,

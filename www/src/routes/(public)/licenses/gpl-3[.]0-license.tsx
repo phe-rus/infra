@@ -7,22 +7,23 @@ import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
-    "/_public/licenses/mit-license"
+    "/(public)/licenses/gpl-3.0-license"
 )({
     head: () => {
-        const license = resolveLicense("mit-license")
+        const license = resolveLicense("gpl-3.0-license")
 
         return seo({
-            title: license?.label ?? "MIT license",
+            title: license?.label ?? "GPLv3 license",
             description: license?.description,
-            path: license?.path ?? "/licenses/mit-license",
+            path:
+                license?.path ?? "/licenses/gpl-3.0-license",
         })
     },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const license = resolveLicense("mit-license")
+    const license = resolveLicense("gpl-3.0-license")
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">

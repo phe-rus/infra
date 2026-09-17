@@ -7,22 +7,24 @@ import { createFileRoute } from "@tanstack/react-router"
 import { motion } from "motion/react"
 
 export const Route = createFileRoute(
-    "/_public/licenses/pherus-license"
+    "/(public)/licenses/apache-2.0-license"
 )({
     head: () => {
-        const license = resolveLicense("pherus-license")
+        const license = resolveLicense("apache-2.0-license")
 
         return seo({
-            title: license?.label ?? "Pherus license",
+            title: license?.label ?? "Apache-2.0 license",
             description: license?.description,
-            path: license?.path ?? "/licenses/pherus-license",
+            path:
+                license?.path ??
+                "/licenses/apache-2.0-license",
         })
     },
     component: RouteComponent,
 })
 
 function RouteComponent() {
-    const license = resolveLicense("pherus-license")
+    const license = resolveLicense("apache-2.0-license")
 
     return (
         <article className="flex flex-col gap-5 pt-10 pb-32 md:gap-10">
@@ -45,15 +47,15 @@ function RouteComponent() {
 
                     <motion.p
                         {...reveal}
-                        className="md:max-w-md text-base"
+                        className="text-sm text-muted-foreground"
                     >
-                        {license?.description}
+                        {license?.disclaimer}
                     </motion.p>
                 </div>
 
                 <div
                     data-not-typeset
-                    className="mx-auto w-full md:max-w-3xl"
+                    className="mx-auto w-full md:max-w-3xl [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_pre]:font-sans [&_pre]:text-sm [&_pre]:leading-relaxed"
                 >
                     {license && renderDoc(license.content)}
                 </div>

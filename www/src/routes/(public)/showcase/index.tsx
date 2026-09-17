@@ -11,7 +11,7 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 import { useMemo } from "react"
 
-export const Route = createFileRoute("/_public/showcase/")({
+export const Route = createFileRoute("/(public)/showcase/")({
     head: () =>
         seo({
             title: m[showcase.index.titleKey](),
