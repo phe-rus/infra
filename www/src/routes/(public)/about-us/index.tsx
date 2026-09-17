@@ -1,6 +1,14 @@
 import { m } from "@/paraglide/messages"
-import { Mail01Icon } from "@hugeicons/core-free-icons"
+import {
+    Grid02Icon,
+    Mail01Icon,
+    UserIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import {
+    Avatar,
+    AvatarFallback,
+} from "@infra/ui/components/avatar"
 import { cn } from "@infra/ui/lib/utils"
 import { aboutUs } from "@data/about-us"
 import { icons } from "@data/icons"
@@ -24,6 +32,15 @@ export const Route = createFileRoute("/(public)/about-us/")({
         }),
     component: RouteComponent,
 })
+
+function initials(name: string) {
+    return name
+        .split(" ")
+        .map((word) => word[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+}
 
 function RouteComponent() {
     const building = showcase.items.filter(
@@ -124,6 +141,103 @@ function RouteComponent() {
                     </Link>
                     .
                 </p>
+            </section>
+
+            <section
+                className={cn(
+                    "container flex min-h-[25dvh] w-full flex-col items-center",
+                    "justify-center gap-5 text-center"
+                )}
+            >
+                <HugeiconsIcon
+                    icon={UserIcon}
+                    className="size-8 text-primary"
+                />
+
+                <motion.h2 {...reveal} className="font-black">
+                    {m["about.ownership.heading"]()}
+                </motion.h2>
+
+                <motion.p
+                    {...reveal}
+                    className="max-w-md text-sm text-muted-foreground"
+                >
+                    {m["about.ownership.body"]()}
+                </motion.p>
+
+                <motion.div
+                    {...reveal}
+                    className="flex flex-wrap items-center justify-center gap-6 pt-2"
+                >
+                    {aboutUs.people.map((person) => (
+                        <div
+                            key={person.name}
+                            className="flex flex-col items-center gap-1"
+                        >
+                            <Avatar className="size-14">
+                                <AvatarFallback>
+                                    {initials(person.name)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <p className="text-sm font-bold">
+                                {person.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {m[person.roleKey]()}
+                                {person.legalName &&
+                                    ` · ${person.legalName}`}
+                            </p>
+                        </div>
+                    ))}
+                </motion.div>
+            </section>
+
+            <section
+                className={cn(
+                    "container flex min-h-[25dvh] w-full flex-col items-center",
+                    "justify-center gap-5 text-center"
+                )}
+            >
+                <HugeiconsIcon
+                    icon={Grid02Icon}
+                    className="size-8 text-primary"
+                />
+
+                <motion.h2 {...reveal} className="font-black">
+                    {m["about.ecosystem.heading"]()}
+                </motion.h2>
+
+                <motion.p
+                    {...reveal}
+                    className="max-w-md text-sm text-muted-foreground"
+                >
+                    {m["about.ecosystem.body"]()}
+                </motion.p>
+
+                <motion.div
+                    {...reveal}
+                    className="flex max-w-2xl flex-wrap items-center justify-center gap-2 pt-2"
+                >
+                    {showcase.items.map((item) => (
+                        <Link
+                            key={item.slug}
+                            to="/showcase/$slug"
+                            params={{ slug: item.slug }}
+                            className={cn(
+                                "flex items-center gap-1.5 rounded-full border border-border/35",
+                                "px-3 py-1 text-xs transition-colors hover:border-primary/50"
+                            )}
+                        >
+                            <img
+                                src={item.img}
+                                alt={item.title}
+                                className="size-3.5"
+                                data-not-typeset
+                            />
+                            {item.title}
+                        </Link>
+                    ))}
+                </motion.div>
             </section>
 
             <section

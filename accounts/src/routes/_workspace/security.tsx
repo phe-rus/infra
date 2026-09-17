@@ -19,6 +19,7 @@ import {
 import { Badge } from "@infra/ui/components/badge"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Key01Icon } from "@hugeicons/core-free-icons"
+import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute("/_workspace/security")({
     loader: async ({ context }) => {
@@ -49,8 +50,8 @@ function RouteComponent() {
         <ViewController
             heading={
                 <ViewController.Heading
-                    title="Security & sign-in"
-                    description="Manage how you sign in and keep your account secure"
+                    title={m["security.title"]()}
+                    description={m["security.description"]()}
                 />
             }
         >
@@ -66,12 +67,14 @@ function RouteComponent() {
                         </Button>
                         <div className="gap-0!">
                             <h2 className="text-base">
-                                Two-factor authentication
+                                {m[
+                                    "security.twoFactorHeading"
+                                ]()}
                             </h2>
                             <p className="text-xs text-muted-foreground md:max-w-64!">
-                                Require a code from an
-                                authenticator app when signing
-                                in
+                                {m[
+                                    "security.twoFactorDescription"
+                                ]()}
                             </p>
                         </div>
                     </div>
@@ -80,7 +83,9 @@ function RouteComponent() {
                         onCheckedChange={() =>
                             setTwoFactorDialogOpen(true)
                         }
-                        aria-label="Two-factor authentication"
+                        aria-label={m[
+                            "security.twoFactorHeading"
+                        ]()}
                     />
                 </ContentView.Row>
                 {!isTwoFactorEnabled && (
@@ -91,7 +96,7 @@ function RouteComponent() {
                             setBackupCodesDialogOpen(true)
                         }
                     >
-                        Backup codes
+                        {m["security.backupCodes"]()}
                     </Badge>
                 )}
             </ContentView.Section>
@@ -115,13 +120,13 @@ function RouteComponent() {
             <ContentView.Section className="md:max-w-md">
                 <ContentView.Header
                     as="h2"
-                    heading="Passkeys"
+                    heading={m["security.passkeysHeading"]()}
                     action={
                         <Passkey.Add size="xs">
-                            Add
+                            {m["security.passkeysAdd"]()}
                         </Passkey.Add>
                     }
-                    p="Sign in without a password, using your device's biometrics or a security key"
+                    p={m["security.passkeysDescription"]()}
                     pClassName="text-sm text-muted-foreground"
                 />
                 <Passkey.List data={passkeys} />
@@ -130,16 +135,15 @@ function RouteComponent() {
             <ContentView.Section className="md:max-w-md">
                 <ContentView.Header
                     as="h2"
-                    heading="Sessions & devices"
-                    p="Everywhere you're currently signed in. Sign out of any device that isn't yours."
+                    heading={m["security.sessionsHeading"]()}
+                    p={m["security.sessionsDescription"]()}
                     pClassName="text-sm text-muted-foreground"
                 />
                 {sessions === null ? (
                     <p className="text-sm text-muted-foreground">
-                        For your security, viewing sessions
-                        requires a recent sign-in. Sign out
-                        and back in to manage your devices
-                        here.
+                        {m[
+                            "security.sessionsRequireRecentSignIn"
+                        ]()}
                     </p>
                 ) : (
                     <SessionList
@@ -154,8 +158,10 @@ function RouteComponent() {
             <ContentView.Section className="md:max-w-md">
                 <ContentView.Header
                     as="h2"
-                    heading="Danger zone"
-                    p="Permanently delete your account and all its data. This can't be undone."
+                    heading={m[
+                        "security.dangerZoneHeading"
+                    ]()}
+                    p={m["security.dangerZoneDescription"]()}
                     pClassName="text-sm text-muted-foreground"
                 />
                 <Button
@@ -166,7 +172,7 @@ function RouteComponent() {
                         setDeleteAccountDialogOpen(true)
                     }
                 >
-                    Terminate account permanently
+                    {m["security.terminateAccount"]()}
                 </Button>
             </ContentView.Section>
 

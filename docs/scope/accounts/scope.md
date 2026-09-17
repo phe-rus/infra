@@ -21,6 +21,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 8 | Security: passkeys | Existing | existing |
 | 9 | Security: sessions and devices | Existing | existing |
 | 10 | Delete account | Existing | existing |
+| 11 | Locale support (i18n) | Slice 1 | in-progress |
 
 ## Existing
 
@@ -55,6 +56,19 @@ List active sessions with device/browser detection, IP, and sign in date; revoke
 Permanent account deletion via password confirmation plus a confirmation email. code in `accounts/domains/security/views/delete-account-dialog.tsx`
 
 Nothing partial or missing turned up in this workspace this pass; no next slice planned here yet. Run `/scope accounts <a feature>` to enroll a new one, or run `/scope` again once you have a next slice in mind.
+
+### 11. Locale support (i18n) · in-progress
+Real i18n for accounts, mirroring www's Paraglide setup: en (unprefixed), zh (`/zh/`), fr (`/fr/`), across every accounts page. infra is explicitly out of scope (admin only dashboard).
+**Done when:** a visitor can select en/zh/fr from a locale switcher on any accounts page, and every route's UI chrome renders in that language at the matching URL prefix.
+- [x] Design it (spec): [0001](../../specs/accounts/0001-locale-support.md) (assumed, not yet ratified)
+- [x] Build it: `/develop locale for accounts`
+  - [x] Paraglide mechanism (install, project.inlang config, vite plugin, generated src/paraglide/, locale switcher component)
+  - [x] Wire `__root.tsx` (lang/dir passthrough, matching www's ComposeViewport convention) plus `components/headers.tsx`
+  - [x] Translate the OAuth hosted pages (sign-in, create-account, two-factor, consent, forgot-password, reset-password)
+  - [x] Translate the end user account surfaces (`_workspace` index, profile, security's 4 composed views)
+- [ ] Verify it: `/check verify locale for accounts`
+- [ ] Test it: `/test locale for accounts`
+code in `accounts/project.inlang/`, `accounts/messages/`, `accounts/src/routes/`, `accounts/components/headers.tsx`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.

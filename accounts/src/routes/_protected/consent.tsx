@@ -7,6 +7,7 @@ import { z } from "zod"
 import { Button } from "@infra/ui/components/button"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { authClient } from "@/lib/auth-client"
+import { m } from "../../paraglide/messages"
 
 const consentSearchSchema = z.object({
     client_id: z.string().optional(),
@@ -47,7 +48,7 @@ function RouteComponent() {
         if (consentError) {
             setError(
                 consentError.message ??
-                    "Unable to submit consent"
+                    m["auth.consent.errorFallback"]()
             )
             setDecision(null)
             return
@@ -61,19 +62,19 @@ function RouteComponent() {
             heading={
                 <ViewController.Heading
                     size="compact"
-                    title="Authorize application"
+                    title={m["auth.consent.title"]()}
                     description={
                         <>
-                            <span className="text-foreground">
-                                {client?.client_name ??
-                                    "An application"}
-                            </span>{" "}
-                            is requesting access to your
-                            account
+                            {m["auth.consent.description"]({
+                                clientName:
+                                    client?.client_name ??
+                                    m[
+                                        "auth.consent.defaultClientName"
+                                    ](),
+                            })}
                             {client?.client_uri
                                 ? ` (${client.client_uri})`
                                 : ""}
-                            .
                         </>
                     }
                 />
@@ -92,8 +93,8 @@ function RouteComponent() {
                     onClick={() => void respond(true)}
                 >
                     {decision === "accept"
-                        ? "Authorizing…"
-                        : "Allow"}
+                        ? m["auth.consent.authorizing"]()
+                        : m["auth.consent.allow"]()}
                 </Button>
                 <Button
                     type="button"
@@ -102,8 +103,8 @@ function RouteComponent() {
                     onClick={() => void respond(false)}
                 >
                     {decision === "deny"
-                        ? "Denying…"
-                        : "Deny"}
+                        ? m["auth.consent.denying"]()
+                        : m["auth.consent.deny"]()}
                 </Button>
             </div>
         </ViewController>

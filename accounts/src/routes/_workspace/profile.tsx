@@ -9,16 +9,18 @@ import { formatUtc } from "@infra/ui/lib/date"
 import { resolveCdnUrl } from "@/lib/auth-client"
 import {
     currentOptions,
-    profileSchema,
+    getProfileSchema,
     useUpdateProfile,
 } from "@/domains/auth"
 import type { ProfileFormValues } from "@/domains/auth"
+import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute("/_workspace/profile")({
     component: RouteComponent,
 })
 
 function RouteComponent() {
+    const profileSchema = getProfileSchema()
     const { data } = useSuspenseQuery(currentOptions())
     const { mutateAsync: handleUpdate } = useUpdateProfile()
     const user = data?.user
@@ -58,8 +60,8 @@ function RouteComponent() {
         <ViewController
             heading={
                 <ViewController.Heading
-                    title="Personal info"
-                    description="Manage your account details"
+                    title={m["profile.title"]()}
+                    description={m["profile.description"]()}
                 />
             }
         >
@@ -89,16 +91,24 @@ function RouteComponent() {
                                 <ContentView.Header
                                     as="h2"
                                     className="flex flex-col"
-                                    heading="Basics"
-                                    p="The basics of you"
+                                    heading={m[
+                                        "profile.basicsHeading"
+                                    ]()}
+                                    p={m[
+                                        "profile.basicsDescription"
+                                    ]()}
                                     pClassName="text-sm"
                                 />
                                 <form.AppField
                                     name="name"
                                     children={(field) => (
                                         <field.input
-                                            label="Name"
-                                            placeholder="Your name"
+                                            label={m[
+                                                "profile.nameLabel"
+                                            ]()}
+                                            placeholder={m[
+                                                "profile.namePlaceholder"
+                                            ]()}
                                         />
                                     )}
                                 />
@@ -107,8 +117,12 @@ function RouteComponent() {
                                     name="bio"
                                     children={(field) => (
                                         <field.textarea
-                                            label="Bio"
-                                            placeholder="A short bio"
+                                            label={m[
+                                                "profile.bioLabel"
+                                            ]()}
+                                            placeholder={m[
+                                                "profile.bioPlaceholder"
+                                            ]()}
                                         />
                                     )}
                                 />
@@ -118,8 +132,12 @@ function RouteComponent() {
                                 <ContentView.Header
                                     as="h2"
                                     className="flex flex-col"
-                                    heading="Credentials"
-                                    p="This are protected from being changed and only happen automatically"
+                                    heading={m[
+                                        "profile.credentialsHeading"
+                                    ]()}
+                                    p={m[
+                                        "profile.credentialsDescription"
+                                    ]()}
                                     pClassName="text-sm md:max-w-md"
                                 />
 
@@ -127,7 +145,9 @@ function RouteComponent() {
                                     {vals.email && (
                                         <div>
                                             <h3 className="text-sm">
-                                                Email
+                                                {m[
+                                                    "profile.emailLabel"
+                                                ]()}
                                             </h3>
                                             <p className="text-sm">
                                                 {vals.email}
@@ -138,7 +158,9 @@ function RouteComponent() {
                                     {vals.role && (
                                         <div>
                                             <h3 className="text-sm">
-                                                Role
+                                                {m[
+                                                    "profile.roleLabel"
+                                                ]()}
                                             </h3>
                                             <p className="text-sm">
                                                 {vals.role}
@@ -149,7 +171,9 @@ function RouteComponent() {
                                     {vals.createdAt && (
                                         <div>
                                             <h3 className="text-sm">
-                                                Created At
+                                                {m[
+                                                    "profile.createdAtLabel"
+                                                ]()}
                                             </h3>
                                             <p className="text-sm">
                                                 {
@@ -162,7 +186,9 @@ function RouteComponent() {
                                     {vals.updatedAt && (
                                         <div>
                                             <h3 className="text-sm">
-                                                Updated At
+                                                {m[
+                                                    "profile.updatedAtLabel"
+                                                ]()}
                                             </h3>
                                             <p className="text-sm">
                                                 {
@@ -175,7 +201,9 @@ function RouteComponent() {
                                     {vals.emailVerified && (
                                         <div>
                                             <h3 className="text-sm">
-                                                Email Verified
+                                                {m[
+                                                    "profile.emailVerifiedLabel"
+                                                ]()}
                                             </h3>
                                             <p className="text-sm">
                                                 {
@@ -188,7 +216,9 @@ function RouteComponent() {
                                     {vals.id && (
                                         <div>
                                             <h3 className="text-sm">
-                                                ID
+                                                {m[
+                                                    "profile.idLabel"
+                                                ]()}
                                             </h3>
                                             <p className="text-sm">
                                                 {vals.id}
@@ -199,7 +229,9 @@ function RouteComponent() {
                             </ContentView.Section>
                         </FieldGroup>
 
-                        <form.submit label="Save changes" />
+                        <form.submit
+                            label={m["profile.submit"]()}
+                        />
                     </form.AppForm>
                 </form>
             </section>

@@ -104,4 +104,9 @@ export const organizationJsonLd = () => ({
     logo: `${SITE_URL}/favicon.png`,
     description:
         "Pherus is a practical research, sciences, innovation, and technology company: a place for curious ideas to become real things.",
+    founder: {
+        "@type": "Person",
+        name: "Tiabah La Niina",
+        alternateName: "Chotabhai Mike",
+    },
 })

@@ -4,17 +4,11 @@ import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { useResetPassword } from "@/domains/auth"
+import { m } from "../../paraglide/messages"
 
 const resetPasswordSearchSchema = z.object({
     token: z.string().optional(),
     error: z.string().optional(),
-})
-
-const newPasswordFormSchema = z.object({
-    newPassword: z
-        .string()
-        .min(8, "At least 8 characters")
-        .max(48, "At most 48 characters"),
 })
 
 export const Route = createFileRoute("/_auth/reset-password")(
@@ -25,6 +19,13 @@ export const Route = createFileRoute("/_auth/reset-password")(
 )
 
 function RouteComponent() {
+    const newPasswordFormSchema = z.object({
+        newPassword: z
+            .string()
+            .min(8, m["auth.common.password.tooShort"]())
+            .max(48, m["auth.common.password.tooLong"]()),
+    })
+
     const { token, error } = Route.useSearch()
     const { mutateAsync: resetPassword } = useResetPassword()
     const invalid = !token || error
@@ -49,13 +50,19 @@ function RouteComponent() {
                     size="compact"
                     title={
                         invalid
-                            ? "Link expired"
-                            : "Set a new password"
+                            ? m[
+                                  "auth.resetPassword.expiredTitle"
+                              ]()
+                            : m["auth.resetPassword.title"]()
                     }
                     description={
                         invalid
-                            ? "This password reset link is invalid or has expired, request a new one."
-                            : "Choose a new password for your account."
+                            ? m[
+                                  "auth.resetPassword.expiredDescription"
+                              ]()
+                            : m[
+                                  "auth.resetPassword.description"
+                              ]()
                     }
                 />
             }
@@ -65,7 +72,7 @@ function RouteComponent() {
                     to="/forgot-password"
                     className="text-xs text-muted-foreground hover:underline"
                 >
-                    ← Request a new link
+                    {m["auth.resetPassword.requestNewLink"]()}
                 </Link>
             ) : (
                 <form
@@ -81,16 +88,24 @@ function RouteComponent() {
                                 name="newPassword"
                                 children={(field) => (
                                     <field.input
-                                        label="New password"
+                                        label={m[
+                                            "auth.resetPassword.newPasswordLabel"
+                                        ]()}
                                         type="password"
                                         autoComplete="new-password"
-                                        placeholder="At least 8 characters"
+                                        placeholder={m[
+                                            "auth.common.password.tooShort"
+                                        ]()}
                                     />
                                 )}
                             />
                         </FieldGroup>
 
-                        <form.submit label="Reset password" />
+                        <form.submit
+                            label={m[
+                                "auth.resetPassword.submit"
+                            ]()}
+                        />
                     </form.AppForm>
                 </form>
             )}

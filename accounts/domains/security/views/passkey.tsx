@@ -24,6 +24,7 @@ import {
     useUpdatePasskey,
     useDeletePasskey,
 } from "@/domains/security"
+import { m } from "@/src/paraglide/messages"
 
 type TriggerProps = Omit<
     ComponentProps<typeof Button>,
@@ -40,17 +41,25 @@ type RenameProps = PropsWithChildren<{
 }> &
     TriggerProps
 
-const passkeyNameSchema = z.object({
-    name: z.string().min(1, "Give this passkey a name"),
-})
+function getPasskeyNameSchema() {
+    return z.object({
+        name: z
+            .string()
+            .min(1, m["security.passkey.nameRequired"]()),
+    })
+}
 
-const addPasskeySchema = z.object({
-    name: z.string().min(1, "Give this passkey a name"),
-    authenticatorAttachment: z.enum([
-        "platform",
-        "cross-platform",
-    ]),
-})
+function getAddPasskeySchema() {
+    return z.object({
+        name: z
+            .string()
+            .min(1, m["security.passkey.nameRequired"]()),
+        authenticatorAttachment: z.enum([
+            "platform",
+            "cross-platform",
+        ]),
+    })
+}
 
 const Rename: FC<RenameProps> = ({
     id,
@@ -58,6 +67,7 @@ const Rename: FC<RenameProps> = ({
     children,
     ...props
 }) => {
+    const passkeyNameSchema = getPasskeyNameSchema()
     const [open, setOpen] = useState(false)
     const updateMutation = useUpdatePasskey()
 
@@ -89,8 +99,10 @@ const Rename: FC<RenameProps> = ({
             <DialogWidget
                 open={open}
                 onOpenChange={setOpen}
-                title="Rename passkey"
-                description="Give this passkey a name you'll recognize later"
+                title={m["security.passkey.renameTitle"]()}
+                description={m[
+                    "security.passkey.renameDescription"
+                ]()}
                 onSubmit={(e) => {
                     e.preventDefault()
                     void form.handleSubmit()
@@ -104,8 +116,12 @@ const Rename: FC<RenameProps> = ({
                             }
                         >
                             {updateMutation.isPending
-                                ? "Saving…"
-                                : "Save"}
+                                ? m[
+                                      "security.passkey.saving"
+                                  ]()
+                                : m[
+                                      "security.passkey.save"
+                                  ]()}
                         </Button>
                         <DrawerClose
                             render={
@@ -115,7 +131,7 @@ const Rename: FC<RenameProps> = ({
                                 />
                             }
                         >
-                            Cancel
+                            {m["security.twoFactor.cancel"]()}
                         </DrawerClose>
                     </>
                 }
@@ -126,8 +142,12 @@ const Rename: FC<RenameProps> = ({
                             name="name"
                             children={(field) => (
                                 <field.input
-                                    label="Name"
-                                    placeholder="e.g. MacBook Touch ID"
+                                    label={m[
+                                        "auth.createAccount.nameLabel"
+                                    ]()}
+                                    placeholder={m[
+                                        "security.passkey.namePlaceholder"
+                                    ]()}
                                 />
                             )}
                         />
@@ -142,6 +162,7 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({
     children,
     ...props
 }) => {
+    const addPasskeySchema = getAddPasskeySchema()
     const [open, setOpen] = useState(false)
     const addMutation = useAddPasskey()
 
@@ -182,8 +203,10 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({
             <DialogWidget
                 open={open}
                 onOpenChange={setOpen}
-                title="Add a passkey"
-                description="Name it so you can recognize it later, then follow your browser's prompt"
+                title={m["security.passkey.addTitle"]()}
+                description={m[
+                    "security.passkey.addDescription"
+                ]()}
                 onSubmit={(e) => {
                     e.preventDefault()
                     void form.handleSubmit()
@@ -195,8 +218,12 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({
                             disabled={addMutation.isPending}
                         >
                             {addMutation.isPending
-                                ? "Waiting for passkey…"
-                                : "Continue"}
+                                ? m[
+                                      "auth.signIn.passkeyWaiting"
+                                  ]()
+                                : m[
+                                      "security.twoFactor.continueLabel"
+                                  ]()}
                         </Button>
                         <DrawerClose
                             render={
@@ -206,7 +233,7 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({
                                 />
                             }
                         >
-                            Cancel
+                            {m["security.twoFactor.cancel"]()}
                         </DrawerClose>
                     </>
                 }
@@ -217,8 +244,12 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({
                             name="name"
                             children={(field) => (
                                 <field.input
-                                    label="Name"
-                                    placeholder="e.g. MacBook Touch ID"
+                                    label={m[
+                                        "auth.createAccount.nameLabel"
+                                    ]()}
+                                    placeholder={m[
+                                        "security.passkey.namePlaceholder"
+                                    ]()}
                                 />
                             )}
                         />
@@ -226,19 +257,29 @@ const Add: FC<PropsWithChildren<TriggerProps>> = ({
                             name="authenticatorAttachment"
                             children={(field) => (
                                 <field.radioCard
-                                    label="Where should this passkey live?"
+                                    label={m[
+                                        "security.passkey.whereLiveLabel"
+                                    ]()}
                                     options={[
                                         {
                                             value: "platform",
-                                            label: "This device",
+                                            label: m[
+                                                "security.passkey.thisDeviceLabel"
+                                            ](),
                                             description:
-                                                "Touch ID, Windows Hello, or your synced password manager",
+                                                m[
+                                                    "security.passkey.thisDeviceDescription"
+                                                ](),
                                         },
                                         {
                                             value: "cross-platform",
-                                            label: "A different device or security key",
+                                            label: m[
+                                                "security.passkey.otherDeviceLabel"
+                                            ](),
                                             description:
-                                                "Use this if you already have a passkey on this device",
+                                                m[
+                                                    "security.passkey.otherDeviceDescription"
+                                                ](),
                                         },
                                     ]}
                                 />
@@ -260,7 +301,7 @@ const List: FC<ListProps> = ({ data }) => {
     if (data.length === 0) {
         return (
             <p className="text-sm text-muted-foreground">
-                No passkeys yet
+                {m["security.passkey.empty"]()}
             </p>
         )
     }
@@ -283,10 +324,15 @@ const List: FC<ListProps> = ({ data }) => {
                     >
                         <div className="flex flex-col">
                             <p className="text-sm font-bold">
-                                {passkey.name || "Passkey"}
+                                {passkey.name ||
+                                    m[
+                                        "security.passkey.fallbackName"
+                                    ]()}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                Added{" "}
+                                {m[
+                                    "security.passkey.added"
+                                ]()}
                                 {formatUtc(
                                     String(passkey.createdAt),
                                     "PPP"
@@ -297,7 +343,10 @@ const List: FC<ListProps> = ({ data }) => {
                             <Rename
                                 id={passkey.id}
                                 name={
-                                    passkey.name || "Passkey"
+                                    passkey.name ||
+                                    m[
+                                        "security.passkey.fallbackName"
+                                    ]()
                                 }
                                 size="icon-xs"
                                 variant="secondary"

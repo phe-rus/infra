@@ -1,18 +1,23 @@
 import { z } from "zod"
+import { m } from "@/src/paraglide/messages"
 
-export const profileSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    bio: z
-        .string()
-        .max(280, "At most 280 characters")
-        .optional(),
-    avatar: z.file().nullable(),
-    email: z.email(),
-    id: z.string(),
-    role: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    emailVerified: z.string(),
-})
+export function getProfileSchema() {
+    return z.object({
+        name: z.string().min(1, m["profile.nameRequired"]()),
+        bio: z
+            .string()
+            .max(280, m["profile.bioTooLong"]())
+            .optional(),
+        avatar: z.file().nullable(),
+        email: z.email(),
+        id: z.string(),
+        role: z.string(),
+        createdAt: z.string(),
+        updatedAt: z.string(),
+        emailVerified: z.string(),
+    })
+}
 
-export type ProfileFormValues = z.input<typeof profileSchema>
+export type ProfileFormValues = z.input<
+    ReturnType<typeof getProfileSchema>
+>

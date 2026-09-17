@@ -1,0 +1,182 @@
+{
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "header": {
+        "brand": "账户",
+        "nav": {
+            "general": "概览",
+            "basics": "基本信息",
+            "security": "安全与登录"
+        },
+        "logout": "退出登录",
+        "languages": "语言"
+    },
+    "auth": {
+        "common": {
+            "email": {
+                "label": "电子邮箱",
+                "placeholder": "请输入邮箱地址",
+                "invalid": "请输入有效的邮箱地址"
+            },
+            "password": {
+                "label": "密码",
+                "tooShort": "至少 8 个字符",
+                "tooLong": "最多 48 个字符"
+            }
+        },
+        "signIn": {
+            "title": "登录",
+            "description": "登录你的账户",
+            "passwordPlaceholder": "请输入密码",
+            "passwordRequired": "请输入密码",
+            "rememberMe": "记住我",
+            "forgotPassword": "忘记密码？",
+            "passkeyWaiting": "正在等待通行密钥…",
+            "passkeySignIn": "使用通行密钥登录",
+            "errorFallback": "无法登录",
+            "passkeyErrorFallback": "无法使用通行密钥登录",
+            "noAccount": "还没有账户？",
+            "createOne": "立即创建"
+        },
+        "createAccount": {
+            "title": "创建账户",
+            "checkEmailTitle": "请查收邮箱",
+            "checkEmailDescription": "我们已向你的邮箱发送了一封验证邮件,点击其中的链接以完成账户创建。",
+            "errorFallback": "无法创建账户",
+            "nameLabel": "姓名",
+            "namePlaceholder": "你的姓名",
+            "nameRequired": "请输入姓名",
+            "submit": "创建账户",
+            "alreadyHaveAccount": "已经有账户？"
+        },
+        "twoFactor": {
+            "title": "双重验证",
+            "description": "请输入身份验证器应用中的验证码",
+            "codeLabel": "验证码",
+            "codeRequired": "请输入验证码",
+            "trustDevice": "信任此设备 30 天",
+            "submit": "验证",
+            "invalidCode": "验证码无效"
+        },
+        "forgotPassword": {
+            "title": "重置密码",
+            "successDescription": "如果该邮箱存在,重置链接即将发送。",
+            "pendingDescription": "输入你的邮箱,我们会发送重置密码的链接。",
+            "submit": "发送重置链接",
+            "backToSignIn": "返回登录"
+        },
+        "resetPassword": {
+            "expiredTitle": "链接已失效",
+            "title": "设置新密码",
+            "expiredDescription": "此密码重置链接无效或已过期,请重新申请。",
+            "description": "为你的账户选择一个新密码。",
+            "requestNewLink": "← 重新申请链接",
+            "newPasswordLabel": "新密码",
+            "submit": "重置密码"
+        },
+        "consent": {
+            "title": "授权应用",
+            "defaultClientName": "该应用",
+            "description": "{clientName} 正在请求访问你的账户。",
+            "errorFallback": "无法提交授权",
+            "authorizing": "正在授权…",
+            "allow": "允许",
+            "denying": "正在拒绝…",
+            "deny": "拒绝"
+        }
+    },
+    "home": {
+        "searchPlaceholder": "搜索你的账户"
+    },
+    "profile": {
+        "title": "个人信息",
+        "description": "管理你的账户详情",
+        "basicsHeading": "基本信息",
+        "basicsDescription": "关于你的基本信息",
+        "nameLabel": "姓名",
+        "namePlaceholder": "你的姓名",
+        "bioLabel": "简介",
+        "bioPlaceholder": "简短的个人简介",
+        "credentialsHeading": "凭证信息",
+        "credentialsDescription": "这些信息受到保护,只能自动更改",
+        "emailLabel": "电子邮箱",
+        "roleLabel": "角色",
+        "createdAtLabel": "创建时间",
+        "updatedAtLabel": "更新时间",
+        "emailVerifiedLabel": "邮箱已验证",
+        "idLabel": "ID",
+        "submit": "保存更改",
+        "nameRequired": "请输入姓名",
+        "bioTooLong": "最多 280 个字符"
+    },
+    "security": {
+        "title": "安全与登录",
+        "description": "管理你的登录方式并保护账户安全",
+        "twoFactorHeading": "双重验证",
+        "twoFactorDescription": "登录时需要身份验证器应用生成的验证码",
+        "backupCodes": "备用码",
+        "passkeysHeading": "通行密钥",
+        "passkeysAdd": "添加",
+        "passkeysDescription": "无需密码,使用设备的生物识别或安全密钥登录",
+        "sessionsHeading": "会话与设备",
+        "sessionsDescription": "显示你当前登录的所有位置。请退出任何不属于你的设备。",
+        "sessionsRequireRecentSignIn": "为了你的账户安全,查看会话需要最近的登录记录。请退出并重新登录以管理你的设备。",
+        "dangerZoneHeading": "危险操作",
+        "dangerZoneDescription": "永久删除你的账户及其所有数据,此操作无法撤销。",
+        "terminateAccount": "永久注销账户",
+        "twoFactor": {
+            "passwordRequired": "请输入密码",
+            "codeRequired": "请输入验证码",
+            "cancel": "取消",
+            "enableTitle": "启用双重验证",
+            "enableDescription": "确认密码以开始设置",
+            "continuing": "正在继续…",
+            "continueLabel": "继续",
+            "scanTitle": "扫描二维码",
+            "scanDescription": "使用身份验证器应用扫描,然后输入 6 位验证码",
+            "verifying": "正在验证…",
+            "verifyAndEnable": "验证并启用",
+            "backupCodesSaveWarning": "请妥善保存这些备用码 — 如果无法访问你的验证器应用,每个备用码都可以替代一次验证码。",
+            "disableTitle": "禁用双重验证",
+            "disableDescription": "确认密码以关闭双重验证",
+            "disabling": "正在禁用…",
+            "disable": "禁用",
+            "regenerateTitle": "生成新的备用码",
+            "regenerateSavedDescription": "请妥善保存这些备用码 — 你的旧备用码已失效",
+            "regenerateConfirmDescription": "确认密码以生成一组新的备用码",
+            "done": "完成",
+            "generating": "正在生成…",
+            "generateCodes": "生成备用码"
+        },
+        "passkey": {
+            "nameRequired": "请为该通行密钥命名",
+            "renameTitle": "重命名通行密钥",
+            "renameDescription": "为该通行密钥起一个你之后能识别的名字",
+            "saving": "正在保存…",
+            "save": "保存",
+            "namePlaceholder": "例如 MacBook 触控 ID",
+            "addTitle": "添加通行密钥",
+            "addDescription": "为它命名以便之后识别,然后按照浏览器提示操作",
+            "whereLiveLabel": "此通行密钥保存在哪里?",
+            "thisDeviceLabel": "此设备",
+            "thisDeviceDescription": "触控 ID、Windows Hello,或你同步的密码管理器",
+            "otherDeviceLabel": "其他设备或安全密钥",
+            "otherDeviceDescription": "如果你已经在此设备上有通行密钥,请使用此选项",
+            "empty": "还没有通行密钥",
+            "fallbackName": "通行密钥",
+            "added": "添加于 "
+        },
+        "sessions": {
+            "unknownBrowser": "某浏览器",
+            "unknownOs": "未知操作系统",
+            "thisDevice": "本设备",
+            "unknownLocation": "未知位置",
+            "signedIn": "登录于",
+            "signOutDevice": "退出此设备"
+        },
+        "deleteAccount": {
+            "description": "确认密码以将确认链接发送到你的邮箱。点击链接后,你的账户及其所有数据将被删除 — 此操作无法撤销。",
+            "sending": "正在发送…",
+            "sendConfirmation": "发送确认邮件"
+        }
+    }
+}

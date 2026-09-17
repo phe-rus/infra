@@ -12,6 +12,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import type { SessionsData } from "@/domains/security"
 import { useRevokeSession } from "@/domains/security"
+import { m } from "@/src/paraglide/messages"
 
 type SessionListProps = {
     data: SessionsData
@@ -24,7 +25,7 @@ const describeDevice = (
     const { browser, os } = new UAParser(
         userAgent ?? ""
     ).getResult()
-    return `${browser.name ?? "A browser"} on ${os.name ?? "an unknown OS"}`
+    return `${browser.name ?? m["security.sessions.unknownBrowser"]()} on ${os.name ?? m["security.sessions.unknownOs"]()}`
 }
 
 export const SessionList: FC<SessionListProps> = ({
@@ -67,14 +68,21 @@ export const SessionList: FC<SessionListProps> = ({
                                             variant="secondary"
                                             className="rounded-full"
                                         >
-                                            This device
+                                            {m[
+                                                "security.sessions.thisDevice"
+                                            ]()}
                                         </Badge>
                                     )}
                                 </div>
                                 <p className="text-xs text-muted-foreground">
                                     {session.ipAddress ??
-                                        "Unknown location"}{" "}
-                                    · Signed in{" "}
+                                        m[
+                                            "security.sessions.unknownLocation"
+                                        ]()}{" "}
+                                    ·{" "}
+                                    {m[
+                                        "security.sessions.signedIn"
+                                    ]()}{" "}
                                     {formatUtc(
                                         String(
                                             session.createdAt
@@ -89,7 +97,9 @@ export const SessionList: FC<SessionListProps> = ({
                                     variant="destructive"
                                     size="icon-xs"
                                     className="rounded-full"
-                                    aria-label="Sign out this device"
+                                    aria-label={m[
+                                        "security.sessions.signOutDevice"
+                                    ]()}
                                     disabled={
                                         revokeMutation.isPending &&
                                         revokingToken ===

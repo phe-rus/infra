@@ -8,10 +8,7 @@ import { cn } from "@infra/ui/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { useRequestPasswordReset } from "@/domains/auth"
-
-const forgotPasswordSchema = z.object({
-    email: z.email("Enter a valid email"),
-})
+import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute(
     "/_auth/forgot-password"
@@ -20,6 +17,10 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+    const forgotPasswordSchema = z.object({
+        email: z.email(m["auth.common.email.invalid"]()),
+    })
+
     const { mutateAsync: requestPasswordReset, isSuccess } =
         useRequestPasswordReset()
 
@@ -37,11 +38,15 @@ function RouteComponent() {
             heading={
                 <ViewController.Heading
                     size="compact"
-                    title="Reset your password"
+                    title={m["auth.forgotPassword.title"]()}
                     description={
                         isSuccess
-                            ? "If that email exists, a reset link is on its way."
-                            : "Enter your email and we'll send you a link to reset it."
+                            ? m[
+                                  "auth.forgotPassword.successDescription"
+                              ]()
+                            : m[
+                                  "auth.forgotPassword.pendingDescription"
+                              ]()
                     }
                 />
             }
@@ -60,16 +65,24 @@ function RouteComponent() {
                                 name="email"
                                 children={(field) => (
                                     <field.input
-                                        label="Email"
+                                        label={m[
+                                            "auth.common.email.label"
+                                        ]()}
                                         type="email"
                                         autoComplete="email"
-                                        placeholder="Enter your email"
+                                        placeholder={m[
+                                            "auth.common.email.placeholder"
+                                        ]()}
                                     />
                                 )}
                             />
                         </FieldGroup>
 
-                        <form.submit label="Send reset link" />
+                        <form.submit
+                            label={m[
+                                "auth.forgotPassword.submit"
+                            ]()}
+                        />
                     </form.AppForm>
                 )}
 
@@ -84,7 +97,7 @@ function RouteComponent() {
                     )}
                 >
                     <HugeiconsIcon icon={ArrowLeft01Icon} />
-                    Back to sign in
+                    {m["auth.forgotPassword.backToSignIn"]()}
                 </Link>
             </form>
         </ViewController>

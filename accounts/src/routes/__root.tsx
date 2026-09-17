@@ -11,6 +11,8 @@ import { currentOptions } from "@/domains/auth"
 import { seo } from "@/lib/seo"
 import { ToasterProvider } from "@infra/ui/components/sonner"
 import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
+import { getLocale } from "../paraglide/runtime"
+import { LocaleSwitcher } from "@/components/locale-switcher"
 
 export interface RouterAppContext {
     q: QueryClient
@@ -62,7 +64,7 @@ export const Route =
 
 function RootDocument() {
     return (
-        <ComposeViewport>
+        <ComposeViewport lang={getLocale()}>
             <head>
                 <HeadContent />
             </head>
@@ -83,6 +85,7 @@ function RootDocument() {
                 >
                     <Outlet />
                     <ToasterProvider />
+                    <LocaleSwitcher />
                 </ThemeProvider>
             </ComposeViewport.Window>
         </ComposeViewport>

@@ -1,5 +1,4 @@
 import { getNavItems } from "@components/toolbars/config"
-import { LocaleSwitcher } from "@components/toolbars/views/locale-switcher"
 import { NavDrawer } from "@components/toolbars/views/nav-drawer"
 import { MoreHorizontal } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -54,7 +53,6 @@ export function Toolbar() {
                     </div>
 
                     <nav className="flex items-center gap-1">
-                        <LocaleSwitcher />
                         <button
                             type="button"
                             onClick={() =>

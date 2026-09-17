@@ -11,12 +11,7 @@ import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { authClient } from "@/lib/auth-client"
 import { t } from "@infra/ui/components/sonner"
-
-const signInSchema = z.object({
-    email: z.email("Enter a valid email"),
-    password: z.string().min(1, "Password is required"),
-    rememberMe: z.boolean().optional(),
-})
+import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute("/_auth/sign-in")({
     loader: async ({ context: { session } }) => {
@@ -45,6 +40,14 @@ function RouteComponent() {
     const [passkeyPending, setPasskeyPending] =
         useState(false)
 
+    const signInSchema = z.object({
+        email: z.email(m["auth.common.email.invalid"]()),
+        password: z
+            .string()
+            .min(1, m["auth.signIn.passwordRequired"]()),
+        rememberMe: z.boolean().optional(),
+    })
+
     const form = useAppForm({
         defaultValues: {
             email: "",
@@ -63,7 +66,8 @@ function RouteComponent() {
                 })
             if (signInError) {
                 t.error(
-                    signInError.message ?? "Unable to sign in"
+                    signInError.message ??
+                        m["auth.signIn.errorFallback"]()
                 )
                 return
             }
@@ -79,7 +83,7 @@ function RouteComponent() {
         if (passkeyError) {
             t.error(
                 passkeyError.message ??
-                    "Unable to sign in with passkey"
+                    m["auth.signIn.passkeyErrorFallback"]()
             )
             return
         }
@@ -92,8 +96,10 @@ function RouteComponent() {
             heading={
                 <ViewController.Heading
                     size="compact"
-                    title="Sign in"
-                    description="Sign in to your account"
+                    title={m["auth.signIn.title"]()}
+                    description={m[
+                        "auth.signIn.description"
+                    ]()}
                 />
             }
         >
@@ -110,10 +116,14 @@ function RouteComponent() {
                             name="email"
                             children={(field) => (
                                 <field.input
-                                    label="Email"
+                                    label={m[
+                                        "auth.common.email.label"
+                                    ]()}
                                     type="email"
                                     autoComplete="email"
-                                    placeholder="Enter your email"
+                                    placeholder={m[
+                                        "auth.common.email.placeholder"
+                                    ]()}
                                 />
                             )}
                         />
@@ -122,10 +132,14 @@ function RouteComponent() {
                             name="password"
                             children={(field) => (
                                 <field.input
-                                    label="Password"
+                                    label={m[
+                                        "auth.common.password.label"
+                                    ]()}
                                     type="password"
                                     autoComplete="current-password"
-                                    placeholder="Enter your password"
+                                    placeholder={m[
+                                        "auth.signIn.passwordPlaceholder"
+                                    ]()}
                                 />
                             )}
                         />
@@ -134,19 +148,27 @@ function RouteComponent() {
                             <form.AppField
                                 name="rememberMe"
                                 children={(field) => (
-                                    <field.checkbox label="Remember me" />
+                                    <field.checkbox
+                                        label={m[
+                                            "auth.signIn.rememberMe"
+                                        ]()}
+                                    />
                                 )}
                             />
                             <Link
                                 to="/forgot-password"
                                 className="text-xs text-muted-foreground hover:underline"
                             >
-                                Forgot password?
+                                {m[
+                                    "auth.signIn.forgotPassword"
+                                ]()}
                             </Link>
                         </div>
                     </FieldGroup>
 
-                    <form.submit label="Sign in" />
+                    <form.submit
+                        label={m["auth.signIn.title"]()}
+                    />
                 </form.AppForm>
 
                 <Button
@@ -156,17 +178,17 @@ function RouteComponent() {
                     onClick={() => void signInWithPasskey()}
                 >
                     {passkeyPending
-                        ? "Waiting for passkey…"
-                        : "Sign in with a passkey"}
+                        ? m["auth.signIn.passkeyWaiting"]()
+                        : m["auth.signIn.passkeySignIn"]()}
                 </Button>
 
                 <p className="text-sm text-muted-foreground">
-                    No account?{" "}
+                    {m["auth.signIn.noAccount"]()}
                     <Link
                         to="/create-account"
                         className="text-foreground hover:underline"
                     >
-                        Create one
+                        {m["auth.signIn.createOne"]()}
                     </Link>
                 </p>
             </form>

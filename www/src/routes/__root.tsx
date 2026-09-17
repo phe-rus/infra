@@ -2,6 +2,7 @@ import { getLocale } from "@/paraglide/runtime"
 import tailwind from "@infra/ui/globals.css?url"
 import { ThemeProvider } from "@infra/ui/theme"
 import { ComposeViewport } from "@infra/ui/widgets/compose-viewport"
+import { LocaleSwitcher } from "@components/toolbars/views/locale-switcher"
 import { organizationJsonLd, seo } from "@lib/seo"
 import {
     HeadContent,
@@ -94,6 +95,7 @@ function RootDocument() {
                     enableSystem
                 >
                     <Outlet />
+                    <LocaleSwitcher />
                 </ThemeProvider>
             </ComposeViewport.Window>
         </ComposeViewport>

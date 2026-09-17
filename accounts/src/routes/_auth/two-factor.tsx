@@ -5,17 +5,20 @@ import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { authClient } from "@/lib/auth-client"
 import { t } from "@infra/ui/components/sonner"
+import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute("/_auth/two-factor")({
     component: RouteComponent,
 })
 
-const codeSchema = z.object({
-    code: z.string().min(1, "Enter the code"),
-    trustDevice: z.boolean(),
-})
-
 function RouteComponent() {
+    const codeSchema = z.object({
+        code: z
+            .string()
+            .min(1, m["auth.twoFactor.codeRequired"]()),
+        trustDevice: z.boolean(),
+    })
+
     const form = useAppForm({
         defaultValues: { code: "", trustDevice: false },
         validators: {
@@ -28,7 +31,10 @@ function RouteComponent() {
                     trustDevice: value.trustDevice,
                 })
             if (verifyError) {
-                t.error(verifyError.message ?? "Invalid code")
+                t.error(
+                    verifyError.message ??
+                        m["auth.twoFactor.invalidCode"]()
+                )
                 return
             }
             const redirectUri = (
@@ -44,8 +50,10 @@ function RouteComponent() {
             heading={
                 <ViewController.Heading
                     size="compact"
-                    title="Two-factor verification"
-                    description="Enter the code from your authenticator app"
+                    title={m["auth.twoFactor.title"]()}
+                    description={m[
+                        "auth.twoFactor.description"
+                    ]()}
                 />
             }
         >
@@ -62,7 +70,9 @@ function RouteComponent() {
                             name="code"
                             children={(field) => (
                                 <field.otp
-                                    label="Code"
+                                    label={m[
+                                        "auth.twoFactor.codeLabel"
+                                    ]()}
                                     onComplete={() =>
                                         void form.handleSubmit()
                                     }
@@ -72,12 +82,18 @@ function RouteComponent() {
                         <form.AppField
                             name="trustDevice"
                             children={(field) => (
-                                <field.checkbox label="Trust this device for 30 days" />
+                                <field.checkbox
+                                    label={m[
+                                        "auth.twoFactor.trustDevice"
+                                    ]()}
+                                />
                             )}
                         />
                     </FieldGroup>
 
-                    <form.submit label="Verify" />
+                    <form.submit
+                        label={m["auth.twoFactor.submit"]()}
+                    />
                 </form.AppForm>
             </form>
         </ViewController>

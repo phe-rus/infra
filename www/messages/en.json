@@ -101,6 +101,17 @@
             "heading": "How we work",
             "body": "We open source what we can, and lean toward decentralised, practical systems over grand promises. We'd rather ship something small and real than talk about something big and hypothetical. Pass, our identity platform, is a real example: self-hosted on our own infrastructure rather than rented from a vendor."
         },
+        "ownership": {
+            "heading": "Who owns Pherus",
+            "body": "Pherus is privately owned and operated by its founder, built as a long-term research and technology venture. Some projects operate independently; others form part of the wider Pherus ecosystem."
+        },
+        "people": {
+            "founder": "Founder"
+        },
+        "ecosystem": {
+            "heading": "What is part of Pherus",
+            "body": "Pherus develops a growing collection of projects, platforms, and research initiatives. Some have their own identity and purpose, but all remain part of the wider Pherus ecosystem."
+        },
         "building": {
             "heading": "What we're building"
         },

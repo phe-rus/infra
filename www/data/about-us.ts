@@ -13,12 +13,19 @@ const AboutSectionSchema = z.object({
     bodyKey: messageKey,
 })
 
+const PersonSchema = z.object({
+    name: z.string(),
+    legalName: z.string().optional(),
+    roleKey: messageKey,
+})
+
 const AboutUsSchema = z.object({
     path: z.literal("/about-us"),
     titleKey: messageKey,
     descriptionKey: messageKey,
     keywords: z.array(z.string()),
     sections: z.array(AboutSectionSchema),
+    people: z.array(PersonSchema),
     contactEmail: z.string(),
     contactPhone: z.string(),
 })
@@ -51,6 +58,13 @@ export const aboutUs = defaultHandlers(AboutUsSchema)({
             icon: "route",
             headingKey: "about.howWeWork.heading",
             bodyKey: "about.howWeWork.body",
+        },
+    ],
+    people: [
+        {
+            name: "Tiabah La Niina",
+            legalName: "Chotabhai Mike",
+            roleKey: "about.people.founder",
         },
     ],
     contactEmail: "pherus@pherus.org",

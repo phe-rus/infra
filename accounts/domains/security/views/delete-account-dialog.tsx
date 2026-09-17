@@ -5,10 +5,7 @@ import { DialogWidget } from "@infra/ui/widgets/dialog-widget"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { z } from "zod"
 import { useDeleteAccount } from "@/domains/auth"
-
-const passwordSchema = z.object({
-    password: z.string().min(1, "Password is required"),
-})
+import { m } from "@/src/paraglide/messages"
 
 type ControlledDialogProps = {
     open: boolean
@@ -19,6 +16,14 @@ export function DeleteAccountDialog({
     open,
     onOpenChange,
 }: ControlledDialogProps) {
+    const passwordSchema = z.object({
+        password: z
+            .string()
+            .min(
+                1,
+                m["security.twoFactor.passwordRequired"]()
+            ),
+    })
     const deleteMutation = useDeleteAccount()
 
     function close() {
@@ -45,8 +50,10 @@ export function DeleteAccountDialog({
             onOpenChange={(next) => {
                 if (!next) close()
             }}
-            title="Terminate account permanently"
-            description="Confirm your password to send a confirmation link to your email. Your account and all its data are deleted once you click it — this can't be undone."
+            title={m["security.terminateAccount"]()}
+            description={m[
+                "security.deleteAccount.description"
+            ]()}
             onSubmit={(e) => {
                 e.preventDefault()
                 void form.handleSubmit()
@@ -59,8 +66,12 @@ export function DeleteAccountDialog({
                         disabled={deleteMutation.isPending}
                     >
                         {deleteMutation.isPending
-                            ? "Sending…"
-                            : "Send confirmation email"}
+                            ? m[
+                                  "security.deleteAccount.sending"
+                              ]()
+                            : m[
+                                  "security.deleteAccount.sendConfirmation"
+                              ]()}
                     </Button>
                     <DrawerClose
                         render={
@@ -70,7 +81,7 @@ export function DeleteAccountDialog({
                             />
                         }
                     >
-                        Cancel
+                        {m["security.twoFactor.cancel"]()}
                     </DrawerClose>
                 </>
             }
@@ -81,10 +92,14 @@ export function DeleteAccountDialog({
                         name="password"
                         children={(field) => (
                             <field.input
-                                label="Password"
+                                label={m[
+                                    "auth.common.password.label"
+                                ]()}
                                 type="password"
                                 autoComplete="current-password"
-                                placeholder="Enter your password"
+                                placeholder={m[
+                                    "auth.signIn.passwordPlaceholder"
+                                ]()}
                             />
                         )}
                     />

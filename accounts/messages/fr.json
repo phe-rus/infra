@@ -1,0 +1,182 @@
+{
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "header": {
+        "brand": "Compte",
+        "nav": {
+            "general": "Général",
+            "basics": "Informations de base",
+            "security": "Sécurité et connexion"
+        },
+        "logout": "Déconnexion",
+        "languages": "Langues"
+    },
+    "auth": {
+        "common": {
+            "email": {
+                "label": "E-mail",
+                "placeholder": "Entrez votre e-mail",
+                "invalid": "Entrez une adresse e-mail valide"
+            },
+            "password": {
+                "label": "Mot de passe",
+                "tooShort": "Au moins 8 caractères",
+                "tooLong": "Au plus 48 caractères"
+            }
+        },
+        "signIn": {
+            "title": "Connexion",
+            "description": "Connectez-vous à votre compte",
+            "passwordPlaceholder": "Entrez votre mot de passe",
+            "passwordRequired": "Le mot de passe est requis",
+            "rememberMe": "Se souvenir de moi",
+            "forgotPassword": "Mot de passe oublié ?",
+            "passkeyWaiting": "En attente de la clé d'accès…",
+            "passkeySignIn": "Se connecter avec une clé d'accès",
+            "errorFallback": "Impossible de se connecter",
+            "passkeyErrorFallback": "Impossible de se connecter avec une clé d'accès",
+            "noAccount": "Pas de compte ? ",
+            "createOne": "Créez-en un"
+        },
+        "createAccount": {
+            "title": "Créer un compte",
+            "checkEmailTitle": "Vérifiez votre e-mail",
+            "checkEmailDescription": "Nous avons envoyé un lien de vérification à votre adresse e-mail. Suivez-le pour terminer la création de votre compte.",
+            "errorFallback": "Impossible de créer le compte",
+            "nameLabel": "Nom",
+            "namePlaceholder": "Votre nom",
+            "nameRequired": "Le nom est requis",
+            "submit": "Créer le compte",
+            "alreadyHaveAccount": "Vous avez déjà un compte ? "
+        },
+        "twoFactor": {
+            "title": "Vérification en deux étapes",
+            "description": "Entrez le code de votre application d'authentification",
+            "codeLabel": "Code",
+            "codeRequired": "Entrez le code",
+            "trustDevice": "Faire confiance à cet appareil pendant 30 jours",
+            "submit": "Vérifier",
+            "invalidCode": "Code invalide"
+        },
+        "forgotPassword": {
+            "title": "Réinitialisez votre mot de passe",
+            "successDescription": "Si cet e-mail existe, un lien de réinitialisation est en route.",
+            "pendingDescription": "Entrez votre e-mail et nous vous enverrons un lien pour le réinitialiser.",
+            "submit": "Envoyer le lien de réinitialisation",
+            "backToSignIn": "Retour à la connexion"
+        },
+        "resetPassword": {
+            "expiredTitle": "Lien expiré",
+            "title": "Définir un nouveau mot de passe",
+            "expiredDescription": "Ce lien de réinitialisation est invalide ou a expiré, demandez-en un nouveau.",
+            "description": "Choisissez un nouveau mot de passe pour votre compte.",
+            "requestNewLink": "← Demander un nouveau lien",
+            "newPasswordLabel": "Nouveau mot de passe",
+            "submit": "Réinitialiser le mot de passe"
+        },
+        "consent": {
+            "title": "Autoriser l'application",
+            "defaultClientName": "Une application",
+            "description": "{clientName} demande à accéder à votre compte.",
+            "errorFallback": "Impossible de soumettre l'autorisation",
+            "authorizing": "Autorisation…",
+            "allow": "Autoriser",
+            "denying": "Refus…",
+            "deny": "Refuser"
+        }
+    },
+    "home": {
+        "searchPlaceholder": "Rechercher dans votre compte"
+    },
+    "profile": {
+        "title": "Informations personnelles",
+        "description": "Gérez les détails de votre compte",
+        "basicsHeading": "Informations de base",
+        "basicsDescription": "L'essentiel vous concernant",
+        "nameLabel": "Nom",
+        "namePlaceholder": "Votre nom",
+        "bioLabel": "Bio",
+        "bioPlaceholder": "Une courte bio",
+        "credentialsHeading": "Identifiants",
+        "credentialsDescription": "Ces informations sont protégées et ne peuvent changer qu'automatiquement",
+        "emailLabel": "E-mail",
+        "roleLabel": "Rôle",
+        "createdAtLabel": "Créé le",
+        "updatedAtLabel": "Mis à jour le",
+        "emailVerifiedLabel": "E-mail vérifié",
+        "idLabel": "ID",
+        "submit": "Enregistrer les modifications",
+        "nameRequired": "Le nom est requis",
+        "bioTooLong": "Au plus 280 caractères"
+    },
+    "security": {
+        "title": "Sécurité et connexion",
+        "description": "Gérez la façon dont vous vous connectez et protégez votre compte",
+        "twoFactorHeading": "Authentification à deux facteurs",
+        "twoFactorDescription": "Exiger un code d'une application d'authentification lors de la connexion",
+        "backupCodes": "Codes de secours",
+        "passkeysHeading": "Clés d'accès",
+        "passkeysAdd": "Ajouter",
+        "passkeysDescription": "Connectez-vous sans mot de passe, grâce à la biométrie de votre appareil ou une clé de sécurité",
+        "sessionsHeading": "Sessions et appareils",
+        "sessionsDescription": "Partout où vous êtes actuellement connecté. Déconnectez tout appareil qui n'est pas le vôtre.",
+        "sessionsRequireRecentSignIn": "Pour votre sécurité, consulter les sessions nécessite une connexion récente. Déconnectez-vous puis reconnectez-vous pour gérer vos appareils ici.",
+        "dangerZoneHeading": "Zone de danger",
+        "dangerZoneDescription": "Supprimez définitivement votre compte et toutes ses données. Cette action est irréversible.",
+        "terminateAccount": "Résilier définitivement le compte",
+        "twoFactor": {
+            "passwordRequired": "Le mot de passe est requis",
+            "codeRequired": "Entrez le code",
+            "cancel": "Annuler",
+            "enableTitle": "Activer l'authentification à deux facteurs",
+            "enableDescription": "Confirmez votre mot de passe pour commencer la configuration",
+            "continuing": "Poursuite…",
+            "continueLabel": "Continuer",
+            "scanTitle": "Scannez le code QR",
+            "scanDescription": "Scannez avec votre application d'authentification, puis entrez le code à 6 chiffres",
+            "verifying": "Vérification…",
+            "verifyAndEnable": "Vérifier et activer",
+            "backupCodesSaveWarning": "Conservez-les en lieu sûr — chacun peut remplacer un code de votre application si vous y perdez l'accès.",
+            "disableTitle": "Désactiver l'authentification à deux facteurs",
+            "disableDescription": "Confirmez votre mot de passe pour désactiver l'authentification à deux facteurs",
+            "disabling": "Désactivation…",
+            "disable": "Désactiver",
+            "regenerateTitle": "Générer de nouveaux codes de secours",
+            "regenerateSavedDescription": "Conservez-les en lieu sûr — vos anciens codes de secours ne fonctionnent plus",
+            "regenerateConfirmDescription": "Confirmez votre mot de passe pour générer un nouveau jeu de codes de secours",
+            "done": "Terminé",
+            "generating": "Génération…",
+            "generateCodes": "Générer les codes"
+        },
+        "passkey": {
+            "nameRequired": "Donnez un nom à cette clé d'accès",
+            "renameTitle": "Renommer la clé d'accès",
+            "renameDescription": "Donnez à cette clé d'accès un nom que vous reconnaîtrez plus tard",
+            "saving": "Enregistrement…",
+            "save": "Enregistrer",
+            "namePlaceholder": "ex. MacBook Touch ID",
+            "addTitle": "Ajouter une clé d'accès",
+            "addDescription": "Nommez-la pour la reconnaître plus tard, puis suivez les instructions de votre navigateur",
+            "whereLiveLabel": "Où cette clé d'accès doit-elle résider ?",
+            "thisDeviceLabel": "Cet appareil",
+            "thisDeviceDescription": "Touch ID, Windows Hello, ou votre gestionnaire de mots de passe synchronisé",
+            "otherDeviceLabel": "Un autre appareil ou une clé de sécurité",
+            "otherDeviceDescription": "Utilisez cette option si vous avez déjà une clé d'accès sur cet appareil",
+            "empty": "Aucune clé d'accès pour le moment",
+            "fallbackName": "Clé d'accès",
+            "added": "Ajoutée le "
+        },
+        "sessions": {
+            "unknownBrowser": "Un navigateur",
+            "unknownOs": "un système d'exploitation inconnu",
+            "thisDevice": "Cet appareil",
+            "unknownLocation": "Emplacement inconnu",
+            "signedIn": "Connecté le",
+            "signOutDevice": "Déconnecter cet appareil"
+        },
+        "deleteAccount": {
+            "description": "Confirmez votre mot de passe pour envoyer un lien de confirmation à votre e-mail. Votre compte et toutes ses données seront supprimés dès que vous cliquerez dessus — cette action est irréversible.",
+            "sending": "Envoi…",
+            "sendConfirmation": "Envoyer l'e-mail de confirmation"
+        }
+    }
+}

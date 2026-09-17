@@ -6,6 +6,10 @@ import {
     NotFound,
 } from "@infra/ui/defaults"
 import { QueryProvider, getContext } from "@/lib/queryClient"
+import {
+    deLocalizeUrl,
+    localizeUrl,
+} from "./paraglide/runtime"
 import { routeTree } from "./routeTree.gen"
 
 export function getRouter() {
@@ -21,6 +25,10 @@ export function getRouter() {
         defaultPendingComponent: DefaultLoader,
         defaultErrorComponent: DefaultBoundary,
         defaultNotFoundComponent: () => <NotFound />,
+        rewrite: {
+            input: ({ url }) => deLocalizeUrl(url),
+            output: ({ url }) => localizeUrl(url),
+        },
         Wrap: ({ children }) => {
             return (
                 <QueryProvider query={q}>

@@ -9,6 +9,7 @@ import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { authClient } from "@/lib/auth-client"
+import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute("/_auth/create-account")(
     {
@@ -24,16 +25,18 @@ export const Route = createFileRoute("/_auth/create-account")(
     }
 )
 
-const createAccountSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    email: z.email("Enter a valid email"),
-    password: z
-        .string()
-        .min(8, "At least 8 characters")
-        .max(48, "At most 48 characters"),
-})
-
 function RouteComponent() {
+    const createAccountSchema = z.object({
+        name: z
+            .string()
+            .min(1, m["auth.createAccount.nameRequired"]()),
+        email: z.email(m["auth.common.email.invalid"]()),
+        password: z
+            .string()
+            .min(8, m["auth.common.password.tooShort"]())
+            .max(48, m["auth.common.password.tooLong"]()),
+    })
+
     const [error, setError] = useState<string | null>(null)
     const [needsVerification, setNeedsVerification] =
         useState(false)
@@ -59,7 +62,9 @@ function RouteComponent() {
             if (signUpError) {
                 setError(
                     signUpError.message ??
-                        "Unable to create account"
+                        m[
+                            "auth.createAccount.errorFallback"
+                        ]()
                 )
                 return
             }
@@ -85,12 +90,16 @@ function RouteComponent() {
                     size="compact"
                     title={
                         needsVerification
-                            ? "Check your email"
-                            : "Create an account"
+                            ? m[
+                                  "auth.createAccount.checkEmailTitle"
+                              ]()
+                            : m["auth.createAccount.title"]()
                     }
                     description={
                         needsVerification
-                            ? "We sent a verification link to your email address. Follow it to finish creating your account."
+                            ? m[
+                                  "auth.createAccount.checkEmailDescription"
+                              ]()
                             : undefined
                     }
                 />
@@ -116,9 +125,13 @@ function RouteComponent() {
                                 name="name"
                                 children={(field) => (
                                     <field.input
-                                        label="Name"
+                                        label={m[
+                                            "auth.createAccount.nameLabel"
+                                        ]()}
                                         autoComplete="name"
-                                        placeholder="Your name"
+                                        placeholder={m[
+                                            "auth.createAccount.namePlaceholder"
+                                        ]()}
                                     />
                                 )}
                             />
@@ -127,10 +140,14 @@ function RouteComponent() {
                                 name="email"
                                 children={(field) => (
                                     <field.input
-                                        label="Email"
+                                        label={m[
+                                            "auth.common.email.label"
+                                        ]()}
                                         type="email"
                                         autoComplete="email"
-                                        placeholder="Enter your email"
+                                        placeholder={m[
+                                            "auth.common.email.placeholder"
+                                        ]()}
                                     />
                                 )}
                             />
@@ -139,25 +156,35 @@ function RouteComponent() {
                                 name="password"
                                 children={(field) => (
                                     <field.input
-                                        label="Password"
+                                        label={m[
+                                            "auth.common.password.label"
+                                        ]()}
                                         type="password"
                                         autoComplete="new-password"
-                                        placeholder="At least 8 characters"
+                                        placeholder={m[
+                                            "auth.common.password.tooShort"
+                                        ]()}
                                     />
                                 )}
                             />
                         </FieldGroup>
 
-                        <form.submit label="Create account" />
+                        <form.submit
+                            label={m[
+                                "auth.createAccount.submit"
+                            ]()}
+                        />
                     </form.AppForm>
 
                     <p className="text-sm text-muted-foreground">
-                        Already have an account?{" "}
+                        {m[
+                            "auth.createAccount.alreadyHaveAccount"
+                        ]()}
                         <Link
                             to="/sign-in"
                             className="text-foreground hover:underline"
                         >
-                            Sign in
+                            {m["auth.signIn.title"]()}
                         </Link>
                     </p>
                 </form>

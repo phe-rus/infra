@@ -1,10 +1,11 @@
+import { getNativeLanguageName } from "@/lib/intl.displayNames"
+import { m } from "@/src/paraglide/messages"
 import {
     getLocale,
     locales,
     setLocale,
-} from "@/paraglide/runtime"
+} from "@/src/paraglide/runtime"
 import { cn } from "@infra/ui/lib/utils"
-import { getNativeLanguageName } from "@lib/intl.displayNames"
 import {
     AnimatePresence,
     motion,
@@ -13,7 +14,7 @@ import {
 } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 
-const POSITION_STORAGE_KEY = "www.localeSwitcherPosition"
+const POSITION_STORAGE_KEY = "accounts.localeSwitcherPosition"
 
 type Side = "left" | "right"
 type Edge = "top" | "bottom"
@@ -183,7 +184,7 @@ export function LocaleSwitcher() {
             >
                 <button
                     type="button"
-                    aria-label="Languages"
+                    aria-label={m["header.languages"]()}
                     aria-expanded={open}
                     onPointerDown={(e) =>
                         dragControls.start(e)

@@ -12,24 +12,38 @@ import {
     useDisableTwoFactor,
     useGenerateBackupCodes,
 } from "@/domains/security"
+import { m } from "@/src/paraglide/messages"
 
 type ControlledDialogProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
 }
 
-const passwordSchema = z.object({
-    password: z.string().min(1, "Password is required"),
-})
+function getPasswordSchema() {
+    return z.object({
+        password: z
+            .string()
+            .min(
+                1,
+                m["security.twoFactor.passwordRequired"]()
+            ),
+    })
+}
 
-const totpCodeSchema = z.object({
-    code: z.string().min(1, "Enter the code"),
-})
+function getTotpCodeSchema() {
+    return z.object({
+        code: z
+            .string()
+            .min(1, m["security.twoFactor.codeRequired"]()),
+    })
+}
 
 const Enable: FC<ControlledDialogProps> = ({
     open,
     onOpenChange,
 }) => {
+    const passwordSchema = getPasswordSchema()
+    const totpCodeSchema = getTotpCodeSchema()
     const enableMutation = useEnableTwoFactor()
     // this flow never passes `method: "otp"`, so a resolved enrollment is
     // always the "totp" variant carrying totpURI/backupCodes — narrow here
@@ -76,8 +90,12 @@ const Enable: FC<ControlledDialogProps> = ({
                     onOpenChange={(next) => {
                         if (!next) close()
                     }}
-                    title="Enable two-factor authentication"
-                    description="Confirm your password to start setup"
+                    title={m[
+                        "security.twoFactor.enableTitle"
+                    ]()}
+                    description={m[
+                        "security.twoFactor.enableDescription"
+                    ]()}
                     onSubmit={(e) => {
                         e.preventDefault()
                         void passwordForm.handleSubmit()
@@ -91,8 +109,12 @@ const Enable: FC<ControlledDialogProps> = ({
                                 }
                             >
                                 {enableMutation.isPending
-                                    ? "Continuing…"
-                                    : "Continue"}
+                                    ? m[
+                                          "security.twoFactor.continuing"
+                                      ]()
+                                    : m[
+                                          "security.twoFactor.continueLabel"
+                                      ]()}
                             </Button>
                             <DrawerClose
                                 render={
@@ -102,7 +124,9 @@ const Enable: FC<ControlledDialogProps> = ({
                                     />
                                 }
                             >
-                                Cancel
+                                {m[
+                                    "security.twoFactor.cancel"
+                                ]()}
                             </DrawerClose>
                         </>
                     }
@@ -113,10 +137,14 @@ const Enable: FC<ControlledDialogProps> = ({
                                 name="password"
                                 children={(field) => (
                                     <field.input
-                                        label="Password"
+                                        label={m[
+                                            "auth.common.password.label"
+                                        ]()}
                                         type="password"
                                         autoComplete="current-password"
-                                        placeholder="Enter your password"
+                                        placeholder={m[
+                                            "auth.signIn.passwordPlaceholder"
+                                        ]()}
                                     />
                                 )}
                             />
@@ -129,8 +157,12 @@ const Enable: FC<ControlledDialogProps> = ({
                     onOpenChange={(next) => {
                         if (!next) close()
                     }}
-                    title="Scan the QR code"
-                    description="Scan with your authenticator app, then enter the 6-digit code"
+                    title={m[
+                        "security.twoFactor.scanTitle"
+                    ]()}
+                    description={m[
+                        "security.twoFactor.scanDescription"
+                    ]()}
                     onSubmit={(e) => {
                         e.preventDefault()
                         void codeForm.handleSubmit()
@@ -144,8 +176,12 @@ const Enable: FC<ControlledDialogProps> = ({
                                 }
                             >
                                 {verifyMutation.isPending
-                                    ? "Verifying…"
-                                    : "Verify and enable"}
+                                    ? m[
+                                          "security.twoFactor.verifying"
+                                      ]()
+                                    : m[
+                                          "security.twoFactor.verifyAndEnable"
+                                      ]()}
                             </Button>
                             <DrawerClose
                                 render={
@@ -155,7 +191,9 @@ const Enable: FC<ControlledDialogProps> = ({
                                     />
                                 }
                             >
-                                Cancel
+                                {m[
+                                    "security.twoFactor.cancel"
+                                ]()}
                             </DrawerClose>
                         </>
                     }
@@ -170,13 +208,12 @@ const Enable: FC<ControlledDialogProps> = ({
 
                         <div className="flex flex-col gap-1">
                             <p className="text-sm font-medium">
-                                Backup codes
+                                {m["security.backupCodes"]()}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                Save these somewhere safe —
-                                each one can replace a code
-                                from your app if you lose
-                                access to it.
+                                {m[
+                                    "security.twoFactor.backupCodesSaveWarning"
+                                ]()}
                             </p>
                             <div className="grid grid-cols-2 gap-1 font-mono text-xs">
                                 {enrollment.backupCodes.map(
@@ -198,7 +235,9 @@ const Enable: FC<ControlledDialogProps> = ({
                                     name="code"
                                     children={(field) => (
                                         <field.otp
-                                            label="Code"
+                                            label={m[
+                                                "auth.twoFactor.codeLabel"
+                                            ]()}
                                             onComplete={() =>
                                                 void codeForm.handleSubmit()
                                             }
@@ -218,6 +257,7 @@ const Disable: FC<ControlledDialogProps> = ({
     open,
     onOpenChange,
 }) => {
+    const passwordSchema = getPasswordSchema()
     const disableMutation = useDisableTwoFactor()
 
     const form = useAppForm({
@@ -240,8 +280,10 @@ const Disable: FC<ControlledDialogProps> = ({
         <DialogWidget
             open={open}
             onOpenChange={onOpenChange}
-            title="Disable two-factor authentication"
-            description="Confirm your password to turn off two-factor authentication"
+            title={m["security.twoFactor.disableTitle"]()}
+            description={m[
+                "security.twoFactor.disableDescription"
+            ]()}
             onSubmit={(e) => {
                 e.preventDefault()
                 void form.handleSubmit()
@@ -254,8 +296,12 @@ const Disable: FC<ControlledDialogProps> = ({
                         disabled={disableMutation.isPending}
                     >
                         {disableMutation.isPending
-                            ? "Disabling…"
-                            : "Disable"}
+                            ? m[
+                                  "security.twoFactor.disabling"
+                              ]()
+                            : m[
+                                  "security.twoFactor.disable"
+                              ]()}
                     </Button>
                     <DrawerClose
                         render={
@@ -265,7 +311,7 @@ const Disable: FC<ControlledDialogProps> = ({
                             />
                         }
                     >
-                        Cancel
+                        {m["security.twoFactor.cancel"]()}
                     </DrawerClose>
                 </>
             }
@@ -276,10 +322,14 @@ const Disable: FC<ControlledDialogProps> = ({
                         name="password"
                         children={(field) => (
                             <field.input
-                                label="Password"
+                                label={m[
+                                    "auth.common.password.label"
+                                ]()}
                                 type="password"
                                 autoComplete="current-password"
-                                placeholder="Enter your password"
+                                placeholder={m[
+                                    "auth.signIn.passwordPlaceholder"
+                                ]()}
                             />
                         )}
                     />
@@ -293,6 +343,7 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({
     open,
     onOpenChange,
 }) => {
+    const passwordSchema = getPasswordSchema()
     const generateMutation = useGenerateBackupCodes()
     const backupCodes =
         generateMutation.data?.backupCodes ?? null
@@ -317,11 +368,15 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({
             onOpenChange={(next) => {
                 if (!next) close()
             }}
-            title="Generate new backup codes"
+            title={m["security.twoFactor.regenerateTitle"]()}
             description={
                 backupCodes
-                    ? "Save these somewhere safe — your old backup codes no longer work"
-                    : "Confirm your password to generate a new set of backup codes"
+                    ? m[
+                          "security.twoFactor.regenerateSavedDescription"
+                      ]()
+                    : m[
+                          "security.twoFactor.regenerateConfirmDescription"
+                      ]()
             }
             onSubmit={(e) => {
                 e.preventDefault()
@@ -330,7 +385,7 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({
             footer={
                 backupCodes ? (
                     <Button type="button" onClick={close}>
-                        Done
+                        {m["security.twoFactor.done"]()}
                     </Button>
                 ) : (
                     <>
@@ -341,8 +396,12 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({
                             }
                         >
                             {generateMutation.isPending
-                                ? "Generating…"
-                                : "Generate codes"}
+                                ? m[
+                                      "security.twoFactor.generating"
+                                  ]()
+                                : m[
+                                      "security.twoFactor.generateCodes"
+                                  ]()}
                         </Button>
                         <DrawerClose
                             render={
@@ -352,7 +411,7 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({
                                 />
                             }
                         >
-                            Cancel
+                            {m["security.twoFactor.cancel"]()}
                         </DrawerClose>
                     </>
                 )
@@ -365,10 +424,14 @@ const RegenerateBackupCodes: FC<ControlledDialogProps> = ({
                             name="password"
                             children={(field) => (
                                 <field.input
-                                    label="Password"
+                                    label={m[
+                                        "auth.common.password.label"
+                                    ]()}
                                     type="password"
                                     autoComplete="current-password"
-                                    placeholder="Enter your password"
+                                    placeholder={m[
+                                        "auth.signIn.passwordPlaceholder"
+                                    ]()}
                                 />
                             )}
                         />

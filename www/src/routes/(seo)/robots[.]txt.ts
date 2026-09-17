@@ -17,11 +17,15 @@ type RobotsConfig = z.infer<typeof robotsSchema>
 function generateRobotsTxt(config: RobotsConfig): string {
     const blocks = config.rules.map((rule) => {
         const lines = [`User-agent: ${rule.userAgent}`]
-        for (const path of rule.allow ?? []) lines.push(`Allow: ${path}`)
-        for (const path of rule.disallow ?? []) lines.push(`Disallow: ${path}`)
+        for (const path of rule.allow ?? [])
+            lines.push(`Allow: ${path}`)
+        for (const path of rule.disallow ?? [])
+            lines.push(`Disallow: ${path}`)
         return lines.join("\n")
     })
-    return [...blocks, `Sitemap: ${config.sitemap}`].join("\n\n")
+    return [...blocks, `Sitemap: ${config.sitemap}`].join(
+        "\n\n"
+    )
 }
 
 export const Route = createFileRoute("/(seo)/robots.txt")({
@@ -34,19 +38,15 @@ export const Route = createFileRoute("/(seo)/robots.txt")({
                         {
                             userAgent: "*",
                             allow: ["/"],
-                            disallow: [
-                                "/api/apache-2.0-license",
-                                "/api/mit-license",
-                                "/api/mpl-2.0-license",
-                            ]
-                        }
+                            disallow: ["/api/"],
+                        },
                     ],
                     sitemap: `${origin}/sitemap.xml`,
                 })
                 return new Response(generateRobotsTxt(data), {
                     headers: { "Content-Type": "text/plain" },
                 })
-            }
-        }
-    }
+            },
+        },
+    },
 })

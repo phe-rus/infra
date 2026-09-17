@@ -1,0 +1,182 @@
+{
+    "$schema": "https://inlang.com/schema/inlang-message-format",
+    "header": {
+        "brand": "Account",
+        "nav": {
+            "general": "General",
+            "basics": "Basics",
+            "security": "Security & Sign-in"
+        },
+        "logout": "Logout",
+        "languages": "Languages"
+    },
+    "auth": {
+        "common": {
+            "email": {
+                "label": "Email",
+                "placeholder": "Enter your email",
+                "invalid": "Enter a valid email"
+            },
+            "password": {
+                "label": "Password",
+                "tooShort": "At least 8 characters",
+                "tooLong": "At most 48 characters"
+            }
+        },
+        "signIn": {
+            "title": "Sign in",
+            "description": "Sign in to your account",
+            "passwordPlaceholder": "Enter your password",
+            "passwordRequired": "Password is required",
+            "rememberMe": "Remember me",
+            "forgotPassword": "Forgot password?",
+            "passkeyWaiting": "Waiting for passkey…",
+            "passkeySignIn": "Sign in with a passkey",
+            "errorFallback": "Unable to sign in",
+            "passkeyErrorFallback": "Unable to sign in with passkey",
+            "noAccount": "No account? ",
+            "createOne": "Create one"
+        },
+        "createAccount": {
+            "title": "Create an account",
+            "checkEmailTitle": "Check your email",
+            "checkEmailDescription": "We sent a verification link to your email address. Follow it to finish creating your account.",
+            "errorFallback": "Unable to create account",
+            "nameLabel": "Name",
+            "namePlaceholder": "Your name",
+            "nameRequired": "Name is required",
+            "submit": "Create account",
+            "alreadyHaveAccount": "Already have an account? "
+        },
+        "twoFactor": {
+            "title": "Two-factor verification",
+            "description": "Enter the code from your authenticator app",
+            "codeLabel": "Code",
+            "codeRequired": "Enter the code",
+            "trustDevice": "Trust this device for 30 days",
+            "submit": "Verify",
+            "invalidCode": "Invalid code"
+        },
+        "forgotPassword": {
+            "title": "Reset your password",
+            "successDescription": "If that email exists, a reset link is on its way.",
+            "pendingDescription": "Enter your email and we'll send you a link to reset it.",
+            "submit": "Send reset link",
+            "backToSignIn": "Back to sign in"
+        },
+        "resetPassword": {
+            "expiredTitle": "Link expired",
+            "title": "Set a new password",
+            "expiredDescription": "This password reset link is invalid or has expired, request a new one.",
+            "description": "Choose a new password for your account.",
+            "requestNewLink": "← Request a new link",
+            "newPasswordLabel": "New password",
+            "submit": "Reset password"
+        },
+        "consent": {
+            "title": "Authorize application",
+            "defaultClientName": "An application",
+            "description": "{clientName} is requesting access to your account.",
+            "errorFallback": "Unable to submit consent",
+            "authorizing": "Authorizing…",
+            "allow": "Allow",
+            "denying": "Denying…",
+            "deny": "Deny"
+        }
+    },
+    "home": {
+        "searchPlaceholder": "Search your account"
+    },
+    "profile": {
+        "title": "Personal info",
+        "description": "Manage your account details",
+        "basicsHeading": "Basics",
+        "basicsDescription": "The basics of you",
+        "nameLabel": "Name",
+        "namePlaceholder": "Your name",
+        "bioLabel": "Bio",
+        "bioPlaceholder": "A short bio",
+        "credentialsHeading": "Credentials",
+        "credentialsDescription": "These are protected from being changed and only happen automatically",
+        "emailLabel": "Email",
+        "roleLabel": "Role",
+        "createdAtLabel": "Created At",
+        "updatedAtLabel": "Updated At",
+        "emailVerifiedLabel": "Email Verified",
+        "idLabel": "ID",
+        "submit": "Save changes",
+        "nameRequired": "Name is required",
+        "bioTooLong": "At most 280 characters"
+    },
+    "security": {
+        "title": "Security & sign-in",
+        "description": "Manage how you sign in and keep your account secure",
+        "twoFactorHeading": "Two-factor authentication",
+        "twoFactorDescription": "Require a code from an authenticator app when signing in",
+        "backupCodes": "Backup codes",
+        "passkeysHeading": "Passkeys",
+        "passkeysAdd": "Add",
+        "passkeysDescription": "Sign in without a password, using your device's biometrics or a security key",
+        "sessionsHeading": "Sessions & devices",
+        "sessionsDescription": "Everywhere you're currently signed in. Sign out of any device that isn't yours.",
+        "sessionsRequireRecentSignIn": "For your security, viewing sessions requires a recent sign-in. Sign out and back in to manage your devices here.",
+        "dangerZoneHeading": "Danger zone",
+        "dangerZoneDescription": "Permanently delete your account and all its data. This can't be undone.",
+        "terminateAccount": "Terminate account permanently",
+        "twoFactor": {
+            "passwordRequired": "Password is required",
+            "codeRequired": "Enter the code",
+            "cancel": "Cancel",
+            "enableTitle": "Enable two-factor authentication",
+            "enableDescription": "Confirm your password to start setup",
+            "continuing": "Continuing…",
+            "continueLabel": "Continue",
+            "scanTitle": "Scan the QR code",
+            "scanDescription": "Scan with your authenticator app, then enter the 6-digit code",
+            "verifying": "Verifying…",
+            "verifyAndEnable": "Verify and enable",
+            "backupCodesSaveWarning": "Save these somewhere safe — each one can replace a code from your app if you lose access to it.",
+            "disableTitle": "Disable two-factor authentication",
+            "disableDescription": "Confirm your password to turn off two-factor authentication",
+            "disabling": "Disabling…",
+            "disable": "Disable",
+            "regenerateTitle": "Generate new backup codes",
+            "regenerateSavedDescription": "Save these somewhere safe — your old backup codes no longer work",
+            "regenerateConfirmDescription": "Confirm your password to generate a new set of backup codes",
+            "done": "Done",
+            "generating": "Generating…",
+            "generateCodes": "Generate codes"
+        },
+        "passkey": {
+            "nameRequired": "Give this passkey a name",
+            "renameTitle": "Rename passkey",
+            "renameDescription": "Give this passkey a name you'll recognize later",
+            "saving": "Saving…",
+            "save": "Save",
+            "namePlaceholder": "e.g. MacBook Touch ID",
+            "addTitle": "Add a passkey",
+            "addDescription": "Name it so you can recognize it later, then follow your browser's prompt",
+            "whereLiveLabel": "Where should this passkey live?",
+            "thisDeviceLabel": "This device",
+            "thisDeviceDescription": "Touch ID, Windows Hello, or your synced password manager",
+            "otherDeviceLabel": "A different device or security key",
+            "otherDeviceDescription": "Use this if you already have a passkey on this device",
+            "empty": "No passkeys yet",
+            "fallbackName": "Passkey",
+            "added": "Added "
+        },
+        "sessions": {
+            "unknownBrowser": "A browser",
+            "unknownOs": "an unknown OS",
+            "thisDevice": "This device",
+            "unknownLocation": "Unknown location",
+            "signedIn": "Signed in",
+            "signOutDevice": "Sign out this device"
+        },
+        "deleteAccount": {
+            "description": "Confirm your password to send a confirmation link to your email. Your account and all its data are deleted once you click it — this can't be undone.",
+            "sending": "Sending…",
+            "sendConfirmation": "Send confirmation email"
+        }
+    }
+}

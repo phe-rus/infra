@@ -101,6 +101,17 @@
             "heading": "Comment nous travaillons",
             "body": "Nous publions en open source tout ce que nous pouvons, et privilégions des systèmes décentralisés et pratiques plutôt que de grandes promesses. Nous préférons livrer quelque chose de petit et de réel que de parler de quelque chose de grand et d'hypothétique. Pass, notre plateforme d'identité, en est un exemple concret : autohébergée sur notre propre infrastructure plutôt que louée à un fournisseur."
         },
+        "ownership": {
+            "heading": "À qui appartient Pherus",
+            "body": "Pherus est détenue et exploitée à titre privé par son fondateur, conçue comme un projet de recherche et de technologie à long terme. Certains projets fonctionnent de manière indépendante, d'autres font partie de l'écosystème Pherus plus large."
+        },
+        "people": {
+            "founder": "Fondateur"
+        },
+        "ecosystem": {
+            "heading": "Ce qui fait partie de Pherus",
+            "body": "Pherus développe une collection croissante de projets, de plateformes et d'initiatives de recherche. Certains ont leur propre identité et leur propre finalité, mais tous restent liés à l'écosystème Pherus plus large."
+        },
         "building": {
             "heading": "Ce que nous construisons"
         },
