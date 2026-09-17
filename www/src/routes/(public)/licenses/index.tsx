@@ -12,6 +12,7 @@ export const Route = createFileRoute("/(public)/licenses/")({
         return seo({
             title: index.title,
             description: index.description,
+            keywords: index.keywords,
             path: index.path,
         })
     },

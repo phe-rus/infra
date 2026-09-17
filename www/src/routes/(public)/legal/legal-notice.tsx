@@ -15,6 +15,7 @@ export const Route = createFileRoute(
         return seo({
             title: page?.title ?? "Legal notice",
             description: page?.description,
+            keywords: page?.keywords,
             path: page?.path ?? "/legal/legal-notice",
         })
     },

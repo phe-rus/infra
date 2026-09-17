@@ -18,6 +18,7 @@ export const Route = createFileRoute(
             description: resource?.descriptionKey
                 ? m[resource.descriptionKey]()
                 : undefined,
+            keywords: resource?.keywords,
             image: resource?.img,
             path: `/showcase/${params.slug}`,
         })

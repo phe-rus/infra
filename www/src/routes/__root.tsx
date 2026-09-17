@@ -16,6 +16,13 @@ export const Route = createRootRoute({
             title: "Pherus - Practical research, sciences, innovation & technology",
             description:
                 "Pherus is a practical research company exploring science, technology, and engineering to create innovative solutions that solve real-world problems. We build open technologies, conduct research, and turn ideas into practical tools that improve everyday life.",
+            keywords: [
+                "Pherus",
+                "Research and technology company",
+                "Identity and access",
+                "Open source",
+                "Science and research",
+            ],
             canonical: false,
         })
 

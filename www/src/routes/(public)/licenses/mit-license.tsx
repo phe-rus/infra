@@ -15,6 +15,7 @@ export const Route = createFileRoute(
         return seo({
             title: license?.label ?? "MIT license",
             description: license?.description,
+            keywords: license?.keywords,
             path: license?.path ?? "/licenses/mit-license",
         })
     },

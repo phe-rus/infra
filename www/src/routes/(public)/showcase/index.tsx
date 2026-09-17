@@ -16,6 +16,7 @@ export const Route = createFileRoute("/(public)/showcase/")({
         seo({
             title: m[showcase.index.titleKey](),
             description: m[showcase.index.descriptionKey](),
+            keywords: showcase.index.keywords,
             path: showcase.index.path,
         }),
     component: RouteComponent,
@@ -90,9 +91,7 @@ function RouteComponent() {
                                     <div className="relative w-full h-full overflow-hidden rounded-none!">
                                         <img
                                             src={item.img}
-                                            alt={
-                                                item.title
-                                            }
+                                            alt={item.title}
                                             className={cn(
                                                 "absolute inset-0 w-full h-full object-cover",
                                                 "group-hover:scale-101 transition-transform",

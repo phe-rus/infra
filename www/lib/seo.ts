@@ -86,6 +86,7 @@ export const seo = ({
               ]
             : []),
         { name: "twitter:image", content: absoluteImage },
+        { name: "twitter:url", content: canonicalUrl },
     ]
 
     const links = canonical

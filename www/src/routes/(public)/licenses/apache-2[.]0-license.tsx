@@ -15,6 +15,7 @@ export const Route = createFileRoute(
         return seo({
             title: license?.label ?? "Apache-2.0 license",
             description: license?.description,
+            keywords: license?.keywords,
             path:
                 license?.path ??
                 "/licenses/apache-2.0-license",

@@ -31,6 +31,7 @@ const HomeSchema = z.object({
     path: z.literal("/"),
     title: z.string(),
     descriptionKey: messageKey,
+    keywords: z.array(z.string()),
     fields: z.array(FieldSchema),
     showcaseTabs: z.array(ShowcaseTabSchema),
 })
@@ -39,6 +40,17 @@ export const home = defaultHandlers(HomeSchema)({
     path: "/",
     title: "Pherus",
     descriptionKey: "overview.hero.description",
+    keywords: [
+        "Pherus",
+        "Identity and access",
+        "Health and wellbeing",
+        "Justice and governance",
+        "Queer life and community",
+        "Science and research",
+        "Software and infrastructure",
+        "Pherus Pass",
+        "Pherus Health",
+    ],
     fields: [
         {
             icon: "security",

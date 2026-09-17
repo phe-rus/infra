@@ -8,9 +8,9 @@ import termsOfServiceContent from "./legal/terms-of-service.json"
 import { defaultHandlers } from "./lib/handler"
 import { resolveContentLocale } from "./lib/locale"
 import { messageKey } from "./lib/message-key"
-import type { TiptapDoc } from "./lib/tiptap-doc"
+import type { BasiccnContent } from "@infra/rich-text"
 
-const tiptapDoc = z.custom<TiptapDoc>(
+const tiptapDoc = z.custom<BasiccnContent>(
     (value) => typeof value === "object" && value !== null
 )
 
@@ -52,6 +52,7 @@ const LegalPageSchema = z.object({
     titleKey: messageKey,
     description: LocalizedString,
     content: LocalizedDoc,
+    keywords: z.array(z.string()),
 })
 
 const CookiePolicySchema = z.object({
@@ -63,6 +64,7 @@ const CookiePolicySchema = z.object({
     sections: LocalizedDoc,
     cookies: LocalizedCookies,
     durationLabel: LocalizedString,
+    keywords: z.array(z.string()),
 })
 
 const LegalSchema = z.object({
@@ -70,6 +72,7 @@ const LegalSchema = z.object({
         path: z.literal("/legal"),
         titleKey: messageKey,
         description: LocalizedString,
+        keywords: z.array(z.string()),
     }),
     pages: z.array(LegalPageSchema),
     cookiePolicy: CookiePolicySchema,
@@ -85,6 +88,13 @@ export const legal = defaultHandlers(LegalSchema)({
         path: "/legal",
         titleKey: "nav.legal.label",
         description: legalIndexContent.description,
+        keywords: [
+            "Pherus legal",
+            "Privacy policy",
+            "Terms of service",
+            "Legal notice",
+            "Cookie policy",
+        ],
     },
     pages: [
         {
@@ -93,6 +103,12 @@ export const legal = defaultHandlers(LegalSchema)({
             titleKey: "nav.legal.terms-of-service",
             description: termsOfServiceContent.description,
             content: termsOfServiceContent.content,
+            keywords: [
+                "Terms of service",
+                "Pherus terms",
+                "pherus.org",
+                "account.pherus.org",
+            ],
         },
         {
             slug: "privacy-policy",
@@ -100,6 +116,12 @@ export const legal = defaultHandlers(LegalSchema)({
             titleKey: "nav.legal.privacy-policy",
             description: privacyPolicyContent.description,
             content: privacyPolicyContent.content,
+            keywords: [
+                "Privacy policy",
+                "Pherus Inc.",
+                "Data collection",
+                "pherus.org",
+            ],
         },
         {
             slug: "legal-notice",
@@ -107,6 +129,11 @@ export const legal = defaultHandlers(LegalSchema)({
             titleKey: "nav.legal.legal-notice",
             description: legalNoticeContent.description,
             content: legalNoticeContent.content,
+            keywords: [
+                "Legal notice",
+                "Pherus Inc.",
+                "Operator details",
+            ],
         },
     ],
     cookiePolicy: {
@@ -118,6 +145,12 @@ export const legal = defaultHandlers(LegalSchema)({
         sections: cookiePolicyContent.sections,
         cookies: cookiePolicyContent.cookies,
         durationLabel: cookiePolicyContent.durationLabel,
+        keywords: [
+            "Cookie policy",
+            "Pherus cookies",
+            "Local storage",
+            "No tracking scripts",
+        ],
     },
 })
 
@@ -135,6 +168,7 @@ export function resolveLegalPage(slug: LegalPage["slug"]) {
         title: m[page.titleKey](),
         description: page.description[locale],
         content: page.content[locale],
+        keywords: page.keywords,
         isFallback,
     }
 }
@@ -152,6 +186,7 @@ export function resolveCookiePolicy() {
         sections: cookiePolicy.sections[locale],
         cookies: cookiePolicy.cookies[locale],
         durationLabel: cookiePolicy.durationLabel[locale],
+        keywords: cookiePolicy.keywords,
         isFallback,
     }
 }
@@ -184,6 +219,7 @@ export function resolveLegalIndex() {
         path: legal.index.path,
         title: m[legal.index.titleKey](),
         description: legal.index.description[locale],
+        keywords: legal.index.keywords,
         items: (
             [
                 "terms-of-service",

@@ -17,6 +17,7 @@ const AboutUsSchema = z.object({
     path: z.literal("/about-us"),
     titleKey: messageKey,
     descriptionKey: messageKey,
+    keywords: z.array(z.string()),
     sections: z.array(AboutSectionSchema),
     contactEmail: z.string(),
     contactPhone: z.string(),
@@ -26,6 +27,15 @@ export const aboutUs = defaultHandlers(AboutUsSchema)({
     path: "/about-us",
     titleKey: "nav.about-us",
     descriptionKey: "about.description",
+    keywords: [
+        "About Pherus",
+        "Pherus Inc.",
+        "Wakiso, Uganda",
+        "Open source",
+        "Decentralised systems",
+        "Self-hosted",
+        "Research and technology company",
+    ],
     sections: [
         {
             icon: "idea",

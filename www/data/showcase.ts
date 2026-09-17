@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { defaultHandlers } from "./lib/handler"
 import { messageKey } from "./lib/message-key"
-import type { TiptapDoc } from "./lib/tiptap-doc"
+import type { BasiccnContent } from "@infra/rich-text"
 
 const ResourceLinkSchema = z.object({
     label: z.string(),
@@ -23,6 +23,7 @@ const ResourceSchema = z.object({
     /** RSS feed path, only set for resources with a public feed (drives the landing page marquee). */
     feed: z.string().optional(),
     descriptionKey: messageKey.optional(),
+    keywords: z.array(z.string()),
     tags: z.array(z.string()).optional(),
     stack: z.array(z.string()).optional(),
     catalogs: z.array(z.string()).optional(),
@@ -38,6 +39,7 @@ const ShowcaseSchema = z.object({
         path: z.literal("/showcase"),
         titleKey: messageKey,
         descriptionKey: messageKey,
+        keywords: z.array(z.string()),
     }),
     items: z.array(ResourceSchema),
 })
@@ -49,6 +51,13 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
         path: "/showcase",
         titleKey: "nav.showcase",
         descriptionKey: "showcase.hero.description",
+        keywords: [
+            "Pherus showcase",
+            "Identity and access management",
+            "Health technology",
+            "Legal technology",
+            "Open source projects",
+        ],
     },
     items: [
         {
@@ -57,6 +66,14 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             img: "/showcase/pass.svg",
             feed: "/rss/pass",
             descriptionKey: "showcase.pass.description",
+            keywords: [
+                "Pherus Pass",
+                "Identity platform",
+                "OAuth 2.1",
+                "OIDC",
+                "Self-hosted authentication",
+                "Open source identity",
+            ],
             tags: [
                 "Identity",
                 "OAuth 2.1 & OIDC",
@@ -90,6 +107,12 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             img: "/showcase/health.svg",
             feed: "/rss/health",
             descriptionKey: "showcase.health.description",
+            keywords: [
+                "Pherus Health",
+                "Health technology",
+                "Personal health data",
+                "Decentralised health system",
+            ],
         },
         {
             slug: "collective",
@@ -97,6 +120,12 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             img: "/showcase/collective.svg",
             feed: "/rss/collective",
             descriptionKey: "showcase.collective.description",
+            keywords: [
+                "Pherus Collective",
+                "Community platform",
+                "Shared ownership",
+                "Decentralised community",
+            ],
             homeCategory: "community",
         },
         {
@@ -106,6 +135,11 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             feed: "/rss/software",
             descriptionKey:
                 "overview.fields.software.description",
+            keywords: [
+                "Pherus Software",
+                "Open source infrastructure",
+                "Developer tools",
+            ],
         },
         {
             slug: "transspace",
@@ -114,6 +148,10 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             feed: "/rss/transspace",
             descriptionKey:
                 "overview.fields.queer.description",
+            keywords: [
+                "Pherus Transspace",
+                "Queer life and community",
+            ],
             homeCategory: "community",
         },
         {
@@ -121,24 +159,33 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             title: "Laniina",
             img: "/showcase/laniina.svg",
             feed: "/rss/laniina",
+            keywords: ["Pherus Laniina", "Pherus"],
         },
         {
             slug: "futa",
             title: "Futa",
             img: "/showcase/futa.svg",
             feed: "/rss/futa",
+            keywords: ["Pherus Futa", "Pherus"],
         },
         {
             slug: "sora",
             title: "Sora",
             img: "/showcase/sora.svg",
             feed: "/rss/sora",
+            keywords: ["Pherus Sora", "Pherus"],
         },
         {
             slug: "research",
             title: "Research",
             img: "/showcase/research.svg",
             descriptionKey: "showcase.research.description",
+            keywords: [
+                "Pherus Research",
+                "Research and exploration",
+                "Personal knowledge management",
+                "Science",
+            ],
             tags: ["Research", "Exploration", "Science"],
             stack: [
                 "Zettelkasten",
@@ -150,7 +197,7 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
     ],
 })
 
-const bodies = import.meta.glob<TiptapDoc>(
+const bodies = import.meta.glob<BasiccnContent>(
     "./showcase/*.json",
     { import: "default", eager: true }
 )

@@ -27,6 +27,7 @@ export const Route = createFileRoute("/(public)/")({
         seo({
             title: home.title,
             description: m[home.descriptionKey](),
+            keywords: home.keywords,
             path: home.path,
         }),
     component: RouteComponent,

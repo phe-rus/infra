@@ -15,6 +15,7 @@ export const Route = createFileRoute(
         return seo({
             title: license?.label ?? "GPLv3 license",
             description: license?.description,
+            keywords: license?.keywords,
             path:
                 license?.path ?? "/licenses/gpl-3.0-license",
         })

@@ -5,5 +5,5 @@ import { Preview, type BasiccnContent } from "@infra/rich-text"
  * resource's deep dive) shares one renderer with the rest of the codebase
  * instead of a page-local reimplementation. */
 export function DocPreview({ doc }: { doc: BasiccnContent }) {
-    return <Preview content={JSON.stringify(doc)} />
+    return <Preview content={doc} />
 }
