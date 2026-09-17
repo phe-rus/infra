@@ -6,7 +6,7 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Pherus Research is where we document and share what we find as we explore different fields, from identity and health to justice and community technology."
+                    "text": "Pherus Research is where findings from exploring different fields get documented and shared: identity, health, justice, and community technology among them."
                 }
             ]
         },
@@ -15,7 +15,21 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Not every question turns into a product. Some stay research: notes, experiments, and findings worth putting into the world even before they become something you can use directly."
+                    "text": "Not every question turns into a product. Some stay research, notes, experiments, and findings worth putting into the world even before they become something usable directly."
+                }
+            ]
+        },
+        {
+            "type": "blockquote",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "[This project is still being defined. Full details, features, and technology choices will be published here once there's something real to show.]"
+                        }
+                    ]
                 }
             ]
         }

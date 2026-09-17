@@ -6,7 +6,7 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Pherus Collective is built on a simple idea: shared ownership. Instead of one party controlling a system others depend on, Collective explores what it looks like when the people using a system also own and shape it."
+                    "text": "Pherus Collective is built on a simple idea: shared ownership. Instead of one party controlling a system others depend on, Collective is meant to explore what it looks like when the people using a system also own and shape it."
                 }
             ]
         },
@@ -15,7 +15,21 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "It's decentralised by design, meant for building and creating things together rather than handing that power to a single operator."
+                    "text": "It's decentralised by design, for building and creating things together rather than handing that power to a single operator."
+                }
+            ]
+        },
+        {
+            "type": "blockquote",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "[This project is still being defined. Full details, features, and technology choices will be published here once there's something real to show.]"
+                        }
+                    ]
                 }
             ]
         }

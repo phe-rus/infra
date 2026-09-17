@@ -6,7 +6,7 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Pherus Software is the open source layer underneath everything else Pherus builds: developer tools, shared infrastructure, and the pieces that make the rest of the ecosystem possible."
+                    "text": "Pherus Software is the open-source layer underneath everything else Pherus builds: developer tools, shared infrastructure, and the pieces that make the wider ecosystem possible."
                 }
             ]
         },
@@ -16,6 +16,20 @@
                 {
                     "type": "text",
                     "text": "Where Pherus publishes code, it's published in the open. See the Licenses page for exactly which terms cover which parts."
+                }
+            ]
+        },
+        {
+            "type": "blockquote",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "[This project is still being defined. Full details, features, and technology choices will be published here once there's something real to show.]"
+                        }
+                    ]
                 }
             ]
         }

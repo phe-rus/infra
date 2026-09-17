@@ -90,18 +90,6 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             img: "/showcase/health.svg",
             feed: "/rss/health",
             descriptionKey: "showcase.health.description",
-            tags: [
-                "Identity",
-                "Decentralised",
-                "Open standards",
-            ],
-            stack: [
-                "bun",
-                "React",
-                "Next.js",
-                "Tailwind CSS",
-                "TypeScript",
-            ],
         },
         {
             slug: "collective",
@@ -109,18 +97,6 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             img: "/showcase/collective.svg",
             feed: "/rss/collective",
             descriptionKey: "showcase.collective.description",
-            tags: [
-                "Organisation",
-                "Decentralised",
-                "Collective action",
-            ],
-            stack: [
-                "bun",
-                "React",
-                "Next.js",
-                "Tailwind CSS",
-                "TypeScript",
-            ],
             homeCategory: "community",
         },
         {
@@ -128,12 +104,16 @@ export const showcase = defaultHandlers(ShowcaseSchema)({
             title: "Software",
             img: "/showcase/software.svg",
             feed: "/rss/software",
+            descriptionKey:
+                "overview.fields.software.description",
         },
         {
             slug: "transspace",
             title: "Transspace",
             img: "/showcase/transspace.svg",
             feed: "/rss/transspace",
+            descriptionKey:
+                "overview.fields.queer.description",
             homeCategory: "community",
         },
         {
