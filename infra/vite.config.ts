@@ -20,6 +20,14 @@ const config = defineConfig({
             "@": path.resolve(import.meta.dirname, "."),
         },
     },
+    build: {
+        rolldownOptions: {
+            external: (id) => id === "reflect-metadata",
+        },
+    },
+    ssr: {
+        noExternal: ["reflect-metadata", "tsyringe"],
+    },
     plugins: [
         cloudflare({
             viteEnvironment: {

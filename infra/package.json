@@ -65,9 +65,10 @@
         "@vitejs/plugin-react": "^6",
         "babel-plugin-react-compiler": "^1.0.0",
         "drizzle-kit": "^1.0.0-rc.4",
+        "rollup-plugin-visualizer": "^7.1.1",
         "typescript": "catalog:",
-        "web-vitals": "^6.2.0",
         "vite": "catalog:tanstack",
+        "web-vitals": "^6.2.0",
         "wrangler": "catalog:tanstack"
     }
 }
