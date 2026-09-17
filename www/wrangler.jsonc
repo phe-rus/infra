@@ -1,8 +1,10 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "www",
+    "name": "pherus",
     "compatibility_date": "2026-08-08",
-    "compatibility_flags": ["nodejs_compat"],
+    "compatibility_flags": [
+        "nodejs_compat"
+    ],
     "main": "src/server.ts",
     "observability": {
         "enabled": true
