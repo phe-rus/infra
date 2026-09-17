@@ -67,6 +67,26 @@ function renderNode(
                         .join("")}
                 </pre>
             )
+        case "table":
+            return (
+                <div key={key} className="typeset-scroll">
+                    <table>
+                        <tbody>{children()}</tbody>
+                    </table>
+                </div>
+            )
+        case "tableRow":
+            return <tr key={key}>{children()}</tr>
+        case "tableHeader":
+            return <th key={key}>{children()}</th>
+        case "tableCell":
+            return <td key={key}>{children()}</td>
+        case "blockquote":
+            return (
+                <blockquote key={key}>
+                    {children()}
+                </blockquote>
+            )
         default:
             return null
     }

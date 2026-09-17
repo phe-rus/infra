@@ -1,5 +1,4 @@
 import { m } from "@/paraglide/messages"
-import { cn } from "@infra/ui/lib/utils"
 import { resolveLegalPage } from "@data/legal"
 import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
@@ -45,14 +44,7 @@ function RouteComponent() {
                     </motion.p>
                 </div>
 
-                <div
-                    className={cn(
-                        "mx-auto flex w-full md:max-w-3xl flex-col gap-5",
-                        "[&_h2]:text-base [&_h2]:font-black",
-                        "[&_h2:not(:first-child)]:mt-6",
-                        "[&_p]:text-sm [&_p]:text-muted-foreground"
-                    )}
-                >
+                <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
                     {page && renderDoc(page.content)}
                 </div>
             </section>

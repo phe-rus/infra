@@ -60,7 +60,7 @@ function RouteComponent() {
                         {m["showcase.detail.back"]()}
                     </Link>
 
-                    <div className="relative w-full aspect-video overflow-hidden rounded-md">
+                    <div className="relative w-full h-40 md:h-56 overflow-hidden rounded-md">
                         <img
                             src={resource.img}
                             alt={resource.title}
@@ -94,7 +94,7 @@ function RouteComponent() {
                     )}
 
                     {resource.body && (
-                        <div className="flex flex-col gap-3 [&_p]:text-sm [&_p]:text-muted-foreground">
+                        <div className="flex flex-col gap-3">
                             {renderDoc(resource.body)}
                         </div>
                     )}

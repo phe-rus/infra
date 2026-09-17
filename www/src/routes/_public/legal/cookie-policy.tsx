@@ -1,5 +1,4 @@
 import { m } from "@/paraglide/messages"
-import { cn } from "@infra/ui/lib/utils"
 import { resolveCookiePolicy } from "@data/legal"
 import { renderDoc } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
@@ -46,14 +45,7 @@ function RouteComponent() {
                 </div>
 
                 <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
-                    <div
-                        className={cn(
-                            "[&_h2]:text-base [&_h2]:font-black",
-                            "[&_p]:text-sm [&_p]:text-muted-foreground"
-                        )}
-                    >
-                        {renderDoc(page.intro)}
-                    </div>
+                    <div>{renderDoc(page.intro)}</div>
 
                     <div className="flex flex-col gap-2">
                         {page.cookies.map((cookie) => (
@@ -75,14 +67,7 @@ function RouteComponent() {
                         ))}
                     </div>
 
-                    <div
-                        className={cn(
-                            "flex flex-col gap-5",
-                            "[&_h2]:text-base [&_h2]:font-black",
-                            "[&_h2:not(:first-child)]:mt-6",
-                            "[&_p]:text-sm [&_p]:text-muted-foreground"
-                        )}
-                    >
+                    <div className="flex flex-col gap-5">
                         {renderDoc(page.sections)}
                     </div>
                 </div>
