@@ -10,8 +10,9 @@ import {
     Upload01Icon,
     UserIcon,
 } from "@hugeicons/core-free-icons"
+import type { NavEntry } from "./nav-items"
 
-export const config = [
+export const config: NavEntry[] = [
     {
         label: "Users",
         path: "/users",
@@ -42,7 +43,6 @@ export const config = [
         label: "System",
         items: [
             {
-                isDev: true,
                 label: "Application",
                 path: "/settings",
                 Icon: Settings01Icon,

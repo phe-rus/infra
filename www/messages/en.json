@@ -73,6 +73,20 @@
             "and": "and"
         }
     },
+    "footer": {
+        "company": {
+            "label": "Company",
+            "openKnowledge": "Open Knowledge",
+            "investors": "Investors",
+            "contact": "Contact",
+            "blog": "Blog",
+            "faq": "FAQ"
+        },
+        "legal": {
+            "label": "Legal"
+        },
+        "copyright": "All rights reserved."
+    },
     "about": {
         "description": "We are a collective of like-minded individuals driven by curiosity and a desire to understand, improve, and innovate.",
         "whatWeDo": {

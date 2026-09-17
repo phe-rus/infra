@@ -73,6 +73,20 @@
             "and": "和"
         }
     },
+    "footer": {
+        "company": {
+            "label": "公司",
+            "openKnowledge": "开放知识",
+            "investors": "投资者",
+            "contact": "联系我们",
+            "blog": "博客",
+            "faq": "常见问题"
+        },
+        "legal": {
+            "label": "法律"
+        },
+        "copyright": "保留所有权利。"
+    },
     "about": {
         "description": "我们是一群志同道合的人,怀着好奇心以及理解、改进与创新的渴望。",
         "whatWeDo": {

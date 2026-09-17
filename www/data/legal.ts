@@ -6,7 +6,7 @@ import legalNoticeContent from "./legal/legal-notice.json"
 import privacyPolicyContent from "./legal/privacy-policy.json"
 import termsOfServiceContent from "./legal/terms-of-service.json"
 import { defaultHandlers } from "./lib/handler"
-import { activeLocale } from "./lib/locale"
+import { resolveContentLocale } from "./lib/locale"
 import { messageKey } from "./lib/message-key"
 import type { TiptapDoc } from "./lib/tiptap-doc"
 
@@ -127,7 +127,7 @@ export function resolveLegalPage(slug: LegalPage["slug"]) {
     )
     if (!page) return undefined
 
-    const locale = activeLocale()
+    const { locale, isFallback } = resolveContentLocale()
 
     return {
         slug: page.slug,
@@ -135,12 +135,13 @@ export function resolveLegalPage(slug: LegalPage["slug"]) {
         title: m[page.titleKey](),
         description: page.description[locale],
         content: page.content[locale],
+        isFallback,
     }
 }
 
 export function resolveCookiePolicy() {
     const { cookiePolicy } = legal
-    const locale = activeLocale()
+    const { locale, isFallback } = resolveContentLocale()
 
     return {
         slug: cookiePolicy.slug,
@@ -151,11 +152,12 @@ export function resolveCookiePolicy() {
         sections: cookiePolicy.sections[locale],
         cookies: cookiePolicy.cookies[locale],
         durationLabel: cookiePolicy.durationLabel[locale],
+        isFallback,
     }
 }
 
 export function resolveLegalIndex() {
-    const locale = activeLocale()
+    const { locale } = resolveContentLocale()
 
     const bySlug = (slug: LegalSlug) => {
         if (slug === "cookie-policy") {

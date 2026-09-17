@@ -3,6 +3,7 @@ import {
     Cancel01Icon,
     ChevronDownIcon,
     ChevronUpIcon,
+    Loading03Icon,
     Search01Icon,
 } from "@hugeicons/core-free-icons"
 import type {
@@ -37,7 +38,7 @@ import {
     useTable,
 } from "@tanstack/react-table"
 import type { ReactNode } from "react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Badge } from "../../components/badge"
 import { Button } from "../../components/button"
 import { Checkbox } from "../../components/checkbox"
@@ -135,6 +136,8 @@ type DataTableProps<TData extends RowData> = {
     onSelectedRowsChange?: (rows: TData[]) => void
     /** A summary row rendered inside the table's own <tfoot>, below the data rows — e.g. a totals line. Gets the visible column count for its colSpan. */
     footer?: (columnCount: number) => ReactNode
+    /** True while a background refetch is in flight (e.g. after a mutation invalidates the query). Dims the existing rows and shows a small spinner rather than rendering nothing, since `data` still holds the last good result. */
+    isLoading?: boolean
 }
 
 /**
@@ -153,9 +156,21 @@ export function DataTable<TData extends RowData>({
     pageSizeOptions,
     onSelectedRowsChange,
     footer,
+    isLoading = false,
     "aria-label": ariaLabel,
 }: DataTableProps<TData>) {
+    const [searchInput, setSearchInput] = useState("")
     const [globalFilter, setGlobalFilter] = useState("")
+    // Debounced: typing updates searchInput (the input stays responsive),
+    // globalFilter (the actual re-filter trigger, synchronous across the
+    // whole dataset) only updates 200ms after the last keystroke.
+    useEffect(() => {
+        const timeout = setTimeout(
+            () => setGlobalFilter(searchInput),
+            200
+        )
+        return () => clearTimeout(timeout)
+    }, [searchInput])
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] =
         useState<ColumnFiltersState>([])
@@ -244,15 +259,21 @@ export function DataTable<TData extends RowData>({
                     <InputGroupInput
                         placeholder={searchPlaceholder}
                         autoComplete="off"
-                        value={globalFilter}
+                        value={searchInput}
                         onChange={(e) =>
-                            setGlobalFilter(e.target.value)
+                            setSearchInput(e.target.value)
                         }
                     />
                     <InputGroupAddon align="inline-start">
                         <HugeiconsIcon icon={Search01Icon} />
                     </InputGroupAddon>
                     <InputGroupAddon align="inline-end">
+                        {isLoading && (
+                            <HugeiconsIcon
+                                icon={Loading03Icon}
+                                className="size-3.5 animate-spin text-muted-foreground"
+                            />
+                        )}
                         <Button
                             type="button"
                             size="xs"
@@ -451,7 +472,11 @@ export function DataTable<TData extends RowData>({
 
             <Table
                 aria-label={ariaLabel}
-                className="divide-none!"
+                className={cn(
+                    "divide-none!",
+                    isLoading &&
+                        "opacity-60 transition-opacity"
+                )}
             >
                 <TableHeader>
                     {table

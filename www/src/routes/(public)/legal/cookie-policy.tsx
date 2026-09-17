@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages"
 import { resolveCookiePolicy } from "@data/legal"
-import { renderDoc } from "@data/lib/tiptap-doc"
+import { DocPreview } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
@@ -45,7 +45,9 @@ function RouteComponent() {
                 </div>
 
                 <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
-                    <div>{renderDoc(page.intro)}</div>
+                    <div>
+                        <DocPreview doc={page.intro} />
+                    </div>
 
                     <div className="flex flex-col gap-2">
                         {page.cookies.map((cookie) => (
@@ -68,7 +70,7 @@ function RouteComponent() {
                     </div>
 
                     <div className="flex flex-col gap-5">
-                        {renderDoc(page.sections)}
+                        <DocPreview doc={page.sections} />
                     </div>
                 </div>
             </section>

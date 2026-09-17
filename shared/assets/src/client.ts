@@ -55,6 +55,25 @@ export const assetsClient = () => {
                             ...fetchOptions,
                         })
                     },
+                    uploadInstanceAsset: async (
+                        file: File,
+                        slot: "logo" | "favicon",
+                        fetchOptions?: Parameters<
+                            typeof $fetch
+                        >[1]
+                    ) => {
+                        const formData = new FormData()
+                        formData.append("file", file)
+                        formData.append("slot", slot)
+                        return $fetch<{
+                            key: string
+                            url: string
+                        }>("/assets/instance-upload", {
+                            method: "POST",
+                            body: formData,
+                            ...fetchOptions,
+                        })
+                    },
                 },
             }
         },

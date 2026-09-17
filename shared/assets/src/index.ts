@@ -19,9 +19,12 @@ import {
     avatarPrefix,
     fileKey,
     getUserUsageBytes,
+    instanceAssetKey,
+    instancePrefix,
     listAllObjects,
     stripExtension,
 } from "./r2-paths"
+import type { InstanceAssetSlot } from "./r2-paths"
 import { cdnPath, cdnUrl } from "./cdn-url"
 
 export { cdnPath, cdnUrl }
@@ -350,6 +353,66 @@ export function assets(options: AssetsProviderOptions) {
                     return ctx.json({
                         success: true,
                         deleted: targetKeys.length,
+                    })
+                }
+            ),
+            // instance-wide assets (e.g. a self-hosted app's logo/favicon),
+            // not tied to any one user: admin-only, written outside the
+            // per-user quota, one slot replaces its own prior object
+            uploadInstanceAsset: createAuthEndpoint(
+                "/assets/instance-upload",
+                {
+                    method: "POST",
+                    use: [sessionMiddleware],
+                    metadata: {
+                        allowedMediaTypes: [
+                            "multipart/form-data",
+                        ],
+                    },
+                    body: z.object({
+                        file: z.instanceof(File),
+                        slot: z.enum(["logo", "favicon"]),
+                    }),
+                },
+                async (ctx) => {
+                    if (
+                        !isAdmin(
+                            ctx.context.session.user.role ??
+                                ""
+                        )
+                    ) {
+                        throw new APIError("FORBIDDEN", {
+                            message: "Admin access required",
+                        })
+                    }
+                    const slot = ctx.body
+                        .slot as InstanceAssetSlot
+                    const file = readUploadedFile(ctx.body)
+                    const { ext, contentType, bytes } =
+                        await sniffAndValidate(file)
+                    if (!isImageExtension(ext)) {
+                        throw new APIError("BAD_REQUEST", {
+                            message:
+                                "Instance asset must be an image",
+                        })
+                    }
+
+                    const prior = await listAllObjects(
+                        binding,
+                        instancePrefix(slot)
+                    )
+                    for (const obj of prior) {
+                        await binding.delete(obj.key)
+                    }
+                    const key = instanceAssetKey(slot, ext)
+                    await binding.put(key, bytes, {
+                        httpMetadata: { contentType },
+                    })
+
+                    const version = Date.now()
+                    return ctx.json({
+                        key,
+                        url: cdnPath(key, version),
                     })
                 }
             ),

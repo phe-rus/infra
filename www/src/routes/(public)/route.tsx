@@ -1,3 +1,4 @@
+import { Footer } from "@components/footers"
 import { Toolbar } from "@components/toolbars"
 import {
     createFileRoute,
@@ -13,6 +14,7 @@ function RouteComponent() {
         <>
             <Toolbar />
             <Outlet />
+            <Footer />
         </>
     )
 }

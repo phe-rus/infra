@@ -58,3 +58,24 @@ export async function getUserUsageBytes(
     const objects = await listAllObjects(bucket, `${userId}/`)
     return objects.reduce((sum, obj) => sum + obj.size, 0)
 }
+
+export type InstanceAssetSlot = "logo" | "favicon"
+
+// Outside the per-user prefix on purpose: an instance-wide asset isn't
+// owned by whichever admin happened to upload it, so it must never count
+// against that admin's own MAX_USER_QUOTA_BYTES.
+export function instancePrefix(
+    slot: InstanceAssetSlot
+): string {
+    return `instance/${slot}/`
+}
+
+// A fresh, unique filename every upload (never a fixed name reused across
+// uploads), so a replaced asset always gets a new key and a stale CDN
+// cached copy of the old one is never served under the new URL.
+export function instanceAssetKey(
+    slot: InstanceAssetSlot,
+    ext: AllowedExtension
+): string {
+    return `${instancePrefix(slot)}${crypto.randomUUID()}.${ext}`
+}

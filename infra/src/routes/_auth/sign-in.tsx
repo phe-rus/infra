@@ -3,6 +3,7 @@ import {
     useResendVerificationEmail,
     useSignIn,
 } from "@/domains/auth"
+import { useInstanceSettings } from "@/domains/settings"
 import { FieldGroup } from "@infra/ui/components/field"
 import { t } from "@infra/ui/components/sonner"
 import { useAppForm } from "@infra/ui/widgets/blocks"
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/_auth/sign-in")({
 })
 
 function RouteComponent() {
+    const { data: settings } = useInstanceSettings()
     const { mutateAsync: signIn } = useSignIn()
     const { mutateAsync: resendVerificationEmail } =
         useResendVerificationEmail()
@@ -92,7 +94,18 @@ function RouteComponent() {
             heading={
                 <ViewController.Heading
                     size="compact"
-                    title="Infra"
+                    title={
+                        <span className="flex items-center gap-2">
+                            {settings.logoUrl && (
+                                <img
+                                    src={settings.logoUrl}
+                                    alt=""
+                                    className="size-6 rounded-full"
+                                />
+                            )}
+                            {settings.displayName}
+                        </span>
+                    }
                     description="Sign in to your account"
                 />
             }
@@ -149,6 +162,17 @@ function RouteComponent() {
                     <form.submit label="Sign in" />
                 </form.AppForm>
             </form>
+            {settings.supportEmail && (
+                <p className="text-center text-xs text-muted-foreground">
+                    Need help?{" "}
+                    <a
+                        href={`mailto:${settings.supportEmail}`}
+                        className="hover:underline"
+                    >
+                        {settings.supportEmail}
+                    </a>
+                </p>
+            )}
         </ViewController>
     )
 }

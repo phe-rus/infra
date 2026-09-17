@@ -1,4 +1,5 @@
 import { meOptions, useLogout } from "@/domains/auth"
+import { useInstanceSettings } from "@/domains/settings"
 import { useStopImpersonating } from "@/domains/users"
 import {
     ChevronLeftIcon,
@@ -13,7 +14,6 @@ import { Link } from "@tanstack/react-router"
 import type { FC, PropsWithChildren } from "react"
 import {
     createContext,
-    Fragment,
     useCallback,
     useContext,
     useEffect,
@@ -21,6 +21,7 @@ import {
     useState,
 } from "react"
 import { config } from "./config"
+import { NavGroupSection, NavLink } from "./nav-items"
 
 type DashboardProps = PropsWithChildren
 type SidebarProps = {
@@ -30,11 +31,43 @@ type SidebarProps = {
 const SidebarContext = createContext<SidebarProps | null>(
     null
 )
+
+// Read only after mount (useEffect), never in a useState initializer: that
+// runs during SSR too, where localStorage doesn't exist, and reading it on
+// the client's first render (before the persisted value is known) would
+// disagree with the server-rendered markup and trip a hydration mismatch.
+const SIDEBAR_OPEN_KEY = "infra:sidebar-open"
+const SIDEBAR_COLLAPSED_GROUPS_KEY =
+    "infra:sidebar-collapsed-groups"
+
+function readStoredOpen(): boolean {
+    try {
+        const stored = localStorage.getItem(SIDEBAR_OPEN_KEY)
+        return stored === null ? true : stored === "true"
+    } catch {
+        return true
+    }
+}
+
+function readStoredCollapsedGroups(): Set<string> {
+    try {
+        const stored = localStorage.getItem(
+            SIDEBAR_COLLAPSED_GROUPS_KEY
+        )
+        return stored
+            ? new Set(JSON.parse(stored))
+            : new Set()
+    } catch {
+        return new Set()
+    }
+}
+
 export const Dashboard: FC<DashboardProps> = ({
     children,
 }) => {
     const { isPending, mutateAsync: signOut } = useLogout()
     const { data: session } = useSuspenseQuery(meOptions())
+    const { data: settings } = useInstanceSettings()
     const {
         mutateAsync: stopImpersonating,
         isPending: isStoppingImpersonation,
@@ -42,17 +75,48 @@ export const Dashboard: FC<DashboardProps> = ({
     const impersonatedBy = session?.session.impersonatedBy
     const [open, setOpen] = useState<boolean>(true)
     const [isPeeking, setIsPeeking] = useState(false)
+    const [collapsedGroups, setCollapsedGroups] = useState<
+        Set<string>
+    >(new Set())
     const ref = useRef<HTMLDivElement>(null)
     const isMobile = useIsMobile()
 
     const toggleSidebar = useCallback(() => {
-        setOpen((prev) => !prev)
+        setOpen((prev) => {
+            const next = !prev
+            try {
+                localStorage.setItem(
+                    SIDEBAR_OPEN_KEY,
+                    String(next)
+                )
+            } catch { }
+            return next
+        })
         setIsPeeking(false)
+    }, [])
+
+    const toggleGroup = useCallback((label: string) => {
+        setCollapsedGroups((prev) => {
+            const next = new Set(prev)
+            if (next.has(label)) next.delete(label)
+            else next.add(label)
+            try {
+                localStorage.setItem(
+                    SIDEBAR_COLLAPSED_GROUPS_KEY,
+                    JSON.stringify([...next])
+                )
+            } catch { }
+            return next
+        })
+    }, [])
+
+    useEffect(() => {
+        setCollapsedGroups(readStoredCollapsedGroups())
     }, [])
 
     useEffect(() => {
         if (!isMobile) {
-            setOpen(true)
+            setOpen(readStoredOpen())
         }
     }, [isMobile])
 
@@ -92,10 +156,10 @@ export const Dashboard: FC<DashboardProps> = ({
                             "will-change-transform will-change-backdrop-filter",
                             "shadow shadow-muted",
                             open
-                                ? "w-72 translate-x-0 z-55 md:relative"
+                                ? "w-78 translate-x-0 z-55 md:relative"
                                 : isPeeking
-                                  ? "w-72 translate-x-0 z-55 md:absolute shadow-2xl"
-                                  : "w-72 -translate-x-full z-10 md:absolute"
+                                    ? "w-78 translate-x-0 z-55 md:absolute shadow-2xl"
+                                    : "w-78 -translate-x-full z-10 md:absolute"
                         )}
                     >
                         <Button
@@ -130,7 +194,7 @@ export const Dashboard: FC<DashboardProps> = ({
                         </Button>
                         <section
                             className={cn(
-                                "min-h-svh flex-col gap-5 px-5 py-2",
+                                "min-h-svh flex-col gap-5 px-3 py-2",
                                 !isExpanded
                                     ? "hidden"
                                     : "flex"
@@ -143,148 +207,47 @@ export const Dashboard: FC<DashboardProps> = ({
                                         className={cn(
                                             "flex gap-1.5 items-center text-primary",
                                             "hover:text-primary/65 tracking-wider font-bold",
-                                            "px-1"
+                                            "px-3"
                                         )}
                                     >
                                         <img
-                                            src="/favicon.svg"
-                                            alt="Infra"
+                                            src={
+                                                settings.logoUrl ??
+                                                "/favicon.svg"
+                                            }
+                                            alt={
+                                                settings.displayName
+                                            }
                                             className="size-4.5 mix-blend-normal rounded-full!"
                                         />
-                                        Infra
+                                        {settings.displayName}
                                     </Link>
                                 </nav>
                                 <nav className="flex flex-col">
-                                    {config.map(
-                                        (
-                                            {
-                                                label,
-                                                items,
-                                                ...props
-                                            },
-                                            index
-                                        ) => {
-                                            if (!items) {
-                                                return (
-                                                    <Link
-                                                        key={
-                                                            index
-                                                        }
-                                                        to={
-                                                            props.path
-                                                        }
-                                                        className={cn(
-                                                            "group tracking-tight flex items-center gap-2",
-                                                            "transition-colors duration-150 ease-out",
-                                                            "relative font-light!",
-                                                            props.isDev &&
-                                                                "duration-150 opacity-60"
-                                                        )}
-                                                        activeProps={{
-                                                            className:
-                                                                cn(
-                                                                    "text-current",
-                                                                    props.isDev &&
-                                                                        "opacity-100"
-                                                                ),
-                                                        }}
-                                                    >
-                                                        {props.Icon && (
-                                                            <HugeiconsIcon
-                                                                icon={
-                                                                    props.Icon
-                                                                }
-                                                                className="size-5"
-                                                            />
-                                                        )}
-                                                        {
-                                                            label
-                                                        }
-                                                        {props.isDev && (
-                                                            <span
-                                                                className={cn(
-                                                                    "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
-                                                                    "text-destructive-foreground rounded-2xl",
-                                                                    "px-1 py-0.5"
-                                                                )}
-                                                            >
-                                                                comming
-                                                                soon
-                                                            </span>
-                                                        )}
-                                                    </Link>
-                                                )
-                                            }
-                                            return (
-                                                <Fragment
-                                                    key={
-                                                        index
-                                                    }
-                                                >
-                                                    <h4 className="pt-3 pb-1 text-base font-light">
-                                                        {
-                                                            label
-                                                        }
-                                                    </h4>
-                                                    <nav className="flex flex-col">
-                                                        {items?.map(
-                                                            (
-                                                                i,
-                                                                inx
-                                                            ) => {
-                                                                return (
-                                                                    <Link
-                                                                        key={
-                                                                            inx
-                                                                        }
-                                                                        to={
-                                                                            i.path
-                                                                        }
-                                                                        className={cn(
-                                                                            "group tracking-tight flex items-center gap-2",
-                                                                            "transition-colors duration-150 ease-out",
-                                                                            "relative font-light!",
-                                                                            i.isDev &&
-                                                                                "duration-150 opacity-60"
-                                                                        )}
-                                                                        activeProps={{
-                                                                            className:
-                                                                                cn(
-                                                                                    "text-current",
-                                                                                    i.isDev &&
-                                                                                        "opacity-100"
-                                                                                ),
-                                                                        }}
-                                                                    >
-                                                                        <HugeiconsIcon
-                                                                            icon={
-                                                                                i.Icon
-                                                                            }
-                                                                            className="size-4.5"
-                                                                        />
-                                                                        {
-                                                                            i.label
-                                                                        }
-                                                                        {i.isDev && (
-                                                                            <span
-                                                                                className={cn(
-                                                                                    "absolute -top-0.5 right-3 text-[5px] bg-destructive/45",
-                                                                                    "text-destructive-foreground rounded-2xl",
-                                                                                    "px-1 py-0.5"
-                                                                                )}
-                                                                            >
-                                                                                comming
-                                                                                soon
-                                                                            </span>
-                                                                        )}
-                                                                    </Link>
-                                                                )
-                                                            }
-                                                        )}
-                                                    </nav>
-                                                </Fragment>
-                                            )
-                                        }
+                                    {config.map((entry) =>
+                                        "items" in entry ? (
+                                            <NavGroupSection
+                                                key={
+                                                    entry.label
+                                                }
+                                                {...entry}
+                                                isCollapsed={collapsedGroups.has(
+                                                    entry.label
+                                                )}
+                                                onToggle={() =>
+                                                    toggleGroup(
+                                                        entry.label
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <NavLink
+                                                key={
+                                                    entry.label
+                                                }
+                                                {...entry}
+                                            />
+                                        )
                                     )}
                                 </nav>
                             </section>
@@ -292,9 +255,17 @@ export const Dashboard: FC<DashboardProps> = ({
                             <nav
                                 className={cn(
                                     "sticky bottom-0 mb-auto",
-                                    "flex flex-col gap-3"
+                                    "flex flex-col gap-2"
                                 )}
                             >
+                                <div className="flex flex-col gap-0.5 px-1 text-xs">
+                                    <span className="truncate font-medium">
+                                        {session?.user.name}
+                                    </span>
+                                    <span className="truncate text-muted-foreground">
+                                        {session?.user.email}
+                                    </span>
+                                </div>
                                 <Button
                                     size="sm"
                                     className="w-fit!"

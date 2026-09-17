@@ -13,6 +13,7 @@ import { password } from "./config/password"
 import { env, waitUntil } from "cloudflare:workers"
 import { emailHooks } from "./emails"
 import { assets } from "../../shared/assets/src"
+import { settings } from "./plugins/settings"
 import {
     logAuthEvent,
     logManagementEvent,
@@ -242,6 +243,11 @@ export const auth = betterAuth({
         assets({
             binding: env.R2,
             isAdmin: isAdminTier,
+        }),
+        settings({
+            appName: env.VITE_APPNAME,
+            isAdmin: isAdminTier,
+            binding: env.R2,
         }),
         listUserAccounts({
             isAdmin: isAdminTier,

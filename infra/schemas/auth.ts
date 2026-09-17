@@ -128,6 +128,26 @@ export const account = sqliteTable(
     ]
 )
 
+export const instanceSettings = sqliteTable(
+    "instanceSettings",
+    {
+        id: text("id").primaryKey(),
+        displayName: text("displayName"),
+        logoKey: text("logoKey"),
+        faviconKey: text("faviconKey"),
+        supportEmail: text("supportEmail"),
+        updatedAt: integer("updatedAt", {
+            mode: "timestamp_ms",
+        }).notNull(),
+        updatedBy: text("updatedBy").references(
+            () => user.id,
+            {
+                onDelete: "cascade",
+            }
+        ),
+    }
+)
+
 export const twoFactor = sqliteTable(
     "twoFactor",
     {
@@ -511,6 +531,7 @@ export const authRelations = defineRelationsPart(
         user,
         session,
         account,
+        instanceSettings,
         twoFactor,
         passkey,
         jwks,
@@ -531,6 +552,10 @@ export const authRelations = defineRelationsPart(
             accounts: r.many.account({
                 from: r.user.id,
                 to: r.account.userId,
+            }),
+            instanceSettings: r.many.instanceSettings({
+                from: r.user.id,
+                to: r.instanceSettings.updatedBy,
             }),
             twoFactors: r.many.twoFactor({
                 from: r.user.id,
@@ -574,6 +599,12 @@ export const authRelations = defineRelationsPart(
         account: {
             user: r.one.user({
                 from: r.account.userId,
+                to: r.user.id,
+            }),
+        },
+        instanceSettings: {
+            user: r.one.user({
+                from: r.instanceSettings.updatedBy,
                 to: r.user.id,
             }),
         },

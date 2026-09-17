@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages"
 import { resolveLicense } from "@data/licenses"
-import { renderDoc } from "@data/lib/tiptap-doc"
+import { DocPreview } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute } from "@tanstack/react-router"
@@ -51,11 +51,10 @@ function RouteComponent() {
                     </motion.p>
                 </div>
 
-                <div
-                    data-not-typeset
-                    className="mx-auto w-full md:max-w-3xl"
-                >
-                    {license && renderDoc(license.content)}
+                <div className="mx-auto w-full md:max-w-3xl">
+                    {license && (
+                        <DocPreview doc={license.content} />
+                    )}
                 </div>
             </section>
         </article>

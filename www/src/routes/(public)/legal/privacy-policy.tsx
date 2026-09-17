@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages"
 import { resolveLegalPage } from "@data/legal"
-import { renderDoc } from "@data/lib/tiptap-doc"
+import { DocPreview } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
@@ -45,7 +45,9 @@ function RouteComponent() {
                 </div>
 
                 <div className="mx-auto flex w-full md:max-w-3xl flex-col gap-5">
-                    {page && renderDoc(page.content)}
+                    {page && (
+                        <DocPreview doc={page.content} />
+                    )}
 
                     <p className="text-sm text-muted-foreground">
                         {m["legal.common.seeAlso"]()}{" "}

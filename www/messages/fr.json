@@ -73,6 +73,20 @@
             "and": "et"
         }
     },
+    "footer": {
+        "company": {
+            "label": "Entreprise",
+            "openKnowledge": "Savoir ouvert",
+            "investors": "Investisseurs",
+            "contact": "Contact",
+            "blog": "Blog",
+            "faq": "FAQ"
+        },
+        "legal": {
+            "label": "Mentions légales"
+        },
+        "copyright": "Tous droits réservés."
+    },
     "about": {
         "description": "Nous sommes un collectif de personnes animées par les mêmes idées, portées par la curiosité et le désir de comprendre, d'améliorer et d'innover.",
         "whatWeDo": {

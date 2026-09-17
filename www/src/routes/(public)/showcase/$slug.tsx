@@ -1,7 +1,7 @@
 import { m } from "@/paraglide/messages"
 import { cn } from "@infra/ui/lib/utils"
 import { resolveResource } from "@data/showcase"
-import { renderDoc } from "@data/lib/tiptap-doc"
+import { DocPreview } from "@data/lib/tiptap-doc"
 import { reveal } from "@lib/motion"
 import { seo } from "@lib/seo"
 import { createFileRoute, Link } from "@tanstack/react-router"
@@ -95,7 +95,7 @@ function RouteComponent() {
 
                     {resource.body && (
                         <div className="flex flex-col gap-3">
-                            {renderDoc(resource.body)}
+                            <DocPreview doc={resource.body} />
                         </div>
                     )}
 

@@ -19,7 +19,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 6 | Analytics and audit logging | Existing | existing |
 | 7 | Admin dashboard shell | Existing | existing |
 | 8 | Systems utils wiring | Existing | in-progress |
-| 9 | Settings page | Slice 1 | planned |
+| 9 | Settings page | Slice 1 | in-progress |
 | 10 | Push notification admin surface | Slice 1 | planned |
 
 ## Existing
@@ -53,15 +53,28 @@ code in `infra/domains/systems-utils`
 
 ## Slice 1: Admin gaps
 
-### 9. Settings page · needs a decision
-The route and sidebar link already exist; the page currently renders a placeholder greeting with no real content. What belongs on it (security policy knobs, rate limit tuning, branding, something else) hasn't been decided yet.
-**Done when:** admins can view and change a real, defined set of settings, and changes persist.
-- [ ] Design it (spec): `/architect settings page`
+### 9. Settings page
+The route and sidebar link already exist; the page currently renders a placeholder greeting. Scoped to instance branding (display name, logo, favicon, support email); security policy and rate limit tuning were considered and deferred, see Deferred below.
+**Done when:** admins can view and change branding settings, and changes take effect across sign in, dashboard, and email without a redeploy.
+- [x] Design it (spec): `/architect settings page`
+- [x] Build it: `/develop settings page`
+   - [x] Data model + settings domain: schema, migration, `getInstanceSettings`/`updateInstanceSettings`, the in memory memo, audit logging (AC-1, AC-7, AC-10, AC-11)
+   - [x] Wire display name into outgoing emails as the thin end to end slice (AC-4, AC-2)
+   - [x] Instance asset uploads: `uploadInstanceAsset` in `@infra/assets` plus the delete/orphan cleanup paths (AC-8, AC-9, AC-12)
+   - [x] Settings page UI (AC-1, AC-10)
+   - [x] Apply branding across sign in, setup, dashboard, and email surfaces (AC-3, AC-5, AC-6, AC-2)
+- [ ] Verify it: `/check verify settings page`
+- [ ] Test it: `/test settings page`
+spec [0001](../../specs/infra/0001-settings-page-branding/index.md) · code in `infra/auth/plugins/settings.ts` (the settings plugin), `infra/domains/settings` (TanStack wrappers), `shared/assets/src`
 
 ### 10. Push notification admin surface · needs a decision
 Admin UI for viewing subscribed devices and sending push notifications, once the shared plugin exists. Depends on `@infra/icm` (see the repo wide scope) being built first; do not start this before that lands.
 **Done when:** an admin can see subscribed devices and trigger a notification, backed by the real plugin, not a stub.
 - [ ] Design it (spec): `/architect push notification admin surface`
+
+## Deferred
+Out of scope for the current build pass, kept so the plan stays honest.
+- **Security policy & rate limit tuning** (settings page): make `auth.ts`'s currently static session/password/rate limit configuration admin editable instead of fixed at deploy time · needs a decision · from spec [0001](../../specs/infra/0001-settings-page-branding/index.md)
 
 ## Legend
 

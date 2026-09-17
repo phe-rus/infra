@@ -22,3 +22,7 @@ export const { useAppForm, withForm } = createFormHook({
 // radioCard whose options depend on what's currently selected elsewhere in
 // the same form — without subscribing the whole component to every field
 export { useSelector, useStore }
+
+// field prop/value types (e.g. FieldAvatarValue), for a caller that needs to
+// type a value it hands to a field before the form itself is submitted
+export * from "./fields"

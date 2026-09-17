@@ -100,7 +100,8 @@ function baseTemplate(
     heading: string,
     body: string,
     ctaLabel: string,
-    ctaUrl: string
+    ctaUrl: string,
+    supportEmail: string | null
 ): string {
     const cardContent = `<tr>
                     <td style="padding:28px 28px 0 28px;">
@@ -126,51 +127,57 @@ function baseTemplate(
                     </td>
                   </tr>`
 
-    return layout(
-        appName,
-        cardContent,
-        "If you didn't request this, you can safely ignore this email."
-    )
+    const footerText = supportEmail
+        ? `If you didn't request this, you can safely ignore this email.<br />Need help? Contact <a href="mailto:${supportEmail}" class="text" style="color:${COLORS.light.text};">${supportEmail}</a>.`
+        : "If you didn't request this, you can safely ignore this email."
+
+    return layout(appName, cardContent, footerText)
 }
 
 export function verificationEmailHtml(
     appName: string,
     name: string,
-    url: string
+    url: string,
+    supportEmail: string | null
 ): string {
     return baseTemplate(
         appName,
         "Verify your email",
         `Hi ${name}, confirm your email address to finish setting up your ${appName} account.`,
         "Verify email",
-        url
+        url,
+        supportEmail
     )
 }
 
 export function resetPasswordEmailHtml(
     appName: string,
     name: string,
-    url: string
+    url: string,
+    supportEmail: string | null
 ): string {
     return baseTemplate(
         appName,
         "Reset your password",
         `Hi ${name}, we received a request to reset your ${appName} password. This link expires in 1 hour.`,
         "Reset password",
-        url
+        url,
+        supportEmail
     )
 }
 
 export function deleteAccountEmailHtml(
     appName: string,
     name: string,
-    url: string
+    url: string,
+    supportEmail: string | null
 ): string {
     return baseTemplate(
         appName,
         "Confirm account deletion",
         `Hi ${name}, confirm you want to permanently delete your ${appName} account. This can't be undone.`,
         "Delete my account",
-        url
+        url,
+        supportEmail
     )
 }

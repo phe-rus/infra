@@ -1,4 +1,5 @@
 import { env } from "cloudflare:workers"
+import { auth } from "@/auth"
 import {
     verificationEmailHtml,
     resetPasswordEmailHtml,
@@ -53,13 +54,16 @@ export const emailHooks = {
         user: EmailUser
         url: string
     }) => {
+        const { displayName, supportEmail } =
+            await auth.api.getInstanceSettings()
         await send({
             to: user.email,
-            subject: `${env.VITE_APPNAME}: Verify your email`,
+            subject: `${displayName}: Verify your email`,
             html: verificationEmailHtml(
-                env.VITE_APPNAME,
+                displayName,
                 user.name,
-                url
+                url,
+                supportEmail
             ),
         })
     },
@@ -70,13 +74,16 @@ export const emailHooks = {
         user: EmailUser
         url: string
     }) => {
+        const { displayName, supportEmail } =
+            await auth.api.getInstanceSettings()
         await send({
             to: user.email,
-            subject: `${env.VITE_APPNAME}: Reset your password`,
+            subject: `${displayName}: Reset your password`,
             html: resetPasswordEmailHtml(
-                env.VITE_APPNAME,
+                displayName,
                 user.name,
-                url
+                url,
+                supportEmail
             ),
         })
     },
@@ -87,13 +94,16 @@ export const emailHooks = {
         user: EmailUser
         url: string
     }) => {
+        const { displayName, supportEmail } =
+            await auth.api.getInstanceSettings()
         await send({
             to: user.email,
-            subject: `${env.VITE_APPNAME}: Confirm account deletion`,
+            subject: `${displayName}: Confirm account deletion`,
             html: deleteAccountEmailHtml(
-                env.VITE_APPNAME,
+                displayName,
                 user.name,
-                url
+                url,
+                supportEmail
             ),
         })
     },

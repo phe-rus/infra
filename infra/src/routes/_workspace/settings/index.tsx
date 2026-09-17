@@ -1,8 +1,15 @@
+import {
+    instanceSettingsOptions,
+    SettingsForm,
+} from "@/domains/settings"
 import { ViewController } from "@infra/ui/widgets/view-controller"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_workspace/settings/")(
     {
+        loader: async ({ context: { q } }) => {
+            await q.ensureQueryData(instanceSettingsOptions())
+        },
         component: RouteComponent,
     }
 )
@@ -17,7 +24,7 @@ function RouteComponent() {
                 />
             }
         >
-            <div>Hello "/_workspace/settings/"!</div>
+            <SettingsForm />
         </ViewController>
     )
 }

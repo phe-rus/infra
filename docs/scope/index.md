@@ -7,7 +7,7 @@ A map of the whole monorepo's scope, one line per workspace plus repo wide share
 
 | Workspace | Rollup | Scope |
 |---|---|---|
-| infra | 8 existing, 1 in progress, 2 planned | [infra/scope.md](infra/scope.md) |
+| infra | 8 existing, 2 in progress, 1 planned | [infra/scope.md](infra/scope.md) |
 | accounts | 10 existing, 0 in progress, 0 planned | [accounts/scope.md](accounts/scope.md) |
 | www | 10 existing, 3 in progress, 3 planned | [www/scope.md](www/scope.md) |
 | _root (shared packages, tooling) | 4 existing, 1 in progress, 1 planned | [_root/scope.md](_root/scope.md) |

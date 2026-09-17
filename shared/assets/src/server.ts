@@ -21,5 +21,8 @@ export {
     stripExtension,
     listAllObjects,
     getUserUsageBytes,
+    instancePrefix,
+    instanceAssetKey,
 } from "./r2-paths"
+export type { InstanceAssetSlot } from "./r2-paths"
 export { cdnPath, cdnUrl } from "./cdn-url"

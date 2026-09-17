@@ -2,7 +2,7 @@ import { m } from "@/paraglide/messages"
 import { z } from "zod"
 import strings from "./licenses/strings.json"
 import { defaultHandlers } from "./lib/handler"
-import { activeLocale } from "./lib/locale"
+import { resolveContentLocale } from "./lib/locale"
 import { messageKey } from "./lib/message-key"
 import type { TiptapDoc } from "./lib/tiptap-doc"
 
@@ -92,7 +92,7 @@ export function resolveLicense(slug: LicenseSlug) {
     )
     if (!license) return undefined
 
-    const locale = activeLocale()
+    const { locale, isFallback } = resolveContentLocale()
     const description =
         slug === "pherus-license"
             ? strings.pherusPlaceholder[locale]
@@ -108,11 +108,12 @@ export function resolveLicense(slug: LicenseSlug) {
         description,
         disclaimer: strings.disclaimer[locale],
         content: docs[`./licenses/${slug}.json`],
+        isFallback,
     }
 }
 
 export function resolveLicensesIndex() {
-    const locale = activeLocale()
+    const { locale } = resolveContentLocale()
 
     return {
         path: licenses.index.path,

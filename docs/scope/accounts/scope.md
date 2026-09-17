@@ -56,6 +56,10 @@ Permanent account deletion via password confirmation plus a confirmation email. 
 
 Nothing partial or missing turned up in this workspace this pass; no next slice planned here yet. Run `/scope accounts <a feature>` to enroll a new one, or run `/scope` again once you have a next slice in mind.
 
+## Deferred
+Out of scope for the current build pass, kept so the plan stays honest.
+- **Instance branding on accounts' own sign in page**: infra's settings page (spec [0001](../../specs/infra/0001-settings-page-branding/index.md)) only applies the instance's display name/logo to infra's own admin sign in page, not accounts' end user facing one · needs a decision · from spec 0001 (infra)
+
 ## Legend
 
 - **Status**: `planned` → `in-progress` → `done`, plus `existing` (pre workflow, left alone by `/develop` and `/sync`) and `dropped` (kept for history).

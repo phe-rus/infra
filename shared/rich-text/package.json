@@ -1,0 +1,63 @@
+{
+    "name": "@infra/rich-text",
+    "private": true,
+    "version": "0.0.0",
+    "license": "MIT",
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@hugeicons/core-free-icons": "^4.3.0",
+        "@hugeicons/react": "^1.1.10",
+        "@infra/ui": "workspace:*",
+        "@tiptap/core": "^3.27.4",
+        "@tiptap/extension-blockquote": "^3.27.4",
+        "@tiptap/extension-bold": "^3.27.4",
+        "@tiptap/extension-code": "^3.28.0",
+        "@tiptap/extension-code-block": "^3.27.4",
+        "@tiptap/extension-code-block-lowlight": "^3.28.0",
+        "@tiptap/extension-document": "^3.27.4",
+        "@tiptap/extension-drag-handle-react": "^3.28.0",
+        "@tiptap/extension-hard-break": "^3.27.4",
+        "@tiptap/extension-heading": "^3.27.4",
+        "@tiptap/extension-highlight": "^3.27.4",
+        "@tiptap/extension-horizontal-rule": "^3.27.4",
+        "@tiptap/extension-image": "^3.28.0",
+        "@tiptap/extension-italic": "^3.27.4",
+        "@tiptap/extension-link": "^3.27.4",
+        "@tiptap/extension-list": "^3.27.4",
+        "@tiptap/extension-paragraph": "^3.27.4",
+        "@tiptap/extension-strike": "^3.27.4",
+        "@tiptap/extension-subscript": "^3.28.0",
+        "@tiptap/extension-superscript": "^3.28.0",
+        "@tiptap/extension-table": "^3.28.0",
+        "@tiptap/extension-text": "^3.27.4",
+        "@tiptap/extension-text-align": "^3.28.0",
+        "@tiptap/extension-text-style": "^3.27.4",
+        "@tiptap/extension-typography": "^3.28.0",
+        "@tiptap/extension-underline": "^3.27.4",
+        "@tiptap/extensions": "^3.27.4",
+        "@tiptap/pm": "^3.27.4",
+        "@tiptap/react": "^3.27.4",
+        "@tiptap/suggestion": "^3.27.4",
+        "@uiw/react-codemirror": "^4.25.11",
+        "lowlight": "^3.3.0",
+        "codemirror": "^6.0.2"
+    },
+    "peerDependencies": {
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:"
+    },
+    "devDependencies": {
+        "@types/react": "catalog:",
+        "typescript": "catalog:"
+    }
+}

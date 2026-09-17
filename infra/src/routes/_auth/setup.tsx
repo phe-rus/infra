@@ -3,6 +3,7 @@ import {
     useCompleteSetup,
     useResendVerificationEmail,
 } from "@/domains/auth"
+import { useInstanceSettings } from "@/domains/settings"
 import { Button } from "@infra/ui/components/button"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/_auth/setup")({
 })
 
 function RouteComponent() {
+    const { data: settings } = useInstanceSettings()
     const { mutateAsync: completeSetup } = useCompleteSetup()
     const {
         mutateAsync: resendVerificationEmail,
@@ -93,7 +95,18 @@ function RouteComponent() {
             heading={
                 <ViewController.Heading
                     size="compact"
-                    title="Infra"
+                    title={
+                        <span className="flex items-center gap-2">
+                            {settings.logoUrl && (
+                                <img
+                                    src={settings.logoUrl}
+                                    alt=""
+                                    className="size-6 rounded-full"
+                                />
+                            )}
+                            {settings.displayName}
+                        </span>
+                    }
                     description="Create the first admin account"
                 />
             }

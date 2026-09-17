@@ -26,7 +26,8 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 13 | Legal jurisdiction facts | Existing | in-progress |
 | 14 | Blog | Slice 1 | planned |
 | 15 | FAQ | Slice 1 | planned |
-| 16 | Footers | Slice 1 | planned |
+| 16 | Footers | Slice 1 | in-progress |
+| 17 | i18n locale expansion, RTL | Slice 1 | in-progress |
 
 ## Existing
 
@@ -90,10 +91,27 @@ A FAQ page with question and answer entries. Referenced as planned footer nav, b
 **Done when:** a visitor can read a list of question and answer entries, in all three locales.
 - [ ] Design it (spec): `/architect faq`
 
-### 16. Footers
+### 16. Footers · in-progress
 A site footer with a Company group (About, Open Knowledge, Investors, Contact, Blog, FAQ) and a Legal group, following the same nav data pattern the header toolbar already uses.
 **Done when:** every public page renders a footer with working links, in all three locales.
-- [ ] Build it: `/develop footers`
+- [x] Build it: `/develop footers`
+- [ ] Verify it: `/check verify footers`
+- [ ] Test it: `/test footers`
+code in `www/components/footers`
+
+### 17. i18n locale expansion, RTL · in-progress
+Grows i18n from three locales to eight (adding Swahili, Hindi, Arabic, German, Mexican Spanish), with full right to left layout support for Arabic and an honest, flagged unreviewed translation policy; legal and license pages stay English with a note until a reviewer signs off.
+**Done when:** a visitor can browse the site fully translated in any of the 8 locales, Arabic mirrors the whole layout, every page in an unreviewed locale shows the machine drafted notice, and legal/license pages never show an unreviewed legal translation.
+- [x] Design it (spec): [0001](../../specs/www/0001-i18n-locale-expansion-rtl/index.md)
+- [ ] Build it: `/develop i18n locale expansion`
+  - [x] Locale type safety fix (split `SiteLocale`/`ReviewedLocale`, `resolveContentLocale()`) before adding locales, satisfies the spec's key invariants
+  - [ ] Add the 5 locale codes to Paraglide + write their UI chrome message files, satisfies AC-1, AC-3, AC-4
+  - [ ] RTL layout mechanism end to end on the toolbar/footer/home slice (`dir` prop, logical CSS properties, nav drawer fix, directional icon audit), satisfies AC-2, AC-6
+  - [ ] Sweep remaining pages onto the RTL convention, build the unreviewed banner and legal fallback note, satisfies AC-2, AC-3, AC-4
+  - [ ] Confirm canonical/OG/JSON-LD URLs reflect the new locales, satisfies AC-5
+- [ ] Verify it: `/check verify i18n locale expansion`
+- [ ] Test it: `/test i18n locale expansion`
+code in `www/data/lib/locale.ts`, `www/messages`, `shared/ui`
 
 ## Legend
 
