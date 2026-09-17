@@ -77,15 +77,15 @@
         "description": "Nous sommes un collectif de personnes animées par les mêmes idées, portées par la curiosité et le désir de comprendre, d'améliorer et d'innover.",
         "whatWeDo": {
             "heading": "Ce que nous faisons",
-            "body": "Pherus est une entreprise de recherche pratique, de sciences, d'innovation et de technologie — un lieu où les idées curieuses deviennent des réalités concrètes. Nous travaillons sur l'identité et l'accès, la santé, la justice, la communauté, la science et les logiciels, en transformant des questions ouvertes en systèmes fonctionnels."
+            "body": "Pherus est une entreprise de recherche pratique, de sciences, d'innovation et de technologie. C'est un lieu où les idées curieuses deviennent des réalités concrètes. Nous travaillons sur l'identité et l'accès, la santé, la justice, la communauté, la science et les logiciels, en transformant des questions ouvertes en systèmes fonctionnels."
         },
         "whereBased": {
             "heading": "Où nous sommes basés",
-            "body": "Pherus Inc. est basée à Wakiso, en Ouganda."
+            "body": "Pherus Inc. est basée à Wakiso, en Ouganda, à la boîte postale 114722. Tout ce que nous construisons fonctionne cependant sur le réseau mondial de Cloudflare, donc notre implantation ne limite pas qui nous servons."
         },
         "howWeWork": {
             "heading": "Comment nous travaillons",
-            "body": "Nous publions en open source tout ce que nous pouvons, et privilégions des systèmes décentralisés et pratiques plutôt que de grandes promesses. Nous préférons livrer quelque chose de petit et de réel que de parler de quelque chose de grand et d'hypothétique."
+            "body": "Nous publions en open source tout ce que nous pouvons, et privilégions des systèmes décentralisés et pratiques plutôt que de grandes promesses. Nous préférons livrer quelque chose de petit et de réel que de parler de quelque chose de grand et d'hypothétique. Pass, notre plateforme d'identité, en est un exemple concret : autohébergée sur notre propre infrastructure plutôt que louée à un fournisseur."
         },
         "building": {
             "heading": "Ce que nous construisons"

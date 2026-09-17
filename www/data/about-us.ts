@@ -19,6 +19,7 @@ const AboutUsSchema = z.object({
     descriptionKey: messageKey,
     sections: z.array(AboutSectionSchema),
     contactEmail: z.string(),
+    contactPhone: z.string(),
 })
 
 export const aboutUs = defaultHandlers(AboutUsSchema)({
@@ -43,4 +44,5 @@ export const aboutUs = defaultHandlers(AboutUsSchema)({
         },
     ],
     contactEmail: "pherus@pherus.org",
+    contactPhone: "+256 772 769 734",
 })

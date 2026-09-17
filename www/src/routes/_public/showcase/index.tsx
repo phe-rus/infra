@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages"
-import { cn } from "@infra/ui/lib/utils"
 import { showcase } from "@data/showcase"
+import { cn } from "@infra/ui/lib/utils"
 import {
     reveal,
     staggerContainer,
@@ -46,95 +46,95 @@ function RouteComponent() {
                         {m["showcase.hero.description"]()}
                     </motion.p>
                 </div>
+            </section>
 
-                <section className="container flex flex-col gap-5">
-                    <div className="mx-auto flex w-full md:max-w-3xl flex-col">
-                        <motion.h3
-                            {...reveal}
-                            className="font-black"
-                        >
-                            {m["nav.showcase"]()}
-                        </motion.h3>
-                    </div>
-
-                    <motion.div
-                        initial="initial"
-                        whileInView="whileInView"
-                        viewport={{ once: true }}
-                        variants={staggerContainer}
-                        className={cn(
-                            "columns-2 md:columns-3 gap-2 mx-auto w-full",
-                            "md:max-w-3xl"
-                        )}
+            <section className="container flex flex-col gap-5">
+                <div className="mx-auto flex w-full md:max-w-3xl flex-col">
+                    <motion.h3
+                        {...reveal}
+                        className="font-black"
                     >
-                        {showcasing?.map((item) => (
-                            <Link
-                                key={item.slug}
-                                to="/showcase/$slug"
-                                params={{ slug: item.slug }}
-                                className="contents"
+                        {m["nav.showcase"]()}
+                    </motion.h3>
+                </div>
+
+                <motion.div
+                    initial="initial"
+                    whileInView="whileInView"
+                    viewport={{ once: true }}
+                    variants={staggerContainer}
+                    className={cn(
+                        "columns-1 sm:columns-2 md:columns-3 gap-2 mx-auto w-full",
+                        "md:max-w-3xl"
+                    )}
+                >
+                    {showcasing?.map((item) => (
+                        <Link
+                            key={item.slug}
+                            to="/showcase/$slug"
+                            params={{ slug: item.slug }}
+                            className="contents"
+                        >
+                            <motion.article
+                                variants={staggerItem}
+                                whileTap={{ scale: 0.99 }}
+                                whileHover={{
+                                    scale: 1.01,
+                                }}
+                                className={cn(
+                                    "group flex flex-col overflow-hidden cursor-pointer",
+                                    "break-inside-avoid! mb-5"
+                                )}
                             >
-                                <motion.article
-                                    variants={staggerItem}
-                                    whileTap={{ scale: 0.99 }}
-                                    whileHover={{
-                                        scale: 1.01,
-                                    }}
-                                    className={cn(
-                                        "group flex flex-col overflow-hidden cursor-pointer",
-                                        "break-inside-avoid! mb-5"
-                                    )}
-                                >
-                                    <div className="mt-auto relative w-full aspect-video p-px">
-                                        <div className="relative w-full h-full overflow-hidden rounded-none!">
-                                            <img
-                                                src={item.img}
-                                                alt={
-                                                    item.title
-                                                }
-                                                className={cn(
-                                                    "absolute inset-0 w-full h-full object-cover",
-                                                    "group-hover:scale-101 transition-transform",
-                                                    "duration-700 ease-out transition-opacity",
-                                                    "duration-500 opacity-100"
-                                                )}
-                                                data-not-typeset
-                                            />
-                                        </div>
+                                <div className="mt-auto relative w-full aspect-video p-px">
+                                    <div className="relative w-full h-full overflow-hidden rounded-none!">
+                                        <img
+                                            src={item.img}
+                                            alt={
+                                                item.title
+                                            }
+                                            className={cn(
+                                                "absolute inset-0 w-full h-full object-cover",
+                                                "group-hover:scale-101 transition-transform",
+                                                "duration-700 ease-out transition-opacity",
+                                                "duration-500 opacity-100"
+                                            )}
+                                            data-not-typeset
+                                        />
                                     </div>
-                                    <div className="flex flex-col w-full py-1">
-                                        <span className="text-xs! font-medium text-muted-foreground">
-                                            {item.tags
-                                                ?.map(
-                                                    (tag) =>
-                                                        `#${tag}`
-                                                )
-                                                .join(", ")}
-                                        </span>
-                                        <span className="text-xs! font-medium text-muted-foreground">
-                                            {item.stack
-                                                ?.map(
-                                                    (tag) =>
-                                                        `#${tag}`
-                                                )
-                                                .join(", ")}
-                                        </span>
-                                        <h1 className="text-base!">
-                                            {item.title}
-                                        </h1>
-                                        <p className="text-sm!">
-                                            {item.descriptionKey &&
-                                                m[
-                                                    item
-                                                        .descriptionKey
-                                                ]()}
-                                        </p>
-                                    </div>
-                                </motion.article>
-                            </Link>
-                        ))}
-                    </motion.div>
-                </section>
+                                </div>
+                                <div className="flex flex-col w-full py-1">
+                                    <span className="text-xs! font-medium text-muted-foreground">
+                                        {item.tags
+                                            ?.map(
+                                                (tag) =>
+                                                    `#${tag}`
+                                            )
+                                            .join(", ")}
+                                    </span>
+                                    <span className="text-xs! font-medium text-muted-foreground">
+                                        {item.stack
+                                            ?.map(
+                                                (tag) =>
+                                                    `#${tag}`
+                                            )
+                                            .join(", ")}
+                                    </span>
+                                    <h1 className="text-base!">
+                                        {item.title}
+                                    </h1>
+                                    <p className="text-sm!">
+                                        {item.descriptionKey &&
+                                            m[
+                                                item
+                                                    .descriptionKey
+                                            ]()}
+                                    </p>
+                                </div>
+                            </motion.article>
+                        </Link>
+                    ))}
+                </motion.div>
             </section>
         </article>
     )

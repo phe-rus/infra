@@ -113,6 +113,13 @@ function RouteComponent() {
                         className="underline"
                     >
                         {m["nav.licenses.label"]()}
+                    </Link>{" "}
+                    {m["legal.common.and"]()}{" "}
+                    <Link
+                        to="/showcase"
+                        className="underline"
+                    >
+                        {m["nav.showcase"]()}
                     </Link>
                     .
                 </p>
@@ -193,6 +200,18 @@ function RouteComponent() {
                         {aboutUs.contactEmail}
                     </a>
                     .
+                </motion.p>
+
+                <motion.p
+                    {...reveal}
+                    className="text-sm text-muted-foreground"
+                >
+                    <a
+                        href={`tel:${aboutUs.contactPhone.replace(/\s/g, "")}`}
+                        className="underline"
+                    >
+                        {aboutUs.contactPhone}
+                    </a>
                 </motion.p>
             </section>
         </article>

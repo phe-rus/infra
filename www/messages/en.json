@@ -77,15 +77,15 @@
         "description": "We are a collective of like-minded individuals driven by curiosity and a desire to understand, improve, and innovate.",
         "whatWeDo": {
             "heading": "What we do",
-            "body": "Pherus is a practical research, sciences, innovation, and technology company — a place for curious ideas to become real things. We work across identity and access, health, justice, community, science, and software, moving from open questions to working systems."
+            "body": "Pherus is a practical research, sciences, innovation, and technology company. It's a place for curious ideas to become real things. We work across identity and access, health, justice, community, science, and software, moving from open questions to working systems."
         },
         "whereBased": {
             "heading": "Where we're based",
-            "body": "Pherus Inc. is based in Wakiso, Uganda."
+            "body": "Pherus Inc. is based in Wakiso, Uganda, at P.O. Box 114722. Everything we build runs on Cloudflare's global network, though, so being based there doesn't limit who we build for."
         },
         "howWeWork": {
             "heading": "How we work",
-            "body": "We open source what we can, and lean toward decentralised, practical systems over grand promises. We'd rather ship something small and real than talk about something big and hypothetical."
+            "body": "We open source what we can, and lean toward decentralised, practical systems over grand promises. We'd rather ship something small and real than talk about something big and hypothetical. Pass, our identity platform, is a real example: self-hosted on our own infrastructure rather than rented from a vendor."
         },
         "building": {
             "heading": "What we're building"
