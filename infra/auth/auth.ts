@@ -22,7 +22,6 @@ import { dbContext } from "@/db"
 import {
     admin,
     jwt,
-    openAPI,
     haveIBeenPwned,
     twoFactor,
 } from "better-auth/plugins"
@@ -314,7 +313,7 @@ export const auth = betterAuth({
         }),
         ...(isProduction
             ? [haveIBeenPwned()]
-            : [openAPI({ path: "docs" })]),
+            : []),
         tanstackStartCookies(),
     ],
 })
