@@ -24,7 +24,7 @@ const config = defineConfig({
         target: "esnext",
         cssCodeSplit: true,
         rollupOptions: {
-            external: [],
+            external: ['@node-rs/argon2', 'better-auth'],
             output: {
                 manualChunks(id) {
                     if (id.includes("node_modules/recharts")) {
