@@ -23,7 +23,7 @@
         "motion": "^13.1.1",
         "react": "catalog:",
         "react-dom": "catalog:",
-        "zod": "^4.6.5"
+        "zod": "catalog:"
     },
     "devDependencies": {
         "@cloudflare/vite-plugin": "^1.53.0",

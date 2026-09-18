@@ -35,7 +35,7 @@
         "react": "catalog:",
         "react-dom": "catalog:",
         "ua-parser-js": "^2.0.10",
-        "zod": "^4.4.3"
+        "zod": "catalog:"
     },
     "devDependencies": {
         "@cloudflare/vite-plugin": "^1.53.0",

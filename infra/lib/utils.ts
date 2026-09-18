@@ -1,5 +1,4 @@
-import { twMerge } from "tailwind-merge"
-import { clsx } from "clsx"
+import { cn } from "@infra/ui/lib/utils"
 
 export function gridCellBorderClasses(
     index: number,
@@ -9,13 +8,11 @@ export function gridCellBorderClasses(
 ) {
     const left4 = index % columns2 !== 0
     const left6 = index % columns3 !== 0
-    return twMerge(
-        clsx(
-            "border-dashed border-r-0 border-b-0",
-            includeTop ? "border-t-2" : "border-t-0",
-            left4 ? "@4xl:border-l-2" : "@4xl:border-l-0",
-            left6 ? "@6xl:border-l-2" : "@6xl:border-l-0"
-        )
+    return cn(
+        "border-dashed border-r-0 border-b-0",
+        includeTop ? "border-t-2" : "border-t-0",
+        left4 ? "@4xl:border-l-2" : "@4xl:border-l-0",
+        left6 ? "@6xl:border-l-2" : "@6xl:border-l-0"
     )
 }
 

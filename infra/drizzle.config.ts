@@ -1,7 +1,6 @@
 import { defineConfig } from "drizzle-kit"
 import path from "node:path"
 import fs from "node:fs"
-import "dotenv/config"
 
 const localConfig = () => {
     try {

@@ -11,7 +11,7 @@
         "better-auth": "^1.7.2"
     },
     "dependencies": {
-        "zod": "^4.4.3"
+        "zod": "catalog:"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4",
