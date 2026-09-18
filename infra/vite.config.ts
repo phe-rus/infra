@@ -21,12 +21,21 @@ const config = defineConfig({
         },
     },
     build: {
-        rolldownOptions: {
-            external: (id) => id === "reflect-metadata",
+        target: "esnext",
+        cssCodeSplit: true,
+        rollupOptions: {
+            external: [],
+            output: {
+                manualChunks(id) {
+                    if (id.includes("node_modules/recharts")) {
+                        return "vendor-recharts"
+                    }
+                    if (id.includes("node_modules/date-fns") || id.includes("node_modules/dayjs")) {
+                        return "vendor-dates"
+                    }
+                },
+            },
         },
-    },
-    ssr: {
-        noExternal: ["reflect-metadata", "tsyringe"],
     },
     plugins: [
         cloudflare({

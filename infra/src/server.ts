@@ -4,8 +4,9 @@ import {
 } from "@better-auth/oauth-provider"
 import handler from "@tanstack/react-start/server-entry"
 import { withEdgeCache } from "@infra/tanstack-image/server"
-import { auth, isTrustedOrigin } from "@/auth"
 
+const { auth } = await import("@/auth")
+const { isTrustedOrigin } = await import("@/auth")
 export type RequestContext = {
     env: Env
     waitUntil: (promise: Promise<unknown>) => void

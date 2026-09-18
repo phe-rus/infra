@@ -159,10 +159,10 @@ export const auth = betterAuth({
         after: createAuthMiddleware(async (ctx) => {
             const cf = ctx.request?.cf as
                 | {
-                      country?: string
-                      city?: string
-                      region?: string
-                  }
+                    country?: string
+                    city?: string
+                    region?: string
+                }
                 | undefined
             const geo = {
                 ip:
@@ -187,11 +187,11 @@ export const auth = betterAuth({
                     | undefined
                 const returned = ctx.context.returned as
                     | {
-                          token?: string
-                          user?: {
-                              email?: string
-                          }
-                      }
+                        token?: string
+                        user?: {
+                            email?: string
+                        }
+                    }
                     | undefined
                 ctx.context.runInBackground(
                     logAuthEvent({
