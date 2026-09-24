@@ -16,10 +16,13 @@ import {
 } from "./types"
 import { getServerURL } from "@/lib/getURL"
 
+// getRequestHeaders() already returns a real Headers instance (h3's
+// event.req.headers); Object.entries() only reads OWN enumerable
+// properties, which a Headers object has none of, so
+// Object.fromEntries(Object.entries(headers)) always produced {} here,
+// silently dropping the session cookie on every call that used this
 function headers() {
-    return Object.fromEntries(
-        Object.entries(getRequestHeaders())
-    )
+    return getRequestHeaders()
 }
 
 export const getSession = createServerFn({ method: "GET" })

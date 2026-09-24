@@ -35,7 +35,7 @@ export const useSignIn = () => {
                 window.location.href = data.redirectUri
                 return
             }
-            q.query(meOptions()).catch(() => {})
+            q.query(meOptions()).catch(() => { })
             setTimeout(async () => {
                 await router.invalidate()
                 router.navigate({ to: "/", replace: true })
@@ -55,18 +55,15 @@ export const useLogout = () => {
     return useAppMutation({
         mutationFn: signOut,
         successMessage: "Signed out",
-        successDescription:
-            "You have been signed out successfully",
-        onSuccess: () => {
-            q.invalidateQueries(meOptions())
+        successDescription: "You have been signed out successfully",
+        onSuccess: async () => {
             q.clear()
-            setTimeout(async () => {
-                await router.invalidate()
-                router.navigate({
-                    to: "/sign-in",
-                    replace: true,
-                })
-            }, 50)
+            await router.navigate({
+                to: "/sign-in",
+                replace: true,
+                reloadDocument: true,
+            })
+            await router.invalidate()
         },
         errorMessage: "Sign out failed",
     })

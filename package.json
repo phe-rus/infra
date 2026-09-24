@@ -21,7 +21,7 @@
         "catalogs": {
             "tanstack": {
                 "vite": "^8.3.0",
-                "wrangler": "^4.134.0"
+                "wrangler": "^4.137.0"
             }
         }
     },

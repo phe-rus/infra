@@ -1,13 +1,13 @@
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
-    CancelCircleIcon,
     Cancel01Icon,
+    CancelCircleIcon,
     CheckmarkCircle02Icon,
     InformationCircleIcon,
     Loading03Icon,
     TriangleAlertIcon,
 } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { format } from "date-fns"
 import type { ComponentPropsWithoutRef } from "react"
 
@@ -65,7 +65,7 @@ function Toast({
         <ToastPrimitive.Root
             data-slot="toast"
             className={cn(
-                "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-full border border-border bg-popover text-popover-foreground shadow-[0_4px_12px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] will-change-transform outline-none select-none has-data-[slot=toast-description]:rounded-2xl focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-full border border-border bg-popover text-popover-foreground shadow-[0_4px_12px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] will-change-transform outline-none has-data-[slot=toast-description]:rounded-2xl focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
                 "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
                 "h-(--height) transform-[translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_500ms_cubic-bezier(0.34,1.56,0.64,1),opacity_500ms,height_150ms]",
                 "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
@@ -234,8 +234,8 @@ function ToastList() {
     return toasts.map((toastItem) => {
         const createdAt = (
             toastItem.data as
-                | { createdAt?: number }
-                | undefined
+            | { createdAt?: number }
+            | undefined
         )?.createdAt
         return (
             <Toast key={toastItem.id} toast={toastItem}>
@@ -247,8 +247,8 @@ function ToastList() {
                                 className={
                                     toastItem.type
                                         ? TYPE_TEXT[
-                                              toastItem.type
-                                          ]
+                                        toastItem.type
+                                        ]
                                         : undefined
                                 }
                             />
@@ -269,8 +269,8 @@ function ToastList() {
                                 className={
                                     toastItem.type
                                         ? TYPE_ACTION[
-                                              toastItem.type
-                                          ]
+                                        toastItem.type
+                                        ]
                                         : undefined
                                 }
                             />

@@ -6,15 +6,24 @@ import {
     updateApp,
 } from "./func"
 import { useAppMutation } from "@infra/ui/hooks"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import type { AppListData } from "./func"
 import { appOptions, consoleOptions } from "./get-console"
+import { CREATE_CLIENT_ID } from "./types"
 
 export const useConsole = () =>
     useSuspenseQuery(consoleOptions())
 
+// plain (non-suspense) and gated off for CREATE_CLIENT_ID: the create
+// flow uses this hook with a clientId that never exists in the database,
+// and findApp is AdminMiddleware-protected, so querying it unconditionally
+// meant an expired session surfaced as an uncaught redirect thrown from
+// inside a suspended query instead of a handled navigation
 export const useApp = (clientId: string) =>
-    useSuspenseQuery(appOptions(clientId))
+    useQuery({
+        ...appOptions(clientId),
+        enabled: clientId !== CREATE_CLIENT_ID,
+    })
 
 export const useCreateApp = () =>
     useAppMutation({

@@ -1,3 +1,4 @@
+import { getRequestHeaders } from "@tanstack/react-start/server"
 import { createServerFn } from "@tanstack/react-start"
 import { desc, eq } from "drizzle-orm"
 import { APIError } from "better-auth/api"
@@ -15,6 +16,7 @@ import {
     setAppActiveSchema,
     updateAppSchema,
 } from "./types"
+import { forwardAuthHeaders } from "@/lib/forward-headers"
 
 type OAuthClientRow = typeof oauthClient.$inferSelect
 function toAppDetail(row: OAuthClientRow, callerId: string) {
@@ -47,18 +49,39 @@ function toAppDetail(row: OAuthClientRow, callerId: string) {
     }
 }
 
+// getRequestHeaders() already returns a real Headers instance (h3's
+// event.req.headers); Object.entries() only reads OWN enumerable
+// properties, which a Headers object has none of, so
+// Object.fromEntries(Object.entries(headers)) always produced {} here,
+// silently dropping the session cookie on every admin oauth-client call
+function headers() {
+    return getRequestHeaders()
+}
+
 export type ListedApp = ReturnType<typeof toAppDetail>
 function withClientMetadataError(error: unknown): never {
-    if (
-        error instanceof APIError &&
-        !error.message &&
-        error.body &&
-        typeof error.body === "object" &&
-        "error_description" in error.body
-    ) {
-        throw new APIError(error.status, {
-            message: String(error.body.error_description),
-        })
+    if (error instanceof APIError && !error.message) {
+        const description =
+            error.body &&
+                typeof error.body === "object" &&
+                ("error_description" in error.body ||
+                    "message" in error.body)
+                ? String(
+                    (error.body as Record<string, unknown>)
+                        .message ??
+                    (
+                        error.body as Record<
+                            string,
+                            unknown
+                        >
+                    ).error_description
+                )
+                // the oauth-provider plugin throws several of its own
+                // checks (assertClientPrivileges among them) as a bare
+                // `new APIError(status)` with no body at all, which used
+                // to surface as a silent, description-less toast
+                : `${error.status} from the identity server, no further detail given`
+        throw new APIError(error.status, { message: description })
     }
     throw error
 }
@@ -123,38 +146,43 @@ export const createApp = createServerFn({ method: "POST" })
     .validator(createAppSchema)
     .handler(async ({ data }) => {
         try {
-            const client =
-                await auth.api.adminCreateOAuthClient({
-                    body: {
-                        client_name: data.client_name,
-                        client_uri: data.client_uri,
-                        logo_uri: data.logo_uri,
-                        application_type:
-                            data.application_type,
-                        token_endpoint_auth_method:
-                            data.token_endpoint_auth_method,
-                        redirect_uris: data.redirect_uris
-                            ?.length
-                            ? data.redirect_uris
-                            : [PENDING_REDIRECT_URI],
-                        post_logout_redirect_uris:
-                            data.post_logout_redirect_uris,
-                        scope: data.scope.join(" "),
-                        grant_types: data.grant_types,
-                        require_pkce: data.require_pkce,
-                        skip_consent: data.skip_consent,
-                        enable_end_session:
-                            data.enable_end_session,
-                        ...(data.framework && {
-                            metadata: {
-                                framework: data.framework,
-                            },
-                        }),
-                    },
-                })
+            const {
+                headers: responseHeaders,
+                response
+            } = await auth.api.adminCreateOAuthClient({
+                headers: headers(),
+                body: {
+                    client_name: data.client_name,
+                    client_uri: data.client_uri,
+                    logo_uri: data.logo_uri,
+                    application_type:
+                        data.application_type,
+                    token_endpoint_auth_method:
+                        data.token_endpoint_auth_method,
+                    redirect_uris: data.redirect_uris
+                        ?.length
+                        ? data.redirect_uris
+                        : [PENDING_REDIRECT_URI],
+                    post_logout_redirect_uris:
+                        data.post_logout_redirect_uris,
+                    scope: data.scope.join(" "),
+                    grant_types: data.grant_types,
+                    require_pkce: data.require_pkce,
+                    skip_consent: data.skip_consent,
+                    enable_end_session:
+                        data.enable_end_session,
+                    ...(data.framework && {
+                        metadata: {
+                            framework: data.framework,
+                        },
+                    }),
+                },
+                returnHeaders: true
+            })
+            forwardAuthHeaders(responseHeaders)
             return {
-                clientId: client.client_id,
-                clientSecret: client.client_secret ?? null,
+                clientId: response.client_id,
+                clientSecret: response.client_secret ?? null,
             }
         } catch (error) {
             withClientMetadataError(error)
@@ -170,6 +198,7 @@ export const updateApp = createServerFn({ method: "POST" })
         const { clientId, scope, framework, ...rest } = data
         try {
             await auth.api.adminUpdateOAuthClient({
+                headers: headers(),
                 body: {
                     client_id: clientId,
                     update: {
@@ -182,6 +211,7 @@ export const updateApp = createServerFn({ method: "POST" })
                         }),
                     },
                 },
+                returnHeaders: true
             })
             return { success: true }
         } catch (error) {

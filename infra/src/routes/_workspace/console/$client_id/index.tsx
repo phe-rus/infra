@@ -1,18 +1,6 @@
-import { useEffect, useState } from "react"
-import { createFileRoute } from "@tanstack/react-router"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Copy01Icon } from "@hugeicons/core-free-icons"
-import { formatUtc } from "@infra/ui/lib/date"
-import { Badge } from "@infra/ui/components/badge"
-import { Button } from "@infra/ui/components/button"
-import { Separator } from "@infra/ui/components/separator"
-import { useAppForm } from "@infra/ui/widgets/blocks"
-import { ApplicationFormFields } from "@/domains/console"
-import { t } from "@infra/ui/components/sonner"
 import {
     appDetailSearchSchema,
-    appFormSchema,
-    computeChangedFields,
+    appFormSchema, ApplicationFormFields, computeChangedFields,
     CREATE_CLIENT_ID,
     CREATE_DEFAULT_VALUES,
     editDefaultValues,
@@ -22,9 +10,19 @@ import {
     useRemoveApp,
     useRotateApp,
     useSetAppActive,
-    useUpdateApp,
+    useUpdateApp
 } from "@/domains/console"
+import { Copy01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Badge } from "@infra/ui/components/badge"
+import { Button } from "@infra/ui/components/button"
+import { Separator } from "@infra/ui/components/separator"
+import { t } from "@infra/ui/components/sonner"
+import { formatUtc } from "@infra/ui/lib/date"
+import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
+import { createFileRoute } from "@tanstack/react-router"
+import { useEffect, useState } from "react"
 
 export const Route = createFileRoute(
     "/_workspace/console/$client_id/"
@@ -214,18 +212,18 @@ function RouteComponent() {
                         Created{" "}
                         {application.createdAt
                             ? formatUtc(
-                                  application.createdAt,
-                                  "PPPp"
-                              )
+                                application.createdAt,
+                                "PPPp"
+                            )
                             : "—"}
                     </div>
                     <div>
                         Updated{" "}
                         {application.updatedAt
                             ? formatUtc(
-                                  application.updatedAt,
-                                  "PPPp"
-                              )
+                                application.updatedAt,
+                                "PPPp"
+                            )
                             : "—"}
                     </div>
                     <Badge
