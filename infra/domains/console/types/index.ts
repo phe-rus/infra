@@ -1,15 +1,5 @@
 import { z } from "zod"
-// the plugin's own redirect_uris/post_logout_redirect_uris validation
-// (require HTTPS except for loopback hosts, reject fragments/dangerous
-// schemes) — reused here instead of plain z.url() so a rejected URL fails
-// fast with a clear message from our own form, not a mystery "could not
-// save" once it reaches auth.api.adminUpdateOAuthClient's stricter schema
-import { SafeUrlSchema } from "@better-auth/core/utils/redirect-uri"
 
-// matches better-auth 1.7's applicationType exactly — it collapsed what used
-// to be three OAuth client profiles (web / native / user-agent-based) down to
-// two, since a browser-based SPA can't hold a secret any more securely than a
-// native app can, so both are "native" (public-only) now
 export const CLIENT_TYPES = ["web", "native"] as const
 export type ClientType = (typeof CLIENT_TYPES)[number]
 
@@ -69,19 +59,19 @@ export const GRANT_TYPE_OPTIONS: {
     label: string
     value: GrantType
 }[] = [
-    {
-        label: "Authorization code — user login flows",
-        value: "authorization_code",
-    },
-    {
-        label: "Client credentials — machine-to-machine",
-        value: "client_credentials",
-    },
-    {
-        label: "Refresh token — extend sessions",
-        value: "refresh_token",
-    },
-]
+        {
+            label: "Authorization code — user login flows",
+            value: "authorization_code",
+        },
+        {
+            label: "Client credentials — machine-to-machine",
+            value: "client_credentials",
+        },
+        {
+            label: "Refresh token — extend sessions",
+            value: "refresh_token",
+        },
+    ]
 
 // matches the scopes configured on the oauthProvider plugin (auth/auth.ts)
 export const SCOPES = [
@@ -197,11 +187,8 @@ export const createAppSchema = z.object({
     // redirect_uris come through empty on purpose (createApp's own handler
     // falls back to PENDING_REDIRECT_URI when it does), so requiring at
     // least one here would reject the exact input that fallback exists for
-    redirect_uris: z.array(SafeUrlSchema).optional(),
-    post_logout_redirect_uris: z
-        .array(SafeUrlSchema)
-        .min(1)
-        .optional(),
+    redirect_uris: z.array(z.url()).optional(),
+    post_logout_redirect_uris: z.array(z.url()).min(1).optional(),
     scope: z.array(z.enum(SCOPES)),
     grant_types: z.array(z.enum(GRANT_TYPES)),
     require_pkce: z.boolean(),
@@ -220,11 +207,8 @@ export const updateAppSchema = z.object({
     client_uri: z.url().optional(),
     logo_uri: z.url().optional(),
     framework: z.enum(FRAMEWORKS).optional(),
-    redirect_uris: z.array(SafeUrlSchema).min(1).optional(),
-    post_logout_redirect_uris: z
-        .array(SafeUrlSchema)
-        .min(1)
-        .optional(),
+    redirect_uris: z.array(z.url()).min(1).optional(),
+    post_logout_redirect_uris: z.array(z.url()).min(1).optional(),
     scope: z.array(z.enum(SCOPES)).optional(),
     grant_types: z.array(z.enum(GRANT_TYPES)).optional(),
     skip_consent: z.boolean().optional(),
