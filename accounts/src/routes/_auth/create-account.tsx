@@ -8,7 +8,10 @@ import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
-import { authClient } from "@/lib/auth-client"
+import {
+    authClient,
+    continueOrGoHome,
+} from "@/lib/auth-client"
 import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute("/_auth/create-account")(
@@ -68,17 +71,18 @@ function RouteComponent() {
                 )
                 return
             }
-            const token = (
-                data as { token?: string | null } | undefined
-            )?.token
-            if (!token) {
+            const result = data as
+                | {
+                      token?: string | null
+                      redirect?: boolean
+                  }
+                | undefined
+            // an oauth redirect replaces the body, so it has no token
+            if (!result?.token && !result?.redirect) {
                 setNeedsVerification(true)
                 return
             }
-            const redirectUri = (
-                data as { redirect_uri?: string } | undefined
-            )?.redirect_uri
-            window.location.href = redirectUri ?? "/"
+            continueOrGoHome(data)
         },
     })
 

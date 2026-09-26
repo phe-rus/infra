@@ -9,7 +9,10 @@ import { FieldGroup } from "@infra/ui/components/field"
 import { Button } from "@infra/ui/components/button"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
-import { authClient } from "@/lib/auth-client"
+import {
+    authClient,
+    continueOrGoHome,
+} from "@/lib/auth-client"
 import { t } from "@infra/ui/components/sonner"
 import { m } from "../../paraglide/messages"
 
@@ -24,17 +27,6 @@ export const Route = createFileRoute("/_auth/sign-in")({
     },
     component: RouteComponent,
 })
-
-function continueOrGoHome(data: unknown) {
-    const result = data as
-        | {
-              redirect_uri?: string
-              twoFactorRedirect?: boolean
-          }
-        | undefined
-    if (result?.twoFactorRedirect) return
-    window.location.href = result?.redirect_uri ?? "/"
-}
 
 function RouteComponent() {
     const [passkeyPending, setPasskeyPending] =

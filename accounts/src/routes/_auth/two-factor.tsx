@@ -3,7 +3,10 @@ import { z } from "zod"
 import { FieldGroup } from "@infra/ui/components/field"
 import { useAppForm } from "@infra/ui/widgets/blocks"
 import { ViewController } from "@infra/ui/widgets/view-controller"
-import { authClient } from "@/lib/auth-client"
+import {
+    authClient,
+    continueOrGoHome,
+} from "@/lib/auth-client"
 import { t } from "@infra/ui/components/sonner"
 import { m } from "../../paraglide/messages"
 
@@ -37,10 +40,7 @@ function RouteComponent() {
                 )
                 return
             }
-            const redirectUri = (
-                data as { redirect_uri?: string } | undefined
-            )?.redirect_uri
-            window.location.href = redirectUri ?? "/"
+            continueOrGoHome(data)
         },
     })
 
