@@ -8,14 +8,14 @@
         "typecheck": "tsc --noEmit"
     },
     "peerDependencies": {
-        "better-auth": "^1.7.2"
+        "better-auth": "^1.7.6"
     },
     "dependencies": {
         "zod": "catalog:"
     },
     "devDependencies": {
-        "@cloudflare/workers-types": "^4",
-        "@types/node": "^26",
+        "@cloudflare/workers-types": "^5.20260926.1",
+        "@types/node": "^26.6.3",
         "typescript": "catalog:"
     },
     "exports": {

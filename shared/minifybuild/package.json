@@ -11,7 +11,7 @@
         "vite": "catalog:tanstack"
     },
     "devDependencies": {
-        "@types/node": "^26",
+        "@types/node": "^26.6.3",
         "typescript": "catalog:"
     },
     "exports": {

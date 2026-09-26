@@ -46,10 +46,10 @@ export function getContext() {
 }
 
 export const QueryProvider = ({
-    query,
+    queryClient,
     children,
-}: PropsWithChildren<{ query: QueryClient }>) => {
-    const [client] = useState(() => query)
+}: PropsWithChildren<{ queryClient: QueryClient }>) => {
+    const [client] = useState(() => queryClient)
     return (
         <QueryClientProvider client={client}>
             {children}

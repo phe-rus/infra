@@ -15,7 +15,7 @@ import { getLocale } from "../paraglide/runtime"
 import { LocaleSwitcher } from "@/components/locale-switcher"
 
 export interface RouterAppContext {
-    q: QueryClient
+    queryClient: QueryClient
 }
 
 export const Route =
@@ -52,8 +52,8 @@ export const Route =
                 },
             ],
         }),
-        beforeLoad: async ({ context: { q } }) => {
-            const session = await q.query({
+        beforeLoad: async ({ context: { queryClient } }) => {
+            const session = await queryClient.query({
                 ...currentOptions(),
                 staleTime: "static",
             })

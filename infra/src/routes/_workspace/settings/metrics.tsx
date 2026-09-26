@@ -254,9 +254,11 @@ function RouteComponent() {
                             />
                             <ChartLegend
                                 content={
-                                    <ChartLegendContent nameKey="label" />
+                                    <ChartLegendContent
+                                        nameKey="label"
+                                        className="flex-wrap"
+                                    />
                                 }
-                                className="flex-wrap"
                             />
                         </PieChart>
                     </ChartContainer>

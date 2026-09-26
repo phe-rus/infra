@@ -41,14 +41,11 @@ export const UserAccounts: FC<UserAccountsProps> = ({
                             )}
                         </span>
                     </div>
-                    <div className="flex items-center justify-between text-muted-foreground">
-                        <span>{account.issuer}</span>
-                        {account.scopes.length > 0 && (
-                            <span className="truncate">
-                                {account.scopes.join(", ")}
-                            </span>
-                        )}
-                    </div>
+                    {account.scopes.length > 0 && (
+                        <span className="truncate text-muted-foreground">
+                            {account.scopes.join(", ")}
+                        </span>
+                    )}
                 </div>
             ))}
     </section>

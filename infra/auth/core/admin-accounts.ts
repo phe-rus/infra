@@ -43,7 +43,6 @@ export const listUserAccounts = ({
                         accounts: accounts.map(
                             ({
                                 id,
-                                issuer,
                                 providerId,
                                 accountId,
                                 userId,
@@ -52,7 +51,6 @@ export const listUserAccounts = ({
                                 scope,
                             }) => ({
                                 id,
-                                issuer,
                                 providerId,
                                 accountId,
                                 userId,

@@ -23,8 +23,8 @@ import { m } from "../../paraglide/messages"
 
 export const Route = createFileRoute("/_workspace/security")({
     loader: async ({ context }) => {
-        await context.q.ensureQueryData(passkeysOptions())
-        await context.q.ensureQueryData(sessionsOptions())
+        await context.queryClient.ensureQueryData(passkeysOptions())
+        await context.queryClient.ensureQueryData(sessionsOptions())
     },
     component: RouteComponent,
 })
